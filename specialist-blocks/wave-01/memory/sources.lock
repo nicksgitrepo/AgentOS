@@ -1,0 +1,74 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.memory",
+  "sources": [
+    {
+      "source_id": "source.agentos-portable-governance",
+      "title": "AgentOS Portable Governance Contract",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL:agentos-portable-governance-2.1rc",
+      "version": "2.1rc",
+      "effective_date": null,
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "agentos-portable-governance-2.1rc",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Candidate lifecycle, memory boundaries, model-policy projections, independent review, and fail-closed admission."
+    },
+    {
+      "source_id": "source.agentos-project-memory-contract",
+      "title": "AgentOS Project Memory Contract",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL:agentos-project-memory-contract-v1",
+      "version": "1",
+      "effective_date": null,
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "agentos-project-memory-contract-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Append-only project memory records, replay, snapshots, invalidation, capsules, privacy, and binding."
+    },
+    {
+      "source_id": "source.json-schema-2020-12",
+      "title": "JSON Schema 2020-12",
+      "publisher": "JSON Schema",
+      "url": "https://json-schema.org/draft/2020-12",
+      "version": "2020-12",
+      "effective_date": "2020-12-01",
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "json-schema-draft-2020-12",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Machine-readable contract validation."
+    },
+    {
+      "source_id": "source.rfc-2119",
+      "title": "Key words for use in RFCs",
+      "publisher": "Internet Engineering Task Force",
+      "url": "https://www.rfc-editor.org/rfc/rfc2119",
+      "version": "RFC 2119",
+      "effective_date": "1997-03-01",
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "rfc2119-bcp14-1997",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Controlled normative language."
+    },
+    {
+      "source_id": "source.w3c-prov-dm",
+      "title": "PROV-DM",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/prov-dm/",
+      "version": "REC",
+      "effective_date": "2013-04-30",
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "w3c-prov-dm-recommendation-20130430",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Evidence provenance and derivation identity."
+    }
+  ],
+  "freshness_rule": "DENY dependent memory actions when policy, source, binding, or evidence is stale, superseded, unverifiable, or missing; rebuild or escalate.",
+  "manifest_sha256": "93466195a4aebabdc45be50c448fad6d4cbe2dbb14a060740e9d2cd73f42d099"
+}

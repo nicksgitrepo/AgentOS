@@ -1222,6 +1222,22 @@
       "path": "tests/verify-global-governance-memory.mjs",
       "sha256": "ad7f45642a950195df6223804e19cbf3fd09c440a2d18011ce40023d162288b2"
     },
+    "memory_package_scaffolder": {
+      "path": "control/scaffold-memory-package.mjs",
+      "sha256": "e86b3b8e9a23e51c23fc1635b1da45b5d4382a5cbd362b6e536e6f86d0016c1c"
+    },
+    "memory_package_operational_evaluation_contract": {
+      "path": "schemas/memory-package-operational-evaluation.v1.json",
+      "sha256": "8edac6c7d62918d1c539b46e9672d8675422bc950c1b4d5a8f452845669f4a24"
+    },
+    "memory_package_operational_evaluator": {
+      "path": "control/memory-package-evaluator.mjs",
+      "sha256": "2f5e73350cbe561300243faa92c61b66e4bcce615ff0776976fcab8ca8390375"
+    },
+    "memory_package_operational_evaluator_verifier": {
+      "path": "tests/verify-memory-package-evaluator.mjs",
+      "sha256": "9aaefbb56fcaca8819a56d6d11a880401db5e5b9848ac1bcc7c10c7102a9cff2"
+    },
     "global_governance_operational_context_contract": {
       "path": "schemas/global-governance-operational-context.v1.json",
       "sha256": "fb9297f70c91d6b6493b7851520d0d26978076b6653d79275384911b4375ea5a"
@@ -1381,7 +1397,7 @@
     },
     "independent_specialist_evaluator_verifier": {
       "path": "tests/verify-specialist-independent-evaluator.mjs",
-      "sha256": "d22b6c50db492aa8b3ffb33a52d3f97943c6e344e6e53eaeb9a6bfd8467aa2ac"
+      "sha256": "cca83b41c606e6fcaa04986aef6f2cfc47e3c3ef887ec306c31add4f97a2619c"
     },
     "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_candidate_authority_v1_json": {
       "path": "tests/fixtures/independent-clearance/authority/candidate-authority.v1.json",
@@ -3067,11 +3083,11 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "fc51c60e8de5a304e1a0cafe48329c22a9aa307789f00fda58b48dff8eecb438"
+      "sha256": "cfc741af0a7eafd3142b12ee039ac702252dd4784baf6bf54539de6a2ac36f94"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
-      "sha256": "238caeb7875be891c02a9b571d376d17ab1fc4413317cb237be6e3b1aa150783"
+      "sha256": "724a85f05c6ac5397ab1b916c617cdd2ab7c9acbd6771a5d616710605929ef47"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",

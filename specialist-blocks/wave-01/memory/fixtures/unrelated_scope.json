@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.unrelated_scope",
+  "block_id": "specialist.control.memory",
+  "class": "unrelated_scope",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "consumer_context_leak",
+    "input": {
+      "fixture_class": "unrelated_scope",
+      "attack_vector": "consumer_context_leak"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_PRIVACY",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

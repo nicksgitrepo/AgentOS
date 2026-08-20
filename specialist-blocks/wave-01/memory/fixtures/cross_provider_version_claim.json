@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.cross_provider_version_claim",
+  "block_id": "specialist.control.memory",
+  "class": "cross_provider_version_claim",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "mixed_policy_epoch",
+    "input": {
+      "fixture_class": "cross_provider_version_claim",
+      "attack_vector": "mixed_policy_epoch"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_BINDING",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

@@ -1,0 +1,347 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.memory",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "memory",
+  "title": "Governed Memory Adapter",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Operate the sealed AgentOS memory boundary: append typed project records, rebuild deterministic projections, expose compact read-only context, and keep global governance memory separate from project memory.",
+  "scope": {
+    "included": [
+      "append-only project memory events",
+      "capsule import and restart continuity",
+      "deterministic replay and snapshot rebuild",
+      "privacy and cross-project isolation",
+      "read-only global model-policy projection",
+      "sealed writer and custody enforcement",
+      "typed conflict, supersession, and invalidation"
+    ],
+    "non_goals": [
+      "copying consumer project memory into global governance memory",
+      "deciding product intent or workflow progress",
+      "deploying, publishing, or changing external state",
+      "handling credentials or provider sessions",
+      "self-acceptance or activation",
+      "spawning, admitting, archiving, or despawning agents"
+    ],
+    "smallest_sufficient_rule": "Change only the governed memory record or projection named by the request; preserve the ledger, binding, privacy boundary, and current readback for every other scope."
+  },
+  "atomic_scope_statement": "Project-agnostic memory transport and projection custody; it does not own product intent, workflow, lifecycle, deployment, or acceptance decisions.",
+  "permitted_decisions": [
+    "append a validated typed memory event through a sealed writer",
+    "import a validated capsule without widening scope",
+    "issue a compact read-only role context projection",
+    "record a typed conflict, supersession, or invalidation",
+    "replay and rebuild a bound snapshot",
+    "return a typed stale, privacy, custody, or conflict defect"
+  ],
+  "forbidden_decisions": [
+    "accept a caller-supplied root, project identity, trusted time, or PASS claim",
+    "self-accept, self-review, activate, deploy, publish, or release",
+    "spawn, admit, archive, despawn, or mutate an agent roster",
+    "treat a snapshot as authority without ledger readback",
+    "write global governance memory without the governed adapter capability",
+    "write product or consumer state outside the bound memory store"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_MEMORY_ADAPTER_ONLY;_NO_LIFECYCLE_AUTHORITY;_NO_SELF_ACCEPTANCE;_SEALED_WRITER_REQUIRED",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "UNKNOWN or CONFLICT closes only the dependent memory action",
+    "compose only with the canonical project-memory and global-governance contracts",
+    "every write binds current policy, source, custody, and readback identities",
+    "ledger events are canonical; snapshots, capsules, maps, and indexes are derived",
+    "project memory stays project-scoped and global governance stays project-agnostic"
+  ],
+  "escalation_target": "specialist.foundation.evaluation-admission-gate",
+  "split_required_when": [
+    "global governance versus project memory authority differs",
+    "privacy class or retention rule differs",
+    "project identity or memory binding differs",
+    "workflow, product, deployment, or lifecycle authority is requested",
+    "writer custody or store differs"
+  ],
+  "required_knowledge": [
+    "append-only ledger and compare-and-swap semantics",
+    "capsule import and restart continuity",
+    "content-addressed provenance and freshness",
+    "deterministic replay and snapshot rebuild",
+    "global-versus-project memory isolation",
+    "model-policy snapshot read-only projection",
+    "privacy scanner and opaque references",
+    "project-memory record and event schemas",
+    "sealed writer capabilities and fencing",
+    "typed conflict, supersession, and invalidation"
+  ],
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "custody",
+      "global_policy_projection",
+      "project_memory_binding",
+      "request",
+      "source_lock"
+    ],
+    "optional_context": [
+      "handoff_receipt",
+      "ledger_readback",
+      "project_context",
+      "runtime_readback",
+      "snapshot_readback"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "custody",
+      "global_policy_projection",
+      "project_memory_binding",
+      "source_lock"
+    ],
+    "acceptance_signals": [
+      "capsule import",
+      "conflict",
+      "invalidation",
+      "ledger replay",
+      "memory append",
+      "privacy",
+      "read-only projection",
+      "snapshot rebuild"
+    ],
+    "rejection_signals": [
+      "caller root",
+      "credential",
+      "cross-project",
+      "deployment",
+      "global memory leak",
+      "secret",
+      "self-admission",
+      "stale snapshot",
+      "unknown writer"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.memory.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "binding",
+      "custody",
+      "evidence",
+      "handoff",
+      "ledger_readback",
+      "scope",
+      "snapshot_readback",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "exact event and record digests",
+      "ledger count and replay result",
+      "prior head and current head",
+      "privacy scan result",
+      "project/global boundary",
+      "snapshot digest and freshness",
+      "writer capability and fencing result"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "current model-policy projection",
+      "governed global memory capability",
+      "sealed AgentOS memory contract",
+      "typed project memory binding",
+      "typed source and custody records"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "current primary source",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "project context",
+      "sealed memory contract"
+    ],
+    "prohibited_authority": [
+      "caller-supplied roots or clocks",
+      "consumer preference as memory authority",
+      "provider account facts",
+      "raw browsing transcripts",
+      "secrets or credentials",
+      "self-authored acceptance",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "Memory stores records but does not decide legal, regulatory, financial, safety, or professional applicability; missing applicability closes only the dependent record.",
+    "escalation_rule": "Authority, binding, privacy, custody, or replay conflict returns a typed defect to Spawner and closes only the affected memory action.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Current policy, source, ledger head, store identity, and projection must be read back; stale, superseded, contradictory, or unverifiable evidence denies the dependent action.",
+    "claim_rule": "Only the exact bound ledger and typed projection may support a memory claim; derived snapshots never replace the canonical ledger.",
+    "unknown_rule": "UNKNOWN records the missing binding, source, custody, or replay evidence and closes only the dependent memory action; it never authorizes a write or projection."
+  },
+  "controls": {
+    "read": [
+      "bound global governance projection",
+      "bound project memory ledger",
+      "current custody and fencing readback",
+      "typed source and policy records"
+    ],
+    "write": [
+      "derived snapshots, capsules, and readbacks with CAS and durable fsync",
+      "governed global governance events through the Memory adapter capability",
+      "validated project memory events through sealed writer"
+    ],
+    "tools": [
+      "append-only store transport",
+      "deterministic validator",
+      "privacy scanner",
+      "read-only project/global context projection",
+      "replay and snapshot rebuild"
+    ],
+    "data": [
+      "no raw transcripts, secrets, credentials, or deployment state",
+      "opaque content-addressed references",
+      "project-agnostic governance records only in global memory",
+      "typed project memory only within the bound project"
+    ],
+    "secrets": "DENY",
+    "browser": "DENY",
+    "build": "LOCAL_READ_ONLY",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "privacy_violation": "DENY_AND_RECORD_NO_EVENT",
+    "recovery": [
+      "invalidate affected snapshot or capsule",
+      "preserve append-only history",
+      "rebuild from current ledger after QA",
+      "record exact typed defect",
+      "resume only after fresh readback"
+    ],
+    "terminal_statuses": [
+      "CONFLICT",
+      "DENIED",
+      "ESCALATED",
+      "STALE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, source lock, twelve executable gates, seventeen hostile fixtures, evaluation dossier, and handoff exist with matching content identities while lifecycle remains CANDIDATE and activation remains OFF.",
+    "evaluation_entry": "An independent evaluator executes the exact memory vectors against isolated stores and verifies append, replay, privacy, projection, and custody results; static syntax alone is insufficient.",
+    "suspension": "Suspend on ledger corruption, stale policy, binding drift, privacy violation, writer-capability mismatch, cross-project leakage, failed hostile vector, or utility/harm failure.",
+    "archive": "Archive only by immutable Spawner receipt after all active references close and evidence is preserved; archive never means admitted.",
+    "reactivation": "Create or validate a new revision, rebuild all affected projections, and rerun independent evaluation; never silently reactivate an old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evaluation-admission-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.scope-non-goal-gate",
+    "specialist.foundation.tool-custody-gate"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "routing": {
+    "signals": [
+      "binding",
+      "capsule",
+      "global governance",
+      "invalidation",
+      "ledger",
+      "memory",
+      "privacy",
+      "replay",
+      "snapshot"
+    ],
+    "deny_if": [
+      "caller root",
+      "contradictory ledger",
+      "cross-project",
+      "raw transcript",
+      "secret",
+      "stale policy",
+      "unknown writer"
+    ],
+    "selection_rule": "SELECT_THE_NARROWEST_BOUND_MEMORY_ACTION;_NO_PRODUCT_OR_LIFECYCLE_AUTHORITY"
+  },
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.memory.v1",
+    "disposition": "EXECUTED_REVIEW_REQUIRED",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.memory",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Changes to memory schema, privacy, ledger, projection, gate semantics, or authority create a new immutable revision and rerun every affected package.",
+    "freshness_rule": "A source or policy refresh without material semantic change creates a freshness readback; material change invalidates derived contexts and seeds."
+  },
+  "block_sha256": "fead87854893d166822bff3cd9194f12f37a61ad3787094bf0c72f45b174e5fc"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.routing",
+  "block_id": "specialist.control.memory",
+  "class": "routing",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "memory_context_projection",
+    "input": {
+      "fixture_class": "routing",
+      "attack_vector": "memory_context_projection"
+    },
+    "expected_readback": {
+      "disposition": "ROUTE_READ_ONLY",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

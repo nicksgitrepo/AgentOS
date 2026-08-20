@@ -8,8 +8,8 @@
     "canonical_library_roster": "specialist-blocks/registry/roster.v1.json",
     "master_inventory": "specialist-blocks/registry/master-inventory.v1.json",
     "permanent_role_registry": "specialist-blocks/registry/permanent-role-registry.v1.json",
-    "package_count": 125,
-    "current_package_count": 124,
+    "package_count": 126,
+    "current_package_count": 125,
     "archived_package_count": 1,
     "entry_type_counts": {
       "AGENT_ROLE": 96,
@@ -28140,7 +28140,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-01/project-controller/handoff.json",
-        "handoff_file_sha256": "66c77f471c6c9a8c23b71c358384595d8680f6215f2a8c4b04fbf3d574c81779",
+        "handoff_file_sha256": "72e26c3e193b728d39e796ff9f4b6c800e2aad24e3f04ed96e3f7ff0dc62aae2",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.project-controller.v2"
       },
@@ -28212,68 +28212,266 @@
       "display_name": "Memory",
       "entry_type": "AGENT_ROLE",
       "tier": "PERMANENT_AGENTOS_ROLES",
-      "canonical_block_id": "AGENTOS.AGENTOS.MEMORY.PACKAGE",
+      "canonical_block_id": "specialist.control.memory",
       "package_path": "specialist-blocks/wave-01/memory",
       "family": "memory",
-      "exact_narrow_purpose": "Permanent Memory role: Required governed memory adapter package is not present yet.",
+      "exact_narrow_purpose": "Operate the sealed AgentOS memory boundary: append typed project records, rebuild deterministic projections, expose compact read-only context, and keep global governance memory separate from project memory.",
       "applicability_triggers": [
-        "Bootstrap resolves this role from the sealed permanent-role registry."
+        "binding",
+        "capsule",
+        "global governance",
+        "invalidation",
+        "ledger",
+        "memory",
+        "privacy",
+        "replay",
+        "snapshot",
+        "authority",
+        "custody",
+        "global_policy_projection",
+        "project_memory_binding",
+        "request",
+        "source_lock"
       ],
       "authority": [
-        "Only the narrowly declared permanent role responsibility; Agent Spawner retains lifecycle authority."
+        "NO_PRODUCT_WRITE;_MEMORY_ADAPTER_ONLY;_NO_LIFECYCLE_AUTHORITY;_NO_SELF_ACCEPTANCE;_SEALED_WRITER_REQUIRED",
+        "{\"allowed_authority\":[\"current model-policy projection\",\"governed global memory capability\",\"sealed AgentOS memory contract\",\"typed project memory binding\",\"typed source and custody records\"],\"precedence\":[\"advisory evidence\",\"current primary source\",\"explicit owner authority\",\"human safety and emergency authority\",\"portable governance hard controls\",\"project context\",\"sealed memory contract\"],\"prohibited_authority\":[\"caller-supplied roots or clocks\",\"consumer preference as memory authority\",\"provider account facts\",\"raw browsing transcripts\",\"secrets or credentials\",\"self-authored acceptance\",\"unbound chat\"],\"jurisdiction_rule\":\"Memory stores records but does not decide legal, regulatory, financial, safety, or professional applicability; missing applicability closes only the dependent record.\",\"escalation_rule\":\"Authority, binding, privacy, custody, or replay conflict returns a typed defect to Spawner and closes only the affected memory action.\",\"acceptance_authority\":\"INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT\"}"
       ],
       "forbidden_actions": [
-        "Do not spawn, admit, archive, despawn, or mutate another role unless sealed governance explicitly assigns it.",
-        "Do not self-admit, self-review, or write consumer state."
+        "accept a caller-supplied root, project identity, trusted time, or PASS claim",
+        "self-accept, self-review, activate, deploy, publish, or release",
+        "spawn, admit, archive, despawn, or mutate an agent roster",
+        "treat a snapshot as authority without ledger readback",
+        "write global governance memory without the governed adapter capability",
+        "write product or consumer state outside the bound memory store"
       ],
       "stop_conditions": [
-        "Stop when the package, required gate tree, current model route, or independent review is missing.",
-        "Return a typed defect to Agent Spawner for contradictions, stale evidence, or invalid handoffs."
+        "{\"candidate_entry\":\"Package, source lock, twelve executable gates, seventeen hostile fixtures, evaluation dossier, and handoff exist with matching content identities while lifecycle remains CANDIDATE and activation remains OFF.\",\"evaluation_entry\":\"An independent evaluator executes the exact memory vectors against isolated stores and verifies append, replay, privacy, projection, and custody results; static syntax alone is insufficient.\",\"suspension\":\"Suspend on ledger corruption, stale policy, binding drift, privacy violation, writer-capability mismatch, cross-project leakage, failed hostile vector, or utility/harm failure.\",\"archive\":\"Archive only by immutable Spawner receipt after all active references close and evidence is preserved; archive never means admitted.\",\"reactivation\":\"Create or validate a new revision, rebuild all affected projections, and rerun independent evaluation; never silently reactivate an old digest.\"}"
       ],
       "required_blocks": [
         "specialist.foundation.authority-jurisdiction-gate",
         "specialist.foundation.evaluation-admission-gate",
         "specialist.foundation.evidence-freshness-gate",
-        "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate"
       ],
       "knowledge_context_inputs": [
-        "sealed permanent-role registry",
-        "canonical package path: specialist-blocks/wave-01/memory",
-        "current global model-policy snapshot",
-        "project-scoped typed context only"
+        "append-only ledger and compare-and-swap semantics",
+        "capsule import and restart continuity",
+        "content-addressed provenance and freshness",
+        "deterministic replay and snapshot rebuild",
+        "global-versus-project memory isolation",
+        "model-policy snapshot read-only projection",
+        "privacy scanner and opaque references",
+        "project-memory record and event schemas",
+        "sealed writer capabilities and fencing",
+        "typed conflict, supersession, and invalidation",
+        "authority",
+        "custody",
+        "global_policy_projection",
+        "project_memory_binding",
+        "request",
+        "source_lock",
+        "source.agentos-portable-governance",
+        "source.agentos-project-memory-contract",
+        "source.json-schema-2020-12",
+        "source.rfc-2119",
+        "source.w3c-prov-dm"
       ],
       "deterministic_gates": {
-        "status": "MISSING_PACKAGE",
-        "manifest_path": null,
-        "gates": []
+        "status": "BOUND",
+        "manifest_path": "specialist-blocks/wave-01/memory/gates/manifest.json",
+        "gates": [
+          {
+            "gate_id": "00-intake",
+            "path": "specialist-blocks/wave-01/memory/gates/00-intake.gate",
+            "file_sha256": "71bfdac5880037ba7834f3837e31143b2354404b90bffbe6391cc135451956c8"
+          },
+          {
+            "gate_id": "01-applicability",
+            "path": "specialist-blocks/wave-01/memory/gates/01-applicability.gate",
+            "file_sha256": "fea69d1980b5ef0a0df4296e752c792255b56f73ffc9ba5dbea62edd64f1594b"
+          },
+          {
+            "gate_id": "02-authority-precedence",
+            "path": "specialist-blocks/wave-01/memory/gates/02-authority-precedence.gate",
+            "file_sha256": "166a993563f45c60624cf01718a610deaf295b82689e12e6f339ea4552826107"
+          },
+          {
+            "gate_id": "03-scope-nongoals",
+            "path": "specialist-blocks/wave-01/memory/gates/03-scope-nongoals.gate",
+            "file_sha256": "1659a68084b9697f6c1eda867ebff146d944facc644ec57d7b04e5fd9616b5a9"
+          },
+          {
+            "gate_id": "04-source-evidence-freshness",
+            "path": "specialist-blocks/wave-01/memory/gates/04-source-evidence-freshness.gate",
+            "file_sha256": "d9f8f6966f6e4f4c5d25491ee6a5f1f284915c41ed01055be4d4eace56f7cc00"
+          },
+          {
+            "gate_id": "05-context-completeness",
+            "path": "specialist-blocks/wave-01/memory/gates/05-context-completeness.gate",
+            "file_sha256": "c6f1b1f55278f89f9dfdca6c6aa5073859c100b0ba63b7701102299e7ba71a0d"
+          },
+          {
+            "gate_id": "06-tool-resource-custody",
+            "path": "specialist-blocks/wave-01/memory/gates/06-tool-resource-custody.gate",
+            "file_sha256": "e3a27992231526ef201ed2d1d17fca051642ea939bd371d3f5975366f414c528"
+          },
+          {
+            "gate_id": "07-data-secret-privacy",
+            "path": "specialist-blocks/wave-01/memory/gates/07-data-secret-privacy.gate",
+            "file_sha256": "5e9be5d7e459146f1a4444eb4b0a714d560f1f7427fbda061d96a062b1bcdc84"
+          },
+          {
+            "gate_id": "08-build-browser-runtime",
+            "path": "specialist-blocks/wave-01/memory/gates/08-build-browser-runtime.gate",
+            "file_sha256": "d2368d61064e4174ffacb4ac8ddf0bf16077e19f6eeac67a467e9dbed8b7bd30"
+          },
+          {
+            "gate_id": "09-output-handoff",
+            "path": "specialist-blocks/wave-01/memory/gates/09-output-handoff.gate",
+            "file_sha256": "f1896ce1e6e9278f9700988ce565629682452dc6244c6d345e3e260e1b47dea7"
+          },
+          {
+            "gate_id": "10-proof-acceptance",
+            "path": "specialist-blocks/wave-01/memory/gates/10-proof-acceptance.gate",
+            "file_sha256": "bf22f0877644e6435e053059721f68ce1ff89ae3668dad0be010a94c6f9ac140"
+          },
+          {
+            "gate_id": "11-lifecycle-recovery-archive",
+            "path": "specialist-blocks/wave-01/memory/gates/11-lifecycle-recovery-archive.gate",
+            "file_sha256": "b8cc28cb5f39bd1b21e1af5ae1ed855dc0dd92c44d6b44dafacdb903154b7171"
+          }
+        ]
       },
       "hostile_fixtures": {
-        "status": "MISSING_PACKAGE",
-        "fixtures": []
+        "status": "BOUND",
+        "fixtures": [
+          {
+            "fixture_id": "specialist.control.memory.authority_conflict",
+            "path": "specialist-blocks/wave-01/memory/fixtures/authority_conflict.json",
+            "file_sha256": "5de2acf095b142742a00c990934a9b56a4bb80d04c993628883528bfb4e8281f",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.broad_when_narrow_exists",
+            "path": "specialist-blocks/wave-01/memory/fixtures/broad_when_narrow_exists.json",
+            "file_sha256": "a70566ff626babca2b7000896749d3ea0627b714ebb2f02a1014d72eb55b73ba",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.cross_provider_version_claim",
+            "path": "specialist-blocks/wave-01/memory/fixtures/cross_provider_version_claim.json",
+            "file_sha256": "ebc0caa52ebbac0e66604b7d16d518e6cf686a10c62277b9f24439140b9b4363",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.data_limit",
+            "path": "specialist-blocks/wave-01/memory/fixtures/data_limit.json",
+            "file_sha256": "b789df22aae9c3c00b702f95f11c9b93a23d61da779cf2f11bc3dd563baf05ff",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.duplicate_sibling_authority",
+            "path": "specialist-blocks/wave-01/memory/fixtures/duplicate_sibling_authority.json",
+            "file_sha256": "7cbb7645bf94eb5f5313c650505b8cee4eab3068449d164febab7835ff4a4eec",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.false_positive",
+            "path": "specialist-blocks/wave-01/memory/fixtures/false_positive.json",
+            "file_sha256": "055129cdaa93525fa708eeebedb12c639d51ee4c04a4a67eecb6d07f4e2ec9c1",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.handoff",
+            "path": "specialist-blocks/wave-01/memory/fixtures/handoff.json",
+            "file_sha256": "c97ba12cb409383f5e27b9669d047ec05ff336345a3103d310e0e571d8c0c29d",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.missing_context",
+            "path": "specialist-blocks/wave-01/memory/fixtures/missing_context.json",
+            "file_sha256": "8835a890ad066b978f88572fd4a29da2718fc0802d97cb0227d0041c04e903f7",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.narrowness",
+            "path": "specialist-blocks/wave-01/memory/fixtures/narrowness.json",
+            "file_sha256": "30817412d0ae6b35cd858a02518da9a285dd583a0f9bae54dfe66b4e0fd1cf80",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.router_self_accept",
+            "path": "specialist-blocks/wave-01/memory/fixtures/router_self_accept.json",
+            "file_sha256": "14d64ebedb3a3020bc24cbfae64b92fdee50409384f38fe1dd86b464ba4ae1f3",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.routing",
+            "path": "specialist-blocks/wave-01/memory/fixtures/routing.json",
+            "file_sha256": "4b505908e2eb8c0b81ab86be6ae13e460b0cb00bef493064abfd517c2516aba4",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.silent_scope_expansion",
+            "path": "specialist-blocks/wave-01/memory/fixtures/silent_scope_expansion.json",
+            "file_sha256": "6608ee092ea9efb862d595476aa8e48479c2e357e2bc17cbe5214947ae748e92",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.stale_source",
+            "path": "specialist-blocks/wave-01/memory/fixtures/stale_source.json",
+            "file_sha256": "dfe5be6b174d2f6ef7903155a1f8ed35cd16c6be50111cc88bae97651f277d05",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.tool_limit",
+            "path": "specialist-blocks/wave-01/memory/fixtures/tool_limit.json",
+            "file_sha256": "d59e65d9a92dcff6e3defec108d68656c65bb549a5e1e06ee88f7ad9f18b969f",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.umbrella_authority",
+            "path": "specialist-blocks/wave-01/memory/fixtures/umbrella_authority.json",
+            "file_sha256": "66a31d2f4b6031d2ff160748cc5e3b29636d97aa94ab13ddf51df222d781d00c",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.unrelated_scope",
+            "path": "specialist-blocks/wave-01/memory/fixtures/unrelated_scope.json",
+            "file_sha256": "c95ad8e20930fa6de108aa665786fd803f953dd31ccd1278861d927e61f79564",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.memory.unsafe_action",
+            "path": "specialist-blocks/wave-01/memory/fixtures/unsafe_action.json",
+            "file_sha256": "ab89f4cded75365e47de9de180ab18bf324fb13a928f2e249b938ab26fcfdc67",
+            "expected_outcome": "DENY"
+          }
+        ]
       },
       "required_evidence_handoff": {
         "evidence_fields": [
-          "complete canonical package",
-          "executed deterministic gates",
-          "hostile fixtures",
-          "independent review and one-use admission"
+          "source_lock",
+          "freshness_policy",
+          "claim_rule",
+          "unknown_rule"
         ],
-        "handoff_path": null,
-        "handoff_file_sha256": null,
+        "handoff_path": "specialist-blocks/wave-01/memory/handoff.json",
+        "handoff_file_sha256": "3609a346ed3ab9bdba09812c2d931a6dd4f4a2b110e47a5bb40f250dbba95585",
         "independent_review_required": true,
-        "receipt_id": null
+        "receipt_id": "specialist-eval.memory.v1"
       },
       "lifecycle": {
         "kind": "PERMANENT_ROLE",
         "build_rules": [
-          "Build and qualify exactly one permanent role package at a time."
+          "{\"candidate_entry\":\"Package, source lock, twelve executable gates, seventeen hostile fixtures, evaluation dossier, and handoff exist with matching content identities while lifecycle remains CANDIDATE and activation remains OFF.\",\"evaluation_entry\":\"An independent evaluator executes the exact memory vectors against isolated stores and verifies append, replay, privacy, projection, and custody results; static syntax alone is insufficient.\",\"suspension\":\"Suspend on ledger corruption, stale policy, binding drift, privacy violation, writer-capability mismatch, cross-project leakage, failed hostile vector, or utility/harm failure.\",\"archive\":\"Archive only by immutable Spawner receipt after all active references close and evidence is preserved; archive never means admitted.\",\"reactivation\":\"Create or validate a new revision, rebuild all affected projections, and rerun independent evaluation; never silently reactivate an old digest.\"}"
         ],
-        "seed_rule": "Permanent roles use governed admission and never perform work from an inert seed.",
-        "worker_rule": "Permanent work begins only after Spawner admission and current context readback.",
-        "permanent_rule": "The sealed registry owns the canonical permanent identity.",
-        "archive_rule": "Only Spawner may archive or supersede the role after durable handoff and zero references."
+        "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
+        "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
+        "permanent_rule": "One canonical permanent identity, admitted once by Spawner and held under its lifecycle custody.",
+        "archive_rule": "Archive or supersede only through Spawner after scope closure, evidence preservation, zero references, and durable readback."
       },
       "model_route": {
         "task_class": "DETERMINISTIC_QA",
@@ -28285,39 +28483,50 @@
         "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT"
       },
       "dependency_predecessors": [
-        "AGENTOS.SPAWNER",
-        "AGENTOS_CONTROLLER"
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
       ],
       "likely_consumers": [
         "AgentOS bootstrap",
         "Agent Spawner",
-        "project workflow"
+        "Controller",
+        "Product Owner",
+        "Memory",
+        "Runtime",
+        "Scheduler",
+        "Orchestrator"
       ],
       "reuse_likelihood": {
-        "total": 91.55,
+        "total": 94.05,
         "expected_frequency": 98,
         "dependency_centrality": 94,
         "cross_project_reuse": 92,
         "risk_reduction": 98,
         "architecture_coverage": 100,
-        "finish_cost": 95,
+        "finish_cost": 45,
         "rationale": "P0 priority combines permanent_agentos_roles centrality, cross-project reuse, risk reduction, and completion cost; Required governed memory adapter package is not present yet.."
       },
       "risk": {
         "criticality": "CRITICAL",
-        "reason": "Permanent role authority affects every later project workflow and requires independent admission."
+        "reason": "PERMANENT_AGENTOS_ROLES entry covers memory; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "PLANNED_MISSING_PACKAGE",
-      "qa_state": "MISSING_PACKAGE",
-      "independent_evaluation_state": "PENDING_PACKAGE_BUILD",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
-        "links": [],
-        "invalidate_when": [
-          "permanent-role registry changes",
-          "package or gate bytes change",
-          "global model-policy snapshot changes"
+        "links": [
+          "specialist-blocks/wave-01/memory/evaluation.json"
         ],
-        "rebuild_rule": "Spawner must create the package, bind exact files, execute gates and fixtures, then obtain independent acceptance before admission."
+        "invalidate_when": [
+          "block semantic digest changes",
+          "source lock or authoritative evidence changes",
+          "gate or hostile fixture bytes change",
+          "global model-policy snapshot or permanent-role registry changes"
+        ],
+        "rebuild_rule": "Invalidate dependent compiled contexts and seeds, preserve history, resolve current bytes, re-run deterministic gates, then obtain a new independent receipt before reuse."
       }
     },
     {
@@ -39034,8 +39243,8 @@
       "stable_agent_id": "AGENTOS.MEMORY",
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
-      "priority_score": 91.55,
-      "reason": "Blocked until the canonical package is built and qualified."
+      "priority_score": 94.05,
+      "reason": "Waits for dependency-safe permanent-role predecessors."
     },
     {
       "rank": 5,
@@ -39774,5 +39983,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "ed54f416a44ee878763af37e5c9785cbc1954fd68e56a87107be05820dbe7f17"
+  "roster_sha256": "2c402cdc4a028e7a003f9bc189dd66ccb4183add505bb131c2bdad3abb15a478"
 }

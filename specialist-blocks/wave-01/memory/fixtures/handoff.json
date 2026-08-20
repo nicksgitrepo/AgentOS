@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.handoff",
+  "block_id": "specialist.control.memory",
+  "class": "handoff",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "typed_memory_handoff",
+    "input": {
+      "fixture_class": "handoff",
+      "attack_vector": "typed_memory_handoff"
+    },
+    "expected_readback": {
+      "disposition": "ACCEPT_HANDOFF",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

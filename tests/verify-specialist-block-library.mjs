@@ -26,18 +26,18 @@ const second = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: f
 assert.deepEqual(first.roster, second.roster, "specialist roster compilation is not deterministic");
 assert.deepEqual(first.routing, second.routing, "specialist routing compilation is not deterministic");
 assert.deepEqual(first.inventory, second.inventory, "specialist inventory materialization is not deterministic");
-assert.equal(first.records.length, 123, "foundation, reusable standard, P0, P1, P2, P3, P4, and P5 package count is wrong");
+assert.equal(first.records.length, 124, "foundation, reusable standard, P0, P1, P2, P3, P4, and P5 package count is wrong");
 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
-assert.equal(taskCompilerCatalog.length, 123, "task-shaped compiler catalog must load every compiled candidate package");
+assert.equal(taskCompilerCatalog.length, 124, "task-shaped compiler catalog must load every compiled candidate package");
 assert.equal(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
 assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.aws-iam-current", "specialist.standard.cloudflare-cache-current", "specialist.standard.cloudflare-dns-current", "specialist.standard.conventional-commits-1-0-0", "specialist.standard.fmcsa-part-390-2025", "specialist.standard.gao-green-book-2025", "specialist.standard.gltf-2-0-1", "specialist.standard.nist-ai-rmf-1-0", "specialist.standard.nist-genai-profile-1-0", "specialist.standard.nist-ssdf", "specialist.standard.oauth-rfc-9700", "specialist.standard.oidc-core-1-0", "specialist.standard.openapi-3-1-1", "specialist.standard.owasp-api-top10-2023", "specialist.standard.owasp-asvs", "specialist.standard.owasp-top10-2025", "specialist.standard.postgresql-17-rls", "specialist.standard.react-19-2", "specialist.standard.rust-reference", "specialist.standard.semantic-versioning-2-0-0", "specialist.standard.slsa", "specialist.standard.typescript-5-9", "specialist.standard.wcag-2-2"]);
 assert(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").every((block) => block.standard_identity && /^[0-9a-f]{64}$/u.test(block.source_lock_digest)), "loaded standard blocks must retain exact reuse and source-lock identities");
 assert.equal(library.roster.activation, "OFF");
 assert.equal(library.roster.lifecycle ?? "NOT_ADMITTED", "NOT_ADMITTED");
 assert.equal(library.roster.blocks.every((block) => block.lifecycle === "NOT_ADMITTED" && block.activation === "OFF"), true);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "CONTROL_PLANE").length, 16);
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "CONTROL_PLANE").length, 17);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ROUTER").length, 19);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST").length, 65);

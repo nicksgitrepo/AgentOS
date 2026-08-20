@@ -415,6 +415,71 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.control.memory",
+      "candidate_digest": "fead87854893d166822bff3cd9194f12f37a61ad3787094bf0c72f45b174e5fc",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Project-agnostic memory transport and projection custody; it does not own product intent, workflow, lifecycle, deployment, or acceptance decisions.",
+      "permitted_decisions": [
+        "append a validated typed memory event through a sealed writer",
+        "import a validated capsule without widening scope",
+        "issue a compact read-only role context projection",
+        "record a typed conflict, supersession, or invalidation",
+        "replay and rebuild a bound snapshot",
+        "return a typed stale, privacy, custody, or conflict defect"
+      ],
+      "forbidden_decisions": [
+        "accept a caller-supplied root, project identity, trusted time, or PASS claim",
+        "self-accept, self-review, activate, deploy, publish, or release",
+        "spawn, admit, archive, despawn, or mutate an agent roster",
+        "treat a snapshot as authority without ledger readback",
+        "write global governance memory without the governed adapter capability",
+        "write product or consumer state outside the bound memory store"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_MEMORY_ADAPTER_ONLY;_NO_LIFECYCLE_AUTHORITY;_NO_SELF_ACCEPTANCE;_SEALED_WRITER_REQUIRED",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN or CONFLICT closes only the dependent memory action",
+        "compose only with the canonical project-memory and global-governance contracts",
+        "every write binds current policy, source, custody, and readback identities",
+        "ledger events are canonical; snapshots, capsules, maps, and indexes are derived",
+        "project memory stays project-scoped and global governance stays project-agnostic"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "global governance versus project memory authority differs",
+        "privacy class or retention rule differs",
+        "project identity or memory binding differs",
+        "workflow, product, deployment, or lifecycle authority is requested",
+        "writer custody or store differs"
+      ],
+      "priority": "P0",
+      "family": "memory",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-portable-governance",
+        "source.agentos-project-memory-contract",
+        "source.json-schema-2020-12",
+        "source.rfc-2119",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.memory.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.control.product-owner",
       "candidate_digest": "c4e596b3a484c7fdc581ff528721d31682bf995402835ee8b6be26730e0c18ab",
       "role_kind": "CONTROL_PLANE",
@@ -478,7 +543,7 @@
     },
     {
       "block_id": "specialist.control.project-controller",
-      "candidate_digest": "ac5c3b6cc774c305ff70609d9bb08f29121e981fc71663a8691c29300ab87694",
+      "candidate_digest": "6b2dba9fb90096ae143266684e0e3cf8ce2955d4f27b28b5fedc8cf1c8aa206e",
       "role_kind": "CONTROL_PLANE",
       "atomic_scope_statement": "Workflow-regulation-only control for AGENTOS_CONTROLLER; AGENTOS.PRODUCT_OWNER owns intent and conversation, Agent Spawner owns lifecycle, and Runtime owns delivery.",
       "permitted_decisions": [
@@ -7110,5 +7175,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "aec27ff0587adb76c57d79b7e0829b0d181241938ea0a1564b113cc6037aac10"
+  "roster_sha256": "1b7f6f7690e2888c3dd744905d785ce74992e89a08c179c34519b55a7abf9200"
 }

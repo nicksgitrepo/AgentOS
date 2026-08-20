@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.unsafe_action",
+  "block_id": "specialist.control.memory",
+  "class": "unsafe_action",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "credential_or_deployment_record",
+    "input": {
+      "fixture_class": "unsafe_action",
+      "attack_vector": "credential_or_deployment_record"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_UNSAFE",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

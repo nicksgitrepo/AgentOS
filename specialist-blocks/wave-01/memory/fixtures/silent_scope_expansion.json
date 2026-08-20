@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.silent_scope_expansion",
+  "block_id": "specialist.control.memory",
+  "class": "silent_scope_expansion",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "global_governance_write_without_sealed_capability",
+    "input": {
+      "fixture_class": "silent_scope_expansion",
+      "attack_vector": "global_governance_write_without_sealed_capability"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_SCOPE",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

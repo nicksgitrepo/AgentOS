@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.tool_limit",
+  "block_id": "specialist.control.memory",
+  "class": "tool_limit",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "caller_root_override",
+    "input": {
+      "fixture_class": "tool_limit",
+      "attack_vector": "caller_root_override"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_CUSTODY",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

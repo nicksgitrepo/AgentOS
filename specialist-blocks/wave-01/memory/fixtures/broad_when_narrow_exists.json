@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.broad_when_narrow_exists",
+  "block_id": "specialist.control.memory",
+  "class": "broad_when_narrow_exists",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "cross_project_memory_request",
+    "input": {
+      "fixture_class": "broad_when_narrow_exists",
+      "attack_vector": "cross_project_memory_request"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_SCOPE",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

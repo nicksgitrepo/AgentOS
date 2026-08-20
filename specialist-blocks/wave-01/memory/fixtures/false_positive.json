@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.false_positive",
+  "block_id": "specialist.control.memory",
+  "class": "false_positive",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "typed_project_decision_record",
+    "input": {
+      "fixture_class": "false_positive",
+      "attack_vector": "typed_project_decision_record"
+    },
+    "expected_readback": {
+      "disposition": "ACCEPT_RECORD",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

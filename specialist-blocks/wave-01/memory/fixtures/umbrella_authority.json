@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.umbrella_authority",
+  "block_id": "specialist.control.memory",
+  "class": "umbrella_authority",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "memory_attempts_product_decision",
+    "input": {
+      "fixture_class": "umbrella_authority",
+      "attack_vector": "memory_attempts_product_decision"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_AUTHORITY",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

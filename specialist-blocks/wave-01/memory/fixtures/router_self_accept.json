@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.router_self_accept",
+  "block_id": "specialist.control.memory",
+  "class": "router_self_accept",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "memory_self_admission",
+    "input": {
+      "fixture_class": "router_self_accept",
+      "attack_vector": "memory_self_admission"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_SELF_ACCEPTANCE",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "agentos.specialist_handoff.v1",
+  "version": 1,
+  "handoff_id": "specialist-handoff.memory.v1",
+  "block_id": "specialist.control.memory",
+  "disposition": "WAITING_WITH_RECEIPT",
+  "candidate_digest": "fead87854893d166822bff3cd9194f12f37a61ad3787094bf0c72f45b174e5fc",
+  "source_commit": "ac31996d36c1c2486112aedb0b15a119d8b99294",
+  "source_tree": "0e8b9e62cd093727d25c3685ebd66f2c00144d70",
+  "changed_paths": [
+    "specialist-blocks/wave-01/memory/block.json",
+    "specialist-blocks/wave-01/memory/evaluation.json",
+    "specialist-blocks/wave-01/memory/fixtures",
+    "specialist-blocks/wave-01/memory/gates/manifest.json",
+    "specialist-blocks/wave-01/memory/handoff.json",
+    "specialist-blocks/wave-01/memory/sources.lock"
+  ],
+  "proof": [
+    "12-gate-pack-digests",
+    "17-executable-memory-fixtures",
+    "block-schema-and-digest",
+    "independent-reviewer-required",
+    "project-global-isolation",
+    "source-lock-digest"
+  ],
+  "residuals": [
+    "candidate remains inactive and not admitted",
+    "independent utility/harm and package evaluation remain external",
+    "project-specific memory binding remains outside the reusable package"
+  ],
+  "next_action": "Route the exact Memory candidate through the independent evaluator; preserve lifecycle CANDIDATE and activation OFF.",
+  "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
+}

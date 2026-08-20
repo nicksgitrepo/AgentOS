@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.narrowness",
+  "block_id": "specialist.control.memory",
+  "class": "narrowness",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "single_record_replay",
+    "input": {
+      "fixture_class": "narrowness",
+      "attack_vector": "single_record_replay"
+    },
+    "expected_readback": {
+      "disposition": "ACCEPT_NARROW_SCOPE",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

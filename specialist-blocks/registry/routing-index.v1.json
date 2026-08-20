@@ -230,6 +230,43 @@
       "priority": 0
     },
     {
+      "route_id": "route.control.memory",
+      "family": "memory",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "binding",
+        "capsule",
+        "global governance",
+        "invalidation",
+        "ledger",
+        "memory",
+        "privacy",
+        "replay",
+        "snapshot"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "global_policy_projection",
+        "project_memory_binding",
+        "request",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.memory"
+      ],
+      "deny_if": [
+        "caller root",
+        "contradictory ledger",
+        "cross-project",
+        "raw transcript",
+        "secret",
+        "stale policy",
+        "unknown writer"
+      ],
+      "priority": 0
+    },
+    {
       "route_id": "route.control.product-owner",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -3833,5 +3870,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "bf125396632172d133e0c46c23f46563ff455a48c7702421b4c199550df3e8ac"
+  "routing_sha256": "e6684d42caf9834732a0071cbfee7e4ff41e32f561ac02ebae3c256bd4f4a084"
 }

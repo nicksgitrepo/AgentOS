@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "fixture_id": "specialist.control.memory.authority_conflict",
+  "block_id": "specialist.control.memory",
+  "class": "authority_conflict",
+  "hostile": true,
+  "vector": {
+    "entrypoint": "control/memory-package-evaluator.mjs#executeMemoryFixture",
+    "attack": "wrong_writer_role",
+    "input": {
+      "fixture_class": "authority_conflict",
+      "attack_vector": "wrong_writer_role"
+    },
+    "expected_readback": {
+      "disposition": "REJECT_WRITER",
+      "zero_side_effects": true,
+      "project_global_isolation": true,
+      "exact_binding": true
+    }
+  }
+}

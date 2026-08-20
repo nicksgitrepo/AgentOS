@@ -20,7 +20,7 @@ QA, and independent evaluation must all be current.
 1. `AGENTOS.SPAWNER` — admitted governance and lifecycle owner.
 2. `AGENTOS_CONTROLLER` — workflow regulation and useful-progress checks only.
 3. `AGENTOS.PRODUCT_OWNER` — user intent and normal human conversation only.
-4. `AGENTOS.MEMORY` — governed memory adapter; package still needs to be built.
+4. `AGENTOS.MEMORY` — governed memory adapter; candidate package and real hostile evaluator are ready for independent review.
 5. `AGENTOS.RUNTIME` — runtime and rollback custody only.
 6. `AGENTOS.SCHEDULER` — resource and work scheduling only.
 7. `AGENTOS.ORCHESTRATOR` — plan coordination and acceptance; package still needs to be built.
@@ -56,9 +56,10 @@ from the accepted global model-policy snapshot, with freshness, availability,
 context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
-The first queue item marked eligible is `AGENTOS_CONTROLLER`. All other
-entries remain queued, blocked on predecessors, missing packages, or pending
-independent review as recorded in the machine registry.
+The first queue item marked eligible is `AGENTOS_CONTROLLER`. Memory is now a
+complete candidate waiting for its one independent review; it is not admitted
+or active. All other entries remain queued, blocked on predecessors, missing
+packages, or pending independent review as recorded in the machine registry.
 
 The machine-readable source of the full backlog is
 `master-inventory.v1.json`. The generic priority overlay is
@@ -111,17 +112,18 @@ The materialized roster distinguishes these role kinds:
 
 The legacy materialized-library counts below are retained only as historical
 inventory context. The current authority is the generated registry above:
-`127` entries from `125` package directories (`124` current and `1` archived),
+`127` entries from `126` package directories (`125` current and `1` archived),
 with `96` agent roles, `7` reusable governance blocks, `23` reusable standard
-blocks, and `2` planned permanent-role package entries. The registry's ordered
+blocks, and `1` planned plus `3` candidate permanent-role package entries. The registry's ordered
 queue, not the historical recipe counts, controls what may be built.
 
 The on-demand recipe and master-inventory catalogs remain useful source
 inventories, but they do not admit an agent. A package becomes actionable only
 when its registry entry has a complete block graph, exact gate and hostile
 fixture evidence, a current model route, and an independent acceptance receipt.
-Protected memory and other missing permanent-role packages stay explicitly
-planned until their own package is built and qualified.
+Protected memory remains inactive until its independent review is accepted;
+other missing permanent-role packages stay explicitly planned until their own
+package is built and qualified.
 
 ## Source-locked standard candidates
 
