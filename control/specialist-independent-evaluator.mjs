@@ -143,15 +143,85 @@ function packageDirectories(libraryRoot) {
   return directories;
 }
 
+function blockIdentity(packageDir) {
+  try {
+    const block = readJson(path.join(packageDir, "block.json"));
+    return {block_id: typeof block.block_id === "string" ? block.block_id : `UNKNOWN.${path.basename(packageDir)}`, lifecycle: block.lifecycle ?? null};
+  } catch {
+    return {block_id: `UNKNOWN.${path.basename(packageDir)}`, lifecycle: null};
+  }
+}
+
+function findingFor(packageDir, error, packageIndex, repositoryRoot) {
+  const identity = blockIdentity(packageDir);
+  const packagePath = path.relative(repositoryRoot, packageDir).split(path.sep).join("/");
+  const message = String(error?.message ?? error);
+  const evidence = {block_id: identity.block_id, package_path: packagePath, package_index: packageIndex, defect_code: "INDEPENDENT_EVALUATION_FAILED", message};
+  return Object.freeze({
+    finding_id: `INDEPENDENT_DEFECT.${digest(evidence).slice(0, 32).toUpperCase()}`,
+    block_id: identity.block_id,
+    package_path: packagePath,
+    package_index: packageIndex,
+    affected_layers: ["SHARED_SPECIALIST_EVALUATOR_CONTRACT"],
+    defect_code: "INDEPENDENT_EVALUATION_FAILED",
+    evidence_sha256: digest(evidence),
+    error_message_sha256: digest({message}),
+  });
+}
+
+function runEarlierPackageRecheck({packageDirs, findings, repositoryRoot}) {
+  if (findings.length === 0) return Object.freeze({status: "NOT_TRIGGERED", trigger: "ANY_NEW_FINDING", policy: "RECHECK_ALL_EARLIER_NON_ARCHIVED_PACKAGES", packages: []});
+  const failedIndices = findings.map((finding) => finding.package_index);
+  const earlierLimit = Math.max(...failedIndices);
+  const candidates = packageDirs.slice(0, earlierLimit).map((packageDir, orderIndex) => ({packageDir, orderIndex, identity: blockIdentity(packageDir)})).filter((entry) => entry.identity.lifecycle !== "ARCHIVED");
+  const packages = candidates.map(({packageDir, orderIndex, identity}) => {
+    try {
+      const result = evaluatePackage(packageDir);
+      return Object.freeze({block_id: result.block_id, package_path: path.relative(repositoryRoot, packageDir).split(path.sep).join("/"), order_index: orderIndex, status: "PASS", candidate_digest: result.candidate_digest, checked_gate_count: result.checked_gate_count, checked_fixture_count: result.checked_fixture_count});
+    } catch (error) {
+      const message = String(error?.message ?? error);
+      return Object.freeze({block_id: identity.block_id, package_path: path.relative(repositoryRoot, packageDir).split(path.sep).join("/"), order_index: orderIndex, status: "FAIL", defect_code: "EARLIER_PACKAGE_REGRESSION", error_message_sha256: digest({message})});
+    }
+  });
+  const status = packages.every((entry) => entry.status === "PASS") ? "PASS" : "FAIL";
+  return Object.freeze({status, trigger: "ANY_NEW_FINDING", policy: "RECHECK_ALL_EARLIER_NON_ARCHIVED_PACKAGES", packages});
+}
+
 export function independentlyEvaluateSpecialistLibrary({repositoryRoot = process.cwd()} = {}) {
   const libraryRoot = path.join(repositoryRoot, "specialist-blocks");
   const roster = readJson(path.join(libraryRoot, "registry", "roster.v1.json"));
   if (roster.status !== "COMPILED_CANDIDATE" || roster.activation !== "OFF") fail("roster is active or not a candidate");
   const packageDirs = packageDirectories(libraryRoot);
-  const results = packageDirs.map(evaluatePackage).filter((result) => result.lifecycle !== "ARCHIVED").sort((left, right) => left.block_id.localeCompare(right.block_id));
+  const attempts = packageDirs.map((packageDir, packageIndex) => {
+    try { return {packageDir, packageIndex, result: evaluatePackage(packageDir), error: null}; }
+    catch (error) { return {packageDir, packageIndex, result: null, error}; }
+  });
+  const findings = attempts.filter((attempt) => attempt.error !== null).map((attempt) => findingFor(attempt.packageDir, attempt.error, attempt.packageIndex, repositoryRoot));
+  const results = attempts.filter((attempt) => attempt.result !== null).map((attempt) => attempt.result).filter((result) => result.lifecycle !== "ARCHIVED").sort((left, right) => left.block_id.localeCompare(right.block_id));
+  const regressionRecheck = runEarlierPackageRecheck({packageDirs, findings, repositoryRoot});
   const rosterIds = new Set(roster.blocks.map((block) => block.block_id));
   for (const result of results) if (!rosterIds.has(result.block_id)) fail(`${result.block_id} is absent from the roster`);
-  if (results.length !== roster.blocks.length) fail("roster/package count mismatch");
+  if (findings.length === 0 && results.length !== roster.blocks.length) fail("roster/package count mismatch");
+  if (findings.length > 0) {
+    return {
+      schema: "agentos.independent_specialist_evaluation_receipt.v1",
+      version: 1,
+      evaluator_id: "agentos.independent-specialist-evaluator",
+      evaluator_version: "1.1.0",
+      candidate_roster_digest: roster.roster_sha256,
+      status: regressionRecheck.status === "FAIL" ? "REGRESSION_FOUND" : "NEW_FINDINGS_RECHECKED",
+      independent_reviewer_required: true,
+      self_acceptance: "FORBIDDEN",
+      packages_checked: results.length,
+      gate_files_checked: results.reduce((total, result) => total + result.checked_gate_count, 0),
+      hostile_fixtures_checked: results.reduce((total, result) => total + result.checked_fixture_count, 0),
+      results,
+      new_findings: findings,
+      regression_recheck: regressionRecheck,
+      utility_harm: "PENDING_EXTERNAL_AUTHORITY",
+      residuals: ["A new evaluator finding blocks acceptance of this candidate.", "Every earlier non-archived package was rechecked before this receipt was returned.", "Admission and activation remain OFF."],
+    };
+  }
   const byId = new Map(results.map((result) => [result.block_id, result]));
   for (const result of results) {
     for (const dependency of result.dependencies) {
@@ -171,7 +241,7 @@ export function independentlyEvaluateSpecialistLibrary({repositoryRoot = process
     schema: "agentos.independent_specialist_evaluation_receipt.v1",
     version: 1,
     evaluator_id: "agentos.independent-specialist-evaluator",
-    evaluator_version: "1.0.0",
+    evaluator_version: "1.1.0",
     candidate_roster_digest: roster.roster_sha256,
     status: "STATIC_PASS_REVIEW_REQUIRED",
     independent_reviewer_required: true,
@@ -180,6 +250,8 @@ export function independentlyEvaluateSpecialistLibrary({repositoryRoot = process
     gate_files_checked: results.reduce((total, result) => total + result.checked_gate_count, 0),
     hostile_fixtures_checked: results.reduce((total, result) => total + result.checked_fixture_count, 0),
     results,
+    new_findings: [],
+    regression_recheck: regressionRecheck,
     utility_harm: "PENDING_EXTERNAL_AUTHORITY",
     residuals: ["Independent utility/harm review has not passed.", "Admission and activation remain OFF.", "This receipt does not authorize integration, deployment, consumer adoption, or release."],
   };

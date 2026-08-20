@@ -49,12 +49,12 @@ function sha256(bytes) { return createHash("sha256").update(bytes).digest("hex")
 function loadCanonicalTrustRoot() {
   const repositoryRoot = sealedAuthorityRepositoryRoot(getSealedCanonicalAuthority());
   const trustRoot = canonicalArtifact(repositoryRoot, TRUST_ROOT_PATH, sha256(fs.readFileSync(path.join(repositoryRoot, TRUST_ROOT_PATH))), "Permanent-role evaluator trust root");
-  exact(trustRoot, ["schema", "version", "registry_path", "registry_sha256", "admission_path", "admission_sha256", "evaluator_id", "evaluator_role", "scope", "authority_epoch", "root_registry_path", "root_registry_sha256", "root_public_key_pem", "evaluator_public_key_pem", "trust_root_sha256"], "Permanent-role evaluator trust root");
+  exact(trustRoot, ["schema", "version", "registry_path", "registry_sha256", "registry_file_sha256", "admission_path", "admission_sha256", "admission_file_sha256", "evaluator_id", "evaluator_role", "scope", "authority_epoch", "root_registry_path", "root_registry_sha256", "root_registry_file_sha256", "root_public_key_pem", "evaluator_public_key_pem", "trust_root_sha256"], "Permanent-role evaluator trust root");
   assert(trustRoot.schema === "agentos.permanent_role_evaluator_trust_root.v1" && trustRoot.version === 1, "Permanent-role evaluator trust-root identity differs");
   assert(SHA.test(trustRoot.trust_root_sha256) && trustRoot.trust_root_sha256 === canonicalDigest(body(trustRoot, ["trust_root_sha256"])), "Permanent-role evaluator trust-root digest differs");
-  const rootRegistry = canonicalArtifact(repositoryRoot, trustRoot.root_registry_path, trustRoot.root_registry_sha256, "Canonical evaluator root registry");
-  const evaluatorRegistry = canonicalArtifact(repositoryRoot, trustRoot.registry_path, trustRoot.registry_sha256, "Canonical evaluator registry");
-  const admission = canonicalArtifact(repositoryRoot, trustRoot.admission_path, trustRoot.admission_sha256, "Canonical evaluator admission");
+  const rootRegistry = canonicalArtifact(repositoryRoot, trustRoot.root_registry_path, trustRoot.root_registry_file_sha256, "Canonical evaluator root registry");
+  const evaluatorRegistry = canonicalArtifact(repositoryRoot, trustRoot.registry_path, trustRoot.registry_file_sha256, "Canonical evaluator registry");
+  const admission = canonicalArtifact(repositoryRoot, trustRoot.admission_path, trustRoot.admission_file_sha256, "Canonical evaluator admission");
   exact(rootRegistry, ["evaluator_admission_sha256", "external_reviewer_registry_sha256", "minimum_authority_epoch", "registry_id", "registry_issuer_id", "registry_public_key_pem", "registry_sha256", "schema", "trust_root_sha256", "version"], "Canonical evaluator root registry");
   exact(evaluatorRegistry, ["authority_epoch", "evaluators", "registry_id", "registry_sha256", "schema", "version"], "Canonical evaluator registry");
   exact(admission, ["admission_sha256", "authority_epoch", "expires_at_utc", "issued_at_utc", "issuer_id", "result", "schema", "scope", "separated_from_roles", "signature_base64", "subject_id", "subject_role", "version"], "Canonical evaluator admission");

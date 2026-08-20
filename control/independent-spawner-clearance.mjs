@@ -53,7 +53,7 @@ function loadCanonicalEvaluatorTrustRoot() {
   exact(admission, ["schema", "version", "issuer_id", "subject_id", "subject_role", "result", "authority_epoch", "issued_at_utc", "expires_at_utc", "scope", "separated_from_roles", "admission_sha256", "signature_base64"], "Canonical evaluator admission");
   assert(admission.schema === "agentos.independent_evaluator_admission.v1" && admission.version === 1 && admission.issuer_id === root.registry_issuer_id && admission.subject_role === "AGENT.INDEPENDENT_EVALUATOR" && admission.result === "ADMITTED", "Canonical evaluator admission identity differs");
   assert(admission.admission_sha256 === root.evaluator_admission_sha256 && admission.admission_sha256 === canonicalDigest(body(admission, "admission_sha256", "signature_base64")), "Canonical evaluator admission digest differs");
-  assert(verifySignature(null, Buffer.from(admission.admission_sha256, "hex"), root.registry_public_key_pem, Buffer.from(admission.signature_base64, "base64")), "Canonical evaluator admission signature differs");
+  assert(verifySignature(null, Buffer.from(canonicalJson({...admission, signature_base64: null})), root.registry_public_key_pem, Buffer.from(admission.signature_base64, "base64")), "Canonical evaluator admission signature differs");
   return {anchor: root, admission};
 }
 

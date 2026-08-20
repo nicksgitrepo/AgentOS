@@ -650,11 +650,11 @@
     },
     "permanent_role_evaluator_trust_root": {
       "path": "specialist-blocks/control-plane/agent-spawner/permanent-role-evaluator-trust-root.v1.json",
-      "sha256": "5f86d21359771e6e47ad9cbed7020e82fa9c0cfb27c402c8d649583117ffee23"
+      "sha256": "62048587653d2f072371ab8c2045ef7f8f06c573fcc62c640e65f89ad7efd6b5"
     },
     "permanent_role_evaluator_trust_root_contract": {
       "path": "schemas/permanent-role-evaluator-trust-root.v1.json",
-      "sha256": "cae3a7c0077a6ce0b1926f97e7003f48e5ea8a6f665a9d5a03b8f1eb06e4f36e"
+      "sha256": "3d4fa9a6793ea89f47c0f522d121af104466a96f161af9795c4cc91518399d43"
     },
     "spawner_external_reviewer_registry": {
       "path": "specialist-blocks/control-plane/agent-spawner/external-reviewer-registry.v1.json",
@@ -662,7 +662,7 @@
     },
     "spawner_independent_evaluator_admission": {
       "path": "specialist-blocks/control-plane/agent-spawner/independent-evaluator-admission.v1.json",
-      "sha256": "2dd561db31f212b6a3b1b57b7b377b2e69b9066579ffac27491eaa1797795eeb"
+      "sha256": "ec8c5bb18b995f5193c615e3c85a2e89cd33434edc8a3cdca3f3a75387e5cdbe"
     },
     "spawner_independent_evaluator_registry": {
       "path": "specialist-blocks/control-plane/agent-spawner/independent-evaluator-registry.v2.json",
@@ -1367,6 +1367,22 @@
       "path": "tests/verify-independent-clearance-applicability.mjs",
       "sha256": "fa7ac0dbfff1ddb7cdd3ade027f680a7e7f584e2de8a0de7f6dd6808b646c679"
     },
+    "independent_specialist_evaluation_receipt_contract": {
+      "path": "schemas/specialist-independent-evaluation-receipt.v1.json",
+      "sha256": "b61b231c60b6eb8b112af8a73ed6dcaa8a1b35ba0549b3e1688853d2da9b9395"
+    },
+    "independent_specialist_evaluator_controller": {
+      "path": "control/specialist-independent-evaluator.mjs",
+      "sha256": "83d106878fe5e24fb25f8af88d83e26baecaf136e6a9bf6f1b19fdeb189ad725"
+    },
+    "independent_specialist_evaluator_regression_recheck_verifier": {
+      "path": "tests/verify-independent-evaluator-regression-recheck.mjs",
+      "sha256": "7553bc3c2ad4a9a8a736eb57db173116984c9b20e733fa57247af18887c65b6d"
+    },
+    "independent_specialist_evaluator_verifier": {
+      "path": "tests/verify-specialist-independent-evaluator.mjs",
+      "sha256": "d22b6c50db492aa8b3ffb33a52d3f97943c6e344e6e53eaeb9a6bfd8467aa2ac"
+    },
     "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_candidate_authority_v1_json": {
       "path": "tests/fixtures/independent-clearance/authority/candidate-authority.v1.json",
       "sha256": "5c14fdc72e73ef51c5d9b04215ad4a90f49b3ef79589abd68794eafc6ff73a1a"
@@ -1413,7 +1429,7 @@
     },
     "independent_spawner_clearance_controller": {
       "path": "control/independent-spawner-clearance.mjs",
-      "sha256": "0ae3f37f3e13340c800750c4636023c9535fc090e0657aaee33f9c636ebe74d9"
+      "sha256": "82ffc13933b67de411262e353c5e03f427581c1674173a71f15d24250f33d5fd"
     },
     "independent_spawner_clearance_verifier": {
       "path": "tests/verify-independent-spawner-clearance.mjs",
@@ -1731,7 +1747,7 @@
     },
     "permanent_role_external_review_controller": {
       "path": "control/permanent-role-external-review-store.mjs",
-      "sha256": "b99c401987eae98eb766d7e1c2689e41cf39a1f56163af63d85ceadcb4676011"
+      "sha256": "3a92cfb192eee228480fde2513411bec529dc8d76e734c7a1d1235f306df7709"
     },
     "permanent_role_external_review_verifier": {
       "path": "tests/verify-permanent-role-external-review-store.mjs",

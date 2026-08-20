@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/specialist-independent-evaluation-receipt.v1.json",
+  "title": "AgentOS Independent Specialist Evaluation Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "evaluator_id",
+    "evaluator_version",
+    "candidate_roster_digest",
+    "status",
+    "independent_reviewer_required",
+    "self_acceptance",
+    "packages_checked",
+    "gate_files_checked",
+    "hostile_fixtures_checked",
+    "results",
+    "new_findings",
+    "regression_recheck",
+    "utility_harm",
+    "residuals"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.independent_specialist_evaluation_receipt.v1"},
+    "version": {"const": 1},
+    "evaluator_id": {"const": "agentos.independent-specialist-evaluator"},
+    "evaluator_version": {"const": "1.1.0"},
+    "candidate_roster_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["STATIC_PASS_REVIEW_REQUIRED", "NEW_FINDINGS_RECHECKED", "REGRESSION_FOUND"]},
+    "independent_reviewer_required": {"const": true},
+    "self_acceptance": {"const": "FORBIDDEN"},
+    "packages_checked": {"type": "integer", "minimum": 0},
+    "gate_files_checked": {"type": "integer", "minimum": 0},
+    "hostile_fixtures_checked": {"type": "integer", "minimum": 0},
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "block_id",
+          "role_kind",
+          "lifecycle",
+          "candidate_digest",
+          "dependencies",
+          "sibling_conflicts",
+          "candidate_standard_dependencies",
+          "status",
+          "checked_gate_count",
+          "checked_fixture_count",
+          "independent_utility_harm"
+        ],
+        "properties": {
+          "block_id": {"type": "string", "minLength": 1},
+          "role_kind": {"type": "string", "minLength": 1},
+          "lifecycle": {"type": "string", "minLength": 1},
+          "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "dependencies": {"type": "array", "items": {"type": "string"}},
+          "required_upstream_router": {"type": "string"},
+          "sibling_conflicts": {"type": "array", "items": {"type": "string"}},
+          "candidate_standard_dependencies": {"type": "array", "items": {"type": "string"}},
+          "status": {"const": "PASS"},
+          "checked_gate_count": {"const": 12},
+          "checked_fixture_count": {"const": 17},
+          "independent_utility_harm": {"const": "PENDING_EXTERNAL_AUTHORITY"}
+        }
+      }
+    },
+    "new_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "finding_id",
+          "block_id",
+          "package_path",
+          "package_index",
+          "affected_layers",
+          "defect_code",
+          "evidence_sha256",
+          "error_message_sha256"
+        ],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^INDEPENDENT_DEFECT\\.[0-9A-F]{32}$"},
+          "block_id": {"type": "string", "minLength": 1},
+          "package_path": {"type": "string", "pattern": "^specialist-blocks/[^\\0-9].*$"},
+          "package_index": {"type": "integer", "minimum": 0},
+          "affected_layers": {"type": "array", "const": ["SHARED_SPECIALIST_EVALUATOR_CONTRACT"]},
+          "defect_code": {"const": "INDEPENDENT_EVALUATION_FAILED"},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "error_message_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "regression_recheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "trigger", "policy", "packages"],
+      "properties": {
+        "status": {"enum": ["NOT_TRIGGERED", "PASS", "FAIL"]},
+        "trigger": {"const": "ANY_NEW_FINDING"},
+        "policy": {"const": "RECHECK_ALL_EARLIER_NON_ARCHIVED_PACKAGES"},
+        "packages": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["block_id", "package_path", "order_index", "status", "candidate_digest", "checked_gate_count", "checked_fixture_count"],
+                "properties": {
+                  "block_id": {"type": "string", "minLength": 1},
+                  "package_path": {"type": "string", "minLength": 1},
+                  "order_index": {"type": "integer", "minimum": 0},
+                  "status": {"const": "PASS"},
+                  "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                  "checked_gate_count": {"const": 12},
+                  "checked_fixture_count": {"const": 17}
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["block_id", "package_path", "order_index", "status", "defect_code", "error_message_sha256"],
+                "properties": {
+                  "block_id": {"type": "string", "minLength": 1},
+                  "package_path": {"type": "string", "minLength": 1},
+                  "order_index": {"type": "integer", "minimum": 0},
+                  "status": {"const": "FAIL"},
+                  "defect_code": {"const": "EARLIER_PACKAGE_REGRESSION"},
+                  "error_message_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "utility_harm": {"const": "PENDING_EXTERNAL_AUTHORITY"},
+    "residuals": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+  }
+}
