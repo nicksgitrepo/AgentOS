@@ -186,5 +186,10 @@ export function verifyIndependentSpawnerClearance({receiptSha256, authorityRoot 
   assert(store, "Canonical independent-clearance store is not installed by sealed bootstrap", "SEALED_CLEARANCE_AUTHORITY_REQUIRED");
   return verifyBundle({...store, receiptSha256, consume: true, issueToken: true}).clearance;
 }
+export function inspectIndependentSpawnerClearance({receiptSha256} = {}) {
+  const store = clearanceStores.get(installedClearanceStore);
+  assert(store, "Canonical independent-clearance store is not installed by sealed bootstrap", "SEALED_CLEARANCE_AUTHORITY_REQUIRED");
+  return verifyBundle({...store, receiptSha256, consume: false, issueToken: false}).clearance;
+}
 export function auditIndependentClearanceFixture({authorityRoot, repositoryRoot, receiptSha256, consume = false} = {}) { return verifyBundle({authorityRoot: fs.realpathSync.native(authorityRoot), repositoryRoot: fs.realpathSync.native(repositoryRoot), receiptSha256, consume, issueToken: false}); }
 export function assertVerifiedIndependentClearance(clearance, expectedCandidate) { assert(record(clearance) && verifiedClearances.has(clearance), "Independent clearance was not verified and consumed through the canonical authority store"); same(clearance.candidate, expectedCandidate, "Verified independent clearance candidate binding"); return clearance; }

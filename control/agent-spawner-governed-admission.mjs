@@ -17,7 +17,7 @@ import {
   validateAgentSpawnerCompilerContinuation,
   validateAgentSpawnerLifecycle,
 } from "./agent-spawner-lifecycle.mjs";
-import {assertVerifiedIndependentClearance, verifyIndependentSpawnerClearance} from "./independent-spawner-clearance.mjs";
+import {assertVerifiedIndependentClearance, inspectIndependentSpawnerClearance, verifyIndependentSpawnerClearance} from "./independent-spawner-clearance.mjs";
 import {assertCanonicalExactSpawnerAdmission} from "./spawner-bootstrap-governance.mjs";
 
 export const AGENT_SPAWNER_GOVERNED_ADMISSION_SCHEMA = "agentos.agent_spawner_governed_admission.v1";
@@ -135,14 +135,15 @@ export function compileAgentSpawnerGovernedAdmission(options = {}) {
   validateAgentSpawnerLifecycle(lifecycleBefore);
   assert(sourceContinuation.next_action === "ADMIT_GOVERNED_SPAWN", "Governed-admission source must be the compiler admission successor");
   assert(sourceContinuation.lifecycle_after_sha256 === lifecycleBefore.lifecycle_sha256, "Governed-admission source lifecycle does not match compiler continuation");
-  const clearance = verifyIndependentSpawnerClearance({receiptSha256: clearanceReceiptSha256});
-  assertVerifiedIndependentClearance(clearance, clearance.candidate);
-  assert(clearance.candidate.lifecycle_candidate_sha256 === lifecycleBefore.candidate_sha256 && clearance.candidate.roster_projection_sha256 === lifecycleBefore.roster_projection_sha256 && clearance.candidate.context_sha256 === lifecycleBefore.context_sha256, "Canonical independent clearance does not bind the current lifecycle");
-  assert(lifecycleBefore.qa.independent_clearance_receipt_sha256 === clearance.receipt_sha256, "Lifecycle clearance reference does not bind the consumed canonical receipt");
+  const inspectedClearance = inspectIndependentSpawnerClearance({receiptSha256: clearanceReceiptSha256});
+  assert(inspectedClearance.candidate.lifecycle_candidate_sha256 === lifecycleBefore.candidate_sha256 && inspectedClearance.candidate.roster_projection_sha256 === lifecycleBefore.roster_projection_sha256 && inspectedClearance.candidate.context_sha256 === lifecycleBefore.context_sha256, "Canonical independent clearance does not bind the current lifecycle");
+  assert(lifecycleBefore.qa.independent_clearance_receipt_sha256 === inspectedClearance.receipt_sha256, "Lifecycle clearance reference does not bind the canonical receipt");
   assert(lifecycleBefore.qa.incomplete_block_count === 0 && lifecycleBefore.qa.pending_route_count === 0, "Governed admission requires complete canonical blocks and roster");
   assertCanonicalExactSpawnerAdmission(exactAdmission);
-  assert(exactAdmission.spawner_package_sha256 === clearance.candidate.package_sha256 && exactAdmission.spawner_package_file_sha256 === clearance.candidate.package_file_sha256, "Exact admission package differs from independent clearance");
+  assert(exactAdmission.spawner_package_sha256 === inspectedClearance.candidate.package_sha256 && exactAdmission.spawner_package_file_sha256 === inspectedClearance.candidate.package_file_sha256, "Exact admission package differs from independent clearance");
   assert(exactAdmission.hostile_fixture_ids.length > 0 && exactAdmission.hostile_evaluation_sha256, "Governed admission requires canonical executed hostile evidence");
+  const clearance = verifyIndependentSpawnerClearance({receiptSha256: clearanceReceiptSha256});
+  assertVerifiedIndependentClearance(clearance, inspectedClearance.candidate);
   const evidenceRefs = [
     {evidence_id: "EVIDENCE.SPAWNER.CLEARANCE", reference: `ref:clearance/${clearance.receipt_sha256}`, sha256: clearance.receipt_sha256},
     {evidence_id: "EVIDENCE.SPAWNER.EXACT_ADMISSION", reference: `ref:exact-admission/${exactAdmission.admission_sha256}`, sha256: exactAdmission.admission_sha256},
