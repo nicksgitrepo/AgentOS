@@ -3415,7 +3415,7 @@
     },
     "industrial_3d_router_boundary_verifier": {
       "path": "tests/verify-industrial-3d-router-boundary.mjs",
-      "sha256": "c1c8b4447b92ae88900be88929e4d27c3257c746230a8ef33c1ad7563183e735"
+      "sha256": "3b214c8db935eb646edab1d0024721f78abea00b03cace36f70cac7277fc48fe"
     },
     "industrial_3d_router_candidate_handoff": {
       "path": "specialist-blocks/wave-06/industrial-3d-router/handoff.json",
