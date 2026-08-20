@@ -171,6 +171,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.REGULATORY_APPLICABILITY_ROUTER",
+      "package_path": "specialist-blocks/wave-06/regulatory-applicability-router",
+      "candidate_commit": "99f9b98c3835a16ca81ca11070ff70162113161b",
+      "candidate_tree": "a33a4ba7e61100f26eda1661deee666ccfce60b7",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/99f9b98c3835a16ca81ca11070ff70162113161b",
+      "receipt_sha256": "0d463d91f9935cae0bd97d1e3269c932e8f56d50130528c0c44aa8e9f4f34b1b",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -251,5 +261,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "1a8acf8d52d607b12b0ff16d6e4774e2ab61642f283c708f08668b991266a13e"
+  "ledger_sha256": "26740c56ece816608d126eebe94e4af582470209a3f4abeecbcf25909d682293"
 }
