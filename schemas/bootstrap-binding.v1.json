@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "5789e344196a3280a0d0eba337a600eded05fc8283ce8d3537b0d31ce7de7203"
+      "sha256": "1d146493ea5386d7a869b464738a8fb57c71d4297cc12b1c814bdc7b45ff12c1"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3364,6 +3364,34 @@
     "workflow_router_candidate_handoff": {
       "path": "specialist-blocks/wave-06/workflow-router/handoff.json",
       "sha256": "ad36aa35736b939360218d45a73f27d2ed9d71b2efa615ec6d9261fc81feb243"
+    },
+    "industrial_3d_router_boundary_gate": {
+      "path": "control/industrial-3d-router-boundary-gate.mjs",
+      "sha256": "d3ec3b33b760f1c2ada8583f6170af28cf4b12698e958d64f02d65b83cb86854"
+    },
+    "industrial_3d_router_boundary_input_contract": {
+      "path": "schemas/industrial-3d-router-boundary-input.v1.json",
+      "sha256": "d80c0139d12272e15cdc45bd9086c213700033be3b95bad84fc47398c4792f1d"
+    },
+    "industrial_3d_router_boundary_result_contract": {
+      "path": "schemas/industrial-3d-router-boundary-result.v1.json",
+      "sha256": "8eb8a2300a96d6a09f28bd956c136d3f74654a968d8a2c6570e294635202c060"
+    },
+    "industrial_3d_router_package_operational_evaluation_contract": {
+      "path": "schemas/industrial-3d-router-package-operational-evaluation.v1.json",
+      "sha256": "b07b8d83d1da4cd18e1dc3344ad0f723891f263009d6a13b3c08664754667751"
+    },
+    "industrial_3d_router_package_operational_evaluator": {
+      "path": "control/industrial-3d-router-package-evaluator.mjs",
+      "sha256": "afbfb87d38880fb67e9d162502d3f443ce77e95c025fc97fda767c7817ccad6b"
+    },
+    "industrial_3d_router_boundary_verifier": {
+      "path": "tests/verify-industrial-3d-router-boundary.mjs",
+      "sha256": "c1c8b4447b92ae88900be88929e4d27c3257c746230a8ef33c1ad7563183e735"
+    },
+    "industrial_3d_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-06/industrial-3d-router/handoff.json",
+      "sha256": "660335ac6108abeac4380fc2d757039568d11e1bf1260ca49ae74c58de0fea84"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",

@@ -6527,103 +6527,103 @@
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/authority_conflict.json",
-            "file_sha256": "ddfa4a96d68d0fb730251751a7da9511626d8e32367f3fc7c54b75075c820740",
+            "file_sha256": "1c7ec3c61c562bfbe4c683474381eec15cb43f6fb76e384d5b4c5e1d0bd950f0",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "7f3c4c1231f315077a663fbb3a331c9dce4d943dc042f0b3b13bcc51d6f14485",
+            "file_sha256": "0521954c2c7923960a70cf7fef5032af4dcde2a1c16d87829c5e04b950af5bec",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "ce7398c439debddfde4d1c5879d86ac88bbcbb08cdd824c34d50561440ee02d2",
+            "file_sha256": "74a75088d00a306fc1cb883226a3af7c6d9fb687c7f6132db074e7d06c88ab84",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.DATA_LIMIT",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/data_limit.json",
-            "file_sha256": "da581ddcd38a083efee358cf6273368ea671103d712fa6f5d0174d5115db3953",
+            "file_sha256": "b0ee13e81cb989843d3fe0036a7b32edb83ef05b4f35d6e1e464cb44863986b5",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "72f2a5f025678701a20da73b7ca836dd0c76c0a9caa7877a149e148de1b893a4",
+            "file_sha256": "896cbb7e6fc029f4b9848f54aa29a6fdbdf362cb9f42681482f19e67a0af2164",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/false_positive.json",
-            "file_sha256": "d1f3ec99b9fedcd047b8d6327fca874483a1b1a23d407b8ead19c303cb224bdb",
+            "file_sha256": "667da353cbf92f333b007084b3258e9bba82da3c5e31c7a3d37c03cafb3d67df",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.HANDOFF",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/handoff.json",
-            "file_sha256": "0b0fb9594d8d5510daaba636dfeb08caf4b56bd71317ecae26a519e75a8807d7",
+            "file_sha256": "6c68de60e30db1b473f74c45f71a299dff3d31b89f9f6f6f0eb7a79cb88a275d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/missing_context.json",
-            "file_sha256": "c1a1a3da76a568d0a7422b5766bb2ebf7351e1da06b628fe5157883042f3e241",
+            "file_sha256": "c3135fdb1bf5e17bc2c69afc42109ea3e1edf6c26c2a36491662d1a2069778ee",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.NARROWNESS",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/narrowness.json",
-            "file_sha256": "3f1d744159eec67dc79eb5d38bdc7b23e0183d85e29b275b5729e880d9564f0f",
+            "file_sha256": "45c982cd26aef7b4e31da251aaee6dcc1974907b967d7eb7e166718a01f6c72c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/router_self_accept.json",
-            "file_sha256": "ae5391e4ee86f983da770e0b1148882b50f41f7c20917e7f576a2c3bf4413705",
+            "file_sha256": "60b5604b0c7ce181234de9710847316b61fc761e38d964bb47585d16c5177442",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.ROUTING",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/routing.json",
-            "file_sha256": "97342e356deb4978a6482caf69147d84be6adc4eb239b5ad36b08bb79b666e78",
+            "file_sha256": "c8eceb8b842d1d987088fee254ef757d0393d1a7b3adf023c4adaa55e83f8378",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "e62a73a31cade9887c0973ca08851bed9402a36eb535ee60f5a306b745ca6122",
+            "file_sha256": "9adaf5e2bf5c2c0e15298caa8f11df970536aa3bd16c1474e3bcb902e66430be",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.STALE_SOURCE",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/stale_source.json",
-            "file_sha256": "73f853c67ac16cf73ec2c5ffb08f1de874c5bd05a5bd9f0ed8bf8b30f3a3dd7e",
+            "file_sha256": "0b4f182a64d3d089bef510e12b09e742818b72af2f4fb3f08584302b4b6afc3f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.TOOL_LIMIT",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/tool_limit.json",
-            "file_sha256": "d2709cbab153ba4efe4ec5e5cb538ac808e1ce84e2cc9058aa9666baaa40c1b2",
+            "file_sha256": "72cd20391557f710d738f0b734209174cbaac79cca02f44e0df2de27fad009b7",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/umbrella_authority.json",
-            "file_sha256": "95eb151bca69986eebd2ecdac692489d70960730302c3675dce30d7731262784",
+            "file_sha256": "b5a139e0947cbacbb53ee65a3751a73e34d462abd602165c2d651de45e894b37",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/unrelated_scope.json",
-            "file_sha256": "002e021bc5e8b5d0231f555cc8a5b3d91b8a69921e2ce97f4427af528f53814b",
+            "file_sha256": "ea5afbe389bbd00aaccebb77d556c6744eacd4a899abd52178520925a3b873fe",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.graphics.industrial-3d-router.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-06/industrial-3d-router/fixtures/unsafe_action.json",
-            "file_sha256": "2ac9b43c840adf0256519b2446e4402085637c80930d6dfbb8865404980daa5d",
+            "file_sha256": "dcafda5ad52f56b5dc1594c34ec2b534a137dd77e3fcc1a97d91d578b459b87f",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "d2b4ed44a192967676fd2a3c5c162ec0f92c6c3bad7ef8080dcc9671a3f8b15a"
+  "roster_sha256": "9e29f21d45c2d9ce53591180f5eefbbd981a6fa11bcf25a5d7eae3c3750c1f5f"
 }

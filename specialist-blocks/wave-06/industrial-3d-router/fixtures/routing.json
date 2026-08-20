@@ -2,8 +2,77 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.graphics.industrial-3d-router",
+  "fixture_id": "specialist.graphics.industrial-3d-router.ROUTING",
   "class": "routing",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for routing; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable typed hostile fixture for routing; no project, consumer, secret, engineering, or acceptance authority.",
+  "vector": {
+    "entrypoint": "control/industrial-3d-router-boundary-gate.mjs#evaluateIndustrial3dRouterBoundary",
+    "input": {
+      "schema": "agentos.industrial_3d_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_3D_SIGNAL",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "asset_domain": "INDUSTRIAL_3D",
+        "asset_identity": "TYPED_ASSET",
+        "asset_stage": "ROUTER",
+        "asset_objective": "PIPELINE_CLASSIFICATION",
+        "asset_version": "GLTF_2.0",
+        "asset_ref": "ref:ASSET/INDUSTRIAL/1",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.BLENDER_GLTF_2_0_MANUAL",
+        "source_version": "3.3",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "d1d3ce94e7c58178825521e84b6d37fab52e94174007821f3f1947d113f9deb5",
+        "graphics_signal": "GRAPHICS.INDUSTRIAL_3D",
+        "signal_status": "BOUND",
+        "task_status": "INDUSTRIAL_3D_CLASSIFICATION",
+        "context_status": "INDUSTRIAL_3D_ROUTER_CONTEXT",
+        "context_complete": true,
+        "requested_action": "CLASSIFY",
+        "requested_tools": [
+          "READ_ASSET_SIGNAL",
+          "READ_SOURCE_LOCK",
+          "READ_GRAPHICS_CATALOG",
+          "READ_CONTEXT",
+          "READ_ENGINEERING_BOUNDARY"
+        ],
+        "required_block_identities": [
+          "SPECIALIST.FOUNDATION.AUTHORITY_JURISDICTION_GATE",
+          "SPECIALIST.FOUNDATION.EVIDENCE_FRESHNESS_GATE",
+          "SPECIALIST.FOUNDATION.ROLE_INTAKE_CLASSIFIER",
+          "SPECIALIST.FOUNDATION.SCOPE_NON_GOAL_GATE",
+          "SPECIALIST.FOUNDATION.TOOL_CUSTODY_GATE"
+        ],
+        "model_policy_status": "CURRENT",
+        "model_route_status": "BOUND",
+        "authority_scope": "INDUSTRIAL_3D_ROUTER",
+        "new_findings": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "INDUSTRIAL_3D_ATOMIC_HANDOFF",
+      "error_code": "INDUSTRIAL_3D_ROUTER_ROUTE_READY"
+    }
+  }
 }
