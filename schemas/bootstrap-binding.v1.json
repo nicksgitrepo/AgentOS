@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "56023360d14e935a9f08500fdc84fc2023f72e897c8c53a9af099be244b9dfb9"
+      "sha256": "4eca3f0b293e862bf6da29f7d315339398c6cdea9660110e872d08f2ef491145"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3644,6 +3644,34 @@
     "data_migration_rollback_router_candidate_handoff": {
       "path": "specialist-blocks/wave-04/migration-rollback/handoff.json",
       "sha256": "528baca00615de4841c5fc5dfbeaf06dcb1050bd9fbcc7513a887f13daf24f6d"
+    },
+    "observability_incident_router_boundary_gate": {
+      "path": "control/observability-incident-router-boundary-gate.mjs",
+      "sha256": "bdf7e889e18c3b599ca8bc6af2d4585cafab46190accd18ec252fae02bed203f"
+    },
+    "observability_incident_router_boundary_input_contract": {
+      "path": "schemas/observability-incident-router-boundary-input.v1.json",
+      "sha256": "422c2addc7eabd7ec9e9ef469d264b0fac61edc4a652c3c147c789bc0dc8f1cc"
+    },
+    "observability_incident_router_boundary_result_contract": {
+      "path": "schemas/observability-incident-router-boundary-result.v1.json",
+      "sha256": "a9b6206442fede38a461404c29d8f55b3f414829245545a21b92875fdaf7c6e6"
+    },
+    "observability_incident_router_package_operational_evaluation_contract": {
+      "path": "schemas/observability-incident-router-package-operational-evaluation.v1.json",
+      "sha256": "0ab1fce69e4c6022c5abf66a05fdbf1f3182d6f9d6ccb93ea55e1a65a1910137"
+    },
+    "observability_incident_router_package_operational_evaluator": {
+      "path": "control/observability-incident-router-package-evaluator.mjs",
+      "sha256": "d3009960380142497111c09547cec1783a38f7a255a42f01644b31785728305e"
+    },
+    "observability_incident_router_boundary_verifier": {
+      "path": "tests/verify-observability-incident-router-boundary.mjs",
+      "sha256": "327b3bf9b707faf1e8ff2bfa53537548c9fcf541668fb3e1eed2e05c49a3d16e"
+    },
+    "observability_incident_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-04/observability-incident/handoff.json",
+      "sha256": "2bf8171306d75d86bebb2866e01d36de11268c97f057706d4a4f5bd8d716ae24"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
