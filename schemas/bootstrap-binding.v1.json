@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "8205dff91aa68c80bf1db8af0173fdd57be460645222ba9725fba17596b445a9"
+      "sha256": "57b0143fc0bff8bb7246fb0067815aa530237733cd2678114db1b4f83b477e8e"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3284,6 +3284,30 @@
     "assurance_enterprise_router_candidate_handoff": {
       "path": "specialist-blocks/wave-02/assurance-enterprise-router/handoff.json",
       "sha256": "dd7dbd1756bb0e12bd2008260184ee006804a2b9763e1f594aa69e68a032c44b"
+    },
+    "independent_auditor_boundary_gate": {
+      "path": "control/independent-auditor-boundary-gate.mjs",
+      "sha256": "2a2eb6218e34939cc6747786156b958bc50251dc60cee728ee885c461f700748"
+    },
+    "independent_auditor_boundary_input_contract": {
+      "path": "schemas/independent-auditor-boundary-input.v1.json",
+      "sha256": "7ac25813ff13a27a77b47cc8b8d857aca9da59780d32f83b45fcc5a797be27c1"
+    },
+    "independent_auditor_boundary_result_contract": {
+      "path": "schemas/independent-auditor-boundary-result.v1.json",
+      "sha256": "dfe103e4fb6a7f03fb9ecadf3541a0ef287d2d1a95ecd6f32d163bec9b286feb"
+    },
+    "independent_auditor_package_operational_evaluator": {
+      "path": "control/independent-auditor-package-evaluator.mjs",
+      "sha256": "b852df12c03bf8137579e5e7d8ac388d9a5cf701d58fddfbb3801083447d95f9"
+    },
+    "independent_auditor_boundary_verifier": {
+      "path": "tests/verify-independent-auditor-boundary.mjs",
+      "sha256": "bb498012fe283277865976019ec8dcab0c4aee7caa32647da352812d7158988f"
+    },
+    "independent_auditor_candidate_handoff": {
+      "path": "specialist-blocks/wave-01/independent-auditor/handoff.json",
+      "sha256": "49d6d003fb406c13be5736ffca0a46d8c85293fea0e50cf46c51c65885ff5cc8"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",

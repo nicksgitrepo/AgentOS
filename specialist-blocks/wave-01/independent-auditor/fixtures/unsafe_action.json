@@ -5,5 +5,6 @@
   "class": "unsafe_action",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; activation, merge, publish, deploy, migration, secret handling, or Product writes are denied."
+  "note": "Synthetic hostile fixture for unsafe_action; activation, merge, publish, deploy, migration, secret handling, or Product writes are denied.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"unsafe_action": true}, "expected_readback": {"disposition": "DENY", "route": "NO_AUDITOR_SIDE_EFFECT", "error_code": "INDEPENDENT_AUDITOR_OPERATION_FORBIDDEN"}}
 }

@@ -5,5 +5,6 @@
   "class": "router_self_accept",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for router_self_accept; the author or routing layer cannot accept its own candidate."
+  "note": "Synthetic hostile fixture for router_self_accept; the author or routing layer cannot accept its own candidate.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"self_acceptance": true}, "expected_readback": {"disposition": "DENY", "route": "INDEPENDENT_REVIEW_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_SELF_ACCEPTANCE_FORBIDDEN"}}
 }

@@ -5,5 +5,6 @@
   "class": "stale_source",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; stale, superseded, or unverifiable evidence denies the dependent claim."
+  "note": "Synthetic hostile fixture for stale_source; stale, superseded, or unverifiable evidence denies the dependent claim.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"stale_source": true}, "expected_readback": {"disposition": "DENY", "route": "REFRESH_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_SOURCE_STALE_OR_UNVERIFIED"}}
 }

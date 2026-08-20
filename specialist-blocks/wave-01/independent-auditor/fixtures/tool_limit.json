@@ -5,5 +5,6 @@
   "class": "tool_limit",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; unsupported tools or side effects deny the dependent evaluation."
+  "note": "Synthetic hostile fixture for tool_limit; unsupported tools or side effects deny the dependent evaluation.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"unsupported_tool": true}, "expected_readback": {"disposition": "DENY", "route": "READ_ONLY_TOOLS_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_TOOL_SCOPE_FORBIDDEN"}}
 }

@@ -5,5 +5,6 @@
   "class": "authority_conflict",
   "expected": "ESCALATE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; conflicting authority is not resolved by inference and no consumer data or private context is supplied."
+  "note": "Synthetic hostile fixture for authority_conflict; conflicting authority is not resolved by inference and no consumer data or private context is supplied.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"authority_conflict": true}, "expected_readback": {"disposition": "DENY", "route": "CONTROLLER_ESCALATION", "error_code": "INDEPENDENT_AUDITOR_AUTHORITY_CONFLICT"}}
 }

@@ -5,5 +5,6 @@
   "class": "narrowness",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; the auditor accepts only a bounded review of one named candidate digest."
+  "note": "Synthetic hostile fixture for narrowness; the auditor accepts only a bounded review of one named candidate digest.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {}, "expected_readback": {"disposition": "ROUTE", "route": "EVALUATION_RECEIPT_TO_SPAWNER", "error_code": "INDEPENDENT_AUDITOR_EVALUATION_READY"}}
 }

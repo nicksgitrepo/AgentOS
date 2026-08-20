@@ -5,5 +5,6 @@
   "class": "data_limit",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for data_limit; protected or unapproved data custody denies the dependent evaluation."
+  "note": "Synthetic hostile fixture for data_limit; protected or unapproved data custody denies the dependent evaluation.",
+  "vector": {"entrypoint": "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", "request_kind": "EVALUATE_CANDIDATE", "adversarial_flags": {"protected_data": true}, "expected_readback": {"disposition": "DENY", "route": "PRIVACY_BOUNDARY_REQUIRED", "error_code": "INDEPENDENT_AUDITOR_PROTECTED_DATA_FORBIDDEN"}}
 }
