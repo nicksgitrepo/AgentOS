@@ -1,4 +1,64 @@
-# Canonical Specialist Roster — Candidate Inactive
+# Canonical AgentOS Reusable Agent Roster — Candidate Inactive
+
+The current canonical campaign registry is
+`specialist-blocks/registry/agent-roster.v1.json`. It is generated from the
+real AgentOS block library and the sealed permanent-role registry. This file is
+the human-readable plan; the JSON registry is the authority for identity,
+dependencies, scores, gates, fixtures, model routes, and build state.
+
+## Build order
+
+The Spawner is already admitted and is reused by its immutable receipt. The
+next eligible package is `AGENTOS_CONTROLLER`, followed by the remaining
+permanent roles in dependency order. Only one package may be in qualification
+at a time. A package is not built merely because a name exists: its exact
+blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
+QA, and independent evaluation must all be current.
+
+### Permanent AgentOS roles
+
+1. `AGENTOS.SPAWNER` — admitted governance and lifecycle owner.
+2. `AGENTOS_CONTROLLER` — workflow regulation and useful-progress checks only.
+3. `AGENTOS.PRODUCT_OWNER` — user intent and normal human conversation only.
+4. `AGENTOS.MEMORY` — governed memory adapter; package still needs to be built.
+5. `AGENTOS.RUNTIME` — runtime and rollback custody only.
+6. `AGENTOS.SCHEDULER` — resource and work scheduling only.
+7. `AGENTOS.ORCHESTRATOR` — plan coordination and acceptance; package still needs to be built.
+
+### Platform agents
+
+After the permanent roles, the queue covers client, backend/API, data,
+infrastructure/cloud, release, assurance, and delivery integration. Existing
+routers and narrow platform packages are listed in the machine registry with
+their actual dependencies and are not promoted until their predecessors are
+accepted.
+
+### Specialist auditors
+
+The final tier contains narrow security, standards, quality, regulatory,
+scientific, operational, and domain auditors. One standard or failure class is
+kept per auditor when that produces a tighter pass. Temporary auditors close
+only after an accepted handoff, closed scope, preserved evidence, and zero
+worktree or custody references; only the Spawner may despawn them.
+
+## Entry contract
+
+Every registry entry records its stable identity and display name, family,
+narrow purpose, applicability triggers, authority, forbidden actions, stop
+conditions, required block graph, knowledge/context inputs, exact gate files,
+hostile fixtures, evidence and handoff contract, lifecycle, model task class
+and capability floor, predecessors, likely consumers, reuse score, risk, build
+and QA state, independent-evaluation state, and invalidation links. Reusable
+governance and standard blocks are explicitly marked as blocks, not agents.
+
+Model names are suggestions only. The current capability-first route comes
+from the accepted global model-policy snapshot, with freshness, availability,
+context, cost, concurrency, fallback, and escalation checks applied at spawn.
+Seeds are immutable clean checkpoints and never perform work.
+
+The first queue item marked eligible is `AGENTOS_CONTROLLER`. All other
+entries remain queued, blocked on predecessors, missing packages, or pending
+independent review as recorded in the machine registry.
 
 The machine-readable source of the full backlog is
 `master-inventory.v1.json`. The generic priority overlay is
@@ -49,24 +109,19 @@ The materialized roster distinguishes these role kinds:
 - `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
   roster agent.
 
-Current materialized counts are `ROUTER: 640`, `CONTROL_PLANE: 16`,
-`KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`, and
-`COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
-`19` routers, `92` atomic specialists, and `16` control-plane roles.
+The legacy materialized-library counts below are retained only as historical
+inventory context. The current authority is the generated registry above:
+`127` entries from `125` package directories (`124` current and `1` archived),
+with `96` agent roles, `7` reusable governance blocks, `23` reusable standard
+blocks, and `2` planned permanent-role package entries. The registry's ordered
+queue, not the historical recipe counts, controls what may be built.
 
-The compiled candidate package roster is a separate count from the complete
-backlog: `123` packages total, consisting of `19` `ROUTER`, `16`
-`CONTROL_PLANE`, `65` `ATOMIC_SPECIALIST`, and `23` `STANDARD_BLOCK` packages.
-All 123 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
-
-The on-demand recipe catalog now covers all `621` retained inventory roles:
-`17` recipes are `CANDIDATE` and compileable (`6` P0, `5` P4, and `6` P5), `603` recipes are `PLANNED`,
-explicitly non-compileable, and require a role-specific block with its own
-source lock, twelve gates, hostile fixtures, independent evaluation, and
-admission receipt. The protected Memory lane is retained as `NOT_APPLICABLE`
-and external-only. The catalog preserves all `10` alias mappings and is
-content-addressed by `e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74`.
+The on-demand recipe and master-inventory catalogs remain useful source
+inventories, but they do not admit an agent. A package becomes actionable only
+when its registry entry has a complete block graph, exact gate and hostile
+fixture evidence, a current model route, and an independent acceptance receipt.
+Protected memory and other missing permanent-role packages stay explicitly
+planned until their own package is built and qualified.
 
 ## Source-locked standard candidates
 

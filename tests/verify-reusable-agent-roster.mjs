@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import {canonicalDigest} from "../control/content-addressing.mjs";
+
+const root = path.resolve(new URL("..", import.meta.url).pathname);
+const registryPath = path.join(root, "specialist-blocks/registry/agent-roster.v1.json");
+const roster = JSON.parse(fs.readFileSync(registryPath, "utf8"));
+const sha = (p) => crypto.createHash("sha256").update(fs.readFileSync(path.join(root, p))).digest("hex");
+const safe = (p) => typeof p === "string" && !path.isAbsolute(p) && !p.split("/").includes("..") && fs.existsSync(path.join(root, p));
+assert.equal(roster.schema, "agentos.reusable_agent_roster.v1");
+assert.equal(roster.version, 1);
+assert.equal(roster.project_agnostic, true);
+assert.equal(roster.roster_sha256, canonicalDigest({...roster, roster_sha256: null}));
+assert.equal(roster.policy.one_package_at_a_time, true);
+assert.equal(roster.policy.permanent_before_platform, true);
+assert.equal(roster.policy.platform_before_auditor, true);
+assert.equal(roster.policy.seed_is_inert, true);
+const ids = new Set();
+for (const entry of roster.entries) {
+  assert(!ids.has(entry.stable_agent_id), `duplicate roster identity: ${entry.stable_agent_id}`); ids.add(entry.stable_agent_id);
+  assert(entry.project_agnostic !== false);
+  assert(entry.forbidden_actions.length > 0 && entry.stop_conditions.length > 0);
+  assert(entry.deterministic_gates.status);
+  for (const gate of entry.deterministic_gates.gates) { assert(safe(gate.path), `${entry.stable_agent_id} gate path missing`); assert.equal(sha(gate.path), gate.file_sha256); }
+  for (const fixture of entry.hostile_fixtures.fixtures) { assert(safe(fixture.path), `${entry.stable_agent_id} hostile fixture missing`); assert.equal(sha(fixture.path), fixture.file_sha256); }
+  if (entry.package_path !== null && entry.build_state !== "PLANNED_MISSING_PACKAGE") assert(safe(`${entry.package_path}/block.json`), `${entry.stable_agent_id} package missing`);
+  assert(entry.model_route.task_class && Number.isInteger(entry.model_route.minimum_capability));
+}
+assert.equal(new Set(roster.build_queue.map((item) => item.rank)).size, roster.build_queue.length);
+assert.deepEqual(roster.tiers.map((tier) => tier.tier), ["PERMANENT_AGENTOS_ROLES", "PLATFORM_AGENTS", "SPECIALIST_AUDITORS"]);
+assert.equal(roster.tiers[0].order[0], "AGENTOS.SPAWNER");
+assert.equal(roster.tiers[0].order.includes("AGENTOS_CONTROLLER"), true);
+assert.equal(roster.tiers[0].order.includes("AGENTOS.PRODUCT_OWNER"), true);
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENTOS_CONTROLLER");
+assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
+console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);
