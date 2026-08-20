@@ -68,10 +68,11 @@ Software Language/Runtime Router, Bootstrap/Project Initializer, Central
 Integrator, Release Manager, Worktree/Custody Manager, Assurance/Enterprise
 Router, Independent Auditor, AI/Search/RAG Router, Workflow Router,
 Accounting/Job-Cost Router, Graphics/Industrial 3D Router, Privacy
-Data-Lifecycle Router, and Regulatory Applicability Router are accepted from
-their exact independent receipts. The current queue item is
-`AGENT.SECURITY_ACCESS_CONTROL_ROUTER`; its package, gates, hostile vectors,
-model route, and local proof are next for one-at-a-time qualification.
+Data-Lifecycle Router, Regulatory Applicability Router, and Access-Control
+Composition Router are accepted from their exact independent receipts. The
+current queue item is `AGENT.SECURITY_OWASP_API_TOP10_ROUTER`; its package,
+gates, hostile vectors, model route, and local proof are next for one-at-a-time
+qualification.
 All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact
