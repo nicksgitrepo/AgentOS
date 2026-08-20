@@ -1838,103 +1838,103 @@
           {
             "fixture_id": "specialist.control.central-integrator.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/authority_conflict.json",
-            "file_sha256": "7ae90400feb055fb85232237d88397a1b58b8d3b5ab9cb2097b335b6b1995790",
+            "file_sha256": "5aeb30f649ef36b251a85ba89cc99f5a3c59e79ffa6480a0525d7b9e320536fb",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "056e2c608004ff0e1e06eb5c54b8389778dcc01863facdec57925ca2648eaab2",
+            "file_sha256": "43bc46e4e152ae0dd5d2a0941c1ace38ae911c8c703818000d771a9533e6570d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "f684fd29c1aff86e2c3ed5cf695911d0b659b31fb81099b6300332df8f7cf4c3",
+            "file_sha256": "7245e46351b89de3901a589188f88448b7e2abf3d8478607d5ef745e9c67aadf",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.DATA_LIMIT",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/data_limit.json",
-            "file_sha256": "e5b64a11cfabe549e1062b57ec772720c77a0ac4db81ceaecf816480963abf1b",
+            "file_sha256": "be3a9edac5f3adf5325d8b68429e76e1103c283d16b80b170c2d6fc88642779b",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.central-integrator.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "ef1fd6a71770e843d4c0bb40b572071ada71035d5b056ea8bbd3c9e9471a786a",
+            "file_sha256": "40473033fc4706296be9bc4862ee108e208c94c5a549d564639253892178d551",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/false_positive.json",
-            "file_sha256": "2f817f079a82762beb65df6626e81519daa43f4fad6b3ac9e546db5f174da92b",
+            "file_sha256": "1ac8d54ee9bf964efbe573fb212da81d6583127517e330e5d90c3b138df3c30e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.HANDOFF",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/handoff.json",
-            "file_sha256": "1ac8fd40e5bab26983e73ca92dcc70f61cfe04b529616eee69021b14d3fc61fc",
+            "file_sha256": "cdc4434afcb21228c83518cef5d8714b0162914240dee8c3fe80b1661c33eb7e",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.central-integrator.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/missing_context.json",
-            "file_sha256": "91fbf9d0f69a096ba507d8dc92e9da3f3833d4466a9106136929d6d6fc06d193",
+            "file_sha256": "c8e9ead8540c6ae2eeeaeac05e534ceeb39ed092c6cf5e429a9256aa84684489",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.NARROWNESS",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/narrowness.json",
-            "file_sha256": "8ddeb6428d2b1fe38b478b2948a4b2de274a5c177551854e4a3c616e6564c1a0",
+            "file_sha256": "3e1815549b2a4f609bdcc50453b1ed4744149836b52690567905c15c7f7cca3d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.central-integrator.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/router_self_accept.json",
-            "file_sha256": "027168bca6c2d9ab6f460e02c3554ee5448518173e95bb74ef57dc0c7a49edfb",
+            "file_sha256": "0eb984dd0683ac44b3a06ae313e2b59a83dd060446388391ea7479750b09754b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.ROUTING",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/routing.json",
-            "file_sha256": "27246d98896205f48ae95d9a02afe226d05e548550ad25b2b5fe6a3ead015bf5",
+            "file_sha256": "e44206e434eacc174c11d624fe0b2114078a3aeeef8aa5b04d0991f3930fcf3e",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.central-integrator.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/silent_scope_expansion.json",
-            "file_sha256": "70ef28a4da2e3617e05bcacc023c7762288d1364d837bbd64cb2940e2f0ab34b",
+            "file_sha256": "95872b8ac810f87a1f7976ca7a65942b83576a2fbb8e7adce1ff97f5f3ba7d9c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.STALE_SOURCE",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/stale_source.json",
-            "file_sha256": "da1a986d2eb00f325e2ead8c5655804f3b8dbd00128265d1545ae56d0bcc574e",
+            "file_sha256": "f26afc2c2f35d164393de3b37363e316ac8646b92e98f1afbe3e81c45497c673",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.TOOL_LIMIT",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/tool_limit.json",
-            "file_sha256": "cdbbd706d1f4c31c2ba007ecad43bc81efa17c9c9b69cc54f5d3d4511509d6d3",
+            "file_sha256": "1fb5a24670093e9967be8e90c91a607fdf4bb0d54967cac98ac48c7fbc6e7732",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.central-integrator.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/umbrella_authority.json",
-            "file_sha256": "c94afe66f597bc1b7cbc44f61c6ae387deb33958c0c8c2b8ba1a2fa2f5f97dc0",
+            "file_sha256": "2a64a00adf6e1897f85781ce40d3686fb0712340843cf5429e54ac75d562742a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/unrelated_scope.json",
-            "file_sha256": "96dff01956032884589d6f8b4cecdfcbbf363af99323ac757519af2e6e11702b",
+            "file_sha256": "986609b4bead29be95e834ff73afdb788ee76c799ccd6dc7f46043aa027f71f2",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.central-integrator.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-04/central-integrator/fixtures/unsafe_action.json",
-            "file_sha256": "8a8a33b402e376c74f50a833a5f69aeae0d65d680554c9c347c7f4a054804292",
+            "file_sha256": "b084071627774fb97cca5277e335a915cb8008c05173765415ed4702022a9927",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "cdc6982b886373330237f944a37b5e4e069ae4ff62a6d1a6da1513ea18aa80cc"
+  "roster_sha256": "58e3ef9436330f9f1cc56b3f6a3318a5b25130f9b236448c135b5e064dd24c88"
 }

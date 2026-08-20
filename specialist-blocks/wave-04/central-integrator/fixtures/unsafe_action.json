@@ -2,8 +2,7 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.central-integrator",
+  "fixture_id": "specialist.control.central-integrator.UNSAFE_ACTION",
   "class": "unsafe_action",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
+  "vector": {"entrypoint": "control/central-integrator-boundary-gate.mjs#evaluateCentralIntegratorBoundary", "input": {"schema": "agentos.central_integrator_boundary_input.v1", "version": 1, "request_kind": "MERGE", "evidence": {}}, "expected_readback": {"disposition": "DENY", "route": "NO_INTEGRATION_SIDE_EFFECT", "error_code": "CENTRAL_INTEGRATOR_OPERATION_FORBIDDEN", "acceptance_allowed": false}}
 }

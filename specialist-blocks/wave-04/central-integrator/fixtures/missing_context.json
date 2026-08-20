@@ -2,8 +2,7 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.central-integrator",
+  "fixture_id": "specialist.control.central-integrator.MISSING_CONTEXT",
   "class": "missing_context",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; provider, project, consumer, secret, and applicability facts remain external."
+  "vector": {"entrypoint": "control/central-integrator-boundary-gate.mjs#evaluateCentralIntegratorBoundary", "input": {"schema": "agentos.central_integrator_boundary_input.v1", "version": 1, "request_kind": "COORDINATE_INTEGRATION", "evidence": {}}, "expected_readback": {"disposition": "DENY", "route": "TYPED_CONTEXT_REQUIRED", "error_code": "CENTRAL_INTEGRATOR_CONTEXT_INCOMPLETE", "acceptance_allowed": false}}
 }

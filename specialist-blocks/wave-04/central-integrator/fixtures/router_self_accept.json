@@ -2,8 +2,11 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.central-integrator",
+  "fixture_id": "specialist.control.central-integrator.ROUTER_SELF_ACCEPT",
   "class": "router_self_accept",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for router_self_accept; provider, project, consumer, secret, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/central-integrator-boundary-gate.mjs#evaluateCentralIntegratorBoundary",
+    "input": {"schema": "agentos.central_integrator_boundary_input.v1", "version": 1, "request_kind": "COORDINATE_INTEGRATION", "evidence": {"authority_status": "CURRENT", "custody_status": "BOUND", "custody_owner": "AGENT.CONTROL_CENTRAL_INTEGRATOR", "custody_ref": "ref:CONTROL_CENTRAL_INTEGRATOR/BOUND", "source_status": "CURRENT", "source_identity": "SOURCE.SLSA_PROVENANCE", "source_version": "1.2", "candidate_identity": "CANDIDATE.AGENTOS.CONTROL_CENTRAL_INTEGRATOR", "candidate_digest": "1cff300fdb5323b73b22c518a3cbcd87ef46b92451173ba1bf63ac583937c407", "candidate_status": "CURRENT_CANDIDATE", "integration_scope": "NARROW_GOVERNANCE", "requested_action": "RECONCILE", "signals": ["AGENT.CENTRAL_INTEGRATOR", "AUTHORITY_GRAPH"], "context_complete": true, "handoff_ref": "ref:HANDOFF/CENTRAL_INTEGRATOR", "dependencies_status": "COMPLETE", "conflicts_status": "NONE", "proof_status": "BOUND", "provenance_status": "BOUND", "model_policy_status": "CURRENT", "model_task_class": "DETERMINISTIC_QA", "model_route_status": "BOUND", "standard_identities": ["SPECIALIST.STANDARD.NIST_SSDF", "SPECIALIST.STANDARD.SLSA"], "requested_tools": ["READ_MANIFEST", "READ_RECEIPTS"], "self_acceptance": true}},
+    "expected_readback": {"disposition": "DENY", "route": "INDEPENDENT_REVIEW_REQUIRED", "error_code": "CENTRAL_INTEGRATOR_SELF_ACCEPTANCE_FORBIDDEN", "acceptance_allowed": false}
+  }
 }

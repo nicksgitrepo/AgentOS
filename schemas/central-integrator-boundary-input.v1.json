@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/central-integrator-boundary-input.v1.json",
+  "title": "Project-agnostic Central Integrator boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.central_integrator_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string", "enum": ["COORDINATE_INTEGRATION", "RECONCILE_AUTHORITY_GRAPH", "CLASSIFY_HANDOFF", "NOT_APPLICABLE", "UNRELATED_REQUEST", "SPAWN", "ADMIT", "ARCHIVE", "DESPAWN", "MERGE", "DEPLOY", "PUBLISH", "WRITE_PROJECT", "WRITE_MEMORY", "ACCEPT", "SELF_REVIEW"]},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_status", "custody_status", "custody_owner", "custody_ref", "source_status", "source_identity", "source_version", "candidate_identity", "candidate_digest", "candidate_status", "integration_scope", "requested_action", "signals", "context_complete", "handoff_ref", "dependencies_status", "conflicts_status", "proof_status", "provenance_status", "model_policy_status", "model_task_class", "model_route_status", "standard_identities"],
+      "properties": {
+        "authority_status": {"type": "string"}, "custody_status": {"type": "string"}, "custody_owner": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "custody_ref": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"},
+        "source_status": {"type": "string"}, "source_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "source_version": {"type": "string"},
+        "candidate_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "candidate_status": {"type": "string"},
+        "integration_scope": {"type": "string"}, "authority_scope": {"type": "string"}, "requested_action": {"type": "string"}, "signals": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "context_complete": {"type": "boolean"}, "handoff_ref": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"},
+        "dependencies_status": {"type": "string"}, "conflicts_status": {"type": "string"}, "proof_status": {"type": "string"}, "provenance_status": {"type": "string"}, "model_policy_status": {"type": "string"}, "model_task_class": {"type": "string"}, "model_route_status": {"type": "string"},
+        "standard_identities": {"type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "requested_tools": {"type": "array", "maxItems": 6, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "self_acceptance": {"type": "boolean"}, "scope_expanded": {"type": "boolean"}, "authority_conflict": {"type": "boolean"}, "sibling_authorities": {"type": "array", "maxItems": 6, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "project_data_present": {"type": "boolean"}, "secret_data_present": {"type": "boolean"}, "unbound_receipt": {"type": "boolean"}, "unreviewed_gate": {"type": "boolean"}, "unknown_context": {"type": "boolean"}
+      }
+    }
+  }
+}
