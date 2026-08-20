@@ -4486,9 +4486,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers delivery-operations; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/observability-router/evaluation.json"
@@ -39524,17 +39524,17 @@
       "rank": 10,
       "stable_agent_id": "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 80.85,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 11,
       "stable_agent_id": "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 80.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 12,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "0e3e29f599a912f7c29b450b274f7fd98dfa769a515de633962785dd859e4023"
+  "roster_sha256": "4db2f46efbebf1299d5a869e311cfd6662c1c1b055b7ebc529bc3c30a57b5eb2"
 }

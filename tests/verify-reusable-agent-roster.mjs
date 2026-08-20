@@ -56,6 +56,9 @@ assert.match(acceptedSecurity.build_state, /^ACCEPTED_/u, "Security Router is no
 const acceptedData = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.DATA_ROUTER");
 assert(acceptedData, "Data Router missing from roster");
 assert.match(acceptedData.build_state, /^ACCEPTED_/u, "Data Router is not marked accepted in the readback index");
-assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_ROUTER");
+const acceptedObservability = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_ROUTER");
+assert(acceptedObservability, "Observability Router missing from roster");
+assert.match(acceptedObservability.build_state, /^ACCEPTED_/u, "Observability Router is not marked accepted in the readback index");
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);
