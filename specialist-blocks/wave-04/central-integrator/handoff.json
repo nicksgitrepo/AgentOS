@@ -5,8 +5,8 @@
   "block_id": "specialist.control.central-integrator",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "1cff300fdb5323b73b22c518a3cbcd87ef46b92451173ba1bf63ac583937c407",
-  "source_commit": "399f102df81775e34ef21350e75117a8a954b5f9",
-  "source_tree": "1c94f9e759b592372df4a9af5a054b8a9919d771",
+  "source_commit": "9d4cb9cb5d64b3d03d6ed77f90dc753b28c5f5db",
+  "source_tree": "1f6a3f97849357084d430f746092e6f8f8ebe4eb",
   "changed_paths": [
     "specialist-blocks/wave-04/central-integrator/block.json",
     "specialist-blocks/wave-04/central-integrator/evaluation.json",

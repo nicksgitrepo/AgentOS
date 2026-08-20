@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "e14d3275fc46f2bf5a19e9f0c122709a3f7926469903591b10ecd052aae0ae2a"
+      "sha256": "ad0a84871e0b24fe019060557422dc07d90f804f7bddae4bb8b4fa2396ceb8ba"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3199,7 +3199,7 @@
     },
     "central_integrator_candidate_handoff": {
       "path": "specialist-blocks/wave-04/central-integrator/handoff.json",
-      "sha256": "8c5cffb0ff4af0b7316d97bcc26e2a9053e6c77794ea47e47b854f29a530c011"
+      "sha256": "e8c16cc23329feb87c3c344d8c655bdd30fc30dc341f499896cbeb39c380daac"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
