@@ -1953,6 +1953,14 @@
       "path": "control/product-owner-pre-admission-evaluator.mjs",
       "sha256": "bdf562d5888e4a67fedae2e6b84703f782ad2fdc7130ea83869f9aa480ff73ff"
     },
+    "product_owner_package_evaluator": {
+      "path": "control/product-owner-package-evaluator.mjs",
+      "sha256": "729cc69b4b2964f1d956a08b1f43b0ce8de669344edceed6d96d03c5dbb9e1a5"
+    },
+    "product_owner_package_evaluator_verifier": {
+      "path": "tests/verify-product-owner-package-evaluator.mjs",
+      "sha256": "9f36082ccb3291ef01a5e3c12f9c40254a661201b0daf4e05031f732013e07f4"
+    },
     "product_owner_specialist_package_verifier": {
       "path": "tests/verify-product-owner-specialist-package.mjs",
       "sha256": "1ee530d7665a848280e42a19a2db9ef62b7b73416e241c00f75decd13f069ee9"
