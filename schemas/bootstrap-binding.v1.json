@@ -3263,7 +3263,7 @@
     },
     "assurance_enterprise_router_boundary_input_contract": {
       "path": "schemas/assurance-enterprise-router-boundary-input.v1.json",
-      "sha256": "6a4e92366b36d14d5296a989a05dec1f164646d15bca9b55d3110b59ab5b4944"
+      "sha256": "b52270a84e76ce5914d09d7d1377f2993def8e908201ce927fdc66cf2d572228"
     },
     "assurance_enterprise_router_boundary_result_contract": {
       "path": "schemas/assurance-enterprise-router-boundary-result.v1.json",
