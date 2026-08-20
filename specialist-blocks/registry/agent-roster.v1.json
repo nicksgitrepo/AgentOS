@@ -8219,9 +8219,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers privacy; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/data-lifecycle-router/evaluation.json"
@@ -10842,105 +10842,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.regulatory.applicability-router.AUTHORITY_CONFLICT",
+            "fixture_id": "regulatory-applicability-router-authority-conflict",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/authority_conflict.json",
-            "file_sha256": "7962c415fce36bd4f9454b20be031576a12d266db1a1f2c6094055e4be0a45e8",
+            "file_sha256": "3ded82e5a47064910a14ca68b7916216d1577eb48631c3f2b32780ad7ef4b5e9",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "regulatory-applicability-router-broad-when-narrow-exists",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "d4f9c823d5f71ae4415c2dae71def9833182731ff288d6e7d6fe35e3cf21d37e",
+            "file_sha256": "6f31372806e36e763f5054b05ff78990a6452ea4a5d21320774b08daeb9eb357",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "regulatory-applicability-router-cross-provider-version-claim",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "190967f1964877dd456c7d664c4b63336ada492480ff9a7d724a82fb9f5a37e0",
+            "file_sha256": "21d2feb31d42356c8c0a1474582cbb220ab9339d6818986990d3faeda111e890",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.DATA_LIMIT",
+            "fixture_id": "regulatory-applicability-router-data-limit",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/data_limit.json",
-            "file_sha256": "4457c805ec302959527464ac298bbf9f998e36328ca20905372f80916b2c5928",
+            "file_sha256": "df5374eca683c504b0fbd24fbfe9443658045f7e890fd1946e8cc1865428045f",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "regulatory-applicability-router-duplicate-sibling-authority",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "39dbeb49db7408b31c227b8fe67380b428d3820baf719d7b550cbc8d7e31424b",
+            "file_sha256": "3a22659c02dba5854f466f6e1783d5ea3c356e495b4842bcf57899873a7b2ef0",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.FALSE_POSITIVE",
+            "fixture_id": "regulatory-applicability-router-false-positive",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/false_positive.json",
-            "file_sha256": "1285fd667ed1f6db02ff6cb971d00c305d9cd42c32c7dd2b1a88d2944681699f",
+            "file_sha256": "ed8b573d7a86d6b6f70eb6bc4c9bc2e160e5d6dc8853490a6aaa7f81c2be2537",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.HANDOFF",
+            "fixture_id": "regulatory-applicability-router-handoff",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/handoff.json",
-            "file_sha256": "3a93a34dceb3a6899daffebf621539f5196eb7fbf44d16cc993c6e4262857bc2",
+            "file_sha256": "2be4db3b21d62703010755a566307db3876b97b8b8c0c4286281e7d8ed257813",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.MISSING_CONTEXT",
+            "fixture_id": "regulatory-applicability-router-missing-context",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/missing_context.json",
-            "file_sha256": "c8b73a54eb52d3c894b64357061406af474de73fa5cb522353c843b1123fac93",
+            "file_sha256": "afa4a13f898e0f4528e9bc55bdaf4d3a47f1c9aaaad57fcf3b0f69d4c3dacd7f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.NARROWNESS",
+            "fixture_id": "regulatory-applicability-router-narrowness",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/narrowness.json",
-            "file_sha256": "1bbdd87e921839b7de26086f01bb7d58907e3723582b0b168eb54910a8e6c422",
+            "file_sha256": "4dfec5fbd966d4016b1e50c6d04a96b6f2da58175a599f53c1708d594428b640",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.ROUTER_SELF_ACCEPT",
+            "fixture_id": "regulatory-applicability-router-router-self-accept",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/router_self_accept.json",
-            "file_sha256": "28abcd30cbaf9ecc6869cfdc5976869c9054fd50a369a7c7519f1c8380d12255",
+            "file_sha256": "ba3ac30fdfd33144f4641bf26c3a0a16104212994ae8f8b50caa0c0cd97acb2d",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.ROUTING",
+            "fixture_id": "regulatory-applicability-router-routing",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/routing.json",
-            "file_sha256": "062c8c888ee850520bd390f32a7ad70b0275590bb75df96a064a20937d1722dd",
+            "file_sha256": "f03e48b8dc7f769f9753374a6ac4fb33e87e70df59a1cb435864da5934e3a7cc",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "regulatory-applicability-router-silent-scope-expansion",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "cd4f9c19ba19cd612df5f39e01fb4be134960d3028fd681b0192c45e33f5d6cb",
+            "file_sha256": "00e02f72557375dc9e20fa0054fce3c355b3f2823a9fe5f306af4272d9cb515d",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.STALE_SOURCE",
+            "fixture_id": "regulatory-applicability-router-stale-source",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/stale_source.json",
-            "file_sha256": "3639c569b360eeff9104707d64b28169a3791e5671074178cba236b244b1bc45",
+            "file_sha256": "c9b4855ca87f174a829a6b540c9014d86fd76c9e6ad3951f0c78316ada5e1b70",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.TOOL_LIMIT",
+            "fixture_id": "regulatory-applicability-router-tool-limit",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/tool_limit.json",
-            "file_sha256": "a32b5fedf95850fe0ad705111aaa3d2b07e60daede82439fcc63b5947abf6126",
+            "file_sha256": "5a1a2bddd2d5ad965df4c71a68c8aefac75afcd26df5b0512aea1415f3a33f0a",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.UMBRELLA_AUTHORITY",
+            "fixture_id": "regulatory-applicability-router-umbrella-authority",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/umbrella_authority.json",
-            "file_sha256": "9ce43a2d0d582f1a5c9ed272ca2af332e77d0afd198e4ce70d1200b469e6369a",
+            "file_sha256": "7641dab7f070840953be7727e9fc545e48fa7b7feb72b804fc0f7af14e693be1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.UNRELATED_SCOPE",
+            "fixture_id": "regulatory-applicability-router-unrelated-scope",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/unrelated_scope.json",
-            "file_sha256": "a9c7ff69b9de66f3d310059738796c9b9c723fab8af69a0a06208887f30d6a63",
+            "file_sha256": "706b3ee65f9523c07257c204d80ce71daf4cd7ad436b1e00f80accbc259f50da",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.regulatory.applicability-router.UNSAFE_ACTION",
+            "fixture_id": "regulatory-applicability-router-unsafe-action",
             "path": "specialist-blocks/wave-06/regulatory-applicability-router/fixtures/unsafe_action.json",
-            "file_sha256": "7cf4282ec6b4b10d13b4b548d66759fae5ba4e1165031a2d7dc558d028dd77a0",
+            "file_sha256": "b12fc10554162df19a3ca5bd6bb070408d4b3ea16654f4a28c8dee3d9e9b836f",
             "expected_outcome": "DENY"
           }
         ]
@@ -39644,17 +39644,17 @@
       "rank": 25,
       "stable_agent_id": "AGENT.PRIVACY_DATA_LIFECYCLE_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 26,
       "stable_agent_id": "AGENT.REGULATORY_APPLICABILITY_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 77.05,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 27,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "1e167275cedee6a21da79201718ed80d44d64cf85668db20dba9e2a10081b005"
+  "roster_sha256": "dcca9e3e30334483c3b0d356282092457c8b1119ee2402214397123197c75a38"
 }
