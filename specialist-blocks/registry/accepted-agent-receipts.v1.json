@@ -31,6 +31,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.CONTROL_RELEASE_MANAGER",
+      "package_path": "specialist-blocks/wave-04/release-manager",
+      "candidate_commit": "6e337cc579b3efc757329ad3d276b6f7bdbe0b36",
+      "candidate_tree": "e34ca610894a7851cd238984d332a9d324384112",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/6e337cc579b3efc757329ad3d276b6f7bdbe0b36",
+      "receipt_sha256": "37a0a00763976f0332965ed5e49807edb53913b3a1b1b7e856799b61a6020147",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "package_path": "specialist-blocks/wave-02/data-router",
       "candidate_commit": "ad8f1a84c673d00a6f000067f836731884dfcd51",
@@ -161,5 +171,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "f429c140f0518d38fac23ed30a78976098eda072ae5b238fb246049feffb46d7"
+  "ledger_sha256": "2c350bb05ddcf58478670ccbfc229fa12018de09fb65cf589d3d0dea02491f2a"
 }
