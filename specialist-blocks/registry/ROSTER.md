@@ -67,10 +67,11 @@ Desktop/Offline/Realtime Client Router, Product/Client Contract Router,
 Software Language/Runtime Router, Bootstrap/Project Initializer, Central
 Integrator, Release Manager, Worktree/Custody Manager, Assurance/Enterprise
 Router, Independent Auditor, AI/Search/RAG Router, Workflow Router,
-Accounting/Job-Cost Router, and Graphics/Industrial 3D Router are accepted from
-their exact independent receipts. The current queue item is
-`AGENT.PRIVACY_DATA_LIFECYCLE_ROUTER`; its package, gates, hostile vectors,
-model route, and local proof are next for one-at-a-time qualification.
+Accounting/Job-Cost Router, Graphics/Industrial 3D Router, and Privacy
+Data-Lifecycle Router are accepted from their exact independent receipts. The
+current queue item is `AGENT.REGULATORY_APPLICABILITY_ROUTER`; its package,
+gates, hostile vectors, model route, and local proof are next for one-at-a-time
+qualification.
 All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact

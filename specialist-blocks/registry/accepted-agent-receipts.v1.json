@@ -141,6 +141,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRIVACY_DATA_LIFECYCLE_ROUTER",
+      "package_path": "specialist-blocks/wave-03/data-lifecycle-router",
+      "candidate_commit": "f3a971799683d7779ac56a6bf2bbbb264ff155f3",
+      "candidate_tree": "775f6d99da973c3a6ba06e42dd3da48f41bb00c1",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/f3a971799683d7779ac56a6bf2bbbb264ff155f3",
+      "receipt_sha256": "5aebec2ea9363183ec143a51463fdb476658a5d5d1088cdc375404156ec4427e",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER",
       "package_path": "specialist-blocks/wave-05/desktop-offline-realtime-router",
       "candidate_commit": "9bb69747e917ad2987ac153d34c7e4d15ef2484d",
@@ -160,28 +170,28 @@
       "receipt_sha256": "df12755741d7fbacdb2d96accc15bec726a76cd184281aba23516dc7f2ff609b",
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
-  {
-    "stable_agent_id": "AGENT.SECURITY_ROUTER",
-    "package_path": "specialist-blocks/wave-02/security-router",
-    "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
+    {
+      "stable_agent_id": "AGENT.SECURITY_ROUTER",
+      "package_path": "specialist-blocks/wave-02/security-router",
+      "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
       "candidate_tree": "286772957d36e5a2762ef8102f0d9afac65ba784",
       "independent_status": "PASS",
       "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
       "receipt_sha256": "7947d53d5bba1bdf344314f9ada187d988f3e1b1f1dfa82b7d18d2e72ba6ff5f",
-    "readback_scope": "EXACT_RECEIPT_RETAINED"
-  },
-  {
-    "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER",
-    "package_path": "specialist-blocks/wave-02/software-language-runtime-router",
-    "candidate_commit": "e5a72a62f5006f550e494c0329ea54580d1ba5fd",
-    "candidate_tree": "b1386172802314e314271bc937aef8b39c474649",
-    "independent_status": "PASS",
-    "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/e5a72a62f5006f550e494c0329ea54580d1ba5fd",
-    "receipt_sha256": "5478f422d974e008444e607de23bc45e57dabb8db17cf7a0a30a0a2411b4b4b8",
-    "readback_scope": "EXACT_RECEIPT_RETAINED"
-  },
-  {
-    "stable_agent_id": "AGENTOS.MEMORY",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
+      "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER",
+      "package_path": "specialist-blocks/wave-02/software-language-runtime-router",
+      "candidate_commit": "e5a72a62f5006f550e494c0329ea54580d1ba5fd",
+      "candidate_tree": "b1386172802314e314271bc937aef8b39c474649",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/e5a72a62f5006f550e494c0329ea54580d1ba5fd",
+      "receipt_sha256": "5478f422d974e008444e607de23bc45e57dabb8db17cf7a0a30a0a2411b4b4b8",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
+      "stable_agent_id": "AGENTOS.MEMORY",
       "package_path": "specialist-blocks/wave-01/memory",
       "candidate_commit": "a51ff068c3369b66722c759958fade8b0523fdd3",
       "candidate_tree": "6bbd683d868d37d845a306e453e59243afa8139d",
@@ -241,5 +251,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "0c970ccedde1aff76358a9bdf092e5eda14b0277cfaa6f83197641ca5f6eeba5"
+  "ledger_sha256": "1a8acf8d52d607b12b0ff16d6e4774e2ab61642f283c708f08668b991266a13e"
 }
