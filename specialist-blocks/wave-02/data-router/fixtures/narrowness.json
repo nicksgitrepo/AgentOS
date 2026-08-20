@@ -1,9 +1,40 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.data.router.narrowness",
   "block_id": "specialist.data.router",
   "class": "narrowness",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/data-router-boundary-gate.mjs#evaluateDataRouterBoundary",
+    "input": {
+      "schema": "agentos.data_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_DATA_SIGNAL",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.DATA_ROUTER",
+        "custody_ref": "ref:DATA_ROUTER/BOUND",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "signal": "POSTGRES_RLS",
+        "target_ref": "specialist.data.postgresql-rls",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "CLASSIFY",
+        "requested_tools": [
+          "READ_SCHEMA"
+        ]
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "SPECIALIST_HANDOFF",
+      "error_code": "DATA_ROUTER_ROUTE_READY",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

@@ -1,9 +1,41 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.data.router.authority_conflict",
   "block_id": "specialist.data.router",
   "class": "authority_conflict",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/data-router-boundary-gate.mjs#evaluateDataRouterBoundary",
+    "input": {
+      "schema": "agentos.data_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_DATA_SIGNAL",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.DATA_ROUTER",
+        "custody_ref": "ref:DATA_ROUTER/BOUND",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "signal": "POSTGRES_RLS",
+        "target_ref": "specialist.data.postgresql-rls",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "CLASSIFY",
+        "requested_tools": [
+          "READ_SCHEMA"
+        ],
+        "authority_conflict": true
+      }
+    },
+    "expected_readback": {
+      "disposition": "ESCALATE",
+      "route": "CONTROL_PLANE_ESCALATION",
+      "error_code": "DATA_ROUTER_AUTHORITY_CONFLICT",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

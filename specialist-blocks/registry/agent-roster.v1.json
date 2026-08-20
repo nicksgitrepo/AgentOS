@@ -3706,105 +3706,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.data.router.AUTHORITY_CONFLICT",
+            "fixture_id": "specialist.data.router.authority_conflict",
             "path": "specialist-blocks/wave-02/data-router/fixtures/authority_conflict.json",
-            "file_sha256": "6e7a0a14dae8b577a686c79d4b5c445a4b72493cfee8a9349a20f6ac546ac749",
-            "expected_outcome": "DENY"
+            "file_sha256": "4ad68ddcd25d6ba12f418482f0a8a30348d34153e34154d790155bac1ea39f90",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.data.router.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "specialist.data.router.broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/data-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "5e7f72b0c53e49d3701e731dad193173d6138191a4410fa9883bac75ed0d33e0",
+            "file_sha256": "ce74fc0b751a7d88a2635a946204f808ee1cf57c853010ddcd1440b2d5db3f1f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "specialist.data.router.cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/data-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "8459cda46b3fcd338b9089d085c04355b784297b5b8a2af228c233158f9f8b2f",
+            "file_sha256": "cddb51ce205bb76af02a998d04ccef0339c1e8a91984a45ddb7c9743941ccd57",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.DATA_LIMIT",
+            "fixture_id": "specialist.data.router.data_limit",
             "path": "specialist-blocks/wave-02/data-router/fixtures/data_limit.json",
-            "file_sha256": "cc6629f055bf7b515ed7c6684116148c78780f57c1539a884ccd119998b5ebff",
+            "file_sha256": "576098387f60e8e6e56e41ae9476dc737ba09bf79af8ca16d57ddfce1ce438f8",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.router.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "specialist.data.router.duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/data-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "939400c4cbb1bb59b4e42e90e22143b8df7198fe44830ed215d33ad883a531fb",
+            "file_sha256": "344589bf8c6b1491c8949c361980a13fb4c50e6e69718f518afe797992a59e92",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.FALSE_POSITIVE",
+            "fixture_id": "specialist.data.router.false_positive",
             "path": "specialist-blocks/wave-02/data-router/fixtures/false_positive.json",
-            "file_sha256": "b4feca46c46b1d1ce26742eed15496b4fd69a4fafe558c040124005469f650b7",
+            "file_sha256": "cfacf53ca09ad80f2a9be9de61dd230fc99a39ef5b968ff5a03910607a85ba4c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.HANDOFF",
+            "fixture_id": "specialist.data.router.handoff",
             "path": "specialist-blocks/wave-02/data-router/fixtures/handoff.json",
-            "file_sha256": "578af2a486f170dad039acfb13a9716c4168dd38194720b0b1239a94f9adb9c3",
+            "file_sha256": "a121e74b4ed6b2a7321adc072b21327da5eeae08f569ab064df2652f9a962c7e",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.router.MISSING_CONTEXT",
+            "fixture_id": "specialist.data.router.missing_context",
             "path": "specialist-blocks/wave-02/data-router/fixtures/missing_context.json",
-            "file_sha256": "fe2ef8f4b9d5374d871cfe575e2d5eb28f67b6b7ddb49fe1948b9add68f04a30",
+            "file_sha256": "31c08e39d2a13a0948b6a835e3479e2b168a5446b04cc7653601825bcff73add",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.NARROWNESS",
+            "fixture_id": "specialist.data.router.narrowness",
             "path": "specialist-blocks/wave-02/data-router/fixtures/narrowness.json",
-            "file_sha256": "c0b4aac3ccd6a349723694425fe1d8c1d773f6627ed76cf3a1215ee47cae81b6",
+            "file_sha256": "5133c14f585b53e510f7699c962432a69572966d5d50d8883ac042049b1de722",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.router.ROUTER_SELF_ACCEPT",
+            "fixture_id": "specialist.data.router.router_self_accept",
             "path": "specialist-blocks/wave-02/data-router/fixtures/router_self_accept.json",
-            "file_sha256": "9d27c75f8cd47bc49bc10cbd6725515eaba4a138582ce6261df399754dffc136",
+            "file_sha256": "a29d520397812d083a9aa18138951925fb5babc91e07897d2922046a304353c5",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.ROUTING",
+            "fixture_id": "specialist.data.router.routing",
             "path": "specialist-blocks/wave-02/data-router/fixtures/routing.json",
-            "file_sha256": "3bb88aaae9933116d24c49f791c2e5e22ce1bb38279a8f128b2f55075b1b8595",
+            "file_sha256": "f7b6b0e53f7884f93501b83ce8527f00656e27e58f2c7364e67cd713a5ca549e",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.router.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "specialist.data.router.silent_scope_expansion",
             "path": "specialist-blocks/wave-02/data-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "665b76c46b06460c00289e4eeb49de82af23c9ded7077a1c06696b800fcd57fd",
+            "file_sha256": "938e859e97277827c383d6d71a5284363430d7e24527907ad2c6a7372738685a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.STALE_SOURCE",
+            "fixture_id": "specialist.data.router.stale_source",
             "path": "specialist-blocks/wave-02/data-router/fixtures/stale_source.json",
-            "file_sha256": "ce3f1ec4df0ec734b15a9e321e560b89890da9161a103ddf4ff878bb659989b6",
+            "file_sha256": "0801c1281d77e92ae6f978e06a2e5145f6974ab300d4ca15837b89fd09a4cc8b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.TOOL_LIMIT",
+            "fixture_id": "specialist.data.router.tool_limit",
             "path": "specialist-blocks/wave-02/data-router/fixtures/tool_limit.json",
-            "file_sha256": "c719b4257f917ecafdfa29052940dd4b7aeec7c85a6cf61c435c1624d4229107",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "a4758facf947d0153f2648c6c7e3c767329b51371ab167d05c9810c6ac0290d9",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.UMBRELLA_AUTHORITY",
+            "fixture_id": "specialist.data.router.umbrella_authority",
             "path": "specialist-blocks/wave-02/data-router/fixtures/umbrella_authority.json",
-            "file_sha256": "6369dc35dfd739fd0bc2545466d03f2eb2c5cf8764163153779d11b3c0630339",
+            "file_sha256": "05eb7602c4804c1463374fd5eed882ea0cf3587e34a97e7dfceb9feacd68970a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.UNRELATED_SCOPE",
+            "fixture_id": "specialist.data.router.unrelated_scope",
             "path": "specialist-blocks/wave-02/data-router/fixtures/unrelated_scope.json",
-            "file_sha256": "47b09b2b4f863a0b5e5dd8e7636592734611eb3feb0266447707afe23b9a1175",
+            "file_sha256": "572840952902e7ad86811e4e598c5636a865c17717358648a50412c5bc39a510",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.router.UNSAFE_ACTION",
+            "fixture_id": "specialist.data.router.unsafe_action",
             "path": "specialist-blocks/wave-02/data-router/fixtures/unsafe_action.json",
-            "file_sha256": "69b4f303fc1b6faffce507391f08b90d47b7e2cb56ec57cc5ac136cfb976fa87",
+            "file_sha256": "95305de01a0ec27a6e10086f11bfdf178bf38e30be1da99f62cec5d82d399092",
             "expected_outcome": "DENY"
           }
         ]
@@ -3817,7 +3817,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/data-router/handoff.json",
-        "handoff_file_sha256": "5928aadd615dd1080519a44cb9d7b4512dd88116169529c45c4a0753eb665f10",
+        "handoff_file_sha256": "e612229e88078dc88b29d3bd589ccedb34459b997f7c3026d65a7360da71f2a2",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.data-router.v1"
       },
@@ -25056,7 +25056,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/security-router/handoff.json",
-        "handoff_file_sha256": "a8d5eb791138aa286f7b3e63a7c49b48fe1657c790a15fc106e7d8a8dd92bc66",
+        "handoff_file_sha256": "0970f1669f2ccece159a7c3d9d53ace8379b08487e0e11b9ad513f55681c4131",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.security-router.v1"
       },
@@ -25103,9 +25103,9 @@
         "criticality": "CRITICAL",
         "reason": "PLATFORM_AGENTS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/security-router/evaluation.json"
@@ -39508,17 +39508,17 @@
       "rank": 8,
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 82.85,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 9,
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 80.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 10,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "4865dbb7b18d40f9437f2cd39538b1b35cf181005eda6b0c4b8ab153414e1319"
+  "roster_sha256": "7afbc358d579c7567759406060b26a958140c8c68092530ae0015a8db1fe653b"
 }
