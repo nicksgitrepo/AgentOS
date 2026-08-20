@@ -1,9 +1,95 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.security.supply-chain-router.BROAD_WHEN_NARROW_EXISTS",
   "block_id": "specialist.security.supply-chain-router",
   "class": "broad_when_narrow_exists",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable typed adversarial vector for Supply Chain routing; no project, consumer, secret, or provider data.",
+  "vector": {
+    "entrypoint": "control/supply-chain-router-boundary-gate.mjs#evaluateSupplyChainRouterBoundary",
+    "input": {
+      "schema": "agentos.supply_chain_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_SUPPLY_CHAIN",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "security_domain": "SUPPLY_CHAIN_SECURITY",
+        "control_identity": "CONTROL.SUPPLY_CHAIN_ROUTER",
+        "control_activity": "CLASSIFY_SUPPLY_CHAIN_APPLICABILITY",
+        "control_entity": "SOFTWARE_SUPPLY_CHAIN",
+        "control_scope": "VERSIONED_SUPPLY_CHAIN_APPLICABILITY",
+        "control_version": "1",
+        "policy_status": "CURRENT",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.SECURITY_SUPPLY_CHAIN",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-20",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "security_signal": "SEC.SECRETS_CRYPTO_SUPPLY_CHAIN",
+        "signal_status": "BOUND",
+        "task_status": "SUPPLY_CHAIN_CLASSIFICATION",
+        "context_status": "SUPPLY_CHAIN_ROUTER_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ROUTE",
+        "requested_tools": [
+          "READ_SUPPLY_CHAIN_SIGNAL",
+          "READ_SOURCE_LOCK",
+          "READ_SUPPLY_CHAIN_CATALOG",
+          "READ_CONTEXT",
+          "READ_APPLICABILITY_RULES"
+        ],
+        "required_block_identities": [
+          "BLOCK.SECURITY.AUTHORITY",
+          "BLOCK.SECURITY.EVIDENCE",
+          "BLOCK.SECURITY.SCOPE",
+          "BLOCK.SECURITY.CUSTODY",
+          "BLOCK.SECURITY.HANDOFF",
+          "BLOCK.SECURITY.ROUTER"
+        ],
+        "model_policy_status": "CURRENT",
+        "model_route_status": "BOUND",
+        "standard_edition": "1",
+        "verification_level": "BASELINE",
+        "applicability_status": "BOUND",
+        "authority_scope": "SUPPLY_CHAIN_SECURITY",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "verification_requested": false,
+        "acceptance_requested": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": true,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "SUPPLY_CHAIN_ROUTER_SCOPE_EXPANSION_FORBIDDEN",
+      "external_side_effects": {
+        "source_reads": 0,
+        "protected_data_reads": 0,
+        "verification_runs": 0,
+        "standard_mutations": 0,
+        "memory_writes": 0,
+        "acceptance_calls": 0,
+        "credential_accesses": 0,
+        "state_changes": 0
+      }
+    }
+  }
 }
