@@ -48,11 +48,12 @@ assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 19, CONTROL_PL
 
 for (const record of first.records) {
   const packageDir = record.packageDir;
+  const packageFixtureClasses = [...new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES, ...(record.block.evaluation?.fixture_classes ?? [])])];
   assert.equal(record.block.gate_pack.ordered_gate_ids.length, 12);
   assert.deepEqual(record.block.gate_pack.outcomes, GATE_OUTCOMES);
   assert.equal(fs.readdirSync(path.join(packageDir, "gates")).filter((name) => name.endsWith(".gate")).length, 12);
-  assert.equal(fs.readdirSync(path.join(packageDir, "fixtures")).length, CORE_EVALUATION_CLASSES.length + ATOMIC_EVALUATION_CLASSES.length);
-  assert.deepEqual(new Set(record.evaluation.cases.map((item) => item.class)), new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES]));
+  assert.equal(fs.readdirSync(path.join(packageDir, "fixtures")).length, packageFixtureClasses.length);
+  assert.deepEqual(new Set(record.evaluation.cases.map((item) => item.class)), new Set(packageFixtureClasses));
   if (record.block.role_kind === "STANDARD_BLOCK") {
     assert.equal(record.standard.requirements.block_id, record.block.block_id);
     assert.equal(record.block.source_manifest_sha256, record.sources.manifest_sha256);

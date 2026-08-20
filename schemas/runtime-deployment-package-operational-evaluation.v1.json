@@ -16,7 +16,7 @@
     "package_block_sha256": {"pattern": "^[0-9a-f]{64}$"},
     "gate_inventory_sha256": {"pattern": "^[0-9a-f]{64}$"},
     "fixture_inventory_sha256": {"pattern": "^[0-9a-f]{64}$"},
-    "fixture_results": {"type": "array", "minItems": 17, "maxItems": 17, "uniqueItems": true},
+    "fixture_results": {"type": "array", "minItems": 21, "maxItems": 21, "uniqueItems": true},
     "focused_suites": {"type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true},
     "mutation_sensitivity": {"type": "object", "additionalProperties": false, "required": ["status", "mutation_detected", "expected_disposition", "observed_disposition", "result_sha256"], "properties": {"status": {"const": "WEAKENED"}, "mutation_detected": {"const": true}, "expected_disposition": {"const": "DENY"}, "observed_disposition": {"const": "ROUTE"}, "result_sha256": {"pattern": "^[0-9a-f]{64}$"}}},
     "independent_signature_required": {"const": true},

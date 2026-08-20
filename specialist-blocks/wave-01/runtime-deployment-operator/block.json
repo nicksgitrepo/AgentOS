@@ -284,14 +284,18 @@
       "duplicate_sibling_authority",
       "false_positive",
       "handoff",
+      "missing_approval",
+      "missing_authority",
       "missing_context",
       "narrowness",
       "router_self_accept",
       "routing",
       "silent_scope_expansion",
+      "stale_authority",
       "stale_source",
       "tool_limit",
       "umbrella_authority",
+      "unbound_custody",
       "unrelated_scope",
       "unsafe_action"
     ]
@@ -306,5 +310,5 @@
     "edition_rule": "CONTROL_PLANE_REUSE_IS_BOUND_TO_BLOCK_REVISION_AND_CANDIDATE_DIGEST;_NO_STANDARD_EDITION_CLAIM",
     "freshness_rule": "REQUIRE_CURRENT_SOURCE_LOCK_AND_TYPED_RUNTIME_READBACK;_STALE_OR_SUPERSEDED_EVIDENCE_DENIES_DEPENDENT_ACTION"
   },
-  "block_sha256": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859"
+  "block_sha256": "48e34237e68c3d1a8a81092f933c8072b8e93dbeec07f097b3eaeb61869ac58e"
 }

@@ -1389,7 +1389,7 @@
     },
     "independent_specialist_evaluator_controller": {
       "path": "control/specialist-independent-evaluator.mjs",
-      "sha256": "83d106878fe5e24fb25f8af88d83e26baecaf136e6a9bf6f1b19fdeb189ad725"
+      "sha256": "4edb2387f8db56d65d41985db2f4f390c3fa22f5bd412798b014aef413b43a16"
     },
     "independent_specialist_evaluator_regression_recheck_verifier": {
       "path": "tests/verify-independent-evaluator-regression-recheck.mjs",
@@ -1397,7 +1397,7 @@
     },
     "independent_specialist_evaluator_verifier": {
       "path": "tests/verify-specialist-independent-evaluator.mjs",
-      "sha256": "cca83b41c606e6fcaa04986aef6f2cfc47e3c3ef887ec306c31add4f97a2619c"
+      "sha256": "2fa924f87cf0ced751d2ffa7169794fce14a23511e0478071d0509b30306e674"
     },
     "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_candidate_authority_v1_json": {
       "path": "tests/fixtures/independent-clearance/authority/candidate-authority.v1.json",
@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "066caa4bd52f48ec24f1bc9252051407ad8fd6bf9a40aecaf28d0097db2c3d2c"
+      "sha256": "14e42cfff29014d7549aa4353b4711862c17178eed7d3f60d06db03e7523a6bb"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3095,19 +3095,19 @@
     },
     "runtime_deployment_boundary_gate": {
       "path": "control/runtime-deployment-boundary-gate.mjs",
-      "sha256": "912926c0580515fef8ee951783d66405a2d4a3f19baa0ac1d998396467526ce6"
+      "sha256": "5832a158037c30cc03888ff6e92aec8456ba16653d3cba3401915839487c6541"
     },
     "runtime_deployment_package_operational_evaluation_contract": {
       "path": "schemas/runtime-deployment-package-operational-evaluation.v1.json",
-      "sha256": "62f58b1171f5da1c7030abc41e465095b74e0d9b28ef65ebb35c18d0e675350a"
+      "sha256": "c5554ede19fe96100131d7c15ebddc105ab8fd267c31cfb29dde74fa5f67dbd0"
     },
     "runtime_deployment_package_operational_evaluator": {
       "path": "control/runtime-deployment-package-evaluator.mjs",
-      "sha256": "cc544187e317794f30fb27619cc1dc6cbc80e5e3083d6d81ada4b9598a23065f"
+      "sha256": "1eb7b8b519cabb1de9a95bb08cbc0e10b4319fbd393cbd891bd763ddf4be2c7f"
     },
     "runtime_deployment_package_operational_evaluator_verifier": {
       "path": "tests/verify-runtime-deployment-package-evaluator.mjs",
-      "sha256": "60ce96e043cec081dc6c278d9a249e79eb4a2480c5fba714a9aef0e59b663543"
+      "sha256": "00839a5f9d356031fd870fe57636f4a17d0fccb22c2f840f08d391cc516ae2a8"
     }
   },
   "compatibility_only": {

@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.runtime-deployment-operator",
+  "fixture_id": "specialist.control.runtime-deployment-operator.UNBOUND_CUSTODY",
+  "class": "unbound_custody",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture: an unbound custody record cannot be treated as runtime evidence readiness.",
+  "vector": {"entrypoint":"control/runtime-deployment-boundary-gate.mjs#evaluateRuntimeDeploymentBoundary","input":{"schema":"agentos.runtime_deployment_boundary_input.v1","version":1,"request_kind":"RUNTIME_READINESS","evidence":{"artifact":{"identity":"ARTIFACT.RUNTIME.001","digest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","provenance_status":"VERIFIED","provider_identity":"AGENTOS_LOCAL","version":"1.0.0"},"authority":{"status":"CURRENT","owner_approval":"BOUND","source_status":"CURRENT"},"custody":{"status":"UNBOUND","ref":"opaque:CUSTODY.RUNTIME.001","owner":"AGENTOS.RUNTIME"},"runtime_target":"TARGET.SYNTHETIC","scope":"RUNTIME_EVIDENCE_ONLY","source_lock":{"status":"CURRENT","identity":"SOURCE.RUNTIME.001","version":"1"}}},"expected_readback":{"disposition":"DENY","route":"CUSTODY_BINDING_REQUIRED","error_code":"RUNTIME_CUSTODY_UNBOUND","zero_side_effects":true}}
+}

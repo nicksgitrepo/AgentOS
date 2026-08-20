@@ -81,6 +81,9 @@ export function evaluateRuntimeDeploymentBoundary(input) {
   if (evidence.tool_mode === "WRITE" || evidence.requested_tools?.some((tool) => /(?:deploy|rollback|migrate|publish|activate|credential|provider)/iu.test(tool))) return result("DENY", "READ_ONLY_TOOLS_REQUIRED", "RUNTIME_TOOL_SCOPE_FORBIDDEN", input);
   const missing = missingEvidence(input);
   if (missing.length) return result("DENY", "TYPED_CONTEXT_REQUIRED", "RUNTIME_CONTEXT_INCOMPLETE", input, {missing_fields: missing});
+  if (evidence.authority.status !== "CURRENT" || evidence.authority.source_status !== "CURRENT") return result("DENY", "AUTHORITY_REFRESH_REQUIRED", "RUNTIME_AUTHORITY_UNVERIFIED", input);
+  if (evidence.authority.owner_approval !== "BOUND") return result("DENY", "APPROVAL_REQUIRED", "RUNTIME_APPROVAL_REQUIRED", input);
+  if (evidence.custody.status !== "BOUND") return result("DENY", "CUSTODY_BINDING_REQUIRED", "RUNTIME_CUSTODY_UNBOUND", input);
   if (evidence.source_lock?.status !== "CURRENT") return result("DENY", "SOURCE_REFRESH_REQUIRED", "RUNTIME_SOURCE_STALE_OR_UNVERIFIED", input);
   if (evidence.artifact?.provenance_status !== "VERIFIED") return result("DENY", "PROVENANCE_REFRESH_REQUIRED", "RUNTIME_PROVENANCE_UNVERIFIED", input);
   if (!EVIDENCE_ACTIONS.has(input.request_kind)) return result("DENY", "TYPED_CONTEXT_REQUIRED", "RUNTIME_REQUEST_NOT_EVIDENCE_PREPARATION", input);

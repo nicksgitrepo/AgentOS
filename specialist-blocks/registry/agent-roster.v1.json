@@ -29125,6 +29125,18 @@
             "expected_outcome": "ROUTE"
           },
           {
+            "fixture_id": "specialist.control.runtime-deployment-operator.MISSING_APPROVAL",
+            "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/missing_approval.json",
+            "file_sha256": "8e7bb97a0f0d4c3d8a6f65024ab9b615ebf1e8fd7357d5353e329beea6711955",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.runtime-deployment-operator.MISSING_AUTHORITY",
+            "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/missing_authority.json",
+            "file_sha256": "bc7e0360370fdfc6a55d37f77b74ea2a360bf0db24b29d4996efc8ceb61ba287",
+            "expected_outcome": "DENY"
+          },
+          {
             "fixture_id": "specialist.control.runtime-deployment-operator.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/missing_context.json",
             "file_sha256": "35f341ae635a45014f89be6ba73f49747d746e061ccdf6157138cad9a2d6c8e4",
@@ -29155,6 +29167,12 @@
             "expected_outcome": "DENY"
           },
           {
+            "fixture_id": "specialist.control.runtime-deployment-operator.STALE_AUTHORITY",
+            "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/stale_authority.json",
+            "file_sha256": "b4baf86ab8c1b79656fb8169b5b74c4a590ecfcd26b412b9bb09e38844ae2a13",
+            "expected_outcome": "DENY"
+          },
+          {
             "fixture_id": "specialist.control.runtime-deployment-operator.STALE_SOURCE",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/stale_source.json",
             "file_sha256": "8c3da58a1278133a98cd089e7b5b7f2a3200227b4ef5f7d48a53154eb048730e",
@@ -29170,6 +29188,12 @@
             "fixture_id": "specialist.control.runtime-deployment-operator.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/umbrella_authority.json",
             "file_sha256": "b8d07952d51987046d7223517e942f9a3827df391bf66bef75e50e1479facbee",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.runtime-deployment-operator.UNBOUND_CUSTODY",
+            "path": "specialist-blocks/wave-01/runtime-deployment-operator/fixtures/unbound_custody.json",
+            "file_sha256": "29c35055d3f7fb7416cfc6bf1f7ecba62c3d3f71d0eb47799f8001dfa50318c9",
             "expected_outcome": "DENY"
           },
           {
@@ -29194,7 +29218,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-01/runtime-deployment-operator/handoff.json",
-        "handoff_file_sha256": "4aad0509753b2c7fe691811edbe1ebccf5b195ab426b00526bda2aa75c105060",
+        "handoff_file_sha256": "90f7dd623d8635b07b01328f209532e36d6df923636d30324bb7c9aaeb2aff70",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.runtime-deployment-operator.v1"
       },
@@ -39983,5 +40007,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "b170aa4747b1552ae45bcc3af9858248b468a5f4b4836e2c1317f5e63ac9ae5c"
+  "roster_sha256": "209157e75f77279688ebcfcb1baf40da0a25852d4ae9ce934c55f921fb2a33ac"
 }

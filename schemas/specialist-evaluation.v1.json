@@ -21,7 +21,7 @@
         "required": ["case_id", "class", "expected", "observed"],
         "properties": {
           "case_id": {"type": "string", "minLength": 1},
-          "class": {"enum": ["narrowness", "routing", "missing_context", "stale_source", "authority_conflict", "tool_limit", "data_limit", "false_positive", "unsafe_action", "handoff", "umbrella_authority", "unrelated_scope", "silent_scope_expansion", "duplicate_sibling_authority", "router_self_accept", "broad_when_narrow_exists", "cross_provider_version_claim"]},
+          "class": {"enum": ["narrowness", "routing", "missing_context", "stale_source", "authority_conflict", "tool_limit", "data_limit", "false_positive", "unsafe_action", "handoff", "umbrella_authority", "unrelated_scope", "silent_scope_expansion", "duplicate_sibling_authority", "router_self_accept", "broad_when_narrow_exists", "cross_provider_version_claim", "missing_approval", "missing_authority", "stale_authority", "unbound_custody"]},
           "expected": {"enum": ["ROUTE", "DENY", "ESCALATE"]},
           "observed": {"enum": ["PASS", "FAIL", "PENDING"]}
         }

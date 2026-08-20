@@ -38,10 +38,10 @@ function digestResult(value) { return canonicalDigest({...value, result_sha256: 
 function readJson(file) { assert(fs.existsSync(file), `${file} is missing`, "RUNTIME_PACKAGE_FILE_MISSING"); return JSON.parse(fs.readFileSync(file, "utf8")); }
 function readBytes(file) { assert(fs.existsSync(file), `${file} is missing`, "RUNTIME_PACKAGE_FILE_MISSING"); return fs.readFileSync(file); }
 
-function readFixtureMap() {
+function readFixtureMap(expectedClasses) {
   const fixtureRoot = path.join(ROOT, PACKAGE_RELATIVE, "fixtures");
   const files = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
-  assert(files.length === 17 && new Set(files).size === 17, "Runtime hostile fixture inventory is not exact", "RUNTIME_FIXTURE_INVENTORY_INVALID");
+  assert(files.length === expectedClasses.length && new Set(files).size === expectedClasses.length, "Runtime hostile fixture inventory is not exact", "RUNTIME_FIXTURE_INVENTORY_INVALID");
   const map = new Map();
   for (const name of files) {
     const bytes = readBytes(path.join(fixtureRoot, name));
@@ -52,6 +52,7 @@ function readFixtureMap() {
     assert(!map.has(fixture.fixture_id), `Duplicate Runtime fixture ${name}`, "RUNTIME_FIXTURE_ALIAS");
     map.set(fixture.fixture_id, {fixture, file_sha256: rawSha256(bytes), relative_path: `${PACKAGE_RELATIVE}/fixtures/${name}`});
   }
+  assert([...map.values()].map(({fixture}) => fixture.class).sort().join("\0") === expectedClasses.slice().sort().join("\0"), "Runtime fixture classes do not match the canonical package inventory", "RUNTIME_FIXTURE_CLASS_INVENTORY_INVALID");
   return map;
 }
 
@@ -96,7 +97,8 @@ export async function evaluateRuntimeDeploymentPackage() {
   const files = packageFiles(packageRoot);
   const fileDigests = files.map((relativePath) => ({relative_path: `${PACKAGE_RELATIVE}/${relativePath}`, sha256: rawSha256(readBytes(path.join(packageRoot, relativePath)))}));
   assert(files.filter((file) => file.startsWith("gates/") && file.endsWith(".gate")).length === 12, "Runtime gate inventory is incomplete", "RUNTIME_GATE_INVENTORY_INVALID");
-  const fixtures = readFixtureMap();
+  const expectedFixtureClasses = Array.isArray(block.evaluation?.fixture_classes) ? block.evaluation.fixture_classes : [];
+  const fixtures = readFixtureMap(expectedFixtureClasses);
   const results = [];
   for (const fixtureInfo of [...fixtures.values()].sort((left, right) => left.fixture.fixture_id.localeCompare(right.fixture.fixture_id))) {
     const fixture = fixtureInfo.fixture; const expected = fixture.vector.expected_readback; const started = Date.now();
@@ -126,4 +128,3 @@ export async function evaluateRuntimeDeploymentPackage() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write(`${JSON.stringify(await evaluateRuntimeDeploymentPackage(), null, 2)}\n`);
-

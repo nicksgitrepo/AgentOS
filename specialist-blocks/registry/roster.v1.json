@@ -734,7 +734,7 @@
     },
     {
       "block_id": "specialist.control.runtime-deployment-operator",
-      "candidate_digest": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859",
+      "candidate_digest": "48e34237e68c3d1a8a81092f933c8072b8e93dbeec07f097b3eaeb61869ac58e",
       "role_kind": "CONTROL_PLANE",
       "atomic_scope_statement": "Control-plane evidence preparation for runtime/deployment readiness and rollback custody; this block never executes or authorizes the runtime action.",
       "permitted_decisions": [
@@ -7175,5 +7175,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "1b7f6f7690e2888c3dd744905d785ce74992e89a08c179c34519b55a7abf9200"
+  "roster_sha256": "d84440366c8adba6204b6700444c1f50ffeb3af698b9de5b9bedf1e73220660a"
 }
