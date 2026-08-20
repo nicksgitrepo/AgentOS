@@ -8995,103 +8995,103 @@
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/authority_conflict.json",
-            "file_sha256": "892e0730fdd8bdc5b7a7620d3380fccfd5fe96053a94d756246795b0b2c1c9b5",
-            "expected_outcome": "DENY"
+            "file_sha256": "2d410247b5a52ddf4a772ef65fc0ecb85a4244142ea619b4cf13d474c038f7b7",
+            "expected_outcome": "ESCALATE"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "0e9149d7b248d943f38a146d6d3b4f7a2a43ee71de3b3e9174ed6e8824b1a0eb",
+            "file_sha256": "235e5e7f1d1688cb2fba7320d992475d657d0d5c4f158c3a49e26d431144f895",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "8a9129e5dc631aacce061b9d41996bf1ec9cbd85a05fa7cb1a2e9671fa15cfd6",
+            "file_sha256": "40637d3d0ecc67bf75612284366fbea77e97e11ae5e3df741a3d90d731ac395b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.DATA_LIMIT",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/data_limit.json",
-            "file_sha256": "1957f907301d48f11ddb9e28e78cdb5164c1fdb6b1d25c7fd33ce858ef99c94f",
+            "file_sha256": "d16e4b55523825a6fffc41e1c680437a0d396124a01bb33773e79584cec72f9e",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "fde158e1ed34cec0278f26d4298675325e671cbbb11be35816fd85a0499a944e",
+            "file_sha256": "54d26379d7aad43edd77747451258434b315eb4c27f2578233ba5f7f32e29533",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/false_positive.json",
-            "file_sha256": "4026ba6b578ffaba372290beec6a8b617beb29898a276e66a8fe9b0a3321a174",
+            "file_sha256": "dffca885b06c83d11a786a4f69cff207e687abf7b8e2a82b9efe06ef0c5a4d5b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.HANDOFF",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/handoff.json",
-            "file_sha256": "04e8ef8e6a1cc532da247edef4122104d3199a88681831e020671d18fad7ae57",
+            "file_sha256": "7b879a6b89f7353b76152c8569aec291275948370b4055096963c88fea6539e6",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/missing_context.json",
-            "file_sha256": "e41d81bdfa3f9e36bdbb4410df32803c1c58a519f71c48cfa9e9b525bcd4144a",
+            "file_sha256": "13ed2f6e1b045c1c0286bfc13d323ce58b7a467509a294573153bef83a2321f6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.NARROWNESS",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/narrowness.json",
-            "file_sha256": "075660fa0da59b9ce6d52982cf59b64057b35c649840c0354cfa38437c390968",
+            "file_sha256": "01c25e0d4d324df82495e30b7f952b5ca9d3fe0e4dbffd8b4a5426c9884cc8e7",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/router_self_accept.json",
-            "file_sha256": "050db451c1ce33072c489a599d73240e8f536f1833093eb8edec453f4d57dbfd",
+            "file_sha256": "3601bf8d922c1ebb2497b650b4548cbe92042eedefa96b724698517778e1844c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.ROUTING",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/routing.json",
-            "file_sha256": "c1ca95e61e86ef57085492c89da5fbe17519404aae944a1e46f8e60e3acc7b9a",
+            "file_sha256": "8f22e39fc9f0187c9a57c87735242ba5bd414cc643be5cdb0d2ebd0ede7ec967",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "73eb755f2c18a60d14249a04bdfb376954aeb9c66cd550d57fad9bd37cff607e",
+            "file_sha256": "a0367bc4b5592485e5cdd09aa731f9587282b4615a451e96f8b4b7f3cc1ba320",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.STALE_SOURCE",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/stale_source.json",
-            "file_sha256": "5df25896243d5f27865738d06e430a514c43f8dff3ee7aa9e4c411b34c571034",
+            "file_sha256": "d046d97e5f42fdf5e034614a50b38dbe0e5bbde9016a2ed56cf607a851263334",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.TOOL_LIMIT",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/tool_limit.json",
-            "file_sha256": "06049c34701e8d63174596eb668410591849e1234c62f6c05b085e9094b28d58",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "0dca2352540816e1a4dde236cfae3c39e8cc323cb878b780403aa4257bb00262",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/umbrella_authority.json",
-            "file_sha256": "390c1454fb741a0c2cf9a31ae6fb60e2eb9c7f43fc7784914e080c9998793f1f",
+            "file_sha256": "d65e1a346fdecf7df3beb99a15ed2bd31f9efa9c12ca9efa39aeae181238a8df",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/unrelated_scope.json",
-            "file_sha256": "89e0130af728bfe611aa7757fc3babe6e365e6192b6c35fbe1441a32c0776921",
+            "file_sha256": "1d3755fad7dd0c6f1a1e092c64560195b77af7dad359b458abcdfe40a7a89db8",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.desktop-offline-realtime-router.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/fixtures/unsafe_action.json",
-            "file_sha256": "80023702c6d91496e5b831c841ba714bc55dc1979e5eafbd8a8f0e83e1265e41",
+            "file_sha256": "d688398055c4f4b5fbd1914f268fef195adcc1a43de0e53fed6dbffaee4ad7a3",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "331f28b4746ae55de87ad47d8175a9cb3a0112f62b02195343acae2577b22292"
+  "roster_sha256": "0594f6e9d671c5012a1fa3f81457e62a80d218d7aab2d3ac224068e7e4c72f2b"
 }

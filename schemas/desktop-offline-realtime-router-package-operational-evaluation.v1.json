@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/desktop-offline-realtime-router-package-operational-evaluation.v1.json",
+  "title": "AgentOS Desktop Offline Realtime Client Router Operational Evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "block_id", "package_root_sha256", "package_block_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "fixture_results", "mutation_sensitivity", "independent_signature_required", "observed_at_utc", "evaluation_sha256"],
+  "properties": {"schema": {"const": "agentos.specialist_desktop_offline_realtime_router_package_operational_evaluation.v1"}, "version": {"const": 1}, "status": {"const": "PASS"}, "block_id": {"const": "specialist.product-client.desktop-offline-realtime-router"}, "package_root_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "package_block_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "gate_inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "fixture_inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "fixture_results": {"type": "array", "minItems": 17}, "mutation_sensitivity": {"type": "object", "required": ["status", "mutation_detected"], "properties": {"status": {"const": "WEAKENED"}, "mutation_detected": {"const": true}}}, "independent_signature_required": {"const": true}, "observed_at_utc": {"type": "string", "format": "date-time"}, "evaluation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "d83a9dfb2fa54138e560bfbcb56ff0a682b7f136ebc867fb2aa262ea82242f58"
+      "sha256": "5bb5c81fb4715754a71d93c175ae14e17239e4741fbddedfd56ef7a5ea0cccc8"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3276,6 +3276,34 @@
     "provider_edge_router_candidate_handoff": {
       "path": "specialist-blocks/wave-02/provider-edge-router/handoff.json",
       "sha256": "6c88a092dcc5c4e117e354e10749c8a1db09dbef2454c4fffa5a0ea226094fb3"
+    },
+    "desktop_offline_realtime_router_boundary_gate": {
+      "path": "control/desktop-offline-realtime-router-boundary-gate.mjs",
+      "sha256": "7cdad47fcacdac64547f9099eae63737df6b88f5e56e2a5cf87f052e38f60f6c"
+    },
+    "desktop_offline_realtime_router_boundary_input_contract": {
+      "path": "schemas/desktop-offline-realtime-router-boundary-input.v1.json",
+      "sha256": "aa34bf265097f84c47eca3316c9e18e418cc1d887f2b1c6efab280429838c908"
+    },
+    "desktop_offline_realtime_router_boundary_result_contract": {
+      "path": "schemas/desktop-offline-realtime-router-boundary-result.v1.json",
+      "sha256": "d6ed1e35c465b4df47287c5562a0810eceb2ac5003428741899347209ae205b6"
+    },
+    "desktop_offline_realtime_router_package_operational_evaluation_contract": {
+      "path": "schemas/desktop-offline-realtime-router-package-operational-evaluation.v1.json",
+      "sha256": "061ee262ce85df6b3a974109f36f6cf361ff65b75f41f68ed9a8283d71e2d9ee"
+    },
+    "desktop_offline_realtime_router_package_operational_evaluator": {
+      "path": "control/desktop-offline-realtime-router-package-evaluator.mjs",
+      "sha256": "2d6785205ae64637ace950054d014af5520f58d2f592cf9b5767357b96c109c6"
+    },
+    "desktop_offline_realtime_router_boundary_verifier": {
+      "path": "tests/verify-desktop-offline-realtime-router-boundary.mjs",
+      "sha256": "d70c6c7395126dcceaaae48aed5b7685a2b9441cd1aef51c8918e801aa45e3db"
+    },
+    "desktop_offline_realtime_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/handoff.json",
+      "sha256": "79f7191bcd523402109c970acdf1ee45bc8a354d3a78e11017ba6efd794d8075"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",
