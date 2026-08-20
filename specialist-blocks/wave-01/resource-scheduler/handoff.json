@@ -5,8 +5,8 @@
   "block_id": "specialist.control.resource-scheduler",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87",
-  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
-  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "source_commit": "373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
+  "source_tree": "9bd8881ca7ef4fb6cffc795bdf352b655f050423",
   "changed_paths": [
     "specialist-blocks/wave-01/resource-scheduler/block.json",
     "specialist-blocks/wave-01/resource-scheduler/evaluation.json",
@@ -47,6 +47,9 @@
     "12-gate-pack-digests",
     "block-schema-and-digest",
     "hostile-fixture-catalog",
+    "real-boundary-execution",
+    "zero-resource-side-effect-spies",
+    "mutation-sensitivity-proof",
     "independent-reviewer-required",
     "reuse-contract",
     "source-lock-digest"

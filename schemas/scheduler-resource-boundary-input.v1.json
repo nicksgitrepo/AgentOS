@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/scheduler-resource-boundary-input.v1.json",
+  "title": "AgentOS Scheduler resource boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.scheduler_resource_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"enum": ["RESOURCE_ADMISSION", "RESOURCE_PRESSURE", "RESOURCE_ROUTING", "NOT_APPLICABLE", "UNRELATED_REQUEST", "ALLOCATE", "THROTTLE", "EVICT", "EXECUTE", "DEPLOY"]},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "authority": {"type": "object", "additionalProperties": false, "properties": {"status": {"type": "string"}, "source_status": {"type": "string"}}},
+        "custody": {"type": "object", "additionalProperties": false, "properties": {"status": {"type": "string"}, "ref": {"type": "string"}, "owner": {"type": "string"}}},
+        "resource": {"type": "object", "additionalProperties": false, "properties": {"identity": {"type": "string"}, "unit": {"type": "string"}, "observed_value": {"type": "number"}, "capacity": {"type": "number"}, "window": {"type": "string"}}},
+        "source_lock": {"type": "object", "additionalProperties": false, "properties": {"status": {"type": "string"}, "identity": {"type": "string"}, "version": {"type": "string"}}},
+        "requested_action": {"type": "string"},
+        "signals": {"type": "array", "maxItems": 16, "items": {"type": "string"}},
+        "scope": {"type": "string"},
+        "provider_claim": {"type": "string"},
+        "data_class": {"type": "string"},
+        "authority_scope": {"type": "string"},
+        "sibling_authorities": {"type": "array", "maxItems": 8, "items": {"type": "string"}},
+        "self_acceptance": {"type": "boolean"},
+        "scope_expanded": {"type": "boolean"},
+        "authority_conflict": {"type": "boolean"},
+        "tool_mode": {"type": "string"},
+        "requested_tools": {"type": "array", "maxItems": 8, "items": {"type": "string"}}
+      }
+    }
+  }
+}

@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.MISSING_CONTEXT",
   "class": "missing_context",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request omits resource identity, unit, and requested action."
+  "note": "Synthetic request omits resource identity, unit, and requested action.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_ADMISSION","evidence":{"scope":"RESOURCE_ONLY"}},"expected_readback":{"disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"SCHEDULER_CONTEXT_INCOMPLETE","zero_side_effects":true}}
 }

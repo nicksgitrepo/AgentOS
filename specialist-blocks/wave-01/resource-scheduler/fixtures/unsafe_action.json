@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.UNSAFE_ACTION",
   "class": "unsafe_action",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request asks to execute, kill, throttle, or otherwise change external resource state."
+  "note": "Synthetic request asks to execute, kill, throttle, or otherwise change external resource state.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"THROTTLE","evidence":{}},"expected_readback":{"disposition":"DENY","route":"NO_EXTERNAL_STATE_CHANGE","error_code":"SCHEDULER_EXTERNAL_STATE_FORBIDDEN","zero_side_effects":true}}
 }

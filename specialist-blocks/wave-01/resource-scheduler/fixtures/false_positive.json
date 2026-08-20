@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.FALSE_POSITIVE",
   "class": "false_positive",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request mentions capacity but contains no resource-admission or pressure classification condition."
+  "note": "Synthetic request mentions capacity but contains no resource-admission or pressure classification condition.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{"scope":"UNRELATED"}},"expected_readback":{"disposition":"DENY","route":"NO_RESOURCE_SCOPE","error_code":"SCHEDULER_SCOPE_NOT_APPLICABLE","zero_side_effects":true}}
 }

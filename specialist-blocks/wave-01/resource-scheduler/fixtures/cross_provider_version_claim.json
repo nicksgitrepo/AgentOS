@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.CROSS_PROVIDER_VERSION_CLAIM",
   "class": "cross_provider_version_claim",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic evidence transfers a resource limit claim across unnamed providers and versions without applicability."
+  "note": "Synthetic evidence transfers a resource limit claim across unnamed providers and versions without applicability.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_ADMISSION","evidence":{"authority":{"status":"CURRENT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.CPU","unit":"PERCENT","observed_value":70,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT","identity":"SOURCE.PSI","version":"1"},"requested_action":"CLASSIFY_ADMISSION","signals":["RESOURCE.CAPACITY"],"scope":"RESOURCE_ONLY","provider_claim":"UNBOUND"}},"expected_readback":{"disposition":"DENY","route":"APPLICABILITY_REQUIRED","error_code":"SCHEDULER_PROVIDER_VERSION_UNBOUND","zero_side_effects":true}}
 }

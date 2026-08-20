@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.BROAD_WHEN_NARROW_EXISTS",
   "class": "broad_when_narrow_exists",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request asks for general operations authority when only a typed pressure classification is in scope."
+  "note": "Synthetic request asks for general operations authority when only a typed pressure classification is in scope.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_PRESSURE","evidence":{"authority":{"status":"CURRENT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.CPU","unit":"PERCENT","observed_value":70,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT","identity":"SOURCE.PSI","version":"1"},"requested_action":"CLASSIFY_PRESSURE","signals":["RESOURCE.PRESSURE"],"scope":"BROAD"}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"SCHEDULER_SCOPE_EXPANSION_FORBIDDEN","zero_side_effects":true}}
 }
