@@ -28,7 +28,7 @@
     {
       "case_id": "search-router-data_limit",
       "class": "data_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {

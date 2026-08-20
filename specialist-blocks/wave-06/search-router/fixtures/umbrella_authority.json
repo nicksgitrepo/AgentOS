@@ -5,5 +5,6 @@
   "class": "umbrella_authority",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {"entrypoint": "control/ai-search-router-boundary-gate.mjs#evaluateAiSearchRouterBoundary", "request_kind": "CLASSIFY_SEARCH_SIGNAL", "adversarial_flags": {"broad_claim": true}, "expected_readback": {"route": "NARROW_SCOPE_REQUIRED", "error_code": "AI_SEARCH_ROUTER_SCOPE_EXPANSION_FORBIDDEN"}}
 }
