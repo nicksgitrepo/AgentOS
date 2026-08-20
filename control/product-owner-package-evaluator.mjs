@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {createHash} from "node:crypto";
 import {pathToFileURL} from "node:url";
 import {canonicalDigest} from "./content-addressing.mjs";
 import {inspectCanonicalPermanentRoleCandidate} from "./permanent-role-governed-admission.mjs";
@@ -16,6 +17,7 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 function fail(message, code = "PRODUCT_OWNER_PACKAGE_EVALUATION_INVALID") { const error = new Error(message); error.code = code; throw error; }
 function assert(value, message, code) { if (!value) fail(message, code); }
 function digestResult(value) { return canonicalDigest({...value, result_sha256: null}); }
+function rawSha256(bytes) { return createHash("sha256").update(bytes).digest("hex"); }
 function readFixtureMap() {
   const fixtureRoot = path.join(ROOT, "specialist-blocks/wave-01/product-owner/fixtures");
   const files = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
@@ -25,7 +27,7 @@ function readFixtureMap() {
     const bytes = fs.readFileSync(path.join(fixtureRoot, name));
     const fixture = JSON.parse(bytes);
     assert(typeof fixture.fixture_id === "string" && !map.has(fixture.fixture_id), `Duplicate Product Owner fixture: ${name}`, "PRODUCT_OWNER_FIXTURE_ALIAS");
-    map.set(fixture.fixture_id, {fixture, file_sha256: canonicalDigest(bytes.toString("utf8"))});
+    map.set(fixture.fixture_id, {fixture, file_sha256: rawSha256(bytes)});
   }
   return map;
 }

@@ -1955,7 +1955,7 @@
     },
     "product_owner_package_evaluator": {
       "path": "control/product-owner-package-evaluator.mjs",
-      "sha256": "729cc69b4b2964f1d956a08b1f43b0ce8de669344edceed6d96d03c5dbb9e1a5"
+      "sha256": "6f9890ef66ebcc05dd2a569eabe4558e29297b2eb169bc8d2f64d9c9017ca6c1"
     },
     "product_owner_package_evaluator_verifier": {
       "path": "tests/verify-product-owner-package-evaluator.mjs",
