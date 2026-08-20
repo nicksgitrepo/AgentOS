@@ -4569,7 +4569,7 @@
     },
     "cve_inventory_boundary_input_contract": {
       "path": "schemas/cve-inventory-boundary-input.v1.json",
-      "sha256": "ee633e2ac88ed6e52948b1c5127d0212f7fe64b93c9e68efc743ce67875c8562"
+      "sha256": "593f46c946b11d61d68acdd23e8ab07eb86701dfa3ad2a9f8bba6a0868c7d5d3"
     },
     "cve_inventory_boundary_result_contract": {
       "path": "schemas/cve-inventory-boundary-result.v1.json",
