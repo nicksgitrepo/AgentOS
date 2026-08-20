@@ -29422,103 +29422,103 @@
           {
             "fixture_id": "specialist.control.resource-scheduler.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/authority_conflict.json",
-            "file_sha256": "d02caf879419cc0165b39163753fe2471deb04734e5cc0d6dd2971d59cdd3a5c",
+            "file_sha256": "c27cb4d85daf959186b32ed20c1811d35df10e522b21a2185ee4894e7c343492",
             "expected_outcome": "ESCALATE"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "affd4df70f2d378cae35aeb38817842fc70a2aaa3017e32349092f12211c4669",
+            "file_sha256": "b870fcc7a84a4555defe93c39e0e56003594fecc5c97c14051136a48427376a6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "53291f79185e9d55349211fc17d63329b8df7ce42f7cf70befcf5cfc68a69f30",
+            "file_sha256": "0cc1bc792e97bd3841f943ea39477c8550b52437d3e8d05b17079b19e0e1e199",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.DATA_LIMIT",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/data_limit.json",
-            "file_sha256": "692e0a8b2bd071591e79b4c503e19a8d1cd555373519a5ddb477065cf375bd0d",
+            "file_sha256": "a5a982e8f7f8bccfb093e2ee2a6ea8aca8db32da9c9fa21983c774eb9a1a7ce1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "e0284dc5bccfcfcf9e9b847a4385d7de7bf015f67a2d27bd02b9f956acf3c15a",
+            "file_sha256": "4e357696becdc748cf6a58a8f5ba43d20166e02f18e4340781d40800ec160881",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/false_positive.json",
-            "file_sha256": "798062b4fa2f097a4ca84a810237106dae85ff100703d065f040977c0a03d229",
+            "file_sha256": "fad66a5ff99eb9a42f7b67d93b2e22aad7b530760a41b353fe596faf2ff0b160",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.HANDOFF",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/handoff.json",
-            "file_sha256": "b9d13f6b574fa8ad47fce518fdf7795fabc0dee2515f7aba1fa9e330a0688c08",
+            "file_sha256": "23b28a58fbf887e7582d2f7956865f8d504d8c67e4a065b903c39b1ac28c8a5f",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/missing_context.json",
-            "file_sha256": "74fecbdb5b902713b1624b6495daebd89933fd5d0f44c0b9d761c922a3ef692d",
+            "file_sha256": "f31ebd2394887612238966e72bd59e29bc750a3789f4a7a8df4ccd4908c52313",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.NARROWNESS",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/narrowness.json",
-            "file_sha256": "c5e988f7495325d6e4e6830489768b4c6a70d34b50dbc0f62f8903880c47f440",
+            "file_sha256": "085aaa9cb636e26516e6f3d0eded72c1c96cdd2bf0c0b873a7238b7665abec97",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/router_self_accept.json",
-            "file_sha256": "9dff298ce885effa68677c2d2e402bec171affc26cd866bbd3f727ae256e0233",
+            "file_sha256": "11d6bb15bfa7ddf2469195577140d6cdc525135b5047c840375e47fa40b6b8ac",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.ROUTING",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/routing.json",
-            "file_sha256": "94fab6220f224027974cb87f71ec1bb3d97e872225e91d10dbeefeb88c33c17d",
+            "file_sha256": "e0ba0cb2fe923140d7c2d5758e51abb6b4fc76d485191eb964d944f2758ebddf",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/silent_scope_expansion.json",
-            "file_sha256": "384c8fd3beac7b349c7d32c4582058227334b137d13fc2ff889d613fd61f013d",
+            "file_sha256": "0bd745e4305f2e391b302f74a33b789324feb3fe364a8ec2bf140a57102043bf",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.STALE_SOURCE",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/stale_source.json",
-            "file_sha256": "f4bd0006bbb06d20f29c013fadfa43c8ec41f02cc6b176ede012a0102955dd68",
+            "file_sha256": "be3ff5b8480edc194f7751987e298a235b9b0d88b29c85977f190e5e6f73b2d4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.TOOL_LIMIT",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/tool_limit.json",
-            "file_sha256": "d434e10d2d1b7ce22d02d5679b0d7bf391345dd4583d9af0aab218e1635efcfb",
+            "file_sha256": "bbf69087b17f46b824180279d5b72eceeacf5ecd23ea22afba0e96f3f080da92",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/umbrella_authority.json",
-            "file_sha256": "a9530ac6e969dd82c88a43c5527904bc257588e5b8d45b17804741edeefd46c7",
+            "file_sha256": "715a2587fbf0f73680e36fd4b07e0ae86b83a41817a04ef8a35062f65e0e5602",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/unrelated_scope.json",
-            "file_sha256": "62e3f0b57bd70b118b5953592ab57e3514df31cd04132196d12dec82819d45ac",
+            "file_sha256": "12dfdfadaac08c5f9414dd7cecdf9a73245f253859b24d647b6cf8f396d52fb0",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.resource-scheduler.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/unsafe_action.json",
-            "file_sha256": "7d98d29a58a599890b46998519fe2de5b2adbe51102f488c612076e2946063da",
+            "file_sha256": "7b6a54e7148b7bb8ed515fb8b846fd87356a933c3c54c20c30a7189d6aa5bc5a",
             "expected_outcome": "DENY"
           }
         ]
@@ -29531,7 +29531,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-01/resource-scheduler/handoff.json",
-        "handoff_file_sha256": "e800bbe96d8b22a593c4cabe4757aa519972061d498f01336f471ee59e24cb6c",
+        "handoff_file_sha256": "ea44b0f3a25ba8668f9c8c3adb7d937bc7a31af0fad1e524f9d1ec074ec598b4",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.resource-scheduler.v1"
       },
@@ -40007,5 +40007,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "209157e75f77279688ebcfcb1baf40da0a25852d4ae9ce934c55f921fb2a33ac"
+  "roster_sha256": "69ba8bafc55e8a86558f3f6eb4a1295dde19ff43bdbd65b623dd7eec1fcd8b7e"
 }

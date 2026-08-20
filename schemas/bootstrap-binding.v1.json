@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "14e42cfff29014d7549aa4353b4711862c17178eed7d3f60d06db03e7523a6bb"
+      "sha256": "0b99f5fc14b071dbeb924cce6dae1084cc88e38a0ebea85cc267a401dca53fb5"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3108,6 +3108,26 @@
     "runtime_deployment_package_operational_evaluator_verifier": {
       "path": "tests/verify-runtime-deployment-package-evaluator.mjs",
       "sha256": "00839a5f9d356031fd870fe57636f4a17d0fccb22c2f840f08d391cc516ae2a8"
+    },
+    "scheduler_resource_boundary_gate": {
+      "path": "control/scheduler-resource-boundary-gate.mjs",
+      "sha256": "acb1cc276cc752f785a1a1675b13d6b689465e546c4854ba3a5ac436c5c889c2"
+    },
+    "scheduler_resource_boundary_input_contract": {
+      "path": "schemas/scheduler-resource-boundary-input.v1.json",
+      "sha256": "cdff447cae3adc3e7cbab8f07f3e9ba5cc306e4156553f295de6c456831b7f9c"
+    },
+    "scheduler_resource_boundary_result_contract": {
+      "path": "schemas/scheduler-resource-boundary-result.v1.json",
+      "sha256": "dd65124a7b994e227bb35aef860aa7654936f01b00c2284ba630ec22bb483aee"
+    },
+    "scheduler_resource_package_operational_evaluator": {
+      "path": "control/scheduler-resource-package-evaluator.mjs",
+      "sha256": "52e27afb4c89de0eddb759528b21d172e3f4ebc91bb674e0bb8912870c74add1"
+    },
+    "scheduler_resource_package_operational_evaluator_verifier": {
+      "path": "tests/verify-scheduler-resource-package-evaluator.mjs",
+      "sha256": "f9d3054bdfe83c209a28da46e4ba5c6ecea7490a949881b0c2865643492c424a"
     }
   },
   "compatibility_only": {

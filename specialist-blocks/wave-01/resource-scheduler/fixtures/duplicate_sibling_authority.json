@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.DUPLICATE_SIBLING_AUTHORITY",
   "class": "duplicate_sibling_authority",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic request assigns the same resource-allocation authority to two sibling controls."
+  "note": "Synthetic request assigns the same resource-allocation authority to two sibling controls.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_ADMISSION","evidence":{"authority":{"status":"CURRENT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.CPU","unit":"PERCENT","observed_value":70,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT","identity":"SOURCE.PSI","version":"1"},"requested_action":"CLASSIFY_ADMISSION","signals":["RESOURCE.CAPACITY"],"scope":"RESOURCE_ONLY","sibling_authorities":["AGENTOS.SCHEDULER","DUPLICATE"]}},"expected_readback":{"disposition":"DENY","route":"SINGLE_AUTHORITY_REQUIRED","error_code":"SCHEDULER_DUPLICATE_AUTHORITY","zero_side_effects":true}}
 }

@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.ROUTING",
   "class": "routing",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic typed signals identify resource admission and pressure classification as the smallest sufficient route."
+  "note": "Synthetic typed signals identify resource admission and pressure classification as the smallest sufficient route.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_ROUTING","evidence":{"authority":{"status":"CURRENT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.IO","unit":"PERCENT","observed_value":40,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT","identity":"SOURCE.PSI","version":"1"},"requested_action":"CLASSIFY_ROUTING","signals":["RESOURCE.ROUTING"],"scope":"RESOURCE_ONLY"}},"expected_readback":{"disposition":"ROUTE","route":"RESOURCE_OWNER_HANDOFF","error_code":"SCHEDULER_RESOURCE_EVIDENCE_READY","zero_side_effects":true}}
 }

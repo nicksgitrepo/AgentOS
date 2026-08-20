@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.AUTHORITY_CONFLICT",
   "class": "authority_conflict",
   "expected": "ESCALATE",
   "hostile": true,
-  "note": "Synthetic resource evidence has two conflicting authority records; preserve custody and escalate without classifying admission."
+  "note": "Synthetic resource evidence has two conflicting authority records; preserve custody and escalate without classifying admission.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_ADMISSION","evidence":{"authority":{"status":"CONFLICT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.CPU","unit":"PERCENT","observed_value":70,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT","identity":"SOURCE.PSI","version":"1"},"requested_action":"CLASSIFY_ADMISSION","signals":["RESOURCE.CAPACITY"],"scope":"RESOURCE_ONLY","authority_conflict":true}},"expected_readback":{"disposition":"ESCALATE","route":"CONTROLLER_ESCALATION","error_code":"SCHEDULER_AUTHORITY_CONFLICT","zero_side_effects":true}}
 }

@@ -6,6 +6,14 @@
   "candidate_digest": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
+  "pre_admission_evaluator": "control/scheduler-resource-package-evaluator.mjs",
+  "implementation_entrypoint": "evaluateSchedulerResourceBoundary",
+  "implementation_artifacts": [
+    "control/scheduler-resource-boundary-gate.mjs",
+    "schemas/scheduler-resource-boundary-input.v1.json",
+    "schemas/scheduler-resource-boundary-result.v1.json"
+  ],
+  "authority_status": "NON_AUTHORITATIVE_OPERATIONAL_EVIDENCE_ONLY",
   "cases": [
     {
       "case_id": "resource-scheduler-authority_conflict",
