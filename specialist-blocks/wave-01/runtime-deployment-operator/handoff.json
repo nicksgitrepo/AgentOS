@@ -5,8 +5,8 @@
   "block_id": "specialist.control.runtime-deployment-operator",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859",
-  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
-  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "source_commit": "40ead839fb6129372008cac5c8fe132e2f1b3241",
+  "source_tree": "620ff2d90e50191c372737474cd21663bdea4a45",
   "changed_paths": [
     "specialist-blocks/wave-01/runtime-deployment-operator/block.json",
     "specialist-blocks/wave-01/runtime-deployment-operator/evaluation.json",
@@ -40,7 +40,13 @@
     "specialist-blocks/wave-01/runtime-deployment-operator/gates/10-proof-acceptance.gate",
     "specialist-blocks/wave-01/runtime-deployment-operator/gates/11-lifecycle-recovery-archive.gate",
     "specialist-blocks/wave-01/runtime-deployment-operator/gates/manifest.json",
-    "specialist-blocks/wave-01/runtime-deployment-operator/sources.lock"
+    "specialist-blocks/wave-01/runtime-deployment-operator/sources.lock",
+    "control/runtime-deployment-boundary-gate.mjs",
+    "control/runtime-deployment-package-evaluator.mjs",
+    "schemas/runtime-deployment-package-operational-evaluation.v1.json",
+    "tests/verify-runtime-deployment-package-evaluator.mjs",
+    "schemas/bootstrap-binding.v1.json",
+    "specialist-blocks/registry/agent-roster.v1.json"
   ],
   "proof": [
     "12-gate-pack-digests",
