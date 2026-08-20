@@ -29468,6 +29468,12 @@
             "expected_outcome": "DENY"
           },
           {
+            "fixture_id": "specialist.control.resource-scheduler.MISSING_SOURCE_IDENTITY",
+            "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/missing_source_identity.json",
+            "file_sha256": "aff60c51284c1d5474fe261378af2b61de1d05a0843830a3d36ec225a4b453d6",
+            "expected_outcome": "DENY"
+          },
+          {
             "fixture_id": "specialist.control.resource-scheduler.NARROWNESS",
             "path": "specialist-blocks/wave-01/resource-scheduler/fixtures/narrowness.json",
             "file_sha256": "085aaa9cb636e26516e6f3d0eded72c1c96cdd2bf0c0b873a7238b7665abec97",
@@ -29531,7 +29537,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-01/resource-scheduler/handoff.json",
-        "handoff_file_sha256": "ea44b0f3a25ba8668f9c8c3adb7d937bc7a31af0fad1e524f9d1ec074ec598b4",
+        "handoff_file_sha256": "3408bf57c58d48376bff7ed794a430d60fd980a2d1215472f86a455194a934f0",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.resource-scheduler.v1"
       },
@@ -40007,5 +40013,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "69ba8bafc55e8a86558f3f6eb4a1295dde19ff43bdbd65b623dd7eec1fcd8b7e"
+  "roster_sha256": "c6cb549249b627776e73cec71253b3c26e34ead37157eb9fd5448ac3a16f1be0"
 }

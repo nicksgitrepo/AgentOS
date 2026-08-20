@@ -1397,7 +1397,7 @@
     },
     "independent_specialist_evaluator_verifier": {
       "path": "tests/verify-specialist-independent-evaluator.mjs",
-      "sha256": "2fa924f87cf0ced751d2ffa7169794fce14a23511e0478071d0509b30306e674"
+      "sha256": "b4ad95870e552f3bdce6373fa46a4980386db8912f1cc3eb51549da5f11d1953"
     },
     "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_candidate_authority_v1_json": {
       "path": "tests/fixtures/independent-clearance/authority/candidate-authority.v1.json",
@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "0b99f5fc14b071dbeb924cce6dae1084cc88e38a0ebea85cc267a401dca53fb5"
+      "sha256": "d0ac82b6420f5f1681177b9c745ebe0b8b6afe9e4aa1c968a52a3940c997aa57"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3111,7 +3111,7 @@
     },
     "scheduler_resource_boundary_gate": {
       "path": "control/scheduler-resource-boundary-gate.mjs",
-      "sha256": "acb1cc276cc752f785a1a1675b13d6b689465e546c4854ba3a5ac436c5c889c2"
+      "sha256": "425b773ba859635fde927173f3172ecf31356698d38157772216935ff7cde824"
     },
     "scheduler_resource_boundary_input_contract": {
       "path": "schemas/scheduler-resource-boundary-input.v1.json",
@@ -3127,7 +3127,11 @@
     },
     "scheduler_resource_package_operational_evaluator_verifier": {
       "path": "tests/verify-scheduler-resource-package-evaluator.mjs",
-      "sha256": "f9d3054bdfe83c209a28da46e4ba5c6ecea7490a949881b0c2865643492c424a"
+      "sha256": "942620bb74388dde3b03700510f64589ae73b8898bc022cb1380e5427a0006f7"
+    },
+    "specialist_evaluation_contract": {
+      "path": "schemas/specialist-evaluation.v1.json",
+      "sha256": "c5dfec06faf4df679394236f43ab46c304bb0bf50bc6f9849ef0d5b14366a0f4"
     }
   },
   "compatibility_only": {

@@ -670,7 +670,7 @@
     },
     {
       "block_id": "specialist.control.resource-scheduler",
-      "candidate_digest": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87",
+      "candidate_digest": "bd4d421f77415c53b7ce43bee26fd7c0a9ffdfe1aa7fc31ce4956f5238e4c42f",
       "role_kind": "CONTROL_PLANE",
       "atomic_scope_statement": "Control-plane classification of typed resource admission and pressure evidence; it does not schedule, execute, throttle, kill, evict, allocate, deploy, or change external state.",
       "permitted_decisions": [
@@ -7175,5 +7175,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "d84440366c8adba6204b6700444c1f50ffeb3af698b9de5b9bedf1e73220660a"
+  "roster_sha256": "48dedce5001d0a8e6a390a4818ebd1217e20a52ab642597319dba957a9a6d3c3"
 }

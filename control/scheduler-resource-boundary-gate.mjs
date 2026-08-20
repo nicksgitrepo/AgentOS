@@ -131,7 +131,7 @@ export function evaluateSchedulerResourceBoundary(input) {
   if (missing.length) return result("DENY", "TYPED_CONTEXT_REQUIRED", "SCHEDULER_CONTEXT_INCOMPLETE", input, {missing_fields: missing});
   if (evidence.authority.status !== "CURRENT" || evidence.authority.source_status !== "CURRENT") return result("DENY", "AUTHORITY_REFRESH_REQUIRED", "SCHEDULER_AUTHORITY_UNVERIFIED", input);
   if (evidence.custody.status !== "BOUND") return result("DENY", "CUSTODY_BINDING_REQUIRED", "SCHEDULER_CUSTODY_UNBOUND", input);
-  if (evidence.source_lock.status !== "CURRENT") return result("DENY", "SOURCE_REFRESH_REQUIRED", "SCHEDULER_SOURCE_STALE_OR_UNVERIFIED", input);
+  if (evidence.source_lock.status !== "CURRENT" || !SAFE_ID.test(evidence.source_lock.identity ?? "") || typeof evidence.source_lock.version !== "string" || evidence.source_lock.version.length === 0) return result("DENY", "SOURCE_REFRESH_REQUIRED", "SCHEDULER_SOURCE_STALE_OR_UNVERIFIED", input);
   const resource = evidence.resource;
   if (!SAFE_ID.test(resource.identity ?? "") || !resource.unit || !Number.isFinite(resource.observed_value) || !Number.isFinite(resource.capacity) || !resource.window) return result("DENY", "RESOURCE_CONTEXT_REQUIRED", "SCHEDULER_RESOURCE_CONTEXT_INVALID", input);
   if (!CLASSIFICATION_ACTIONS.has(evidence.requested_action)) return result("DENY", "TYPED_CONTEXT_REQUIRED", "SCHEDULER_ACTION_NOT_CLASSIFICATION", input);

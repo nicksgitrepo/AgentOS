@@ -302,6 +302,7 @@
       "false_positive",
       "handoff",
       "missing_context",
+      "missing_source_identity",
       "narrowness",
       "router_self_accept",
       "routing",
@@ -313,5 +314,5 @@
       "unsafe_action"
     ]
   },
-  "block_sha256": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87"
+  "block_sha256": "bd4d421f77415c53b7ce43bee26fd7c0a9ffdfe1aa7fc31ce4956f5238e4c42f"
 }
