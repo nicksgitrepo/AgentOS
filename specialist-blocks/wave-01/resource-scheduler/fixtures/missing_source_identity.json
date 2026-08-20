@@ -1,0 +1,11 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.MISSING_SOURCE_IDENTITY",
+  "class": "missing_source_identity",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "A source record marked current without a canonical identity and version cannot support resource classification.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_ADMISSION","evidence":{"authority":{"status":"CURRENT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.CPU","unit":"PERCENT","observed_value":70,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT"},"requested_action":"CLASSIFY_ADMISSION","signals":["RESOURCE.CAPACITY"],"scope":"RESOURCE_ONLY"}},"expected_readback":{"disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"SCHEDULER_SOURCE_STALE_OR_UNVERIFIED","zero_side_effects":true}}
+}
