@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "befa582264984a861f49ea81f6c3f0519634718665d8cb08c1aed3e20ca4666c"
+      "sha256": "532dfce6b95173da3893c1ba078ea072312b57bcf49a189c1a49836246b51f89"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3119,7 +3119,7 @@
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
-      "sha256": "c6b4ef027090f21e30b7f595fc3a75c1ea111592b4d71c68f23c236ae757f01d"
+      "sha256": "1afa13ddce04ac5e50c5811c423c030af645c5976dfd1a6983f60d43fc071cd1"
     },
     "reusable_agent_acceptance_ledger_contract": {
       "path": "schemas/reusable-agent-acceptance-ledger.v1.json",
@@ -3127,7 +3127,7 @@
     },
     "reusable_agent_acceptance_ledger_registry": {
       "path": "specialist-blocks/registry/accepted-agent-receipts.v1.json",
-      "sha256": "319cc19b444197f8bef82642fb51a3929f465f2cd6f653f9d17d2d69ca01d0f3"
+      "sha256": "e2f9236efde2853f502d5dfff54d33c98b280bb45d460dede12533ed91e5dcbc"
     },
     "reusable_agent_acceptance_ledger_verifier": {
       "path": "tests/verify-reusable-agent-acceptance-ledger.mjs",

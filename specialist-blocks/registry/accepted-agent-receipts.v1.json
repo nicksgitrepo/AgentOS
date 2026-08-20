@@ -101,6 +101,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.DOMAIN_WORKFLOW_ROUTER",
+      "package_path": "specialist-blocks/wave-06/workflow-router",
+      "candidate_commit": "d25b271edfcca4972b2452faf377d1bf7e49371d",
+      "candidate_tree": "9d0d587f2a4d0373a73ac1206cf8d3d53dde3a52",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/d25b271edfcca4972b2452faf377d1bf7e49371d",
+      "receipt_sha256": "16733134e993a7c97f094df1a1e72796b58567b85ee7d2a60a402a9560d75194",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER",
       "package_path": "specialist-blocks/wave-02/provider-edge-router",
       "candidate_commit": "3994c3bfb699b226afeb3d5e34f12acbd42b1408",
@@ -211,5 +221,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "61dbff91537de8183d3583ff0f8bb6afa514feda64648d9fc818f2edf955f9c7"
+  "ledger_sha256": "ee80e5146a2ca1e4b599bbede072780262593b80a0d6efdd5f66686506e9cabd"
 }

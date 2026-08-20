@@ -5424,9 +5424,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers domain; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/workflow-router/evaluation.json"
@@ -39620,17 +39620,17 @@
       "rank": 22,
       "stable_agent_id": "AGENT.DOMAIN_WORKFLOW_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 77.05,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 23,
       "stable_agent_id": "AGENT.FINANCE_ACCOUNTING_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.05,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 24,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "2eaea0f7e23d5cfd88dff3a3f571a553e8289fc1ce4088ab9c55b86b07f218b2"
+  "roster_sha256": "26dd7f7f4d3940d1a1c3c6bd6db12563237002f3b7e7f75963d133b57b7fae73"
 }
