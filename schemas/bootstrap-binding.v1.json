@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "01511395fd20dceec2964372c92474057c5769ed7089c86757c7920358ccbb65"
+      "sha256": "078145cb9e55707a1edaf65827501710720cd9adb23f11d41af88720212fce1e"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3616,6 +3616,34 @@
     "supply_chain_router_candidate_handoff": {
       "path": "specialist-blocks/wave-03/supply-chain-router/handoff.json",
       "sha256": "57c3f5c3fea4fcf02383977b50596083fe64bf23a99a81abea3f6ad629f66577"
+    },
+    "data_migration_rollback_router_boundary_gate": {
+      "path": "control/data-migration-rollback-router-boundary-gate.mjs",
+      "sha256": "56a04630564a59debc19f20114ed4bf0e95050c6c015a2c28584aaa73aa42c5c"
+    },
+    "data_migration_rollback_router_boundary_input_contract": {
+      "path": "schemas/data-migration-rollback-router-boundary-input.v1.json",
+      "sha256": "d03cdcd80bdee7f044f029b1c76f1dd49b356a59ffe29988761975f30e57a87f"
+    },
+    "data_migration_rollback_router_boundary_result_contract": {
+      "path": "schemas/data-migration-rollback-router-boundary-result.v1.json",
+      "sha256": "3a18406c763e846d5982ad85462058e28fb2902ea133ec6fd7209b8d93d4da0b"
+    },
+    "data_migration_rollback_router_package_operational_evaluation_contract": {
+      "path": "schemas/data-migration-rollback-router-package-operational-evaluation.v1.json",
+      "sha256": "2a1a80853198607e7cdf19382c9f89d608dca8cd6c9d6fff5d05c41706b19676"
+    },
+    "data_migration_rollback_router_package_operational_evaluator": {
+      "path": "control/data-migration-rollback-router-package-evaluator.mjs",
+      "sha256": "c68de9aabf5fbee0cfc43f0a43f952cd4de6b3b97b0387f95afd5146719e1e3e"
+    },
+    "data_migration_rollback_router_boundary_verifier": {
+      "path": "tests/verify-data-migration-rollback-router-boundary.mjs",
+      "sha256": "04e56a6e2dec4915d03bd3d392e7145bbcb9bece67d7b69b5d4b7ad0088e0eb9"
+    },
+    "data_migration_rollback_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-04/migration-rollback/handoff.json",
+      "sha256": "528baca00615de4841c5fc5dfbeaf06dcb1050bd9fbcc7513a887f13daf24f6d"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",

@@ -3097,103 +3097,103 @@
           {
             "fixture_id": "specialist.data.migration-rollback.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/authority_conflict.json",
-            "file_sha256": "6c06e43dea40bd0b0910364a15806835eaf62b27e70bb0cd859a016e6ef4bf1c",
+            "file_sha256": "a0f10e5e0d7a167c30710a52a9933237a41e202400d5ce45de31b03b9024b7a4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "fb8de8724fd2f778ca01dda9451811f9ce5020dab3734e463b760d11329ead15",
+            "file_sha256": "8779df7fa2d39a69cbb78b3eefd92b5f2fdcdf08ce0752ee31a86cc5cef23e96",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "d715cca52c228d33432701734b4e5215f869e6cc760cead49b09de827525a21c",
+            "file_sha256": "ced8214b9236f5f9afc8e562ebcb4bc5953f0a68fe2e3263e258116be3dff814",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.DATA_LIMIT",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/data_limit.json",
-            "file_sha256": "3077b38f480478937ec5c5f85de8a57544f37839d0d91baae2465930c4a93b24",
+            "file_sha256": "572e1371fcb3c9d61f4c45a82a028da50126e895af9af46ce5351e74efeba3b5",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "f082ce96c1f70f6d78bcb49a73631d7d6554dfa577e5fb653a863e20d31e963b",
+            "file_sha256": "5704aa52340295d19af04ebfb8a873b4edc848ca3e1ac6349f9ab4c83fce9d1e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/false_positive.json",
-            "file_sha256": "4c00d5e7725b672652ad2668300924d00ae3c76295918f5ea79608afb4148b2a",
+            "file_sha256": "964faf0b64afc778c1e5717caf4c744258c9d0d85de92ba357c89e080b2be280",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.HANDOFF",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/handoff.json",
-            "file_sha256": "6f8a9e6cb67ec2b4e6fc5c8867afc74957db48f906f0c04efd3db352add2c059",
+            "file_sha256": "242ffbd1e173455e17a2d9b627b88911bac371bafd862d6de9b19725732f5a7c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/missing_context.json",
-            "file_sha256": "b841b5a44c2abf992fc523161dadef06367a7fbacdc7352fb76dc0c6b3146202",
+            "file_sha256": "b264af27eca07249743d734d81858341043ef55d54574262666803f5b677d537",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.NARROWNESS",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/narrowness.json",
-            "file_sha256": "aefaa27a2ca20889868dd8df477f557f24e05237c42cb13386cc7dda2b9fc059",
+            "file_sha256": "f56e245582bc4e99def8bf5b80868236cd6b26105e9b0bc72cbf8de58d135a35",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/router_self_accept.json",
-            "file_sha256": "3899ecffc7c68a10121a1abbe0efd638a0ee6f3f0fcaffa2c3321af6659e33b9",
+            "file_sha256": "f417b7a80c0f18d03c5e2af102b063e3643e3e7ac683f8a2c2c99f2d0abc37c3",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.ROUTING",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/routing.json",
-            "file_sha256": "b809b356d839204b3e468039db7f86ec02456dc23e1b3644e644603a25c14e59",
+            "file_sha256": "1a8b60e49702b36e445437120143873b347aaa15e491210e27a09864fd113e02",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/silent_scope_expansion.json",
-            "file_sha256": "5c232bc48d6acb2979d8fea6415d79b60ad09230e76879fe3e6f8dbfd89baac7",
+            "file_sha256": "3f466d9bf928655cd0497af9abee5829ef7a31839b5833cdfdb3046f5e0770e6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.STALE_SOURCE",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/stale_source.json",
-            "file_sha256": "85b1945335b7807712f5afc1a9b09895a9df7291e0c2efc5972f0f34d56c7ac5",
+            "file_sha256": "b088a6a53b1a96e9e95407e4d5e213f66ff72a85ab4defa5723207aaa8a88df6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.TOOL_LIMIT",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/tool_limit.json",
-            "file_sha256": "ff51504d15b21d640367d1fb75644ff355e1b0fb98af74de6a8a6e02a79bb13e",
+            "file_sha256": "f3509fdbce9a455f5b125568ea9a1299c161caa9162cb8b83a5186de69f36563",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/umbrella_authority.json",
-            "file_sha256": "f4a4aa9e3bb1408289e93665fb8ac6fd55a63be3afa05d59c7aefaaa9b190cac",
+            "file_sha256": "cd1edb8e8d15789b5585bd04bb7282e4f0b6df51ce8e78b392ba17b720456125",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/unrelated_scope.json",
-            "file_sha256": "28d7f8e668f298e0cd71ffaf281cafe6cf2056dcf1dce58435e33cd7ac0c1ffb",
+            "file_sha256": "433870b5be634cf42fa18705bf846410b0791b8d0147347ef160b3ddc33b750b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.data.migration-rollback.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-04/migration-rollback/fixtures/unsafe_action.json",
-            "file_sha256": "f6f28f743667b2347371339bb76f03d50537c66b752b584e6005da00753f8f44",
+            "file_sha256": "849bb0c07e027fa01cafcfb973bf25419c9be5e255c39166a5ad97864c1b3c8f",
             "expected_outcome": "DENY"
           }
         ]
@@ -26039,9 +26039,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/supply-chain-router/evaluation.json"
@@ -39692,17 +39692,17 @@
       "rank": 31,
       "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 32,
       "stable_agent_id": "AGENT.DATA_MIGRATION_ROLLBACK",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 33,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "77847ac3acf2a93314459fe040972eb14315eef8211d5b9c1cdf06ee29bcf509"
+  "roster_sha256": "9cdac0c699a0f7729a09758bab1ac455f57f94874e4504533748a88a29a44184"
 }
