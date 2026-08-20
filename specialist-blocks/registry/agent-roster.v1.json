@@ -8219,9 +8219,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers privacy; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/data-lifecycle-router/evaluation.json"
@@ -39644,17 +39644,17 @@
       "rank": 25,
       "stable_agent_id": "AGENT.PRIVACY_DATA_LIFECYCLE_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 77.05,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 26,
       "stable_agent_id": "AGENT.REGULATORY_APPLICABILITY_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.05,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 27,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "dcca9e3e30334483c3b0d356282092457c8b1119ee2402214397123197c75a38"
+  "roster_sha256": "90acfcba749bdda27a584261d62e3953fa6924a2e662877ec91d841019eb5b0c"
 }
