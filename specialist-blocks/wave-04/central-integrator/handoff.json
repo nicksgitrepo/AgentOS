@@ -5,14 +5,20 @@
   "block_id": "specialist.control.central-integrator",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "1cff300fdb5323b73b22c518a3cbcd87ef46b92451173ba1bf63ac583937c407",
-  "source_commit": "a6407f4c991d1768596f43f2f29d5a91d8044c0c",
-  "source_tree": "2c392cf5d4f4a0fdb942c8d37fd09d3d836ef2f2",
+  "source_commit": "399f102df81775e34ef21350e75117a8a954b5f9",
+  "source_tree": "1c94f9e759b592372df4a9af5a054b8a9919d771",
   "changed_paths": [
     "specialist-blocks/wave-04/central-integrator/block.json",
     "specialist-blocks/wave-04/central-integrator/evaluation.json",
     "specialist-blocks/wave-04/central-integrator/gates/manifest.json",
     "specialist-blocks/wave-04/central-integrator/handoff.json",
-    "specialist-blocks/wave-04/central-integrator/sources.lock"
+    "specialist-blocks/wave-04/central-integrator/sources.lock",
+    "control/central-integrator-boundary-gate.mjs",
+    "control/central-integrator-package-evaluator.mjs",
+    "schemas/central-integrator-boundary-input.v1.json",
+    "schemas/central-integrator-boundary-result.v1.json",
+    "schemas/central-integrator-package-operational-evaluation.v1.json",
+    "tests/verify-central-integrator-boundary.mjs"
   ],
   "proof": [
     "12-gate-pack-digests",
