@@ -12713,105 +12713,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.cve-applicability.AUTHORITY_CONFLICT",
+            "fixture_id": "cve-applicability-authority_conflict",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/authority_conflict.json",
-            "file_sha256": "c1aabb4990ad549fa6fe2d67ea190c68b89592642df67cb0e7e2978152b004cb",
+            "file_sha256": "99e0e4eb1d09cdc4258a3cc2df26696633be0602f086c966d091b591ca477c30",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "cve-applicability-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "8baa26fd2688d998d2b0d79ec47ad452037d2f26ea8bb5e153351357fe3319fc",
+            "file_sha256": "96ab3f9294b7a97cd8911f558bd6208e788d54ff15ebbd3dd129dde0213f3aa4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "cve-applicability-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "ce4872b6a4f09be7998a63585c4eb8f5d9c979f3a03288fa80f429e8e517392b",
+            "file_sha256": "8e4958fcdcdf15f68252f83da56e09f668c521e90e240f3f4c4ef67bff9cec58",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.DATA_LIMIT",
+            "fixture_id": "cve-applicability-data_limit",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/data_limit.json",
-            "file_sha256": "9743fc02cf4794941014d5f590beac53d36e0035e0c844e23ec48a775eafc3ce",
+            "file_sha256": "363c0a2df22b5b797a91077f3af793175584da665b8f22e3905a78ba286490bd",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "cve-applicability-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "49fcccfd06a5023a45440fa0c6865fb14322c07538552adee8906b1168e16dba",
+            "file_sha256": "e2f5bf33c62a1abaca9cc836d043d2c55857cf0cb151c2b6a3a97f75aaf67b22",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.FALSE_POSITIVE",
+            "fixture_id": "cve-applicability-false_positive",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/false_positive.json",
-            "file_sha256": "fa57d5ec71d784599ff3dc6a68d243c71a5c36a4b1e91cca60536045e2da753d",
+            "file_sha256": "f787d9e1d9aca31c3585cc70a8b92abc9fae36ce60663a3843df3c01dd8818ff",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.HANDOFF",
+            "fixture_id": "cve-applicability-handoff",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/handoff.json",
-            "file_sha256": "8e31d8ff1305bd931f8bf48992be3aef33533122c563371ae687685a3b8835ff",
+            "file_sha256": "1376c932a2fb79271643a779409e41ff5010ef6f5ef2fa5483980fdd379b3f44",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.MISSING_CONTEXT",
+            "fixture_id": "cve-applicability-missing_context",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/missing_context.json",
-            "file_sha256": "593ff9c2c5f34671437bf54a9cb0da2f9d598d61b0b2e930e636ec8cbb5b1359",
+            "file_sha256": "e684c935d0a1ac4227d992fc63f10c6aa299bd6bd2d7abf222b028b367ad3b76",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.NARROWNESS",
+            "fixture_id": "cve-applicability-narrowness",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/narrowness.json",
-            "file_sha256": "e37430cf353588345c8c9ade5145562ee4020b5055c055f3aabbf93e7fd1e4c1",
+            "file_sha256": "7a18c3bec5a1e3cf8aa91ce5418d58e276164a7a6fd83d70bdd12fb0347489c7",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.ROUTER_SELF_ACCEPT",
+            "fixture_id": "cve-applicability-router_self_accept",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/router_self_accept.json",
-            "file_sha256": "1484a3dcd75230998076b2cbf422222c2980918fc1ad8253afc039de3929a5fa",
+            "file_sha256": "d537c58812e2b9508c8f86a90ba8192e8bc3e93b9bb13845cd4877397a68dc14",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.ROUTING",
+            "fixture_id": "cve-applicability-routing",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/routing.json",
-            "file_sha256": "964623f7c0dd517fc4f5be855d9893cb130e6bb718e7a36bb2f6b45005984641",
+            "file_sha256": "1ec8d9acce204361047ab1ff56babe6f7e5148d7d82b21a67b21d4512a4dc6af",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "cve-applicability-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/silent_scope_expansion.json",
-            "file_sha256": "421ca6bda0f5dbacaf4250d72af8c7f03498fa5cd59c2df66a100e2b75553bfb",
+            "file_sha256": "b49d016d443dff431ea8fb813b05a5a5c546e35737e5e137ff8e9d3b4b78c1c6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.STALE_SOURCE",
+            "fixture_id": "cve-applicability-stale_source",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/stale_source.json",
-            "file_sha256": "25b58de349262fe0118f171ca1cbb2edc691295c27a1bc4cb0428110c2b750a1",
+            "file_sha256": "d82927cdbbb0f4a3112c516f61a7c665a0e78a6357ac25d0a15a7e3ced2b0d61",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.TOOL_LIMIT",
+            "fixture_id": "cve-applicability-tool_limit",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/tool_limit.json",
-            "file_sha256": "b85bf039f541236f0f79f3972ca02657c9f0f21ba6155994badf7dfc024c53b0",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "bfa98135c27d3ac3e8c683246fd5bf2d5a0a9211bd079b0a7a38506a19776aec",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.UMBRELLA_AUTHORITY",
+            "fixture_id": "cve-applicability-umbrella_authority",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/umbrella_authority.json",
-            "file_sha256": "d04920333acc9437908d8ba4e567d411c1131b12d0e4cedb46e372cf4ff37661",
+            "file_sha256": "fb00c898e1ce7e70edd5cb3bda96caab724bc6ef2f6b7a7cad8c896fb90f40ef",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.UNRELATED_SCOPE",
+            "fixture_id": "cve-applicability-unrelated_scope",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/unrelated_scope.json",
-            "file_sha256": "80c04014a9007b13f427265d30f30d6ade88184e3244e76f58db5d35a1739ba5",
+            "file_sha256": "0f3a17c5f8d41781f564872f791ffc30c8a96992441086592e6ef95c0e5a04f1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.cve-applicability.UNSAFE_ACTION",
+            "fixture_id": "cve-applicability-unsafe_action",
             "path": "specialist-blocks/wave-03/cve-applicability/fixtures/unsafe_action.json",
-            "file_sha256": "365631a341e14a0793e4771379d34bbb1671da24251327793aab01754b88a04b",
+            "file_sha256": "76f65c814c820cb6c8320b1c2560252292bf7bac1f0e86ee818c1b70e9ab652b",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "35e1a9eab4b608b6db008a95a9aeae4a1b1557ec52b86c91b9933efb53a37a37"
+  "roster_sha256": "05175d2c22f575265adc2fa6555285ff4040a46856ae401250315a62bf1c2376"
 }
