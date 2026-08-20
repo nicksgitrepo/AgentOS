@@ -11,9 +11,9 @@ dependencies, scores, gates, fixtures, model routes, and build state.
 The Spawner is already admitted and is reused by its immutable receipt. The
 Controller, Product Owner, Memory, Runtime, Scheduler, and Orchestrator
 packages have passed their independent checks and are reused by their exact
-candidate readbacks. Security Router, Data Router, and Observability Router
-have now passed their independent checks and are registered as accepted
-platform packages. Only one package may be in qualification at a time. A package is not
+candidate readbacks. Security Router, Data Router, Observability Router, and
+Provider/Edge Router have now passed their independent checks and are registered
+as accepted platform packages. Only one package may be in qualification at a time. A package is not
 built merely because a name exists: its exact
 blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
 QA, and independent evaluation must all be current.
@@ -59,10 +59,10 @@ from the accepted global model-policy snapshot, with freshness, availability,
 context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
-Security Router, Data Router, and Observability Router are accepted from their
-exact independent receipts. The current queue item is
-`AGENT.PLATFORM_PROVIDER_EDGE_ROUTER`; its package, gates, hostile vectors,
-model route, and local proof are next for one-at-a-time qualification. All other
+Security Router, Data Router, Observability Router, and Provider/Edge Router are
+accepted from their exact independent receipts. The current queue item is
+`AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER`; its package, gates,
+hostile vectors, model route, and local proof are next for one-at-a-time qualification. All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.

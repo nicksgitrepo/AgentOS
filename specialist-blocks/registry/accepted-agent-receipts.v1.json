@@ -31,6 +31,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER",
+      "package_path": "specialist-blocks/wave-02/provider-edge-router",
+      "candidate_commit": "3994c3bfb699b226afeb3d5e34f12acbd42b1408",
+      "candidate_tree": "8250b8c4ef333a1465c95b58a32ae0a52a45eb9a",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/3994c3bfb699b226afeb3d5e34f12acbd42b1408",
+      "receipt_sha256": "b1b85d04fba88415d9d84282002a48090aa77fa9a7a2a63cca13ea00d9a44612",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -101,5 +111,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "17154b21cc1c296affbd9f618c73078438b132bcc27d8aebcddedbd13be48874"
+  "ledger_sha256": "e779fcfdf72280b94f933fc96d0de09876df65c43cb37a6a8c2215909e7bed9a"
 }
