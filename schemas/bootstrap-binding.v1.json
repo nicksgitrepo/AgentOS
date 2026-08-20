@@ -3561,6 +3561,34 @@
       "path": "specialist-blocks/wave-03/owasp-asvs-router/handoff.json",
       "sha256": "a7329d17813358ba1e406d81a60440fd8837b01cad9d7423dfc2f5b16715f1bf"
     },
+    "owasp_web_top10_router_boundary_gate": {
+      "path": "control/owasp-web-top10-router-boundary-gate.mjs",
+      "sha256": "ad492cb3b09442409b6317992fa286dca706c0f0bc874c0ff39a4bee8f271438"
+    },
+    "owasp_web_top10_router_boundary_input_contract": {
+      "path": "schemas/owasp-web-top10-router-boundary-input.v1.json",
+      "sha256": "94c81fda5f2a487e7d3906d818e364d9c5d525c96e49f8945d75fd3007b95fd7"
+    },
+    "owasp_web_top10_router_boundary_result_contract": {
+      "path": "schemas/owasp-web-top10-router-boundary-result.v1.json",
+      "sha256": "b9110462113cbabaa6aa620ee42eaa5751a985f5d5726c5dacfc26862302570c"
+    },
+    "owasp_web_top10_router_package_operational_evaluation_contract": {
+      "path": "schemas/owasp-web-top10-router-package-operational-evaluation.v1.json",
+      "sha256": "5701b6bbd5350d5ec4ca30d9d172b95c775b8e71ee654c08d930af637d1c0511"
+    },
+    "owasp_web_top10_router_package_operational_evaluator": {
+      "path": "control/owasp-web-top10-router-package-evaluator.mjs",
+      "sha256": "518554e90125ef686a5e8bfeb80d43f387ceb2b78176797f6c32fdbf7144f6cb"
+    },
+    "owasp_web_top10_router_boundary_verifier": {
+      "path": "tests/verify-owasp-web-top10-router-boundary.mjs",
+      "sha256": "e1ba8f96121a1c746490fb809c923cfc7b9ab6d923d736bd585e08381ae85440"
+    },
+    "owasp_web_top10_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/owasp-web-top10-router/handoff.json",
+      "sha256": "db13662375aef317a085468c136ad4cb1a136ab3b735a43f2f0601e86be9ce5c"
+    },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
       "sha256": "a9dcad2b29050cade8d726c7c2b7b3e44e00232ad9a09ecffe1e3be52c763ea8"
