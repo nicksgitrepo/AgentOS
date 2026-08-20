@@ -3449,6 +3449,34 @@
       "path": "specialist-blocks/wave-03/data-lifecycle-router/handoff.json",
       "sha256": "207c762c79880e3bb7156b4e9c9f63bcc5d531d1dcbb084e6190015b3e3ea08a"
     },
+    "access_control_router_boundary_gate": {
+      "path": "control/access-control-router-boundary-gate.mjs",
+      "sha256": "7cb64aac3a89adc6dcb611237025160743bd40bc44edd99d4919184de78d039a"
+    },
+    "access_control_router_boundary_input_contract": {
+      "path": "schemas/access-control-router-boundary-input.v1.json",
+      "sha256": "59278791b56cee63aeeef115d1555c595e8e93b8ae59f4b672a838c9be63cca0"
+    },
+    "access_control_router_boundary_result_contract": {
+      "path": "schemas/access-control-router-boundary-result.v1.json",
+      "sha256": "223728e1e9db4311e4b0ca639ca376de7fe2d9418a0ee3375cc509f2099d9616"
+    },
+    "access_control_router_package_operational_evaluation_contract": {
+      "path": "schemas/access-control-router-package-operational-evaluation.v1.json",
+      "sha256": "a330b0b74b77dd83ac1a5e283850e7ce1702308c7183377d26c7e80ddb89d159"
+    },
+    "access_control_router_package_operational_evaluator": {
+      "path": "control/access-control-router-package-evaluator.mjs",
+      "sha256": "2d2bb720a0ea33a2965cf42ea310f5dce42e5718488425e5f1ebb1014753e115"
+    },
+    "access_control_router_boundary_verifier": {
+      "path": "tests/verify-access-control-router-boundary.mjs",
+      "sha256": "91c073504d7471689e3a302dcd2deb84cf11e487f56ad01c0eb5b068c0c64e79"
+    },
+    "access_control_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/access-control-router/handoff.json",
+      "sha256": "ddcb5f6390ebfb954762b23f0079246ef77eca94a78ca77dd256916b98ba731e"
+    },
     "regulatory_applicability_router_boundary_gate": {
       "path": "control/regulatory-applicability-router-boundary-gate.mjs",
       "sha256": "046d180cd5be21b3f5dc0b21dd5295c43b3db7969d411b4534215e858f76e1ad"
