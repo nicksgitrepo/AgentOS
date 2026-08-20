@@ -8372,103 +8372,103 @@
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/authority_conflict.json",
-            "file_sha256": "8f9fde88c168c9de405c3a33bfb569465297473524127a660b5c161a83459a12",
+            "file_sha256": "3f63bd4e862ccae4832234e2c7bb809fd5b19457359fe840ace3026c3f5b3381",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "b038aca58006e35a2b4967adb6c7fe8674e261edb50c7f68f7b55f33e4c0d554",
+            "file_sha256": "83e44df0dffde9cd9391c06358f61e4c10bbb737f460f89e6f2dc5d3ee5eff14",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "7449ab62efa27f3d9b0351e5ed797eb13576eb1b1fbe190dc85a1db978e6d3fd",
+            "file_sha256": "31f87188508417524877be0cb3e932fe2f991b33623e7be71f8f67fbcbc21b11",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.DATA_LIMIT",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/data_limit.json",
-            "file_sha256": "86ebf1524b4f990c2c9c5f9b7f54ea41424a996b65eae6521bf4625283c6a717",
+            "file_sha256": "e87456baff908b0ee6c872fea9fa882d677e959f3dc3bfd54c09f9acc436ba04",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "fb19da691d2fe36905e087519720e74294d693634092e1324ae4fbcf8c187ef7",
+            "file_sha256": "345bf98aa1e2efc9d0e32d1d6f9b9f765ebf4803da41447da217ba893aefb74c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/false_positive.json",
-            "file_sha256": "0364c21777a3a61daa687daed472ebc3016de999a5df825712ddb78dad846388",
+            "file_sha256": "03539da36d856e28da88253bd17858d3890a755ad94c23d31d84b5c841629ee1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.HANDOFF",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/handoff.json",
-            "file_sha256": "11a4eaec56622783e20fd0b2edf2256beeee49baed80c68a443d139f85d5ec73",
+            "file_sha256": "534d4b795aa6bfb0113d65aa4e0486580111e44889a2e7b929cc32913c7fdd86",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/missing_context.json",
-            "file_sha256": "87127e2677029b4ac1b9f68b39635808868083e2e657cd888cd1ee5f8241a4be",
+            "file_sha256": "42c07828144e10d5744cb609e85538f48453b004a7307a2e595bee482c56dad4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.NARROWNESS",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/narrowness.json",
-            "file_sha256": "fd65168b67216fdea7e1ee70187f8fcb9f780af09dda8cc3e1c40b561890f625",
+            "file_sha256": "30579834c3f40500350b487c558ddb1d61ac106d3bb0c3bb08fa8448051244f9",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/router_self_accept.json",
-            "file_sha256": "80f29414398f74e9aeaf3f6de9cc7baef65f4ebbe719f40c7ac154d5a8218ab4",
+            "file_sha256": "7f3fe6cf93a1e8d19fc114979fe31a307e30d2edbb7d632b8079305fe72c66a2",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.ROUTING",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/routing.json",
-            "file_sha256": "c0d2d973af0577895acf303b5fb4efe589d12274ec3aaa80ddbe4327a4ad7648",
+            "file_sha256": "cbf43671f3cc5b9490d2489bbaa4d99ac3b97a42efd2f6f7cb65e10c0642b00d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/silent_scope_expansion.json",
-            "file_sha256": "d1a4b72b59fc6fdb7ae2aa1e44b84b92081c6a5e32ba07fbe33de3e32f72f08f",
+            "file_sha256": "f2163bc2ff4f6e3c67b6111744d63fd89bcc91bd64f53f9eea34b0776fd66f53",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.STALE_SOURCE",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/stale_source.json",
-            "file_sha256": "db1e4d255bb473a0210b8c5a5c586f3490e52e70d9ad9d0825d8f6d6a77d1e80",
+            "file_sha256": "8ff1bb8e76baca4b931c353dcef6a97f118ec6add8114e0ffd909315ee06b0da",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.TOOL_LIMIT",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/tool_limit.json",
-            "file_sha256": "32a6227493705fe8fe034f245bd59ee54729f2827b514f19c31061ed2b2a70bc",
+            "file_sha256": "39bccc359eaca03386c24b068b94106c413c7a4e2378f72845890d4f287394a5",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/umbrella_authority.json",
-            "file_sha256": "590cfc858be624b899ead52a8cd3c3ff69d40273f99cdf6ae1d9fa383b906a6d",
+            "file_sha256": "92181e4c56b3727342b4e939fac122c8201e41de178c3a6f2c24513848520b15",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/unrelated_scope.json",
-            "file_sha256": "45bab7f843ef55c15f8042eadffcc44b4dc0959c4e7805ffc0c351724b343714",
+            "file_sha256": "86cd885c7ce0fa4d46ffea75ebc4769ca0a8f20e4cb72382f16559cb9e8418f1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.accessibility-wcag.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-05/accessibility-wcag/fixtures/unsafe_action.json",
-            "file_sha256": "40e07e8342a5a49eb92731ac8d7f0350324b08518d1b0f59f6cd24ed00b80586",
+            "file_sha256": "ecb19de38875a01ccedb021691a1ce1a1690bbdd71f79f25ba467532b07d4618",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "c879c01685f44eb113d67f7a3a1291ea0f71ec22e650da78253f9ed0bd4bbce5"
+  "roster_sha256": "5c6599d35d65495ec8f7e8be4441fc5b0ed8ff366f37c03928767470f68d6e20"
 }

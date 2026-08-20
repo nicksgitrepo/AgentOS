@@ -1,9 +1,95 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.product-client.accessibility-wcag.NARROWNESS",
   "block_id": "specialist.product-client.accessibility-wcag",
   "class": "narrowness",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable typed adversarial vector for Accessibility/WCAG routing; no project, consumer, secret, or provider data.",
+  "vector": {
+    "entrypoint": "control/accessibility-wcag-boundary-gate.mjs#evaluateAccessibilityWcagBoundary",
+    "input": {
+      "schema": "agentos.accessibility_wcag_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ROUTE_ACCESSIBILITY_WCAG_HANDOFF",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "accessibility_domain": "ACCESSIBILITY_WCAG",
+        "control_identity": "CONTROL.ACCESSIBILITY_WCAG_ROUTER",
+        "control_activity": "CLASSIFY_ACCESSIBILITY_WCAG_APPLICABILITY",
+        "control_entity": "CLIENT_SURFACE",
+        "control_scope": "VERSIONED_ACCESSIBILITY_WCAG_APPLICABILITY",
+        "control_version": "1",
+        "policy_status": "CURRENT",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.W3C_ARIA_APG",
+        "source_version": "CURRENT",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-20",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "accessibility_signal": "UX.ACCESSIBILITY_WCAG",
+        "signal_status": "BOUND",
+        "task_status": "ACCESSIBILITY_WCAG_CLASSIFICATION",
+        "context_status": "ACCESSIBILITY_WCAG_ROUTER_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ROUTE",
+        "requested_tools": [
+          "READ_ACCESSIBILITY_SIGNAL",
+          "READ_SOURCE_LOCK",
+          "READ_WCAG_REQUIREMENTS",
+          "READ_CONTEXT",
+          "READ_APPLICABILITY_RULES"
+        ],
+        "required_block_identities": [
+          "BLOCK.CLIENT.AUTHORITY",
+          "BLOCK.CLIENT.EVIDENCE",
+          "BLOCK.CLIENT.SCOPE",
+          "BLOCK.CLIENT.CUSTODY",
+          "BLOCK.CLIENT.HANDOFF",
+          "BLOCK.CLIENT.ROUTER"
+        ],
+        "model_policy_status": "CURRENT",
+        "model_route_status": "BOUND",
+        "standard_edition": "2.2",
+        "verification_level": "BASELINE",
+        "applicability_status": "BOUND",
+        "authority_scope": "ACCESSIBILITY_WCAG",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "verification_requested": false,
+        "acceptance_requested": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "ACCESSIBILITY_WCAG_ATOMIC_SPECIALIST_HANDOFF",
+      "error_code": "ACCESSIBILITY_WCAG_ROUTER_ROUTE_READY",
+      "external_side_effects": {
+        "source_reads": 0,
+        "protected_data_reads": 0,
+        "verification_runs": 0,
+        "standard_mutations": 0,
+        "memory_writes": 0,
+        "acceptance_calls": 0,
+        "credential_accesses": 0,
+        "state_changes": 0
+      }
+    }
+  }
 }
