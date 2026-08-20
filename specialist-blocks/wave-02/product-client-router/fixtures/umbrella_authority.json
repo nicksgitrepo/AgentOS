@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.product-client.router",
-  "class": "umbrella_authority",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.product-client.router.UMBRELLA_AUTHORITY","block_id":"specialist.product-client.router","class":"umbrella_authority","hostile":true,"vector":{"entrypoint":"control/product-client-router-boundary-gate.mjs#evaluateProductClientRouterBoundary","input":{"schema":"agentos.product_client_router_boundary_input.v1","version":1,"request_kind":"ROUTE_PRODUCT_CLIENT","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.PRODUCT_CLIENT_ROUTER","custody_ref":"ref:PRODUCT_CLIENT_ROUTER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.ATOMIC_SPECIALIZATION_LAW","source_version":"1","client_surface":"WEB","signal":"API_CONTRACTS","target_ref":"specialist.product-client.router","context_complete":true,"scope":"NARROW","requested_action":"CLASSIFY","requested_tools":["READ_SOURCE","READ_CONTEXT"],"client_evidence":"BOUNDED"}}},"expected_readback":{"disposition":"DENY","route":"NARROW_SPECIALIST_REQUIRED","error_code":"PRODUCT_CLIENT_ROUTER_TARGET_MISMATCH","zero_side_effects":true,"acceptance_allowed":false}}

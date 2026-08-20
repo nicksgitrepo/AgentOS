@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.product-client.router",
-  "class": "data_limit",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for data_limit; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.product-client.router.DATA_LIMIT","block_id":"specialist.product-client.router","class":"data_limit","hostile":true,"vector":{"entrypoint":"control/product-client-router-boundary-gate.mjs#evaluateProductClientRouterBoundary","input":{"schema":"agentos.product_client_router_boundary_input.v1","version":1,"request_kind":"CLASSIFY_PRODUCT_CLIENT_SIGNAL","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.PRODUCT_CLIENT_ROUTER","custody_ref":"ref:PRODUCT_CLIENT_ROUTER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.ATOMIC_SPECIALIZATION_LAW","source_version":"1","client_surface":"WEB","signal":"API_CONTRACTS","target_ref":"specialist.product-client.openapi-contracts","context_complete":true,"scope":"NARROW","requested_action":"CLASSIFY","requested_tools":["READ_SOURCE","READ_CONTEXT"],"client_evidence":"BOUNDED"}}},"expected_readback":{"disposition":"ROUTE","route":"SPECIALIST_HANDOFF","error_code":"PRODUCT_CLIENT_ROUTER_ROUTE_READY","zero_side_effects":true,"acceptance_allowed":false}}

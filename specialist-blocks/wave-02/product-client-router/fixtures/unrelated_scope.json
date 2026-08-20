@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.product-client.router",
-  "class": "unrelated_scope",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.product-client.router.UNRELATED_SCOPE","block_id":"specialist.product-client.router","class":"unrelated_scope","hostile":true,"vector":{"entrypoint":"control/product-client-router-boundary-gate.mjs#evaluateProductClientRouterBoundary","input":{"schema":"agentos.product_client_router_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{}}},"expected_readback":{"disposition":"DENY","route":"NO_PRODUCT_CLIENT_SCOPE","error_code":"PRODUCT_CLIENT_ROUTER_SCOPE_NOT_APPLICABLE","zero_side_effects":true,"acceptance_allowed":false}}

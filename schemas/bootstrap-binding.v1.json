@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "e94011f70240d744bfa310dc45f1515ffcbdb7a61650583a75e2ec87595b6cb4"
+      "sha256": "ac57324a95438ecbb47788013270166e14a538c4eb770cc3f47f5bcd3a8620a8"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3252,6 +3252,34 @@
     "provider_edge_router_boundary_gate": {
       "path": "control/provider-edge-router-boundary-gate.mjs",
       "sha256": "1e7cbe3898ba80c6dbf10dd09a8c1b687c097134992c1da78a3c904066a23b8b"
+    },
+    "product_client_router_boundary_gate": {
+      "path": "control/product-client-router-boundary-gate.mjs",
+      "sha256": "b29a872dea17caed58eac177ae814f6b1c7d3fdca30568093fdb5cc25c8c38ab"
+    },
+    "product_client_router_boundary_input_contract": {
+      "path": "schemas/product-client-router-boundary-input.v1.json",
+      "sha256": "86bd707dabb933c4e2b56198dab80b11619fbd78c5bb5f1646b0acaf05024e33"
+    },
+    "product_client_router_boundary_result_contract": {
+      "path": "schemas/product-client-router-boundary-result.v1.json",
+      "sha256": "a53d9a36806855ee5fbeaa3534dd7cc01883ba1f4052b23169c2b7331b9910e0"
+    },
+    "product_client_router_package_operational_evaluation_contract": {
+      "path": "schemas/product-client-router-package-operational-evaluation.v1.json",
+      "sha256": "c9ae8cb2cd76104debcb77f9167735f53077915d6802a7db301589c690ae25d8"
+    },
+    "product_client_router_package_operational_evaluator": {
+      "path": "control/product-client-router-package-evaluator.mjs",
+      "sha256": "150a395c8d9eeb0a2f18fdeb2ce15951a937820f2d7a5d4702b084c97d27a38e"
+    },
+    "product_client_router_boundary_verifier": {
+      "path": "tests/verify-product-client-router-boundary.mjs",
+      "sha256": "755efc82ac81b65b4fc53729fafef9f7790174215c5c5f9fad5507e647140ed2"
+    },
+    "product_client_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-02/product-client-router/handoff.json",
+      "sha256": "c954020f505b5110bbb9af06973d27971700143060d0bd3b4bc2f11829ec5876"
     },
     "provider_edge_router_boundary_input_contract": {
       "path": "schemas/provider-edge-router-boundary-input.v1.json",
