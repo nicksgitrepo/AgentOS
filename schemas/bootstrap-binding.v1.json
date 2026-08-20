@@ -2635,7 +2635,7 @@
     },
     "spawner_bootstrap_preparation_verifier": {
       "path": "tests/verify-spawner-bootstrap-preparation.mjs",
-      "sha256": "3adc9182c40fb3f8eba01f8c6d453738ffa53aae80c5e70535e241943b96ebdf"
+      "sha256": "19ce2c524e036978af5d12534845840b2ca5bfd4c251c7f5542fcf0d80c7b03a"
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",

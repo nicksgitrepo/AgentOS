@@ -13,7 +13,7 @@ import {prepareCanonicalIndependentClearanceFixture} from "./helpers/independent
 import {provisionTestExternalSpawnerReview} from "./helpers/spawner-external-review-fixture.mjs";
 
 const sealedAuthority = getSealedCanonicalAuthority();
-assert.throws(() => prepareAgentSpawnerBootstrapAuthority({sealedAuthority}), /requires separately provisioned/iu);
+assert.throws(() => prepareAgentSpawnerBootstrapAuthority({sealedAuthority}), /separately controlled evaluator handoff/iu);
 const candidate = prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation();
 const review = provisionTestExternalSpawnerReview({candidate, install: false});
 const clearance = prepareCanonicalIndependentClearanceFixture();
