@@ -12,13 +12,7 @@
     "specialist-blocks/wave-04/central-integrator/evaluation.json",
     "specialist-blocks/wave-04/central-integrator/gates/manifest.json",
     "specialist-blocks/wave-04/central-integrator/handoff.json",
-    "specialist-blocks/wave-04/central-integrator/sources.lock",
-    "control/central-integrator-boundary-gate.mjs",
-    "control/central-integrator-package-evaluator.mjs",
-    "schemas/central-integrator-boundary-input.v1.json",
-    "schemas/central-integrator-boundary-result.v1.json",
-    "schemas/central-integrator-package-operational-evaluation.v1.json",
-    "tests/verify-central-integrator-boundary.mjs"
+    "specialist-blocks/wave-04/central-integrator/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",

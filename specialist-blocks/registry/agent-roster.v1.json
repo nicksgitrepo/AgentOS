@@ -1947,7 +1947,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-04/central-integrator/handoff.json",
-        "handoff_file_sha256": "e8c16cc23329feb87c3c344d8c655bdd30fc30dc341f499896cbeb39c380daac",
+        "handoff_file_sha256": "326a8d640119c543710b3e0301c462d59170d11701495e92e4b4a54785771d22",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.central-integrator.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "edf4226bc0e0ad36cb71af9302821d4a39b1d12e7de1b3cb7f0eb1bb1fa00702"
+  "roster_sha256": "10e22e605c57effcf0b9fe8a1a10bad40b766a79a19d7799abf581bfd51096df"
 }
