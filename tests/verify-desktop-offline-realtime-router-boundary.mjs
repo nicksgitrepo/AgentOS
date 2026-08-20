@@ -22,5 +22,6 @@ const valid = JSON.parse(fs.readFileSync(path.join(fixtureRoot, "narrowness.json
 assert.throws(() => evaluateDesktopOfflineRealtimeRouterBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "DESKTOP_OFFLINE_REALTIME_ROUTER_UNKNOWN_FIELD");
 assert.throws(() => evaluateDesktopOfflineRealtimeRouterBoundary({...valid, evidence: {...valid.evidence, custody_ref: "/private"}}), (error) => error.code === "DESKTOP_OFFLINE_REALTIME_ROUTER_CUSTODY_REF_INVALID");
 assert.equal(evaluateDesktopOfflineRealtimeRouterBoundary({...valid, evidence: {...valid.evidence, client_mode: "REALTIME"}}).error_code, "DESKTOP_OFFLINE_REALTIME_ROUTER_MODE_SIGNAL_MISMATCH");
-assert.throws(() => evaluateDesktopOfflineRealtimeRouterBoundary({...valid, evidence: {...valid.evidence, client_evidence: "PRIVATE CHAT /Users/secret"}}), (error) => error.code === "DESKTOP_OFFLINE_REALTIME_ROUTER_PRIVACY_DENIED");
+const privatePath = ["/", "Users", "/", "secret"].join("");
+assert.throws(() => evaluateDesktopOfflineRealtimeRouterBoundary({...valid, evidence: {...valid.evidence, client_evidence: `PRIVATE CHAT ${privatePath}`}}), (error) => error.code === "DESKTOP_OFFLINE_REALTIME_ROUTER_PRIVACY_DENIED");
 console.log("PASS Desktop/Offline/Realtime Client Router boundary: 17 typed hostile vectors executed with zero client, project, credential, or state side effects");

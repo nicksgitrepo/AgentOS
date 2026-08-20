@@ -3299,7 +3299,7 @@
     },
     "desktop_offline_realtime_router_boundary_verifier": {
       "path": "tests/verify-desktop-offline-realtime-router-boundary.mjs",
-      "sha256": "d70c6c7395126dcceaaae48aed5b7685a2b9441cd1aef51c8918e801aa45e3db"
+      "sha256": "700359e44eb379a525b780f98ee03591d82c7ce917e15059a006e40b4e704ad5"
     },
     "desktop_offline_realtime_router_candidate_handoff": {
       "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/handoff.json",
