@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.control.resource-scheduler",
+  "fixture_id": "specialist.control.resource-scheduler.HANDOFF",
   "class": "handoff",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic complete finding routes only through a typed waiting handoff and retains candidate custody."
+  "note": "Synthetic complete finding routes only through a typed waiting handoff and retains candidate custody.",
+  "vector": {"entrypoint":"control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary","input":{"schema":"agentos.scheduler_resource_boundary_input.v1","version":1,"request_kind":"RESOURCE_PRESSURE","evidence":{"authority":{"status":"CURRENT","source_status":"CURRENT"},"custody":{"status":"BOUND","ref":"opaque:CUSTODY.SCHEDULER.001","owner":"AGENTOS.SCHEDULER"},"resource":{"identity":"RESOURCE.MEMORY","unit":"PERCENT","observed_value":90,"capacity":100,"window":"WINDOW.1M"},"source_lock":{"status":"CURRENT","identity":"SOURCE.PSI","version":"1"},"requested_action":"CLASSIFY_PRESSURE","signals":["RESOURCE.PRESSURE"],"scope":"RESOURCE_ONLY"}},"expected_readback":{"disposition":"ROUTE","route":"RESOURCE_OWNER_HANDOFF","error_code":"SCHEDULER_RESOURCE_EVIDENCE_READY","zero_side_effects":true}}
 }

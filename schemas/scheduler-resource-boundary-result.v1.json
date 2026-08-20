@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/scheduler-resource-boundary-result.v1.json",
+  "title": "AgentOS Scheduler resource boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "error_code", "classification_allowed", "external_side_effects", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.scheduler_resource_boundary_result.v1"},
+    "version": {"const": 1},
+    "disposition": {"enum": ["ROUTE", "DENY", "ESCALATE"]},
+    "route": {"type": "string"},
+    "error_code": {"type": "string"},
+    "classification_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["allocation_calls", "throttle_calls", "eviction_calls", "process_calls", "deployment_calls", "credential_accesses", "state_changes"], "properties": {"allocation_calls": {"const": 0}, "throttle_calls": {"const": 0}, "eviction_calls": {"const": 0}, "process_calls": {"const": 0}, "deployment_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
+    "input_sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "missing_fields": {"type": "array", "items": {"type": "string"}},
+    "handoff": {"type": "object"},
+    "result_sha256": {"pattern": "^[0-9a-f]{64}$"}
+  }
+}
