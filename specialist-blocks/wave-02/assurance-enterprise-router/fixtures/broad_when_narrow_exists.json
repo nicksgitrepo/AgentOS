@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.assurance-enterprise.router",
-  "class": "broad_when_narrow_exists",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.assurance-enterprise.router","fixture_id":"specialist.assurance-enterprise.router.BROAD_WHEN_NARROW_EXISTS","class":"broad_when_narrow_exists","vector":{"entrypoint":"control/assurance-enterprise-router-boundary-gate.mjs#evaluateAssuranceEnterpriseRouterBoundary","input":{"schema":"agentos.assurance_enterprise_router_boundary_input.v1","version":1,"request_kind":"ASSEMBLE_ATOMIC_CONTEXT","evidence":{"scope_expanded":true}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"ASSURANCE_ENTERPRISE_SCOPE_EXPANSION_FORBIDDEN","acceptance_allowed":false}}}

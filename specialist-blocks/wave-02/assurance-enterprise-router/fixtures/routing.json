@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.assurance-enterprise.router",
-  "class": "routing",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for routing; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.assurance-enterprise.router","fixture_id":"specialist.assurance-enterprise.router.ROUTING","class":"routing","vector":{"entrypoint":"control/assurance-enterprise-router-boundary-gate.mjs#evaluateAssuranceEnterpriseRouterBoundary","input":{"schema":"agentos.assurance_enterprise_router_boundary_input.v1","version":1,"request_kind":"ROUTE_ASSURANCE_HANDOFF","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.ASSURANCE_ENTERPRISE_ROUTER","custody_ref":"ref:ASSURANCE_ROUTER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.ATOMIC_SPECIALIZATION_LAW","source_version":"1","candidate_identity":"CANDIDATE.AGENTOS.CURRENT","candidate_digest":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","candidate_status":"CURRENT_CANDIDATE","assurance_signal":"QA.TEST_ARCHITECT","signal_status":"BOUND","atomic_scope":"NARROW_ASSURANCE_CLASSIFICATION","atomic_candidates":["AGENT.ASSURANCE_ENTERPRISE_TEST_ARCHITECT"],"context_status":"ROUTER_CONTEXT","requested_action":"ROUTE","signals":["QA.TEST_ARCHITECT","TEST_ARCHITECTURE"],"context_complete":true,"handoff_ref":"ref:HANDOFF/ASSURANCE_ROUTER","model_policy_status":"CURRENT","model_task_class":"DETERMINISTIC_QA","model_route_status":"BOUND","required_block_identities":["SPECIALIST.FOUNDATION.ROLE_INTAKE_CLASSIFIER","SPECIALIST.FOUNDATION.SCOPE_NON_GOAL_GATE"],"requested_tools":["READ_ROUTER_CATALOG"],"authority_scope":"NARROW_ASSURANCE_ROUTING","sibling_authorities":["ASSURANCE_ROUTER"]}},"expected_readback":{"disposition":"ROUTE","route":"ASSURANCE_ATOMIC_HANDOFF","error_code":"ASSURANCE_ENTERPRISE_ROUTE_READY","acceptance_allowed":false}}}

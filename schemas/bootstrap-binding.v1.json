@@ -3257,6 +3257,34 @@
       "path": "specialist-blocks/wave-04/worktree-custody/handoff.json",
       "sha256": "3d6b60d53be553ff822420c0ae08e3315d9a5a19768dc025b27e3d1dd400e129"
     },
+    "assurance_enterprise_router_boundary_gate": {
+      "path": "control/assurance-enterprise-router-boundary-gate.mjs",
+      "sha256": "280e5954262a19d3457bb64bc48d36a088a2657dd0fc3c9d1621276e81a3bf0c"
+    },
+    "assurance_enterprise_router_boundary_input_contract": {
+      "path": "schemas/assurance-enterprise-router-boundary-input.v1.json",
+      "sha256": "6a4e92366b36d14d5296a989a05dec1f164646d15bca9b55d3110b59ab5b4944"
+    },
+    "assurance_enterprise_router_boundary_result_contract": {
+      "path": "schemas/assurance-enterprise-router-boundary-result.v1.json",
+      "sha256": "e0133e1cec3eff550751108d6e48e66997900cee63fcb61344c3992db3bd587f"
+    },
+    "assurance_enterprise_router_package_operational_evaluation_contract": {
+      "path": "schemas/assurance-enterprise-router-package-operational-evaluation.v1.json",
+      "sha256": "e40b053bc974731657b81e3d934d10fe6c31f68035a16af97b23cbb237eb8d1f"
+    },
+    "assurance_enterprise_router_package_operational_evaluator": {
+      "path": "control/assurance-enterprise-router-package-evaluator.mjs",
+      "sha256": "54f4b711e951f025ca4a499598870e420ab0ae7d10bb8a92ecac16a3815c32db"
+    },
+    "assurance_enterprise_router_boundary_verifier": {
+      "path": "tests/verify-assurance-enterprise-router-boundary.mjs",
+      "sha256": "2ac6ca3d200f68239da991cfa3b165ecb72d5ef22d5510237f78648596cca618"
+    },
+    "assurance_enterprise_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-02/assurance-enterprise-router/handoff.json",
+      "sha256": "dd7dbd1756bb0e12bd2008260184ee006804a2b9763e1f594aa69e68a032c44b"
+    },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
       "sha256": "a9dcad2b29050cade8d726c7c2b7b3e44e00232ad9a09ecffe1e3be52c763ea8"

@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.assurance-enterprise.router",
-  "class": "false_positive",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.assurance-enterprise.router","fixture_id":"specialist.assurance-enterprise.router.FALSE_POSITIVE","class":"false_positive","vector":{"entrypoint":"control/assurance-enterprise-router-boundary-gate.mjs#evaluateAssuranceEnterpriseRouterBoundary","input":{"schema":"agentos.assurance_enterprise_router_boundary_input.v1","version":1,"request_kind":"CLASSIFY_ASSURANCE_SIGNAL","evidence":{"unknown_context":true}},"expected_readback":{"disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"ASSURANCE_ENTERPRISE_EVIDENCE_UNBOUND","acceptance_allowed":false}}}
