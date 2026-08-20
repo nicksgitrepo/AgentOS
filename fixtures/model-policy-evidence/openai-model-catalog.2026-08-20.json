@@ -1,12 +1,12 @@
 {
   "schema": "agentos.model_policy_source_artifact.v1",
   "version": 1,
-  "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
+  "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
   "authority_class": "FIRST_PARTY_PROVIDER",
   "provider_id": "OPENAI",
   "source_url": "https://developers.openai.com/api/docs/models/compare",
-  "observed_at_utc": "2026-08-18T08:00:00.000Z",
-  "expires_at_utc": "2026-08-25T08:00:00.000Z",
+  "observed_at_utc": "2026-08-20T04:00:00.000Z",
+  "expires_at_utc": "2026-08-27T04:00:00.000Z",
   "max_age_days": 7,
   "uncertainty": "MEDIUM",
   "summary": {
@@ -76,8 +76,8 @@
         ]
       }
     ],
-    "observation_note": "Direct current compare-page readback governs. Search-index excerpts showed newer Terra/Luna prices, so pricing uncertainty is MEDIUM and the conflict is explicit in the snapshot."
+    "observation_note": "Direct current OpenAI compare-page readback governs model identity, pricing, context, and supported reasoning. Current comparative pricing agrees; benchmark capability and speed remain secondary evidence."
   },
-  "summary_sha256": "097f60b3aba7735f85dec85e2b6f568caaec0d3814b88eb5e128c8b795749f5e",
-  "artifact_sha256": "eefc73fdba47487473d8ee312e93c4f7c27231537e891b3aa1a9a8da85eb90be"
+  "summary_sha256": "3fcbece4e7c8ab660f2fdf158eebacd583d256e783162a96190be3854bda520e",
+  "artifact_sha256": "976135c79d9f9eb588f1e8dce55df797bca8f134c5ff9f72536698f3a8cbe9ea"
 }

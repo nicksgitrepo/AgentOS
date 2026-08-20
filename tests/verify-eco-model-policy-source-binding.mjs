@@ -9,7 +9,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {auditModelPolicyEvidenceStore, compileModelPolicyProjection, selectEcoModelRoute, validateEcoModelRoute, validateModelPolicyProjection, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NOW = "2026-08-18T08:30:00.000Z";
+const NOW = "2026-08-20T04:15:00.000Z";
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json")));
 const activate = (snapshot) => { snapshot.status = "ACCEPTED_ACTIVE"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); return snapshot; };
 const active = activate(structuredClone(prepared));
@@ -84,25 +84,23 @@ function hostile(mutate, pattern) {
   try { mutate({authorityRoot, snapshot}); assert.throws(() => auditModelPolicyEvidenceStore(snapshot, {nowUtc: NOW, requireActive: true, authorityRoot}), pattern); }
   finally { fs.rmSync(authorityRoot, {recursive: true, force: true}); }
 }
-hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, "fixtures/model-policy-evidence/current-host.2026-08-18.json")), /ENOENT|artifact/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-18", (artifact) => { artifact.observed_at_utc = "2026-08-18T17:00:00.000Z"; }), /future-dated/iu);
+hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, "fixtures/model-policy-evidence/current-host.2026-08-20.json")), /ENOENT|artifact/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-20", (artifact) => { artifact.observed_at_utc = "2026-08-20T17:00:00.000Z"; }), /future-dated/iu);
 hostile(({snapshot}) => { snapshot.models.push({...snapshot.models[0], model_id: "unlisted-cheap-model"}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /unlisted|coverage differs/iu);
 hostile(({snapshot}) => { snapshot.models[0].input_usd_per_million = 0.0001; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /First-party model fact conflict/iu);
 hostile(({snapshot}) => { snapshot.task_classes[2].preferred_reasoning_effort = "ultra"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /reasoning preference/iu);
-hostile(({snapshot}) => { snapshot.conflicts = []; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /claims an explicit conflict|not explicitly resolved|Structured source conflicts/iu);
-hostile(({snapshot}) => { snapshot.conflicts[0].comparative_value = "2"; snapshot.conflicts[0].conflict_sha256 = canonicalDigest({...snapshot.conflicts[0], conflict_sha256: null}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /not explicitly resolved|Structured source conflicts/iu);
-hostile(({snapshot}) => { snapshot.conflicts[0].authority_ordering = ["COMPARATIVE_BENCHMARK", "FIRST_PARTY_PROVIDER"]; snapshot.conflicts[0].conflict_sha256 = canonicalDigest({...snapshot.conflicts[0], conflict_sha256: null}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /authority ordering/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models.find((model) => model.model_id === "gpt-5.6-terra").input_usd_per_million = 2.5; }), /not explicitly resolved|Structured source conflicts/iu);
 hostile(({authorityRoot, snapshot}) => {
-  rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-18", (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
+  rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-20", (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
 }, /Host availability binding differs/iu);
 hostile(({authorityRoot, snapshot}) => {
-  const artifactPath = path.join(authorityRoot, "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json");
+  const artifactPath = path.join(authorityRoot, "fixtures/model-policy-evidence/openai-model-catalog.2026-08-20.json");
   const artifact = JSON.parse(fs.readFileSync(artifactPath)); artifact.summary.observation_note = "tampered summary without digest repair"; fs.writeFileSync(artifactPath, JSON.stringify(artifact));
 }, /file digest mismatch|summary digest mismatch/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-18", (artifact) => { artifact.source_url = "https://untrusted.invalid/models"; }), /canonical registry|source identity/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-18", (artifact) => { artifact.source_url = "https://developers.openai.com.lookalike.invalid/models"; }), /canonical registry|source identity|lookalike/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18", (artifact) => { artifact.summary.models[0].source_url = artifact.summary.models[1].source_url; }), /canonically bound/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18", (artifact) => { artifact.summary.models[0].source_url = "https://artificialanalysis.ai.lookalike.invalid/models/gpt-5-6-luna"; }), /canonically bound|lookalike/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-20", (artifact) => { artifact.source_url = "https://untrusted.invalid/models"; }), /canonical registry|source identity/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-20", (artifact) => { artifact.source_url = "https://developers.openai.com.lookalike.invalid/models"; }), /canonical registry|source identity|lookalike/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models[0].source_url = artifact.summary.models[1].source_url; }), /canonically bound/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models[0].source_url = "https://artificialanalysis.ai.lookalike.invalid/models/gpt-5-6-luna"; }), /canonically bound|lookalike/iu);
 hostile(({authorityRoot}) => {
   const registryPath = path.join(authorityRoot, "fixtures/model-policy-evidence/source-registry.v1.json");
   const registry = JSON.parse(fs.readFileSync(registryPath));

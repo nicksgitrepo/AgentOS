@@ -1,12 +1,12 @@
 {
   "schema": "agentos.model_policy_source_artifact.v1",
   "version": 1,
-  "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
+  "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
   "authority_class": "COMPARATIVE_BENCHMARK",
   "provider_id": "ARTIFICIAL_ANALYSIS",
   "source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
-  "observed_at_utc": "2026-08-18T08:00:00.000Z",
-  "expires_at_utc": "2026-09-17T16:00:00.000Z",
+  "observed_at_utc": "2026-08-20T04:00:00.000Z",
+  "expires_at_utc": "2026-09-19T04:00:00.000Z",
   "max_age_days": 30,
   "uncertainty": "MEDIUM",
   "summary": {
@@ -17,7 +17,7 @@
         "source_url": "https://artificialanalysis.ai/models/gpt-5-6-luna",
         "reasoning_effort": "max",
         "capability_score": 52,
-        "output_tokens_per_second": 169.3,
+        "output_tokens_per_second": 153.7,
         "input_usd_per_million": 0.2,
         "output_usd_per_million": 1.2
       },
@@ -26,7 +26,7 @@
         "source_url": "https://artificialanalysis.ai/models/gpt-5-6-sol",
         "reasoning_effort": "max",
         "capability_score": 61,
-        "output_tokens_per_second": 67.6,
+        "output_tokens_per_second": 67.8,
         "input_usd_per_million": 5,
         "output_usd_per_million": 30
       },
@@ -35,12 +35,12 @@
         "source_url": "https://artificialanalysis.ai/models/gpt-5-6-terra",
         "reasoning_effort": "max",
         "capability_score": 57,
-        "output_tokens_per_second": 120.3,
-        "input_usd_per_million": 2.5,
-        "output_usd_per_million": 15
+        "output_tokens_per_second": 118.1,
+        "input_usd_per_million": 2,
+        "output_usd_per_million": 12
       }
     ]
   },
-  "summary_sha256": "6f81797ebfcbb0464e3a4586f9fd8073f16f3cfee6012c875aefb54d5b3d7a3a",
-  "artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153"
+  "summary_sha256": "839e3bf63919ea290d016090d0854eb54abbce1e90dee1c21b7b3730f094221a",
+  "artifact_sha256": "777dcfbc1fa67d54d5a3c9e52cdd4790433d5abd2c618ce031cb8e21c2ebe676"
 }

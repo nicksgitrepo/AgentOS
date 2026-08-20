@@ -1,29 +1,29 @@
 {
   "schema": "agentos.model_policy_evidence_manifest.v1",
   "version": 1,
-  "source_registry_sha256": "73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f",
+  "source_registry_sha256": "ce991a618d601ddc33f433d4f55f4faea03cba9ad969c7b81ba1f6c8cb028dc8",
   "entries": [
     {
-      "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-18",
-      "path": "artificial-analysis.2026-08-18.json",
+      "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
+      "path": "artificial-analysis.2026-08-20.json",
       "authority_class": "COMPARATIVE_BENCHMARK",
-      "artifact_sha256": "edb22f4f273cef1942ca6ddc6a75d46ff383262c37425a52b9f1ea6c16b87153",
-      "file_sha256": "99edf65d85d572ed8fd7d06eb885e318b684dc2a4b4b6aa33d94a531c0811d48"
+      "artifact_sha256": "777dcfbc1fa67d54d5a3c9e52cdd4790433d5abd2c618ce031cb8e21c2ebe676",
+      "file_sha256": "a5f84899d8fe56369733d6d3119819c0a66f62363bd4c8918d602ec9deda1098"
     },
     {
-      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-18",
-      "path": "current-host.2026-08-18.json",
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-20",
+      "path": "current-host.2026-08-20.json",
       "authority_class": "HOST_ATTESTATION",
-      "artifact_sha256": "e60b95ca1587c93613799ca21638bc19b0d502706f66074da2e7fd3f3882a63d",
-      "file_sha256": "01bd95c166c312ee976d3d11f5e6f95cac59733c84e5d32427ce6ad2f8e3e497"
+      "artifact_sha256": "e49c6914f598a837446901afb6dcb52f6558feb07dd68fe092a2bd4edf1c65a7",
+      "file_sha256": "34a1d1fffd3bff94da7210881c98be37edba4717da4453c04a076408034eb3ef"
     },
     {
-      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-18",
-      "path": "openai-model-catalog.2026-08-18.json",
+      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
+      "path": "openai-model-catalog.2026-08-20.json",
       "authority_class": "FIRST_PARTY_PROVIDER",
-      "artifact_sha256": "eefc73fdba47487473d8ee312e93c4f7c27231537e891b3aa1a9a8da85eb90be",
-      "file_sha256": "21a81b105e9a7e22baab1503d2091910c36b7038559d8b303147fdd3529ce3ef"
+      "artifact_sha256": "976135c79d9f9eb588f1e8dce55df797bca8f134c5ff9f72536698f3a8cbe9ea",
+      "file_sha256": "318d0f03d17da94be7b2b96a22dfd2729432b5e43d61d44e9065f9777e141fae"
     }
   ],
-  "manifest_sha256": "c88e15390e67648413022cbf67205ba7c187a74eebf1e77f5eb161ea93223d45"
+  "manifest_sha256": "1eb7cf635ab8d0c70d2661a4b34df1a4cfba7087657867bc4bbfd5754d678939"
 }

@@ -24,7 +24,7 @@ import {compileGlobalGovernanceBootstrap, requireGlobalGovernanceRoleProjection,
 import {appendAuthorizedGlobalGovernanceMemoryEvent, compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 
-const NOW = "2026-08-18T08:30:00.000Z";
+const NOW = "2026-08-20T04:15:00.000Z";
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));
 const active = structuredClone(prepared);
@@ -95,7 +95,7 @@ for (const privateValue of [
 ]) assert.throws(() => assertProjectAgnosticGovernanceValue(privateValue), /private|transcript|secret|filesystem|forbidden/iu);
 assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: "not-a-time"}), /exact UTC timestamp/iu);
 for (const eventId of ["PROJECT.ACME.123", "PROJECT-ACME-123", "project.acme", "PROJECT_ACME_123", "ACME_PROJECT_123", "ＰＲＯＪＥＣＴ．ＡＣＭＥ", "%50%52%4F%4A%45%43%54.ACME", Buffer.from("PROJECT.ACME").toString("base64")]) assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId, sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /minted internally/iu);
-const nonMonotonic = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: event.event_sha256, observedAtUtc: "2026-08-18T07:00:00.000Z"});
+const nonMonotonic = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: event.event_sha256, observedAtUtc: "2026-08-20T03:00:00.000Z"});
 assert.throws(() => replayGlobalGovernanceMemory([event, nonMonotonic]), /non-monotonic|current model policy|future-dated/iu);
 const forgedEventId = structuredClone(event); forgedEventId.event_id = "GGM.ACCEPTED." + "A".repeat(48); forgedEventId.event_sha256 = canonicalDigest({...forgedEventId, event_sha256: null});
 assert.throws(() => replayGlobalGovernanceMemory([forgedEventId]), /internally derived/iu);

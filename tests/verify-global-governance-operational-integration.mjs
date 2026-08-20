@@ -15,7 +15,7 @@ import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-operational-global-governance-"));
 const schedulerRoot = path.join(root, "scheduler");
-const first = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: "2026-08-18T08:30:00.000Z"});
+const first = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: "2026-08-20T04:15:00.000Z"});
 const contexts = compileAllOperationalGlobalGovernanceContexts({authorityStore: first.authorityStore});
 
 assert.deepEqual(Object.keys(contexts), MODEL_POLICY_ROLE_CLASSES);
@@ -40,7 +40,7 @@ const scheduler = createHybridScheduler({
 assert.equal(scheduler.globalGovernanceContext().context_sha256, contexts.SCHEDULER.context_sha256);
 
 // A new accepted head invalidates every non-active context and inert seed path.
-const second = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: "2026-08-18T08:40:00.000Z"});
+const second = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: "2026-08-20T04:20:00.000Z"});
 assert.notEqual(second.bootstrap.bootstrap_sha256, first.bootstrap.bootstrap_sha256);
 assert.throws(() => assertOperationalGlobalGovernanceContext(contexts.CONTROLLER, {authorityStore: first.authorityStore, expectedRoleClass: "CONTROLLER"}), /stale|aliased/iu);
 assert.throws(() => scheduler.globalGovernanceContext() && assertOperationalGlobalGovernanceContext(contexts.SCHEDULER, {authorityStore: first.authorityStore, expectedRoleClass: "SCHEDULER"}), /stale|aliased/iu);

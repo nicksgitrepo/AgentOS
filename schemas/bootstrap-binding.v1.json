@@ -642,7 +642,7 @@
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "4e6c311c13f5b9c4f8a39c2a64d094bf84967fd4c4ebd167c4619841d831c2c2"
+      "sha256": "041e7b17996b06c9bccf7d6a9b64caba8693c41689f3db4138181fa23fee5f82"
     },
     "canonical_spawner_turn_closeout_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
@@ -1003,7 +1003,7 @@
     },
     "eco_model_policy_source_binding_verifier": {
       "path": "tests/verify-eco-model-policy-source-binding.mjs",
-      "sha256": "a88829bba84146508549887713165536dbc0c021bbccc36ad28389d03b06bbf4",
+      "sha256": "49b22bdd3af24e97fdc8457e24f4788ab75b285448a549a481c2cc9c4104e6c6",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "evidence_library_compiler": {
@@ -1176,7 +1176,7 @@
     },
     "global_governance_memory_verifier": {
       "path": "tests/verify-global-governance-memory.mjs",
-      "sha256": "2be1a1af53fc9b63ccca2548cd9563a88c99cc00063de5fce0283d02e1b65ba5"
+      "sha256": "6b644f362be7123796c69ee0531f71df71a6fffa1e1b0deee3c0d8f38a3c0da4"
     },
     "global_governance_operational_context_contract": {
       "path": "schemas/global-governance-operational-context.v1.json",
@@ -1188,7 +1188,7 @@
     },
     "global_governance_operational_context_verifier": {
       "path": "tests/verify-global-governance-operational-integration.mjs",
-      "sha256": "c1230c5df9d76a7654dda1819307d0386e695354d369f5f65b4c2a98daa5f799"
+      "sha256": "ea5f129c11879cc38fc77a3115bd05f3b6633613bc5ba327e7005cf7344139d4"
     },
     "global_governance_process_attachment_contract": {
       "path": "schemas/global-governance-process-attachment.v1.json",
@@ -1200,7 +1200,7 @@
     },
     "global_governance_test_fixture_helper": {
       "path": "tests/helpers/global-governance-fixture.mjs",
-      "sha256": "8d744f6f743926f4dc3435b015ee302d0a8369f264ba50c24cd04f1aab18b962",
+      "sha256": "0ae5013eca77bda812102b1b081adaf5fa12f64769333f73d5a5d09898cf7037",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "global_policy_article": {
@@ -1381,7 +1381,7 @@
     },
     "initial_model_policy_snapshot_fixture": {
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
-      "sha256": "6ca84e685cf8771265651ed90286707810e898f4b97c35b5430478fd62ce4135",
+      "sha256": "feb803d9109115815508ea885b173aec92fa603a9480ef558e901bc168cff243",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "installed_global_governance_provisioning_controller": {
@@ -1541,23 +1541,23 @@
       "sha256": "3d5724af4587817472a040d734f9259e102f48cdb2285a980c615e0cd56c883b"
     },
     "model_policy_comparative_source_artifact": {
-      "path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-18.json",
-      "sha256": "99edf65d85d572ed8fd7d06eb885e318b684dc2a4b4b6aa33d94a531c0811d48",
+      "path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-20.json",
+      "sha256": "a5f84899d8fe56369733d6d3119819c0a66f62363bd4c8918d602ec9deda1098",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_evidence_manifest": {
       "path": "fixtures/model-policy-evidence/manifest.json",
-      "sha256": "1c48ec8e6f5d0e2ca77f3045940f3d5b375a9f19ba347b1be83d8b9a70d66963",
+      "sha256": "27d4b928fa5d40668788ea27055ffb4cf8dce68e473fa9842a6047dab2808b1d",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_host_source_artifact": {
-      "path": "fixtures/model-policy-evidence/current-host.2026-08-18.json",
-      "sha256": "01bd95c166c312ee976d3d11f5e6f95cac59733c84e5d32427ce6ad2f8e3e497",
+      "path": "fixtures/model-policy-evidence/current-host.2026-08-20.json",
+      "sha256": "34a1d1fffd3bff94da7210881c98be37edba4717da4453c04a076408034eb3ef",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_openai_source_artifact": {
-      "path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-18.json",
-      "sha256": "21a81b105e9a7e22baab1503d2091910c36b7038559d8b303147fdd3529ce3ef",
+      "path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-20.json",
+      "sha256": "318d0f03d17da94be7b2b96a22dfd2729432b5e43d61d44e9065f9777e141fae",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "model_policy_snapshot_contract": {
@@ -1566,7 +1566,7 @@
     },
     "model_policy_source_registry": {
       "path": "fixtures/model-policy-evidence/source-registry.v1.json",
-      "sha256": "6940a1a29b6d776b4611fcb863328032da0411a09a294a70cd8b0ac2afcaa9f9",
+      "sha256": "59266c6d5b07e5805fb169057b2277e9caeb81bcb33f71f6effe17ece09a87eb",
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE"
     },
     "naming_article": {
@@ -1679,7 +1679,7 @@
     },
     "permanent_role_external_review_consumer_fixture": {
       "path": "tests/fixtures/permanent-role-external-review-consumer.mjs",
-      "sha256": "36874b29c240f39a1a3184a19317201798e51e0ae418f7fc243a35aed4c320d4"
+      "sha256": "01b18f41029356c36b7984a66652a1ba0824a9aa4ac0952ae16e1e76a133868a"
     },
     "permanent_role_external_review_contract": {
       "path": "schemas/permanent-role-external-review.v1.json",
@@ -1691,7 +1691,7 @@
     },
     "permanent_role_external_review_verifier": {
       "path": "tests/verify-permanent-role-external-review-store.mjs",
-      "sha256": "3281e14660237741338679af7ef761ed8317ecdffb039199458b8d10abd7c765"
+      "sha256": "a47ebf396d44dce980173344801ace3849d70e92fd47a3a1135028363a1f218d"
     },
     "permanent_role_governed_admission_contract": {
       "path": "schemas/permanent-role-governed-admission.v1.json",
@@ -1703,7 +1703,7 @@
     },
     "permanent_role_governed_admission_verifier": {
       "path": "tests/verify-permanent-role-governed-admission.mjs",
-      "sha256": "3123595323a3ec3215a2a85b2f0efbd3dd4c832c072d2f6adf4e0faca1b82353"
+      "sha256": "f7932d42fb3086dd9c7a5472b0ad4acb88998b4da51f03076ecfc13130f5f92c"
     },
     "permanent_role_registry": {
       "path": "specialist-blocks/registry/permanent-role-registry.v1.json",
@@ -2611,7 +2611,7 @@
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "6ef8bfb6c229bb3000bfb9b297ab84214f546e68af3f52a801382d43c993771f"
+      "sha256": "613afe5dc29740455c4cf935011ec7a7eacacb0be2702fb8ab586b547379a867"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_caller_asserted_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/caller-asserted-qa.json",
@@ -2779,7 +2779,7 @@
     },
     "spawner_hostile_fixture_evaluator_controller": {
       "path": "control/spawner-hostile-fixture-evaluator.mjs",
-      "sha256": "778af4c79f68cc04ca8261ed942b2a8f5156543b504e9b75382c18a46c5ee719"
+      "sha256": "353c1d82e6151b2b383ae2609acd962a7c6ab989e6f95bce4adc6fb0608c5a21"
     },
     "spawner_independent_hostile_review_contract": {
       "path": "schemas/spawner-independent-hostile-review.v1.json",

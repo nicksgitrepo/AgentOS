@@ -8,7 +8,7 @@ import {GLOBAL_GOVERNANCE_MEMORY_GENESIS, compileGlobalGovernanceMemoryEvent, co
 import {getSealedCanonicalAuthority} from "../../control/sealed-canonical-authority.mjs";
 import {prepareInstalledGlobalGovernanceProvisioning} from "../../control/installed-global-governance-provisioning.mjs";
 
-export function compileTestGlobalGovernance({nowUtc = "2026-08-18T08:30:00.000Z"} = {}) {
+export function compileTestGlobalGovernance({nowUtc = "2026-08-20T04:15:00.000Z"} = {}) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
   const snapshot = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));
   snapshot.status = "ACCEPTED_ACTIVE"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null});
@@ -21,7 +21,7 @@ export function compileTestGlobalGovernance({nowUtc = "2026-08-18T08:30:00.000Z"
   return {snapshot, route, ...context, projection: (roleClass) => requireGlobalGovernanceRoleProjection({...context, roleClass})};
 }
 
-export function materializeTestGlobalGovernanceStore({authorityRoot, nowUtc = "2026-08-18T08:30:00.000Z"} = {}) {
+export function materializeTestGlobalGovernanceStore({authorityRoot, nowUtc = "2026-08-20T04:15:00.000Z"} = {}) {
   const fixture = compileTestGlobalGovernance({nowUtc});
   const directory = path.join(authorityRoot, "global-governance");
   fs.mkdirSync(directory, {recursive: true});
