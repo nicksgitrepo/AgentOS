@@ -13652,105 +13652,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.AUTHORITY_CONFLICT",
+            "fixture_id": "dependency-vulnerability-authority_conflict",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/authority_conflict.json",
-            "file_sha256": "6cc676dd9ca8fb9931c33cf3be84b7a45041587f8d38414288be22333520ba7b",
+            "file_sha256": "00ebaa3e9d1fc7a1996510d84a6ce0f241d672ae5e848b370e6f2225928f66b8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "dependency-vulnerability-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "f2b32c8f8444423bcf99c2d01069c885ce0380d33c7b9e348416aaff2874c03a",
+            "file_sha256": "efb891a8e217cf562d90c212ad98d09da04cbe3744436c4d991cd2a91f78e95f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "dependency-vulnerability-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "650b385674d4c4bc184f39421c2bf27a2144188398f73c460391a0b0ac4e8c78",
+            "file_sha256": "fe3c0f19f9dda2fd1bf22be1e7f5e1fcfbf1bbc5b0c7dc9f5572d20830914f9e",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.DATA_LIMIT",
+            "fixture_id": "dependency-vulnerability-data_limit",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/data_limit.json",
-            "file_sha256": "6b8759e3f6686277f39a884d6af76ad23bfcf49549544b12f31ed7225beb83df",
+            "file_sha256": "14468695aa2f4101c6f911aebfbc145276f855dc28f8a7c8e08e1c1a389f6ab2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "dependency-vulnerability-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "eae04d60a192ee9a264f8f4c0f8f95bdc1c4c7d0bad7b8278c207a4c593bf254",
+            "file_sha256": "d72183bc67f1643eee54ad0db1baca858b41fc01d434472f1e54bde8a4bd7c32",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.FALSE_POSITIVE",
+            "fixture_id": "dependency-vulnerability-false_positive",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/false_positive.json",
-            "file_sha256": "ca4957332ecda6463c0847d665dfbc4aa789f246ed62a5e3b57ee8353ee3985c",
+            "file_sha256": "1819fb9db1f9a0d5dcddfb8d9790854fb39b52f2a2b156b604ea8285b55fe731",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.HANDOFF",
+            "fixture_id": "dependency-vulnerability-handoff",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/handoff.json",
-            "file_sha256": "d64d0ffa97e0205cf30dfe3fcab625b5822d35f990d9d9ef45147c523e023e37",
+            "file_sha256": "f39aa297cbff46da5caea0096c74c166305845aadc55db8094fdac692fbea93c",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.MISSING_CONTEXT",
+            "fixture_id": "dependency-vulnerability-missing_context",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/missing_context.json",
-            "file_sha256": "e8da7d820aa55404035e0a00fe834e49a86856f4e6fa80e18958f76b0a6a4231",
+            "file_sha256": "1c029867ed963037744030c358c52bf43bf232138e6d1cb2efad4720b35fc9c9",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.NARROWNESS",
+            "fixture_id": "dependency-vulnerability-narrowness",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/narrowness.json",
-            "file_sha256": "4291c745b6b0e34f0ab109611ac6822ab056a96e21ca5b4b2fef3996a4d648d5",
+            "file_sha256": "506681ab5a96bf5a1ea93809a98650ebf374e955ccf44511109cf394be99ed26",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.ROUTER_SELF_ACCEPT",
+            "fixture_id": "dependency-vulnerability-router_self_accept",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/router_self_accept.json",
-            "file_sha256": "9c8ccf91c77be655cae9e6ac26eac4f594baaf0729afbbafd6569feb52e4fc6b",
+            "file_sha256": "976d777f408b416498686fe12117e6e9042a4dc3fa584fca197e974df9d329f6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.ROUTING",
+            "fixture_id": "dependency-vulnerability-routing",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/routing.json",
-            "file_sha256": "f52bbfacf04af9eed756eb4e4643a129585e081e7d742731b8a2db75fb78fa57",
+            "file_sha256": "6b63f6fdce13d53ce8297dadfd8af6efc76991f5e1f98d73aa73b38511235ff7",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "dependency-vulnerability-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/silent_scope_expansion.json",
-            "file_sha256": "8f29a49cf38143fa97da189678cfd069f1520676393fa20193daf053d7b43f7d",
+            "file_sha256": "2aa229ce6f57adc59abc6ae2e1d92fb652fbef4ed5f704f5e777a19d0e94bb4c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.STALE_SOURCE",
+            "fixture_id": "dependency-vulnerability-stale_source",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/stale_source.json",
-            "file_sha256": "29478f930b9adffcbe5925a749c2ecb4be3170159d608a3e8c3a3fcaf606eb31",
+            "file_sha256": "236fda31f92725196511037e6838134666cf8e054b8e1cab63632a04e101f02b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.TOOL_LIMIT",
+            "fixture_id": "dependency-vulnerability-tool_limit",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/tool_limit.json",
-            "file_sha256": "6d056b5262c519aefc2d9082e3d4ddb6f946e8581e9f3548a7d7f317d7161cc0",
+            "file_sha256": "38717c7a8246386ee89870560e01c3af896da94ce1d758db81424dcf359da42d",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.UMBRELLA_AUTHORITY",
+            "fixture_id": "dependency-vulnerability-umbrella_authority",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/umbrella_authority.json",
-            "file_sha256": "3baf16be828b2d64bc3896c3ab55a2405f302ee86f4a83fe3dc948aa59023899",
+            "file_sha256": "b24ff24795e2928e0b725ca5c0f094ddeac06ba4a02b8c10ae2658a3f1327ce2",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.UNRELATED_SCOPE",
+            "fixture_id": "dependency-vulnerability-unrelated_scope",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/unrelated_scope.json",
-            "file_sha256": "1f40eda512acd73174cd2bc64263c8742297c3d0dd5f1b4f7c609a4e5c258892",
+            "file_sha256": "c0573c87963830bb80a0dc3eea593075a508bf97075245c352ce1c96c156ed28",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.dependency-vulnerability.UNSAFE_ACTION",
+            "fixture_id": "dependency-vulnerability-unsafe_action",
             "path": "specialist-blocks/wave-03/dependency-vulnerability/fixtures/unsafe_action.json",
-            "file_sha256": "b63aedbb1dd85c2e97cbaad0e0ffecf8aa4841b4a3a01248b22ec8f490a826e7",
+            "file_sha256": "06fafa697c3220c148de6e09cd694b49664f6628c5b0e3110c14cbc1d7182537",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "b6cf4d78a4d7cb8c3d5eaee489f78619c109b1d6795f6ee501b6af24aace8ab6"
+  "roster_sha256": "dae25141a99f22bfff726df5a0622de53b6c17ce2a787a2953d66cd5c2de8fe9"
 }
