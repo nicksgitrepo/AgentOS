@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.domain.workflow-router",
   "class": "data_limit",
-  "expected": "ROUTE",
+  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {"entrypoint": "control/workflow-router-boundary-gate.mjs#evaluateWorkflowRouterBoundary", "request_kind": "CLASSIFY_WORKFLOW_SIGNAL", "adversarial_flags": {"protected_data":true}, "expected_readback": {"route":"PRIVACY_BOUNDARY_REQUIRED","error_code":"WORKFLOW_ROUTER_PROTECTED_DATA_FORBIDDEN"}}
 }

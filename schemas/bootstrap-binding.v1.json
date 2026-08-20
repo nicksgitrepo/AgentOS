@@ -3337,6 +3337,34 @@
       "path": "specialist-blocks/wave-06/search-router/handoff.json",
       "sha256": "fd0e84df5f3912b409a184af58086ca814c3856024888795f66493e02322eb80"
     },
+    "workflow_router_boundary_gate": {
+      "path": "control/workflow-router-boundary-gate.mjs",
+      "sha256": "c8b073f04e320dbeeda95a70b9732bb1a298454b78f24fdc82a435577545be30"
+    },
+    "workflow_router_boundary_input_contract": {
+      "path": "schemas/workflow-router-boundary-input.v1.json",
+      "sha256": "c0323f471046a660d32f350b4f7201dd0a75c75240be321157b657193f6eec49"
+    },
+    "workflow_router_boundary_result_contract": {
+      "path": "schemas/workflow-router-boundary-result.v1.json",
+      "sha256": "03ae0b6e79f0a72a8990cc3ea98ad5d9ff3ccfd926aca03b04001c2e7fb04942"
+    },
+    "workflow_router_package_operational_evaluation_contract": {
+      "path": "schemas/workflow-router-package-operational-evaluation.v1.json",
+      "sha256": "899c2ae750b3a535a87cc700fb74d47db505f635873584094546016f01c8b8e3"
+    },
+    "workflow_router_package_operational_evaluator": {
+      "path": "control/workflow-router-package-evaluator.mjs",
+      "sha256": "3be61569e716359bf5a2cddeaa22d0da8e9a330591cb17acbc3d99bd45be816b"
+    },
+    "workflow_router_boundary_verifier": {
+      "path": "tests/verify-workflow-router-boundary.mjs",
+      "sha256": "15543cad851436ee129f6b524d6cb7ff6ce7b3d87c3daf587bc05fc5ebcb5992"
+    },
+    "workflow_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-06/workflow-router/handoff.json",
+      "sha256": "ad36aa35736b939360218d45a73f27d2ed9d71b2efa615ec6d9261fc81feb243"
+    },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
       "sha256": "a9dcad2b29050cade8d726c7c2b7b3e44e00232ad9a09ecffe1e3be52c763ea8"

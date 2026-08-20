@@ -5266,103 +5266,103 @@
           {
             "fixture_id": "specialist.domain.workflow-router.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/authority_conflict.json",
-            "file_sha256": "d23b89f0eaa5a41733b7c3b41bf8fff404c83929fd2ed22bba49cf000778104f",
+            "file_sha256": "a397d8247a7024ebfdc8427512cd4c85c053aa960f719449089349fa26db60ec",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "137893d4718edfa48eca00c027ca37a1e18795bdf9ea4f5afe24c991a29f280d",
+            "file_sha256": "1e47661fef5f6a95353a333e47c74e773bf548da563e5a6ca6ec5e161f1b1f0e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "00f701c23c0684d086b1e34d5bf0f27544266f75e23d91f2b264c592f1e3c0bd",
+            "file_sha256": "f64a85bc075a6049adff73eb93b8685d47ab8e9d3294f1c820346ae01dbf61df",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.DATA_LIMIT",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/data_limit.json",
-            "file_sha256": "d463a28c550e12abd7892986b515c06d401269f8cc956bf1de35d3d702ff6e53",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "eee6a096452016214f81e907ee6d1a6e41304bfbc332c29d8980713d5685c9aa",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "b085629e9ec314bca0eb05cff30e8b75b244e63459a5e39843fc1625857a65ba",
+            "file_sha256": "d8aad107232d7b00093d2f1aa0fa4e7aeea4d47be2cef25015f57dde926a4cc6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/false_positive.json",
-            "file_sha256": "d471f5199e2b2503cb2dd1281a3d50be8be88cfa33d11b8d44ed55502bc987ab",
+            "file_sha256": "5570a1655f1d61d39163e213c0dea466d4e87685fda8871acfcf22b0a8fd96c9",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.HANDOFF",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/handoff.json",
-            "file_sha256": "62fdef3ffcc60af59b2007668a25fea6e7b084123a4f1ba7a728cce488cd6d2e",
+            "file_sha256": "1347fb4d79abb7f39876acb3cef930cf6724926003248d6e6501be941c8fe238",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/missing_context.json",
-            "file_sha256": "cadd639fcfed01e17e3c5b451803fe1d3f1781337fb6383e8fa3b9a92f9b49d7",
+            "file_sha256": "220b27550db7ee732ffce176f4768a42e4db9776cfc742a481d513ce832a31e1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.NARROWNESS",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/narrowness.json",
-            "file_sha256": "22ce44c3661f0ed8f77d82d5ac8f67b2b9a518e85870463a8eed097e7aef3f7d",
+            "file_sha256": "c7b514d7fb6b17bbf058f99a2310c3308a83ee16484287d8c0725db83d476312",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/router_self_accept.json",
-            "file_sha256": "c1e41a1b2d59c6463d379ddae474cf0e43f75c3c6d3733de64c4268119fae1d4",
+            "file_sha256": "ce5ea3a1f5f7e1f7ab65621d97160e48facc7fb848dd791142522fcbbc7811d2",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.ROUTING",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/routing.json",
-            "file_sha256": "6f2d714d35974aeb0a7e99b68af06d1550ddba2f3704f3522c02e78c280c2971",
+            "file_sha256": "48a2194b94aa33d246318a766040cb10e47ff1a838f4f079e0b877b9ba883e0d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "12ec93798a5504570ff6fb9312bf6b790bfd35726a02f2c2443a4d0c04295b44",
+            "file_sha256": "f1f92ab1dc1679f4088906670bd4f8d684a007fe2266b97f2053f1d6dd07c28f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.STALE_SOURCE",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/stale_source.json",
-            "file_sha256": "715268bef22152975b65a5c2ac2523f4948daed86bd157e8feb25ad240b20118",
+            "file_sha256": "b5e7159bf0fa7f0c27e6623566f34f6be92923e4b81252266f19cdb320b41ac5",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.TOOL_LIMIT",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/tool_limit.json",
-            "file_sha256": "f6a01a2489b4bdb314a8758083690c665b5a6b6080d92926941a172093707483",
+            "file_sha256": "f602b1311c49f1676c5af3130fa0bff960ada8f6da98d932fb1a9c1dda4debed",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/umbrella_authority.json",
-            "file_sha256": "478de267a7b64460abee0ef4f5c6d055a37d665427e909b784caefcdedd8b760",
+            "file_sha256": "416999f2152e842577951c3f32e9ff8751a09121f7409070c351ff2061b8f574",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/unrelated_scope.json",
-            "file_sha256": "ebf22eb406a06ef754ef195ab78090154af1acb06eb1973b997f45f7c723cee7",
+            "file_sha256": "38897477e162c3011dca34d177a349675c01279e7b5bdb0909d9c2ae1d41871d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.workflow-router.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-06/workflow-router/fixtures/unsafe_action.json",
-            "file_sha256": "0fa70a21c4cbdca3be2ca803cfe24ba6649232c3e9512a4b0d6d3e15208942a0",
+            "file_sha256": "2f00d587d9942ce590803843ec22ee6666105243c612785106f84589daad4bf2",
             "expected_outcome": "DENY"
           }
         ]

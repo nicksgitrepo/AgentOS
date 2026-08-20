@@ -5,5 +5,6 @@
   "class": "stale_source",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for stale_source; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {"entrypoint": "control/workflow-router-boundary-gate.mjs#evaluateWorkflowRouterBoundary", "request_kind": "CLASSIFY_WORKFLOW_SIGNAL", "adversarial_flags": {"stale_source":true}, "expected_readback": {"route":"SOURCE_REFRESH_REQUIRED","error_code":"WORKFLOW_ROUTER_SOURCE_STALE_OR_UNVERIFIED"}}
 }
