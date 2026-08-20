@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "6cd63096f749b87e885a606e082eb7e3f69a901a9b31462fc142f4752395949b"
+      "sha256": "c6eb8e70e18aa9fd349802b11cb6cd9f4ad6ea7ecb62172ca9d7ce9a52800583"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4542,6 +4542,26 @@
     "auth_cache_residue_candidate_handoff": {
       "path": "specialist-blocks/wave-03/cache-residue/handoff.json",
       "sha256": "c9535721c446f2932bc86acf3b032f4d1443139e3c84f77dd8bd98f1466e4e15"
+    },
+    "concurrent_authorization_boundary_gate": {
+      "path": "control/concurrent-authorization-boundary-gate.mjs",
+      "sha256": "d2e729b300772f184fb0ab6f5ecbdf0d34d2af543780dc950d8927ac9d0512d0"
+    },
+    "concurrent_authorization_boundary_input_contract": {
+      "path": "schemas/concurrent-authorization-boundary-input.v1.json",
+      "sha256": "70bed6c83b3808d5f3cdea80e69c7ee73835b2fd40206578c1508cf39c68b332"
+    },
+    "concurrent_authorization_boundary_result_contract": {
+      "path": "schemas/concurrent-authorization-boundary-result.v1.json",
+      "sha256": "ac41c517608b7f98fb5143e93296dc70d00d133862671850afd7ef38a6852cb8"
+    },
+    "concurrent_authorization_package_operational_evaluator": {
+      "path": "control/concurrent-authorization-package-evaluator.mjs",
+      "sha256": "04bee3a1dbb3a582e76b7fbb15f7e6084f105bb89b06de44e2329b7ac1c7622b"
+    },
+    "concurrent_authorization_boundary_verifier": {
+      "path": "tests/verify-concurrent-authorization-boundary.mjs",
+      "sha256": "5663068b8c934d86646adca6a65abc20a0d99377063b1450cd415381ca56d8df"
     },
     "worktree_custody_boundary_gate": {
       "path": "control/worktree-custody-boundary-gate.mjs",

@@ -12400,105 +12400,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.concurrent-authorization.AUTHORITY_CONFLICT",
+            "fixture_id": "concurrent-authorization-authority_conflict",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/authority_conflict.json",
-            "file_sha256": "dda0b70cee024392f111f334ed03fd6afe7cb486daa686b2a0cb2035b1b3f5ce",
+            "file_sha256": "4313269bccf1033b0be91e58447510972bbe03481b2daf78a7042c920f3b0a0a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "concurrent-authorization-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e9316a523816c6011becc44c270d9c9baa469db3df274b7a0c8af77244e7f7db",
+            "file_sha256": "5a526fee3d61cc54925f74ea309bb994cf42bdeaaf83d9bb63e770c8cf66eea5",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "concurrent-authorization-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "9702404b58c153c01fe7134a57bc065fbbfb4dd000f7ea6ce6945207a1bc9da7",
+            "file_sha256": "efda36ca79a01b16a619924ed6f141518bd7c1375236abf35f2343b1c22f08c4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.DATA_LIMIT",
+            "fixture_id": "concurrent-authorization-data_limit",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/data_limit.json",
-            "file_sha256": "a727f3f5b2945328496ce1b2882d125e621fc6ac662d25d19eb46e9fc3c06e1b",
+            "file_sha256": "b345360090ae6df180b3a9e94dbc97f87820b12832073dad1fb067943a48a2bc",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "concurrent-authorization-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "73dc0c1059e0192da7c3158ca5f2ab0de94e4ab6631f5e3858305e3be8633618",
+            "file_sha256": "62bde37507f160027f92bc40dcf683ddc583120d373155ca7d6547efcdeafda1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.FALSE_POSITIVE",
+            "fixture_id": "concurrent-authorization-false_positive",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/false_positive.json",
-            "file_sha256": "cbd8e7a2e5ede46351533df8d9f07503265afae8a4e90efb0a52fc139e351591",
+            "file_sha256": "5d0da67d9c0442fdc3e82c6d3e8cca88af4a78e9f11dd97e979115a8c6bf7f20",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.HANDOFF",
+            "fixture_id": "concurrent-authorization-handoff",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/handoff.json",
-            "file_sha256": "7eccbcae1a9f46814e1b243497e46142748d016a9307d8d9c4c3ac2d33ce33d7",
+            "file_sha256": "e20bd5626fe22af45d9f438d6a921bb6935e89bd211ea5ebcdda4aae01e49c27",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.MISSING_CONTEXT",
+            "fixture_id": "concurrent-authorization-missing_context",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/missing_context.json",
-            "file_sha256": "e5627a35846329cefc3ee49700d726e41f912a6259e98c026966faa9e36f737a",
+            "file_sha256": "35dea0272df19b31cb05be6aa04c3aa5edd20a3e1d3793c8ed13df868fdcba4a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.NARROWNESS",
+            "fixture_id": "concurrent-authorization-narrowness",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/narrowness.json",
-            "file_sha256": "1b9136d68637a80c154977a16de37598d0685970fe2429608bd669b4d112a7fb",
+            "file_sha256": "bca56dc22ab7406584c884ac91d6338b240603f88b56b82c360f369ba679e49b",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.ROUTER_SELF_ACCEPT",
+            "fixture_id": "concurrent-authorization-router_self_accept",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/router_self_accept.json",
-            "file_sha256": "c329218e481c803cd5271d0559debb2e4564db835322e0715f939e779b03d579",
+            "file_sha256": "89479f4f002efdb73024aafa0335cc0fa45e0e5bbcddcbe2b389b76d497cf137",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.ROUTING",
+            "fixture_id": "concurrent-authorization-routing",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/routing.json",
-            "file_sha256": "66bd2dff3d24cbf0892133c4c6462dab522b6977d3a1a92960f948a9fb6eda33",
+            "file_sha256": "d1b8d61dcf609ebe3f9cc8becf0c7ab44a2f507dfb01e078c0291f8054964894",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "concurrent-authorization-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/silent_scope_expansion.json",
-            "file_sha256": "c7868d959a7c5f67ed338189dfec094bf48d02d18833a1aae2a9b22f015e1b7e",
+            "file_sha256": "fbc252239a81dde39254d4e5b0e16d97c28fa2d1562c3f4875ddee1806ad5fab",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.STALE_SOURCE",
+            "fixture_id": "concurrent-authorization-stale_source",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/stale_source.json",
-            "file_sha256": "a26b72bcd1611306a3887d8cd0de63724019129ab95dcfb82324c438e47276fd",
+            "file_sha256": "de3cf8cba89604811d4cefc48e1d4e44c62c38d16847c7306bcf3fb3e42cbe01",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.TOOL_LIMIT",
+            "fixture_id": "concurrent-authorization-tool_limit",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/tool_limit.json",
-            "file_sha256": "d2bc14684e6edf27e0f988a58c028dcecf2e2e988d1f4de651edbbb78d8448a7",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "35fb4e8f284e5295e261e6ee30e67f4fcdeb0add12100343c641acf716de4b26",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.UMBRELLA_AUTHORITY",
+            "fixture_id": "concurrent-authorization-umbrella_authority",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/umbrella_authority.json",
-            "file_sha256": "c9c3cd406a7427d511f737ef88a2ac47644ccf257492a41e21767bc49766cec8",
+            "file_sha256": "14a86bbb827382a6255b94a2939c5ed5b17a7d3aafc22551c0eb1463e2ac89d4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.UNRELATED_SCOPE",
+            "fixture_id": "concurrent-authorization-unrelated_scope",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/unrelated_scope.json",
-            "file_sha256": "a414a4e0a9ae4cfbe2b415a87c0fb2b7af8d57d4de8f1e19e072e819a728e708",
+            "file_sha256": "370747eef1ff4cb8c82bb6301278ee44129cbe76b481c1984f59ce1949dfdf85",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.concurrent-authorization.UNSAFE_ACTION",
+            "fixture_id": "concurrent-authorization-unsafe_action",
             "path": "specialist-blocks/wave-03/concurrent-authorization/fixtures/unsafe_action.json",
-            "file_sha256": "fa4c5544a17610c3188b4b6d86de7a7530eb99c8482102c5caf99a62b7e30e94",
+            "file_sha256": "49e4042d18bff3dc93e33f2437aa8e167c062413d2ad0cd03ea887e663939934",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "2252eaf8ea46f5dc394d61d5aa03dfa4054bececf3b9194fcd95c7633b5233e3"
+  "roster_sha256": "35e1a9eab4b608b6db008a95a9aeae4a1b1557ec52b86c91b9933efb53a37a37"
 }
