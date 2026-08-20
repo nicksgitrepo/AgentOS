@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "befa582264984a861f49ea81f6c3f0519634718665d8cb08c1aed3e20ca4666c"
+      "sha256": "00047ade7dc1b0e43be641932641d66bd0dd1e95daff63c984752b918ae91b89"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3364,6 +3364,34 @@
     "workflow_router_candidate_handoff": {
       "path": "specialist-blocks/wave-06/workflow-router/handoff.json",
       "sha256": "ad36aa35736b939360218d45a73f27d2ed9d71b2efa615ec6d9261fc81feb243"
+    },
+    "accounting_router_boundary_gate": {
+      "path": "control/accounting-router-boundary-gate.mjs",
+      "sha256": "761301b43b8d1d61496de8d7021edd2256be9319d38c875a107a544f61fd5842"
+    },
+    "accounting_router_boundary_input_contract": {
+      "path": "schemas/accounting-router-boundary-input.v1.json",
+      "sha256": "768a7d2b334b63aa2f86ccd6c8670661471befd482af0a979dcae780bf84c219"
+    },
+    "accounting_router_boundary_result_contract": {
+      "path": "schemas/accounting-router-boundary-result.v1.json",
+      "sha256": "29342a9bbda8864e572977c29672afa420cbb4eddb840d99c5a1a05d5b80a36d"
+    },
+    "accounting_router_package_operational_evaluation_contract": {
+      "path": "schemas/accounting-router-package-operational-evaluation.v1.json",
+      "sha256": "6caae00af0182a929dd7c25b09987fae245a295af2fdaefdae2b77173fa3480c"
+    },
+    "accounting_router_package_operational_evaluator": {
+      "path": "control/accounting-router-package-evaluator.mjs",
+      "sha256": "d667079667ae67fb2799d6920538f88e4995e0f54f102996f47e0a816c2b2f9b"
+    },
+    "accounting_router_boundary_verifier": {
+      "path": "tests/verify-accounting-router-boundary.mjs",
+      "sha256": "05595e9efa6bb1dbbf83fe87c849a9f2640aa2a01c5f969e3d9e74ca5b65b3d0"
+    },
+    "accounting_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-06/accounting-router/handoff.json",
+      "sha256": "9de71488b1a81bc3e03c745f149f38255b59183afbc60b9f16cd40e1c7d0b2d7"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",

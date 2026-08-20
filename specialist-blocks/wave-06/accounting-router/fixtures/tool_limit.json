@@ -5,5 +5,6 @@
   "class": "tool_limit",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {"entrypoint": "control/accounting-router-boundary-gate.mjs#evaluateAccountingRouterBoundary", "request_kind": "CLASSIFY_ACCOUNTING_SIGNAL", "adversarial_flags": {"unsupported_tool":true}, "expected_readback": {"route":"PROFESSIONAL_REVIEW","error_code":"ACCOUNTING_ROUTER_PROFESSIONAL_REVIEW_REQUIRED"}}
 }

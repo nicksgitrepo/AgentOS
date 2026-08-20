@@ -5577,103 +5577,103 @@
           {
             "fixture_id": "specialist.finance.accounting-router.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/authority_conflict.json",
-            "file_sha256": "f5aeef44d6604a37dbdd3e8343522b86593d6499cdfe71e54bfc4e478cc94bfc",
+            "file_sha256": "0da7870a6fe1273933a8d496c9f8d697970fb7d38c1c82315e77d8c86da61439",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "58271a5520020c6cd747e01ee81737b3369d78a2dd514437d49ce583eb884e56",
+            "file_sha256": "1c57369684ba8452f370a0eded96ed20add12e5d1213438f470b6865066ff7ec",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "24e6448152fb5e2e632c5bd819f8b07f8b16bcbb285aa02cecfd015b6b7a079c",
+            "file_sha256": "7d04edd0cc8e7e9247167af1768a3e7fdb05eef2c47382fe8a2def59728ba809",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.DATA_LIMIT",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/data_limit.json",
-            "file_sha256": "a51d69bd277d634bcb521e2df7bbabbb785e96ac05849be9592bc1b899fc1cd8",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "2aa18462cb789d5dccc027c981b18ebe4ffea3c2b8d6ba7dc3c2c063b69d071b",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "bd5eb3f8af080a5302ba72dc580454e0fea8d2d78049828c75b1ca51621ba21f",
+            "file_sha256": "f1879a00319a950bcdc84ec4926ccf4004346ad2750552bd2bbd653cc6f7ab8e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/false_positive.json",
-            "file_sha256": "513d7ae94003f3c340f333b2a06a0b01756f8c0fdcd64ce3b79b21a56cfad4e9",
+            "file_sha256": "80830b7b50df5e83bee55a3a81bda9569f7190ac93dabb71d9bd08a2745dba9f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.HANDOFF",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/handoff.json",
-            "file_sha256": "7c68104365ea1feef76915c9c82d3dd858ed371cd09a3f7159123e22bda1c180",
+            "file_sha256": "0033557690bf2cc7817d1cf59a216426fb7eb00b9da503f3c624e625bb440cc1",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/missing_context.json",
-            "file_sha256": "5f7231a2966a8a99297b605eddfee7af306b081da39e98bd3bcdae959e002f23",
+            "file_sha256": "5cda80abfce04e737d74f48445c56e4e704e2c632d67f6a29cef2cc2b21a7d1b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.NARROWNESS",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/narrowness.json",
-            "file_sha256": "cae6223471ecf75b91e85cc646607a8e4b52447e699893a12830c271be2cdcb5",
+            "file_sha256": "6c35de9a64f8a8e2221c6926caef05aad3d44e2b048806e3fd46775daeb7fb4c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/router_self_accept.json",
-            "file_sha256": "f078df0015d162baaa96399cb5773bf1bb57c992791619c30ca93e8f32947782",
+            "file_sha256": "6d5d0abde0f15496c2d5bc4faa203d79240c3903a86ea40b4c90c00e30c6cae8",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.ROUTING",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/routing.json",
-            "file_sha256": "8ba1c89053e44d99045c2948da004db54b0a4200fdb41c6b3101a8a6a2af82b8",
+            "file_sha256": "765f719efcb542eeed475b7cdb382b4148e98c5e385fe8a85640fb5828956ca5",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "482386057faa44faec4481d9029258350e36443191589271bd10588ddde91d5c",
+            "file_sha256": "1ac6b5274d2ea653bb8f94b4cfcecfdb339d0c3a019dbccd9d19c04a18783566",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.STALE_SOURCE",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/stale_source.json",
-            "file_sha256": "6a677fb9733a1b8e6ce2840385bcb87776825e322276abcec5da0da1a51b2a8d",
+            "file_sha256": "f1fed83b8cd8f74c87d36a381ba78f36b5a8956c19fc50822df4bd39492bed84",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.TOOL_LIMIT",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/tool_limit.json",
-            "file_sha256": "5f10a66628a26dbad5bed935ebe6029c5ec1c6f96f3a09b3b6b4553bf4d4ea96",
+            "file_sha256": "0d8dad2833a74cece36f42744315756bcda61bb523c720b9d23c2df2e67b9318",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/umbrella_authority.json",
-            "file_sha256": "791045db8469327f05b706adebcef91d237ee46f678149584ab007fdd9897a60",
+            "file_sha256": "c5d432239644343259f41cf9c0595d4b0d9e355a20790118b50d21d419453e5e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/unrelated_scope.json",
-            "file_sha256": "cbd28005feed71bfa4b17bfa29706c308e58a2d1000da72358dc9484348e72a5",
+            "file_sha256": "ba4d430fc7c1cc1ee44379e404fa0538b3170fab5a2b8d8df9c437cc2b45d655",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.finance.accounting-router.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-06/accounting-router/fixtures/unsafe_action.json",
-            "file_sha256": "9ef9b998cf38fa5c04de0e0a61f408c960a90bf77c2975c128bca4574e6880c0",
+            "file_sha256": "f7511cdb437d159d2333b2083abe113380a6a5e185def166819968bd88f5439d",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "2eaea0f7e23d5cfd88dff3a3f571a553e8289fc1ce4088ab9c55b86b07f218b2"
+  "roster_sha256": "6118685b13f8c05c6c75cd133231ec90c1a1bfed74b363f97bc4cfa7071e0890"
 }

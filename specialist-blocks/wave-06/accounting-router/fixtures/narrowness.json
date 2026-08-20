@@ -5,5 +5,6 @@
   "class": "narrowness",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for narrowness; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {"entrypoint": "control/accounting-router-boundary-gate.mjs#evaluateAccountingRouterBoundary", "request_kind": "CLASSIFY_ACCOUNTING_SIGNAL", "adversarial_flags": {}, "expected_readback": {"route":"ACCOUNTING_ATOMIC_HANDOFF","error_code":"ACCOUNTING_ROUTER_ROUTE_READY"}}
 }
