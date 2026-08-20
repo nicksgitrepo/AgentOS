@@ -5,8 +5,8 @@
   "block_id": "specialist.security.router",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "c1c0cb8999e407c4524a3ac1913418b75e221becc89043cf3f44d158450c8a95",
-  "source_commit": "3c6cf8b420c7d4f54ba4c551266a4e27e3cdd913",
-  "source_tree": "a77308b8a879200cb2d0053fabc5c3284f1ba3a4",
+  "source_commit": "1a5a6d8e8893015eb41e7b1e7f09bdcdd0467560",
+  "source_tree": "557f57c0dafd6223e0f0908e03e6d46f3f68bfa4",
   "changed_paths": [
     "specialist-blocks/wave-02/security-router/block.json",
     "specialist-blocks/wave-02/security-router/evaluation.json",
