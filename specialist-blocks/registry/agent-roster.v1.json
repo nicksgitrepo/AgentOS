@@ -8847,9 +8847,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/android-kotlin/evaluation.json"
@@ -39724,17 +39724,17 @@
       "rank": 35,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 36,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 37,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "d3fcd0cf89a8e1e42e421d0022ed437d8a1210b9ebff19508cec604f38f602c2"
+  "roster_sha256": "65171af3bfb83af3a9b84efa297e923ea3353d43ac4cf160a5921e7179beeb7b"
 }
