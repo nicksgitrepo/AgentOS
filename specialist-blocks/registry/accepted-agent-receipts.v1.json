@@ -181,6 +181,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
+      "package_path": "specialist-blocks/wave-05/android-kotlin",
+      "candidate_commit": "e095247a88b6e331c4ac3d6ff882999746008c00",
+      "candidate_tree": "fb035ca891da91e6716d31eb04339cd54551ebad",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/e095247a88b6e331c4ac3d6ff882999746008c00",
+      "receipt_sha256": "88cbac35fffb39349de728fe35a556a162dbe9977a39242e261f4b92fb3f1479",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER",
       "package_path": "specialist-blocks/wave-05/desktop-offline-realtime-router",
       "candidate_commit": "9bb69747e917ad2987ac153d34c7e4d15ef2484d",
@@ -341,5 +351,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "0bac1fcdecceb0852c5c417c9ab02092f1223f84fb107920a9e5f769c9ff0f5a"
+  "ledger_sha256": "f687b33771553be3b16075ec1abc6325b2611123bc4bd9465ca57e40f9aa0e98"
 }
