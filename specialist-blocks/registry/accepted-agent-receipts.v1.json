@@ -281,6 +281,36 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_CONCURRENT_AUTHORIZATION",
+      "package_path": "specialist-blocks/wave-03/concurrent-authorization",
+      "candidate_commit": "f7824fa83b9def7772b41328fb5ab0feb8ad35bc",
+      "candidate_tree": "fcd174bca946fd7e875c22036651ac6b88e13035",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/f7824fa83b9def7772b41328fb5ab0feb8ad35bc",
+      "receipt_sha256": "d75a40b6c45bf3794d077f20e95d00326b711a19b6a96ea6fb77cb5b5653cd2b",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
+      "stable_agent_id": "AGENT.SECURITY_CVE_APPLICABILITY",
+      "package_path": "specialist-blocks/wave-03/cve-applicability",
+      "candidate_commit": "5b7447d2fb8eba0abc4d3d46e0e78a8f8fb92355",
+      "candidate_tree": "4c5d55bf9368f0f56ba989c77e30a0d78c376250",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/5b7447d2fb8eba0abc4d3d46e0e78a8f8fb92355",
+      "receipt_sha256": "36e258e57a9ff1ac988b261b0304c93d68ec207f8608da618ac4d336f184840f",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
+      "stable_agent_id": "AGENT.SECURITY_CVE_INVENTORY",
+      "package_path": "specialist-blocks/wave-03/cve-inventory",
+      "candidate_commit": "5c06a7971f8d3aaaa105135d96514b1737dde5bf",
+      "candidate_tree": "746114186f7c6940a0010d1a706ba951b6f80f4c",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/5c06a7971f8d3aaaa105135d96514b1737dde5bf",
+      "receipt_sha256": "ffa345c5eb21446b4b7b6f9d42af8767ff6cf292d0ac2988ac45f8c8286636a6",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
       "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
@@ -401,5 +431,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "3306d6d2ee95009c30f975f674325f4bd46f435bf6b5fd9f691ec3aba5570a9e"
+  "ledger_sha256": "029ea8be38aed85691385c1f55d1d2f3fe876992c73e984aed1464b1b11e8006"
 }
