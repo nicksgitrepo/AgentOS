@@ -59,9 +59,11 @@ from the accepted global model-policy snapshot, with freshness, availability,
 context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
-The current queue item is `AGENT.DATA_ROUTER`. Its package, gates, hostile
+Security Router and Data Router are accepted from their exact independent
+receipts. The current queue item is
+`AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_ROUTER`; its package, gates, hostile
 vectors, model route, and local proof are next for one-at-a-time qualification.
-Security Router is accepted from its exact independent receipt. All other
+All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.

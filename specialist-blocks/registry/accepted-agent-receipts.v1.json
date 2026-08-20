@@ -11,6 +11,16 @@
   },
   "entries": [
     {
+      "stable_agent_id": "AGENT.DATA_ROUTER",
+      "package_path": "specialist-blocks/wave-02/data-router",
+      "candidate_commit": "ad8f1a84c673d00a6f000067f836731884dfcd51",
+      "candidate_tree": "a215f563994a929af1e7fb1c6d51b80071c546ac",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/ad8f1a84c673d00a6f000067f836731884dfcd51",
+      "receipt_sha256": "3e9a47b92bd2043a9187577118e1ebae655e15b8bd892fe6850f709833b97036",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -81,5 +91,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "0f175d2f85a96d676425baf6e18a15775b8022c341f2a04c6d76cd9641fe6077"
+  "ledger_sha256": "7d5394e3d90967bda613bb8191215fa4071f56b7984c9539f1ff994d0fb8cc9b"
 }
