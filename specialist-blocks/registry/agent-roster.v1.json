@@ -8534,9 +8534,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/accessibility-wcag/evaluation.json"
@@ -8686,103 +8686,103 @@
           {
             "fixture_id": "specialist.product-client.android-kotlin.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/authority_conflict.json",
-            "file_sha256": "7664554043e097a4129c522d4665773f9fa30b61667cfff79d1f94df7eb7ac27",
+            "file_sha256": "a223315333da12aba5806ee6089c07ef7e606914a701f94e949a7599e0da823e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "f1f7e808ba6b4278b09b0d51cb3fffb62f48c65fc652a4447112819236360eca",
+            "file_sha256": "b91092a9de7650c855a053d72f795c83287eaa839b77556cee18ccd5340505f7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "d6edad2ca321b972fd36d4c4e2efec400bca89a161c5e351c2ee61ea8dfbdb6f",
+            "file_sha256": "0f0d9b79a8b589354e1359343d1154adfb0da97c2f3a1841377395ceb9a69e95",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.DATA_LIMIT",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/data_limit.json",
-            "file_sha256": "2713c4b1cb27ad6c623537e667879d9770c20eae16610e9a7966d2fe5602aa27",
+            "file_sha256": "b6aaf35590f962fe6d8ff957282604bd5cf066e0dbd0f844f3c496d1d74d296a",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "f22c2e107aaa5a41b57cff88eaa34e80f0e3690d3b994c22d76c3edab59b0848",
+            "file_sha256": "ccf8bda2dc70d9de74eae01849077dd1e481093e0849894b00f78cb803f06949",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/false_positive.json",
-            "file_sha256": "f0a895714bc6baa860ef279ad257d8e21e0a5e6a86751147603c0be3562709b4",
+            "file_sha256": "7e5e4bea1de5ff6a47f58051ad5b51accc430ac46200ed0eaec84f04a3f96df0",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.HANDOFF",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/handoff.json",
-            "file_sha256": "d854543002eb1da953b97b42a7c02f2f634d17d06540d643debb750d3656e7d9",
+            "file_sha256": "33e29e58dc3bf563914a3f151c04f87857159db8e3f5837b29415c628061503d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/missing_context.json",
-            "file_sha256": "62e7139421803577fa90a4a90883aa5a2d9e800b804b50c491d746a6f8696dc2",
+            "file_sha256": "a1ff9cf77d1c76c2986c652e3d51d52892220e3d0992dce1d3b0a53c6ef77987",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.NARROWNESS",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/narrowness.json",
-            "file_sha256": "5f3fef618e1a313e8cc7e696a4c76e1d30fc219a119f88e3659a1d0d74f4e8b1",
+            "file_sha256": "1123db4450f3bf4d9b3a3f8e0f5304242e562b10711851cebed6f8b86d788f07",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/router_self_accept.json",
-            "file_sha256": "3f2e816fe1987ee59c08d6de1e5074949a5d7697f3c1f1d3410adf168fdc6298",
+            "file_sha256": "ed76d9c8256fe07340d5bca4d70d04c9642f769f3dfbde7e0e417d5084e65b3b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.ROUTING",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/routing.json",
-            "file_sha256": "3bdbcd7d8fcdf196ac6c348446380a2b460dc59f52d75665452082439cd18bc3",
+            "file_sha256": "f8d79777a6e1ddcfb0dda646794e1915c1cbeaa6901fe71a44b0e686612716b2",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/silent_scope_expansion.json",
-            "file_sha256": "52ad77b90cbf77fecee74c035af83b620363f3c459fe81cd9944d5bd33585e8c",
+            "file_sha256": "d2692289f462a5ec8564e292a0b3a22a0e2f567ba8db99ab76a6ca9a35c0ee6f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.STALE_SOURCE",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/stale_source.json",
-            "file_sha256": "25dcc3ab0f0169e4725974ed636e7c1cb17a679b9c02c5117186800c4b054f01",
+            "file_sha256": "2cfe33fffa25cd9fe5f0c5b132a4028c7f9cf9af45b995e3eed8617392a8c151",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.TOOL_LIMIT",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/tool_limit.json",
-            "file_sha256": "74d3cee2d2037e23088cb363da8f5f9d4ebe67491ffec57474d7d33ab35fc76b",
+            "file_sha256": "c42053c2765ebbfb7f774f3da2860f5a6cddc3ba0b3558504f140c8696efaf7a",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/umbrella_authority.json",
-            "file_sha256": "b0ba792bef1319186e15a03fffefbbc6813afb53df828ac9c680ad50f6d4da9e",
+            "file_sha256": "1d3065c550a7d9305ea1fa371f69c55da33ce70eaa224f70a1faa6fde87d422c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/unrelated_scope.json",
-            "file_sha256": "3d010c1295fe788e7d8fab42b6a2afa55b225f01419657c152b145ff342e171a",
+            "file_sha256": "909f53b23b19477e0156195e632c11a0414dd888c885a924ddbe240cf63f9b29",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.android-kotlin.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-05/android-kotlin/fixtures/unsafe_action.json",
-            "file_sha256": "202db79d919920e5c31ffa390dc2ff00113303161d226708d25ad7a1fd72b3f0",
+            "file_sha256": "0a7de3e6ac39a5af2605f9f324f4ee10740f460f856996a325c0312582347b0a",
             "expected_outcome": "DENY"
           }
         ]
@@ -39716,17 +39716,17 @@
       "rank": 34,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ACCESSIBILITY_WCAG",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 35,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 36,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "673eefb6590b056a341ac84070ab9be1ae0a26165295cb0485f8192e73d40fc6"
+  "roster_sha256": "877bb62d980f6e6bb1a37b3bed9e9dbc5b8befe90e753a56cdaddd3b36783659"
 }
