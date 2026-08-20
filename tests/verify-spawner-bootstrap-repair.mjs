@@ -111,7 +111,7 @@ const admission = compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.TEST
 assert.equal(admission.status, "READY_FOR_INERT_SEED");
 assert.equal(admission.block_evidence.length, SPAWNER_BLOCK_LAYERS.length);
 assert(admission.block_evidence.every((entry) => fs.existsSync(path.join(root, entry.artifact_path))));
-assert.throws(() => resolveCanonicalSpawnerBootstrapPackage({}), /already consumed|external review/iu);
+assert.equal(resolveCanonicalSpawnerBootstrapPackage({}).spawner_package.package_sha256, admission.spawner_package_sha256, "the one consumed review remains bound inside the current sealed bootstrap process");
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.CALLER", spawnerPackage: blockPackage, applicableBlocks: [{status: "PASS"}], globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.MISSING_LAYER", requiredLayers: SPAWNER_BLOCK_LAYERS.slice(1), globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied applicable layers/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.FORGED_PROJECTION", modelPolicyProjection: projection, globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied model-policy/iu);

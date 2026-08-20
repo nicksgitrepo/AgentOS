@@ -2639,7 +2639,7 @@
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "613afe5dc29740455c4cf935011ec7a7eacacb0be2702fb8ab586b547379a867"
+      "sha256": "f2feffad0612f8ed4015821217ba9c1076f3602f9906e80aede57c0b96820660"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_caller_asserted_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/caller-asserted-qa.json",
