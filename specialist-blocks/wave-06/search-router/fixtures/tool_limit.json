@@ -5,5 +5,6 @@
   "class": "tool_limit",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {"entrypoint": "control/ai-search-router-boundary-gate.mjs#evaluateAiSearchRouterBoundary", "request_kind": "CLASSIFY_SEARCH_SIGNAL", "adversarial_flags": {"unsupported_tool": true}, "expected_readback": {"route": "TOOL_CUSTODY_REVIEW", "error_code": "AI_SEARCH_ROUTER_TOOL_REVIEW_REQUIRED"}}
 }
