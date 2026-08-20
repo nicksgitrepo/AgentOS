@@ -9466,9 +9466,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/ios-swiftui/evaluation.json"
@@ -9861,62 +9861,62 @@
           {
             "gate_id": "00-intake",
             "path": "specialist-blocks/wave-05/product-interaction/gates/00-intake.gate",
-            "file_sha256": "534680da465fd45a74b024a8e0434bcbe8a4016e8569deeec6dca813cdfb50bb"
+            "file_sha256": "c8d177fd6fe1396e726cf39ccd37113c010c260bb14986c6a5d4c0d7425e358d"
           },
           {
             "gate_id": "01-applicability",
             "path": "specialist-blocks/wave-05/product-interaction/gates/01-applicability.gate",
-            "file_sha256": "749b2b266d6a12492f7ea0c36111cf7625fe79d87a6f4dbe99f8dd8865a24954"
+            "file_sha256": "32e0634c94857e1ded9271d1f8661ad9f8a0ee76ed719d71d526c1047de5d582"
           },
           {
             "gate_id": "02-authority-precedence",
             "path": "specialist-blocks/wave-05/product-interaction/gates/02-authority-precedence.gate",
-            "file_sha256": "d71ec370e394d5e54673b36169cb05ce8fb0f1d1afccc050592b411234b1c150"
+            "file_sha256": "05552a1d297d384a9dd1added1d2385d86d1a633428544d566029015b73effd8"
           },
           {
             "gate_id": "03-scope-nongoals",
             "path": "specialist-blocks/wave-05/product-interaction/gates/03-scope-nongoals.gate",
-            "file_sha256": "5778a470d71e7c368a061d2349ca2f1e7d48e00328665d02ae8ff32d77ddf3f1"
+            "file_sha256": "d170594670dae73a4ac17ab0ddd4ba2b06390dc5327712355a62f2c101606870"
           },
           {
             "gate_id": "04-source-evidence-freshness",
             "path": "specialist-blocks/wave-05/product-interaction/gates/04-source-evidence-freshness.gate",
-            "file_sha256": "06d6be7983f227e48038d69edfc752d77e898fe68ad0148bc5ea0667b02bacd8"
+            "file_sha256": "ac367b1618648a4e4bf3a58a3346cdffcd7adcae64160c35c6ca0a1e0e06e846"
           },
           {
             "gate_id": "05-context-completeness",
             "path": "specialist-blocks/wave-05/product-interaction/gates/05-context-completeness.gate",
-            "file_sha256": "eee0bbb481253800287e7433cb1d8c2e7bb62e1275a7469dcf9ac0ab23a819cf"
+            "file_sha256": "c58eaf5248f1aa8c7201bee1043e774395d08a2b20b5e4e9508ff1119348ab84"
           },
           {
             "gate_id": "06-tool-resource-custody",
             "path": "specialist-blocks/wave-05/product-interaction/gates/06-tool-resource-custody.gate",
-            "file_sha256": "08ee20b901e6d3282233d3b068f514e25f7793cc5cb6d266b96e8cf3fb2e9634"
+            "file_sha256": "44748b922ea6298ab5d51f879129eecf72efb663212141d6404cd040f1b31c87"
           },
           {
             "gate_id": "07-data-secret-privacy",
             "path": "specialist-blocks/wave-05/product-interaction/gates/07-data-secret-privacy.gate",
-            "file_sha256": "9c3c82ce0450343efee03345e8fee765bdb422c4d68c1c7a57606c1c9567418a"
+            "file_sha256": "72102438e034fa0dbd38466adb5fa3d563e679958d1ff522188c6639b9fc7d7e"
           },
           {
             "gate_id": "08-build-browser-runtime",
             "path": "specialist-blocks/wave-05/product-interaction/gates/08-build-browser-runtime.gate",
-            "file_sha256": "0797840ae76c02aaa1a81261f71eadba975702665d42406a68292f658116cb9b"
+            "file_sha256": "26150043cc36af0ba63300e9f713cc96fdaf2cf7844570fb6fed9a83c8062b12"
           },
           {
             "gate_id": "09-output-handoff",
             "path": "specialist-blocks/wave-05/product-interaction/gates/09-output-handoff.gate",
-            "file_sha256": "ba6a035ca56a95d2100fc725e7e0701ac130d36ce59b0a65cc13009f39ccf5af"
+            "file_sha256": "d84aa4ffc0cc96ba75f4005a268fc4d77e1fa3b8e97b5dfb6dafbf32ac7daf3b"
           },
           {
             "gate_id": "10-proof-acceptance",
             "path": "specialist-blocks/wave-05/product-interaction/gates/10-proof-acceptance.gate",
-            "file_sha256": "46bfed1bf41af953681b6859c05cdd430a2790a73773cfa3c95da73c9dec29b0"
+            "file_sha256": "588542ea1c648ba229b056bdab2237f630b38d1cba4a574b63b773308cc46575"
           },
           {
             "gate_id": "11-lifecycle-recovery-archive",
             "path": "specialist-blocks/wave-05/product-interaction/gates/11-lifecycle-recovery-archive.gate",
-            "file_sha256": "2a87804df3fb31cdb18a7503d373589d0e98c81237e1dfc15814338bc0b924b2"
+            "file_sha256": "d6f4f400e36dbd5c83a4fc057ca3e55056cd863a32add0491699e5055ebf6621"
           }
         ]
       },
@@ -9926,103 +9926,103 @@
           {
             "fixture_id": "specialist.product-client.product-interaction.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/authority_conflict.json",
-            "file_sha256": "9957fb79c12eade679937329523a84d095af9c75805b79b0499ca8c2b2bdd4e6",
+            "file_sha256": "ac1ac3eea2f10deda20e3ce2e72de97dbc36870c718d36f15b30069ccb5427d7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "07acfe89e5578373942008ecf9fee3eb8bad05d5a5c2e2facd42378a4cc8ef1a",
+            "file_sha256": "7e6ba81363d3c8fcc9435fc0cfb77f2a309d3104721c3b74e29259ef8ae699ab",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "69aa2753f4b837a3f15ea3cc68425cec9cfe3412119c625244bd5579c61608b5",
+            "file_sha256": "831b78e3d811823a3d1dbc2cde92da9b49c4c5e99825cdc1214685aa3a9339b0",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.DATA_LIMIT",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/data_limit.json",
-            "file_sha256": "11047009b0d973429febd9ad25bb5dab9d30365121fb71ecba87be9e33d61ad2",
+            "file_sha256": "435e2cad3134adfaa0b0962c959862944170a51a993c1e2e9277a418290cfbe8",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "2ed1dad3afc75ba55dc05e84d8bbcfc859d76b2ec40d7bf020b9e983bdcbe7c6",
+            "file_sha256": "6ac345204a59c2d8eab915c55fb57a40ed70c9300c1394a8063f5102a368bb3a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/false_positive.json",
-            "file_sha256": "8efb0a8948bd89cda2dcc6f5e31d32fb87ed0a9c6ec2e95a8c13ae51df5821ac",
+            "file_sha256": "7630e6a00b59131a31e0a0952c2d9f84556fad8efeb3adfb041234ed6dfe64a4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.HANDOFF",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/handoff.json",
-            "file_sha256": "9751344d39317a6b5cebdadf82870901795f0707f0dbfc8f7e1b3e4afc8f36e7",
+            "file_sha256": "d53459cf014bdeab790489394debf59f3093382d3febb127ab627e8f81279f2c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/missing_context.json",
-            "file_sha256": "67c997b73fb182df78ef233714d01c10cc4e008ad962f90303132e0cfcd516fe",
+            "file_sha256": "afe63b76e5057b8af499430ec1edb5949deff1495fcc9677d73c31fcc4f8f192",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.NARROWNESS",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/narrowness.json",
-            "file_sha256": "3e19eaa200109f6afc100d2a9eeeb5841f06a4a43675899040868d39469e4827",
+            "file_sha256": "5ca3837557eb838446c07a040d531566869a7fa490bb28745c4cc00c79013132",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/router_self_accept.json",
-            "file_sha256": "2603a3cc1de2b090fc357a4d21b6de4b4bcbfb4b03646c5021e22258674f31d0",
+            "file_sha256": "1257755a73d10a84e5d29ec275f7e9a19da46c5015a7cb448eebb008adf5ca8d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.ROUTING",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/routing.json",
-            "file_sha256": "b34ab5a3fb3f09d409e0ca1ef412b14ea5452ebf726db217bb7442fb475dffe0",
+            "file_sha256": "dc6e0302c35db95b426cfff051c3f0ef738b134041c24ec3ad8f12a16f5575ae",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/silent_scope_expansion.json",
-            "file_sha256": "a03cfa0841fc1eeb5b56d54ccd7eee6bb3e80df3920e019fb66061c36ab5480d",
+            "file_sha256": "5f55d44e1be520345bf607ed268f846ab74cd542574651d159347423599ecfd1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.STALE_SOURCE",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/stale_source.json",
-            "file_sha256": "c0513be3bd771183e76daed062f1df98aa21971aefe2ff06e0b61535f8612e3f",
+            "file_sha256": "663650ec5303b6051033ab52b7462e1e8fd9bcc5b362c68f4cbfc648d3b8bac1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.TOOL_LIMIT",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/tool_limit.json",
-            "file_sha256": "5ec385963923cf2b580fec6d3b8ea8a997fc040b5821c27b9873e3a0bc5eff3b",
+            "file_sha256": "30c2bc8266b8227ba10846e2ad307f8810af4a6769070a2d6fe2f8553c7d66ad",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/umbrella_authority.json",
-            "file_sha256": "ef9cfccb74e56966bf767c35dbce6be45debe147f873c869a05ccb40023ced05",
+            "file_sha256": "560769ec324c62c19d2d29930cf564d0241ecc97b0d1a6a5213bdd4015ffdd6f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/unrelated_scope.json",
-            "file_sha256": "85ba111d9bbf9bb90f732d8dea486556ee583a84f6549fffabb00d07035bb7fe",
+            "file_sha256": "a1c7c8c65bf5ee4afbdbd69040fc329f91190caf27cf680661b24634f55d6e5f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.product-client.product-interaction.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-05/product-interaction/fixtures/unsafe_action.json",
-            "file_sha256": "3a4e4936f6cb9be85c050e7d4f09fefd8061bfefefb2ea3496afee5013eaba46",
+            "file_sha256": "3a1ac78ffc54e50722e9eb53ccb0cbb4db7f4b9c771d083975027269d6a483a4",
             "expected_outcome": "DENY"
           }
         ]
@@ -10035,7 +10035,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-05/product-interaction/handoff.json",
-        "handoff_file_sha256": "d557da05d71b35e014f206c8dff665002e58ab94d929dcd8975ee6ca515df0e3",
+        "handoff_file_sha256": "4d1a53e543e69aa391a8043f3343a6e79db894f5a8f4385a6ef6acb959f46e44",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.product-interaction.v1"
       },
@@ -10400,9 +10400,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/responsive-web/evaluation.json"
@@ -39732,17 +39732,17 @@
       "rank": 36,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 37,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_PRODUCT_INTERACTION",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 38,
@@ -39750,7 +39750,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 39,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "f58d0f81fd69232e442230c69631031ae733a333ad0fff444938da62b2b8d654"
+  "roster_sha256": "c3d967196d11103ebb595b2058a0191331f2f7eef32e1de49061bd241b55730a"
 }
