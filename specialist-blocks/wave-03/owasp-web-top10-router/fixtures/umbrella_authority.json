@@ -1,9 +1,95 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.security.owasp-web-top10-router.UMBRELLA_AUTHORITY",
   "block_id": "specialist.security.owasp-web-top10-router",
   "class": "umbrella_authority",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable typed adversarial vector for umbrella_authority; no project, consumer, secret, or provider data.",
+  "vector": {
+    "entrypoint": "control/owasp-web-top10-router-boundary-gate.mjs#evaluateOwaspWebTop10RouterBoundary",
+    "input": {
+      "schema": "agentos.owasp_web_top10_router_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_OWASP_WEB_TOP10",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "security_domain": "OWASP_WEB_SECURITY",
+        "control_identity": "CONTROL.OWASP_WEB_TOP10_ROUTER",
+        "control_activity": "CLASSIFY_WEB_TOP10_APPLICABILITY",
+        "control_entity": "WEB_APPLICATION_SECURITY",
+        "control_scope": "VERSIONED_OWASP_WEB_TOP10_APPLICABILITY",
+        "control_version": "1",
+        "policy_status": "CURRENT",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.OWASP_WEB_TOP10_2025",
+        "source_version": "2025",
+        "source_effective_date": "2025-05-30",
+        "source_retrieved_date": "2026-08-20",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "security_signal": "SECURITY.OWASP_WEB_TOP10",
+        "signal_status": "BOUND",
+        "task_status": "OWASP_WEB_TOP10_CLASSIFICATION",
+        "context_status": "OWASP_WEB_TOP10_ROUTER_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ROUTE",
+        "requested_tools": [
+          "READ_OWASP_WEB_TOP10_SIGNAL",
+          "READ_SOURCE_LOCK",
+          "READ_OWASP_WEB_TOP10_CATALOG",
+          "READ_CONTEXT",
+          "READ_APPLICABILITY_RULES"
+        ],
+        "required_block_identities": [
+          "BLOCK.SECURITY.AUTHORITY",
+          "BLOCK.SECURITY.EVIDENCE",
+          "BLOCK.SECURITY.SCOPE",
+          "BLOCK.SECURITY.CUSTODY",
+          "BLOCK.SECURITY.HANDOFF",
+          "BLOCK.SECURITY.ROUTER"
+        ],
+        "model_policy_status": "CURRENT",
+        "model_route_status": "BOUND",
+        "standard_edition": "2025",
+        "verification_level": "A",
+        "applicability_status": "BOUND",
+        "authority_scope": "OWASP_WEB_SECURITY",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "verification_requested": false,
+        "acceptance_requested": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": true,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "OWASP_WEB_TOP10_ROUTER_SCOPE_EXPANSION_FORBIDDEN",
+      "external_side_effects": {
+        "source_reads": 0,
+        "protected_data_reads": 0,
+        "verification_runs": 0,
+        "standard_mutations": 0,
+        "memory_writes": 0,
+        "acceptance_calls": 0,
+        "credential_accesses": 0,
+        "state_changes": 0
+      }
+    }
+  }
 }

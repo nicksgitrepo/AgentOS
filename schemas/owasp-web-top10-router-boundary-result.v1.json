@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/owasp-web-top10-router-boundary-result.v1.json",
+  "title": "Project-agnostic OWASP OWASP_WEB_TOP10 applicability router result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "routing_allowed", "acceptance_allowed", "verification_allowed", "standard_mutation_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.owasp_web_top10_router_result.v1"}, "version": {"const": 1}, "disposition": {"enum": ["DENY", "ROUTE"]}, "route": {"type": "string"}, "routing_allowed": {"type": "boolean"},
+    "acceptance_allowed": {"const": false}, "verification_allowed": {"const": false}, "standard_mutation_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["source_reads", "protected_data_reads", "verification_runs", "standard_mutations", "memory_writes", "acceptance_calls", "credential_accesses", "state_changes"], "properties": {"source_reads": {"const": 0}, "protected_data_reads": {"const": 0}, "verification_runs": {"const": 0}, "standard_mutations": {"const": 0}, "memory_writes": {"const": 0}, "acceptance_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
+    "error_code": {"type": "string"}, "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "selected_owner": {"type": "string"}, "handoff": {"type": "object"}, "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
