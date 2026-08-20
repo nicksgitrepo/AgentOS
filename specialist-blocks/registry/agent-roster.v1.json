@@ -12565,9 +12565,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/concurrent-authorization/evaluation.json"
@@ -12879,9 +12879,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/cve-applicability/evaluation.json"
@@ -13193,9 +13193,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/cve-inventory/evaluation.json"
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "8e5bda3b007f7b3c3c39fd1f8f1a97886fcb9c0d54d3d1f592f621972f72cce3"
+  "roster_sha256": "323c8001edbbd208a9d278887d1e30af2b711ca70a7855f500e71f3ff6052bc5"
 }
