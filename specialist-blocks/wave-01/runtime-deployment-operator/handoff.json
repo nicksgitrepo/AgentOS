@@ -40,13 +40,7 @@
     "specialist-blocks/wave-01/runtime-deployment-operator/gates/10-proof-acceptance.gate",
     "specialist-blocks/wave-01/runtime-deployment-operator/gates/11-lifecycle-recovery-archive.gate",
     "specialist-blocks/wave-01/runtime-deployment-operator/gates/manifest.json",
-    "specialist-blocks/wave-01/runtime-deployment-operator/sources.lock",
-    "control/runtime-deployment-boundary-gate.mjs",
-    "control/runtime-deployment-package-evaluator.mjs",
-    "schemas/runtime-deployment-package-operational-evaluation.v1.json",
-    "tests/verify-runtime-deployment-package-evaluator.mjs",
-    "schemas/bootstrap-binding.v1.json",
-    "specialist-blocks/registry/agent-roster.v1.json"
+    "specialist-blocks/wave-01/runtime-deployment-operator/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",

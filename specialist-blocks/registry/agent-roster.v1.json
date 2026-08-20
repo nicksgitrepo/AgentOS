@@ -29194,7 +29194,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-01/runtime-deployment-operator/handoff.json",
-        "handoff_file_sha256": "ae51699b6386add0eb7117632c056b61980eb6be5ff89814caa698e9cbe59a72",
+        "handoff_file_sha256": "4aad0509753b2c7fe691811edbe1ebccf5b195ab426b00526bda2aa75c105060",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.runtime-deployment-operator.v1"
       },
@@ -39983,5 +39983,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "74ca6e796e2202d34944a5e9b4b4942b82eaf366c4394157f811bac44191739b"
+  "roster_sha256": "b170aa4747b1552ae45bcc3af9858248b468a5f4b4836e2c1317f5e63ac9ae5c"
 }
