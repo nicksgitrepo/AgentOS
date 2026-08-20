@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/release-manager-boundary-input.v1.json",
+  "title": "Project-agnostic Release Manager boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.release_manager_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string", "enum": ["ASSESS_RELEASE_READINESS", "CLASSIFY_VERSION_CHANGE", "RECONCILE_ROLLBACK_PROOF", "ROUTE_RELEASE_HANDOFF", "NOT_APPLICABLE", "UNRELATED_REQUEST", "MERGE", "DEPLOY", "PUBLISH", "ACTIVATE", "APPROVE", "ACCEPT", "SPAWN", "ADMIT", "ARCHIVE", "DESPAWN", "WRITE_PROJECT", "WRITE_MEMORY", "SELF_REVIEW"]},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_status", "custody_status", "custody_owner", "custody_ref", "source_status", "source_identities", "release_identity", "release_digest", "release_status", "release_scope", "requested_action", "signals", "context_complete", "handoff_ref", "version_status", "changes_status", "proof_status", "rollback_status", "provenance_status", "model_policy_status", "model_task_class", "model_route_status", "standard_identities"],
+      "properties": {
+        "authority_status": {"type": "string"}, "custody_status": {"type": "string"}, "custody_owner": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "custody_ref": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"}, "source_status": {"type": "string"}, "source_identity": {"type": "string"}, "source_version": {"type": "string"}, "source_identities": {"type": "array", "minItems": 3, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}},
+        "release_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}, "release_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "release_status": {"type": "string"}, "release_scope": {"type": "string"}, "requested_action": {"type": "string"}, "signals": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "context_complete": {"type": "boolean"}, "handoff_ref": {"type": "string", "pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"}, "version_status": {"type": "string"}, "changes_status": {"type": "string"}, "proof_status": {"type": "string"}, "rollback_status": {"type": "string"}, "provenance_status": {"type": "string"}, "model_policy_status": {"type": "string"}, "model_task_class": {"type": "string"}, "model_route_status": {"type": "string"}, "standard_identities": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}},
+        "requested_tools": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}, "self_acceptance": {"type": "boolean"}, "scope_expanded": {"type": "boolean"}, "authority_conflict": {"type": "boolean"}, "project_data_present": {"type": "boolean"}, "secret_data_present": {"type": "boolean"}, "unbound_receipt": {"type": "boolean"}, "unreviewed_gate": {"type": "boolean"}, "unknown_context": {"type": "boolean"}, "authority_scope": {"type": "string"}, "sibling_authorities": {"type": "array", "maxItems": 6, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,160}$"}}
+      }
+    }
+  }
+}

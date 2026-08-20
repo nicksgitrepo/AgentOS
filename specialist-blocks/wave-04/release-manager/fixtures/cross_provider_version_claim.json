@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.release-manager",
-  "class": "cross_provider_version_claim",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.release-manager","fixture_id":"specialist.control.release-manager.CROSS_PROVIDER_VERSION_CLAIM","class":"cross_provider_version_claim","vector":{"entrypoint":"control/release-manager-boundary-gate.mjs#evaluateReleaseManagerBoundary","input":{"schema":"agentos.release_manager_boundary_input.v1","version":1,"request_kind":"ASSESS_RELEASE_READINESS","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.CONTROL_RELEASE_MANAGER","custody_ref":"ref:CONTROL_RELEASE_MANAGER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.OTHER_PROVIDER","source_version":"9.9","source_identities":["SOURCE.OTHER_PROVIDER","SOURCE.CONVENTIONAL_COMMITS_1_0_0","SOURCE.SLSA_PROVENANCE"],"release_identity":"RELEASE.AGENTOS.CANDIDATE","release_digest":"e2595ba339b5fd2963c02a6507d8c305c602676052f30df8425347dc5f32a236","release_status":"CURRENT_CANDIDATE","release_scope":"NARROW_RELEASE_READINESS","requested_action":"ASSESS","signals":["AGENT.RELEASE_MANAGER","RELEASE_READINESS"],"context_complete":true,"handoff_ref":"ref:HANDOFF/RELEASE_MANAGER","version_status":"BOUND","changes_status":"BOUND","proof_status":"BOUND","rollback_status":"BOUND","provenance_status":"BOUND","model_policy_status":"CURRENT","model_task_class":"DETERMINISTIC_QA","model_route_status":"BOUND","standard_identities":["SPECIALIST.STANDARD.CONVENTIONAL_COMMITS_1_0_0","SPECIALIST.STANDARD.NIST_SSDF","SPECIALIST.STANDARD.SEMANTIC_VERSIONING_2_0_0","SPECIALIST.STANDARD.SLSA"],"requested_tools":["READ_RELEASE_MANIFEST","READ_CHANGE_RECEIPTS"]}},"expected_readback":{"disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"RELEASE_MANAGER_SOURCE_STALE_OR_UNVERIFIED","acceptance_allowed":false}}}

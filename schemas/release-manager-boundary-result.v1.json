@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/release-manager-boundary-result.v1.json",
+  "title": "Project-agnostic Release Manager boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "error_code", "routing_allowed", "acceptance_allowed", "external_side_effects", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.release_manager_boundary_result.v1"}, "version": {"const": 1}, "disposition": {"enum": ["DENY", "ROUTE"]}, "route": {"type": "string"}, "error_code": {"type": "string"}, "routing_allowed": {"type": "boolean"}, "acceptance_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["release_reads", "receipt_writes", "merge_calls", "deployment_calls", "publish_calls", "credential_accesses", "state_changes"], "properties": {"release_reads": {"const": 0}, "receipt_writes": {"const": 0}, "merge_calls": {"const": 0}, "deployment_calls": {"const": 0}, "publish_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "missing_fields": {"type": "array", "items": {"type": "string"}}, "selected_owner": {"type": "string"}, "handoff": {"type": "object"}, "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -3201,6 +3201,34 @@
       "path": "specialist-blocks/wave-04/central-integrator/handoff.json",
       "sha256": "e577584e238c8603a338fe35c6e63f0fb01aac5191defa563e3e9cad16d0399b"
     },
+    "release_manager_boundary_gate": {
+      "path": "control/release-manager-boundary-gate.mjs",
+      "sha256": "aa61a93e615736bfee5b56bf055ccc4d05e1d414e496b4f004d3b2994dd70f70"
+    },
+    "release_manager_boundary_input_contract": {
+      "path": "schemas/release-manager-boundary-input.v1.json",
+      "sha256": "3c7535a1416134d471ff1d0984b50b3558031817659489c1696efb7e51ad7fd4"
+    },
+    "release_manager_boundary_result_contract": {
+      "path": "schemas/release-manager-boundary-result.v1.json",
+      "sha256": "04a596ec00a4b4e210466fb4b7f89af1d72cdf7d466b21a1ca2ee44c07a73524"
+    },
+    "release_manager_package_operational_evaluation_contract": {
+      "path": "schemas/release-manager-package-operational-evaluation.v1.json",
+      "sha256": "d8c0c6373f061b40ec00ad75b8722cb0bcf54cfad3d5d081f3a953e7f885a9fe"
+    },
+    "release_manager_package_operational_evaluator": {
+      "path": "control/release-manager-package-evaluator.mjs",
+      "sha256": "a7404e979a93ef60c1e7a34a1d21e7f9442dcd0f9c3a8d71a7a34fb214936350"
+    },
+    "release_manager_boundary_verifier": {
+      "path": "tests/verify-release-manager-boundary.mjs",
+      "sha256": "bc69c0774a5c137d49bcbfd7b087a80ebd9e8c2361145da539075ad43ef48600"
+    },
+    "release_manager_candidate_handoff": {
+      "path": "specialist-blocks/wave-04/release-manager/handoff.json",
+      "sha256": "44af292e092dfe788706d453b223b61f8d8f4d3023e9102bb1bfe9f6b4633498"
+    },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
       "sha256": "a9dcad2b29050cade8d726c7c2b7b3e44e00232ad9a09ecffe1e3be52c763ea8"

@@ -2463,103 +2463,103 @@
           {
             "fixture_id": "specialist.control.release-manager.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/authority_conflict.json",
-            "file_sha256": "e017d2d8ba9589a13fa78d0d783626f980dcefd1154573120035f4d2a16f4920",
+            "file_sha256": "c97eba57fe81d947772b950fd31ada1300ebf00bdb5584545c3774fe36d255d0",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "1d954e51d198e6fcba570037bdb2762c553d8831d0bc4dbc23ef0852edb53e58",
+            "file_sha256": "bf4f3042b37ce97502883f061e045dd53581598bddf522c77241b5739d4ad4f1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "9c9a50d8369dc2500606ffa883e9ccab97e5e818aa5e1561e94d53deda189081",
+            "file_sha256": "ba409e6dbfd8ab76830d4221ff18235f70d208dcf3e28e70f6deeb30ad106d5a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.DATA_LIMIT",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/data_limit.json",
-            "file_sha256": "a37df1743e09bf5d207993c1c291c61884ccd25b5046d15470278ae7a7688e5d",
+            "file_sha256": "d4d9c0ae975945b4e59a09d58eb065bc94a66960c9ce0b5ae5a5d6e88aea6102",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.release-manager.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "ce49ad851a54ee19d338f3717d201852f0fffb61d546cbe783ce1dc61ba56577",
+            "file_sha256": "9a8f1067f019541ba2d53abf9e564ee2a518ec7bbe59607e30cf26e62434e6a9",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/false_positive.json",
-            "file_sha256": "19fb7c5f2876ee0fd2e559bc1da204a591114c7fbae905da5f8893a4bbb10ace",
+            "file_sha256": "639d9f2957855a171ca05405aae701655dcf5b479a81bc0cc116887f3d7a54ff",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.HANDOFF",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/handoff.json",
-            "file_sha256": "a02e7771e939522798a4b34c7bbe3ef73a31324151361a7cde80e28fd00684e7",
+            "file_sha256": "cce4b3d1579cc44b62f73ee3f7f40081617267aa20bd6a5f672a0388d52de1ab",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.release-manager.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/missing_context.json",
-            "file_sha256": "a315f30b3e3e2d024a11de0f53861d62dce6757ea298a753bef8a2aa59796b93",
+            "file_sha256": "1fadf963b977a86edb18115a27375b6a1c123e7f7dce846f01d9dc29c04794b0",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.NARROWNESS",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/narrowness.json",
-            "file_sha256": "a9690632b9bda487a9d401df70dcf658cd8836fe5ccd263008e0c58bbfefb0ff",
+            "file_sha256": "84e6632be6fe45966769322a86826b8e77323aedff37f6633539f9aa53c74784",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.release-manager.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/router_self_accept.json",
-            "file_sha256": "07a87b0d2950ea49f3a55b66164b220adb1ab2acd6310c87a62612a23af3ba1f",
+            "file_sha256": "0661a02e4251323343661fd174790d59d1b8fc1e1370a3f786bec4b4a64e756e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.ROUTING",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/routing.json",
-            "file_sha256": "6386589f5e831a287fdf0f702e0d5635386d3dd9d8e987aa5a29326f3c7703ae",
+            "file_sha256": "37eaa44b45ba3fa6cdb7fbc3bb6f6d66d4b804db19b65bb7f7f91ee6ede8e2e6",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.release-manager.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/silent_scope_expansion.json",
-            "file_sha256": "b8680765dc32068fc32fa5716bd629504fcfc2f9d8e2ccbcbd3305b3dce97af1",
+            "file_sha256": "4e9bbfc90c620d6b0b300af827f37e4b4f4810c9f6b72cb79471e2aeece60a80",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.STALE_SOURCE",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/stale_source.json",
-            "file_sha256": "ebde2172e85961cc7cd412bf90832f17d4e3b29cbe4d04f3f3b8a091d4daea4e",
+            "file_sha256": "b6b830166537cb7588e6ac6f8deb2588f3c4e1e8adfb95fa5b5e2d2f0fd0df27",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.TOOL_LIMIT",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/tool_limit.json",
-            "file_sha256": "4c3e403dc4b0c5c949b6d8edf1b16b06b25268e9a067af85ebb8427bba54c258",
+            "file_sha256": "213a58976db13a2014eff2a330224c4bc3137dea79c8e5241e90b45b12129acc",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.release-manager.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/umbrella_authority.json",
-            "file_sha256": "60709531297d48eea4d925503179abba3265f0ee0c1221bff14d5c186ffb993d",
+            "file_sha256": "2f771b412b24a4ef201cec117de0aceec51813837f8b0e77e288183ece2538fc",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/unrelated_scope.json",
-            "file_sha256": "71dec9a007a66db4e006413a317da8cd2d337f3e7882b8dc5649ab79d8237f56",
+            "file_sha256": "09a631ed0990cd91c8cfa7895523799a94ba78f035bcadd5ca67e593ddc57e74",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.release-manager.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-04/release-manager/fixtures/unsafe_action.json",
-            "file_sha256": "f6c04f1a74238d758f2a960d63b6a61f122421debb34b00308d5f887b3930097",
+            "file_sha256": "405408a6224ecd6fab197700613af43efe136c004cf916d698842a7f4e41d901",
             "expected_outcome": "DENY"
           }
         ]

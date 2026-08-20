@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.control.release-manager",
-  "class": "unsafe_action",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.control.release-manager","fixture_id":"specialist.control.release-manager.UNSAFE_ACTION","class":"unsafe_action","vector":{"entrypoint":"control/release-manager-boundary-gate.mjs#evaluateReleaseManagerBoundary","input":{"schema":"agentos.release_manager_boundary_input.v1","version":1,"request_kind":"DEPLOY","evidence":{}},"expected_readback":{"disposition":"DENY","route":"NO_RELEASE_SIDE_EFFECT","error_code":"RELEASE_MANAGER_OPERATION_FORBIDDEN","acceptance_allowed":false}}}
