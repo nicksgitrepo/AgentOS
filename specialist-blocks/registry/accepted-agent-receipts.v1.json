@@ -201,6 +201,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_OWASP_ASVS_ROUTER",
+      "package_path": "specialist-blocks/wave-03/owasp-asvs-router",
+      "candidate_commit": "eac11dba7a94d40c121f49bc19779de58e88af66",
+      "candidate_tree": "a71998092be481d5436eaf75dc044c0f0681158c",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/eac11dba7a94d40c121f49bc19779de58e88af66",
+      "receipt_sha256": "8cb1ba52e3985dfaf80714196447489bac0e4b37dd07fd184192f0a534d3cad4",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -281,5 +291,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "48adafc8a3516956f72cca91545e3b8ce4da8ecc59551fd24ced3b5cd3748a56"
+  "ledger_sha256": "8e4fd5d3a3ff7f104aadc6673d8b4a1e7db4f2eff493238415859fc5b8ce59bc"
 }

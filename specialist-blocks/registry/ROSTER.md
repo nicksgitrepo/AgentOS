@@ -18,10 +18,10 @@ Integrator, Release Manager, Worktree/Custody Manager, Assurance/Enterprise
 Router, Independent Auditor, AI/Search/RAG Router, Workflow Router,
 Accounting/Job-Cost Router, Graphics/Industrial 3D Router, Privacy
 Data-Lifecycle Router, Regulatory Applicability Router, Access-Control
-Composition Router, and OWASP API Top 10 Router are accepted from their exact
-independent receipts. The current queue item is
-`AGENT.SECURITY_OWASP_ASVS_ROUTER`; its package, gates, hostile vectors,
-model route, and local proof are next for one-at-a-time qualification.
+Composition Router, OWASP API Top 10 Router, and OWASP ASVS Applicability
+Router are accepted from their exact independent receipts. The current queue
+item is `AGENT.SECURITY_OWASP_WEB_TOP10_ROUTER`; its package, gates, hostile
+vectors, model route, and local proof are next for one-at-a-time qualification.
 All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact
