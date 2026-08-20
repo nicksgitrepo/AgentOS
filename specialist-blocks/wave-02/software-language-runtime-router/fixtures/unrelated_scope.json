@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.software-language-runtime.router",
-  "class": "unrelated_scope",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.software-language-runtime.router.UNRELATED_SCOPE","block_id":"specialist.software-language-runtime.router","class":"unrelated_scope","hostile":true,"vector":{"entrypoint":"control/software-language-runtime-router-boundary-gate.mjs#evaluateSoftwareLanguageRuntimeRouterBoundary","input":{"schema":"agentos.software_language_runtime_router_boundary_input.v1","version":1,"request_kind":"UNRELATED_REQUEST","evidence":{}}},"expected_readback":{"disposition":"DENY","route":"NO_LANGUAGE_RUNTIME_SCOPE","error_code":"SOFTWARE_LANGUAGE_RUNTIME_ROUTER_SCOPE_NOT_APPLICABLE","zero_side_effects":true,"acceptance_allowed":false}}

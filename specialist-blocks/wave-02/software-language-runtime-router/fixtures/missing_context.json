@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.software-language-runtime.router",
-  "class": "missing_context",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.software-language-runtime.router.MISSING_CONTEXT","block_id":"specialist.software-language-runtime.router","class":"missing_context","hostile":true,"vector":{"entrypoint":"control/software-language-runtime-router-boundary-gate.mjs#evaluateSoftwareLanguageRuntimeRouterBoundary","input":{"schema":"agentos.software_language_runtime_router_boundary_input.v1","version":1,"request_kind":"CLASSIFY_LANGUAGE_RUNTIME_SIGNAL","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER","custody_ref":"ref:SOFTWARE_LANGUAGE_RUNTIME_ROUTER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.ATOMIC_SPECIALIZATION_LAW","source_version":"1","signal":"RUST","target_ref":"specialist.software-language-runtime.rust-backend","context_complete":true,"scope":"NARROW","requested_action":"CLASSIFY","requested_tools":["READ_SOURCE","READ_CONTEXT"],"runtime_evidence":"BOUNDED"}}},"expected_readback":{"disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"SOFTWARE_LANGUAGE_RUNTIME_ROUTER_CONTEXT_INCOMPLETE","zero_side_effects":true,"acceptance_allowed":false}}

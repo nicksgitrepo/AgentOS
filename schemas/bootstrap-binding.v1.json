@@ -3083,7 +3083,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "7853585f43a9d5b78ec23e8bf7ca1eed62a311203f66ccd8758a40ce569b159c"
+      "sha256": "362297404446233d9bb651aa92cee070318a7e0aee48957ba74fc367a3f03d49"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3332,6 +3332,34 @@
     "desktop_offline_realtime_router_candidate_handoff": {
       "path": "specialist-blocks/wave-05/desktop-offline-realtime-router/handoff.json",
       "sha256": "5e6d63fc8a4b819ca34b32a5f5fb31b9502847002b53d2fb511533683680d50b"
+    },
+    "software_language_runtime_router_boundary_gate": {
+      "path": "control/software-language-runtime-router-boundary-gate.mjs",
+      "sha256": "49dfd378c0a4ea6e4dab1829fd08736f700feeba7fca4fc4e54ec0f10e1a641c"
+    },
+    "software_language_runtime_router_boundary_input_contract": {
+      "path": "schemas/software-language-runtime-router-boundary-input.v1.json",
+      "sha256": "d6961aef0b2039d59da1a47a3c3a799af9818160832543982347a8cbfbe19dd8"
+    },
+    "software_language_runtime_router_boundary_result_contract": {
+      "path": "schemas/software-language-runtime-router-boundary-result.v1.json",
+      "sha256": "0078ac9c2c7addd868ddd7060b20ded00727584191bba0bcdfaf905213a1d56a"
+    },
+    "software_language_runtime_router_package_operational_evaluation_contract": {
+      "path": "schemas/software-language-runtime-router-package-operational-evaluation.v1.json",
+      "sha256": "75ea3c116523d60d47e0690f1da8c8f8e2b84ad7249fddcf4d90dbc189b8b118"
+    },
+    "software_language_runtime_router_package_operational_evaluator": {
+      "path": "control/software-language-runtime-router-package-evaluator.mjs",
+      "sha256": "47512e89a4352f18f8a74a060cffa4829260deb83427ad063d511b863eb7e344"
+    },
+    "software_language_runtime_router_boundary_verifier": {
+      "path": "tests/verify-software-language-runtime-router-boundary.mjs",
+      "sha256": "35e892c01590272f5dd123960a381ed7be78c2c60f91cc28faa1cda5726ebeb4"
+    },
+    "software_language_runtime_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-02/software-language-runtime-router/handoff.json",
+      "sha256": "cf37d3bc6927d70122a78a918cd63e63d04877f4958965cb04b43e935c0bbbde"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",

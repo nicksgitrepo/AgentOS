@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.software-language-runtime.router",
-  "class": "umbrella_authority",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; all provider, project, consumer, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"fixture_id":"specialist.software-language-runtime.router.UMBRELLA_AUTHORITY","block_id":"specialist.software-language-runtime.router","class":"umbrella_authority","hostile":true,"vector":{"entrypoint":"control/software-language-runtime-router-boundary-gate.mjs#evaluateSoftwareLanguageRuntimeRouterBoundary","input":{"schema":"agentos.software_language_runtime_router_boundary_input.v1","version":1,"request_kind":"ROUTE_LANGUAGE_RUNTIME","evidence":{"authority_status":"CURRENT","custody_status":"BOUND","custody_owner":"AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER","custody_ref":"ref:SOFTWARE_LANGUAGE_RUNTIME_ROUTER/BOUND","source_status":"CURRENT","source_identity":"SOURCE.ATOMIC_SPECIALIZATION_LAW","source_version":"1","runtime_surface":"WEB","signal":"REACT","target_ref":"specialist.software-language-runtime.router","context_complete":true,"scope":"NARROW","requested_action":"CLASSIFY","requested_tools":["READ_SOURCE","READ_CONTEXT"],"runtime_evidence":"BOUNDED"}}},"expected_readback":{"disposition":"DENY","route":"NARROW_SPECIALIST_REQUIRED","error_code":"SOFTWARE_LANGUAGE_RUNTIME_ROUTER_TARGET_MISMATCH","zero_side_effects":true,"acceptance_allowed":false}}
