@@ -20,10 +20,11 @@ Accounting/Job-Cost Router, Graphics/Industrial 3D Router, Privacy
 Data-Lifecycle Router, Regulatory Applicability Router, Access-Control
 Composition Router, OWASP API Top 10 Router, OWASP ASVS Applicability Router,
 and OWASP Web Top 10 Router are accepted from their exact independent
-receipts. The Supply Chain Router is now accepted from its exact independent
-receipt. The current queue item is
-`AGENT.DATA_MIGRATION_ROLLBACK`; its package, gates, hostile vectors, model
-route, and local proof are next for one-at-a-time qualification.
+receipts. The Supply Chain Router and Data Migration/Rollback Router are now
+accepted from their exact independent receipts. The current queue item is the
+next eligible package recorded in the machine registry; its package, gates,
+hostile vectors, model route, and local proof are next for one-at-a-time
+qualification.
 All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact

@@ -81,6 +81,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.DATA_MIGRATION_ROLLBACK",
+      "package_path": "specialist-blocks/wave-04/migration-rollback",
+      "candidate_commit": "990ce21b36149dff8aa049d99ca27d0a2d47b6e7",
+      "candidate_tree": "8ffc1e5498d0ad741bcf883429c5962bdd865afe",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/990ce21b36149dff8aa049d99ca27d0a2d47b6e7",
+      "receipt_sha256": "677187f598a3021fe660e6dbb10b25047c732cfdeb6c8890a6506ad09a0a361c",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "package_path": "specialist-blocks/wave-02/data-router",
       "candidate_commit": "ad8f1a84c673d00a6f000067f836731884dfcd51",
@@ -311,5 +321,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "aabecfeef12a5680523e8c204145b32f5b16c7f9ddcdf49fdb2091c10835b4f7"
+  "ledger_sha256": "5c9f5ee45572b857c637e4f98dd00a4f31393c4f29df2323f13e394c6c7d82eb"
 }

@@ -3259,9 +3259,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers data; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/migration-rollback/evaluation.json"
@@ -39700,17 +39700,17 @@
       "rank": 32,
       "stable_agent_id": "AGENT.DATA_MIGRATION_ROLLBACK",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 33,
       "stable_agent_id": "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_INCIDENT",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 34,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "9ce2de01193d7475fbf451569560d80d22bf7e9a22507c980de2277471cdb260"
+  "roster_sha256": "3e8435d88e8c81e0e9b5c9cbd35b1e1664ef9abeeb432e6655e06271b47ecadb"
 }
