@@ -378,7 +378,7 @@
     },
     "bootstrap_project_initializer_boundary_input_contract": {
       "path": "schemas/bootstrap-project-initializer-boundary-input.v1.json",
-      "sha256": "2de12d8307ec075dcd0bad693fb590a10928115253e9d4efd150b08cd1ae01e2"
+      "sha256": "ec431e1451c3a6fbc5ab1d1568cfa99253c6ded383bbe240ae19285de77263e3"
     },
     "bootstrap_project_initializer_boundary_result_contract": {
       "path": "schemas/bootstrap-project-initializer-boundary-result.v1.json",
