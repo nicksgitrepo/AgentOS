@@ -26039,9 +26039,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/supply-chain-router/evaluation.json"
@@ -39692,17 +39692,17 @@
       "rank": 31,
       "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 77.05,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 32,
       "stable_agent_id": "AGENT.DATA_MIGRATION_ROLLBACK",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 33,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "ffa7a452df7f1218b6426143b0017eac97ec7fdca17bb512cd397ac2538429f2"
+  "roster_sha256": "77847ac3acf2a93314459fe040972eb14315eef8211d5b9c1cdf06ee29bcf509"
 }

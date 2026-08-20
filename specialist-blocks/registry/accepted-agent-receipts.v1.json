@@ -231,6 +231,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_ROUTER",
+      "package_path": "specialist-blocks/wave-03/supply-chain-router",
+      "candidate_commit": "184a9b3a068b0b882ca439d077af27cac93bf589",
+      "candidate_tree": "1e78d732d34f2df7e1a8f934a272fc4fe6bce530",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/184a9b3a068b0b882ca439d077af27cac93bf589",
+      "receipt_sha256": "18e34b4274af2220558b44f90285e6b07f4fbde7af8e1ae2998544c489504519",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER",
       "package_path": "specialist-blocks/wave-02/software-language-runtime-router",
       "candidate_commit": "e5a72a62f5006f550e494c0329ea54580d1ba5fd",
@@ -301,5 +311,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "a15397550b3f148c8d2eb62ad05b8a120ea7d9920dc7981d01154220a8fed2f2"
+  "ledger_sha256": "aabecfeef12a5680523e8c204145b32f5b16c7f9ddcdf49fdb2091c10835b4f7"
 }
