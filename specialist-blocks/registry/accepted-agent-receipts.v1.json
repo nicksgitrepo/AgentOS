@@ -41,6 +41,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER",
+      "package_path": "specialist-blocks/wave-05/desktop-offline-realtime-router",
+      "candidate_commit": "9bb69747e917ad2987ac153d34c7e4d15ef2484d",
+      "candidate_tree": "4f4c9515c4ddc1c0e366897b79f346aa48a50537",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/9bb69747e917ad2987ac153d34c7e4d15ef2484d",
+      "receipt_sha256": "36aeed0f1321e00e44128366378207f8accd9464ecd09e1fb10d776171c6c9c8",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "package_path": "specialist-blocks/wave-02/security-router",
       "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
@@ -111,5 +121,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "e779fcfdf72280b94f933fc96d0de09876df65c43cb37a6a8c2215909e7bed9a"
+  "ledger_sha256": "e3adefea8b8fb7a13eca0f33d1417e4922e1280b6620b3b18c1f6b711385ef8b"
 }
