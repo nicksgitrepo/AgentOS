@@ -1224,7 +1224,7 @@
     },
     "memory_package_scaffolder": {
       "path": "control/scaffold-memory-package.mjs",
-      "sha256": "e86b3b8e9a23e51c23fc1635b1da45b5d4382a5cbd362b6e536e6f86d0016c1c"
+      "sha256": "efd43b9bba9aaded9e352b71e6ba89e7d658f5b5814153c1a0bfab12a478c7b8"
     },
     "memory_package_operational_evaluation_contract": {
       "path": "schemas/memory-package-operational-evaluation.v1.json",
