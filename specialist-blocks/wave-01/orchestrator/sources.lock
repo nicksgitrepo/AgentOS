@@ -1,0 +1,61 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.orchestrator",
+  "sources": [
+    {
+      "source_id": "source.w3c-prov-dm",
+      "title": "PROV-DM",
+      "publisher": "W3C",
+      "url": "https://www.w3.org/TR/prov-dm/",
+      "version": "REC",
+      "effective_date": "2013-04-30",
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "w3c-prov-dm-recommendation-20130430",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Portable provenance vocabulary for binding candidate, activity, entity, and handoff evidence."
+    },
+    {
+      "source_id": "source.git-scm-book",
+      "title": "Git Book - Git Internals",
+      "publisher": "Git community",
+      "url": "https://git-scm.com/book/en/v2/Git-Internals-Git-Objects",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "git-scm-book-internals-objects-current",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Content-addressed object and ancestry identity vocabulary; refresh before authority use."
+    },
+    {
+      "source_id": "source.openssf-scorecard",
+      "title": "OpenSSF Scorecard",
+      "publisher": "OpenSSF",
+      "url": "https://scorecard.dev/",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "openssf-scorecard-current",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "Supply-chain assurance vocabulary for review evidence; comparative guidance only."
+    },
+    {
+      "source_id": "source.agentos-governance",
+      "title": "AgentOS canonical governance contracts",
+      "publisher": "AgentOS",
+      "url": "https://agentos.dev/governance",
+      "version": "2.1rc",
+      "effective_date": null,
+      "retrieved_date": "2026-08-20",
+      "immutable_identity": "agentos-governance-contracts-2.1rc",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Project-agnostic authority, custody, gate, handoff, invalidation, and independent-review contract vocabulary."
+    }
+  ],
+  "freshness_rule": "Deny the dependent route when a source is stale, superseded, unverifiable, missing version/effective-date applicability, or lacks sufficient immutable identity; refresh or escalate.",
+  "manifest_sha256": "8dbc6eb6555480c359631d7e6ceb70c377fbe6d936065953d67df51ae8f53c8b"
+}

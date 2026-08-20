@@ -1,0 +1,51 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.orchestrator",
+  "fixture_id": "specialist.control.orchestrator.CROSS_PROVIDER_VERSION_CLAIM",
+  "class": "cross_provider_version_claim",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Typed hostile Orchestrator vector for cross_provider_version_claim; it must be evaluated through the real coordination boundary with no workflow side effects.",
+  "vector": {
+    "entrypoint": "control/orchestrator-coordination-boundary-gate.mjs#evaluateOrchestratorCoordinationBoundary",
+    "input": {
+      "schema": "agentos.orchestrator_coordination_boundary_input.v1",
+      "version": 1,
+      "request_kind": "INTEGRATION_REVIEW",
+      "evidence": {
+        "authority": {
+          "status": "CURRENT",
+          "source_status": "CURRENT"
+        },
+        "custody": {
+          "status": "BOUND",
+          "ref": "opaque:CUSTODY.ORCHESTRATOR.001",
+          "owner": "AGENTOS.ORCHESTRATOR"
+        },
+        "candidate": {
+          "identity": "CANDIDATE.ORCHESTRATOR.001",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "review_status": "INDEPENDENT_CURRENT",
+          "package_scope": "OTHER_SCOPE"
+        },
+        "source_lock": {
+          "status": "CURRENT",
+          "identity": "SOURCE.AGENTOS.GOVERNANCE",
+          "version": "1"
+        },
+        "requested_action": "CLASSIFY_PLAN",
+        "signals": [
+          "ORCHESTRATOR.COORDINATION"
+        ],
+        "scope": "ORCHESTRATOR_ONLY"
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "ORCHESTRATOR_PACKAGE_SCOPE_INVALID",
+      "zero_side_effects": true
+    }
+  }
+}

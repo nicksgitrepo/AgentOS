@@ -267,6 +267,39 @@
       "priority": 0
     },
     {
+      "route_id": "route.control.orchestrator",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "orchestrator",
+        "coordination",
+        "plan",
+        "integration",
+        "handoff",
+        "candidate",
+        "continuation"
+      ],
+      "required_context": [
+        "authority",
+        "candidate",
+        "custody",
+        "request",
+        "requested_action",
+        "signals",
+        "source_lock"
+      ],
+      "select": [
+        "specialist.control.orchestrator"
+      ],
+      "deny_if": [
+        "ambiguous candidate or source identity",
+        "missing authority, custody, or independent review",
+        "requested lifecycle, delivery, product, memory, or external-state action",
+        "stale or unverifiable source"
+      ],
+      "priority": 0
+    },
+    {
       "route_id": "route.control.product-owner",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -3870,5 +3903,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "e6684d42caf9834732a0071cbfee7e4ff41e32f561ac02ebae3c256bd4f4a084"
+  "routing_sha256": "d8a5e25caafde720a78abb38b1a420e3b013aae62ff11dbd6569d046f5d81caf"
 }

@@ -480,6 +480,68 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.control.orchestrator",
+      "candidate_digest": "5e17efee23c0ce378b4e8377748787a1370c56aa72e53aceaf36b1e3afc9f219",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Project-agnostic coordination of typed plans, candidate reviews, and handoff evidence; it does not spawn, admit, archive, despawn, merge, deploy, publish, or change project state.",
+      "permitted_decisions": [
+        "classify a typed coordination or integration request",
+        "classify whether candidate and source evidence is complete and current",
+        "issue a typed owner handoff",
+        "return NOT_APPLICABLE when no coordination condition is in scope",
+        "route missing or conflicting evidence to typed escalation"
+      ],
+      "forbidden_decisions": [
+        "approve a candidate, gate, release, or its own package",
+        "change governance, memory, roster, or model policy",
+        "execute arbitrary processes or commands",
+        "expose credentials, secrets, or protected data",
+        "infer missing authority, candidate, source, or custody facts",
+        "merge, deploy, publish, or mutate project state",
+        "spawn, admit, archive, or despawn any agent or seed"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_LIFECYCLE_WRITE;_NO_SPAWN;_NO_ADMISSION;_NO_MERGE;_NO_DEPLOY;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "compose only with an explicitly typed coordination request, current candidate identity, source lock, and declared custody",
+        "preserve the smallest sufficient coordination scope and unrelated work",
+        "route lifecycle, delivery, product, memory, or governance changes to their named owner",
+        "unknown closes only the dependent coordination route"
+      ],
+      "escalation_target": "Controller for workflow regulation; Spawner for lifecycle or governance repair; Product Owner for unresolved intent; typed integration owner for delivery decisions",
+      "split_required_when": [
+        "merge, release, deployment, or external-state action is requested",
+        "plan coordination differs from candidate integration review",
+        "project or consumer data is introduced",
+        "workflow authority differs from lifecycle or delivery authority"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-governance",
+        "source.git-scm-book",
+        "source.openssf-scorecard",
+        "source.w3c-prov-dm"
+      ],
+      "dependencies": [
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.orchestrator.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.control.product-owner",
       "candidate_digest": "c4e596b3a484c7fdc581ff528721d31682bf995402835ee8b6be26730e0c18ab",
       "role_kind": "CONTROL_PLANE",
@@ -7175,5 +7237,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "48dedce5001d0a8e6a390a4818ebd1217e20a52ab642597319dba957a9a6d3c3"
+  "roster_sha256": "4be9be5730a51de5e807b6a73efa3061b16db8a7555edce95e8e810e5054c861"
 }

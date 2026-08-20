@@ -9,21 +9,22 @@ dependencies, scores, gates, fixtures, model routes, and build state.
 ## Build order
 
 The Spawner is already admitted and is reused by its immutable receipt. The
-next eligible package is `AGENTOS_CONTROLLER`, followed by the remaining
-permanent roles in dependency order. Only one package may be in qualification
-at a time. A package is not built merely because a name exists: its exact
+Controller, Product Owner, Memory, Runtime, and Scheduler packages have
+passed their independent checks and are reused by their exact receipts. The
+current package is Orchestrator; only one package may be in qualification at
+a time. A package is not built merely because a name exists: its exact
 blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
 QA, and independent evaluation must all be current.
 
 ### Permanent AgentOS roles
 
 1. `AGENTOS.SPAWNER` — admitted governance and lifecycle owner.
-2. `AGENTOS_CONTROLLER` — workflow regulation and useful-progress checks only.
-3. `AGENTOS.PRODUCT_OWNER` — user intent and normal human conversation only.
-4. `AGENTOS.MEMORY` — governed memory adapter; candidate package and real hostile evaluator are ready for independent review.
-5. `AGENTOS.RUNTIME` — runtime and rollback custody only.
-6. `AGENTOS.SCHEDULER` — resource and work scheduling only.
-7. `AGENTOS.ORCHESTRATOR` — plan coordination and acceptance; package still needs to be built.
+2. `AGENTOS_CONTROLLER` — workflow regulation and useful-progress checks only; independently accepted.
+3. `AGENTOS.PRODUCT_OWNER` — user intent and normal human conversation only; independently accepted.
+4. `AGENTOS.MEMORY` — governed memory adapter; independently accepted.
+5. `AGENTOS.RUNTIME` — runtime and rollback custody only; independently accepted.
+6. `AGENTOS.SCHEDULER` — resource and work scheduling only; independently accepted.
+7. `AGENTOS.ORCHESTRATOR` — plan coordination and typed handoffs; current candidate, awaiting independent evaluation.
 
 ### Platform agents
 
@@ -56,10 +57,10 @@ from the accepted global model-policy snapshot, with freshness, availability,
 context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
-The first queue item marked eligible is `AGENTOS_CONTROLLER`. Memory is now a
-complete candidate waiting for its one independent review; it is not admitted
-or active. All other entries remain queued, blocked on predecessors, missing
-packages, or pending independent review as recorded in the machine registry.
+The current queue item is `AGENTOS.ORCHESTRATOR`. Its package, gates, hostile
+vectors, and local proof are complete, but it is not admitted or active until
+the one independent evaluation passes. All other entries remain queued or
+blocked on predecessors as recorded in the machine registry.
 
 The machine-readable source of the full backlog is
 `master-inventory.v1.json`. The generic priority overlay is

@@ -1397,7 +1397,7 @@
     },
     "independent_specialist_evaluator_verifier": {
       "path": "tests/verify-specialist-independent-evaluator.mjs",
-      "sha256": "b4ad95870e552f3bdce6373fa46a4980386db8912f1cc3eb51549da5f11d1953"
+      "sha256": "5399d368d3d3cd0c9aaf9f066f47057b256ff38ce44421890c2d3f252d2a469d"
     },
     "independent_clearance_fixture_tests_fixtures_independent_clearance_authority_candidate_authority_v1_json": {
       "path": "tests/fixtures/independent-clearance/authority/candidate-authority.v1.json",
@@ -3083,11 +3083,11 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "d0ac82b6420f5f1681177b9c745ebe0b8b6afe9e4aa1c968a52a3940c997aa57"
+      "sha256": "52f6c39c39304b808a4fe17e9e528505e05ce9e7767faebfcca754131cf2e0f1"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
-      "sha256": "724a85f05c6ac5397ab1b916c617cdd2ab7c9acbd6771a5d616710605929ef47"
+      "sha256": "0d2f929b4161cd5359b87e5480a42b9ac1c020c74c179ee261ec3a8b9905a8ee"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -3132,6 +3132,38 @@
     "specialist_evaluation_contract": {
       "path": "schemas/specialist-evaluation.v1.json",
       "sha256": "c5dfec06faf4df679394236f43ab46c304bb0bf50bc6f9849ef0d5b14366a0f4"
+    },
+    "orchestrator_coordination_boundary_gate": {
+      "path": "control/orchestrator-coordination-boundary-gate.mjs",
+      "sha256": "a9dcad2b29050cade8d726c7c2b7b3e44e00232ad9a09ecffe1e3be52c763ea8"
+    },
+    "orchestrator_coordination_boundary_input_contract": {
+      "path": "schemas/orchestrator-coordination-boundary-input.v1.json",
+      "sha256": "430b096a381566d612ef581d0cf3087533003b27ac649e8e1fa99fd2646dbcf7"
+    },
+    "orchestrator_coordination_boundary_result_contract": {
+      "path": "schemas/orchestrator-coordination-boundary-result.v1.json",
+      "sha256": "3229f6cbf46862aa8ff3bc1bda15555ec09b192399b3531ecab76e95569c33f3"
+    },
+    "orchestrator_coordination_package_operational_evaluator": {
+      "path": "control/orchestrator-coordination-package-evaluator.mjs",
+      "sha256": "55271c803039d556fc378aa25e43bf68552d578a0d272fb316cf1ba52e712e64"
+    },
+    "orchestrator_coordination_package_operational_evaluator_verifier": {
+      "path": "tests/verify-orchestrator-coordination-package-evaluator.mjs",
+      "sha256": "c4d796a5f2495203a23920634771b74d00fa08f4ca569726475e5232d7c2be52"
+    },
+    "specialist_block_library_verifier": {
+      "path": "tests/verify-specialist-block-library.mjs",
+      "sha256": "1e9cf216c63c2a60d03e1b87ef64131e3f2512a9d3684982d9ededc223a77786"
+    },
+    "specialist_roster_registry": {
+      "path": "specialist-blocks/registry/roster.v1.json",
+      "sha256": "4c2c28fc1cdea3a7c1c4751acb42331f931f4332c328ba4da4e4c0216957d5d8"
+    },
+    "specialist_routing_index": {
+      "path": "specialist-blocks/registry/routing-index.v1.json",
+      "sha256": "4b054806600899237392c3d8edb19f2d6b0b682cd2d20e21d2f5573707c55449"
     }
   },
   "compatibility_only": {

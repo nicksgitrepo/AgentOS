@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "11-lifecycle-recovery-archive",
+  "block_id": "specialist.control.orchestrator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Orchestrator Coordination and Integration Governor: Do invalidation, retry, archive, and recovery preserve history and require a fresh recheck?",
+  "evidence": [
+    "candidate_digest",
+    "candidate_identity",
+    "gate.11-lifecycle-recovery-archive.answer",
+    "gate.11-lifecycle-recovery-archive.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "OUTCOME:ROUTE",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "OUTCOME:ROUTE"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "c0e451911a6f8170c489d91d8190debe16b4df9e34705763ea09ac44473f5b80"
+}

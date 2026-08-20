@@ -1,0 +1,51 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.orchestrator",
+  "fixture_id": "specialist.control.orchestrator.UNSAFE_ACTION",
+  "class": "unsafe_action",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Typed hostile Orchestrator vector for unsafe_action; it must be evaluated through the real coordination boundary with no workflow side effects.",
+  "vector": {
+    "entrypoint": "control/orchestrator-coordination-boundary-gate.mjs#evaluateOrchestratorCoordinationBoundary",
+    "input": {
+      "schema": "agentos.orchestrator_coordination_boundary_input.v1",
+      "version": 1,
+      "request_kind": "SPAWN",
+      "evidence": {
+        "authority": {
+          "status": "CURRENT",
+          "source_status": "CURRENT"
+        },
+        "custody": {
+          "status": "BOUND",
+          "ref": "opaque:CUSTODY.ORCHESTRATOR.001",
+          "owner": "AGENTOS.ORCHESTRATOR"
+        },
+        "candidate": {
+          "identity": "CANDIDATE.ORCHESTRATOR.001",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "review_status": "INDEPENDENT_CURRENT",
+          "package_scope": "ORCHESTRATOR_COORDINATION_ONLY"
+        },
+        "source_lock": {
+          "status": "CURRENT",
+          "identity": "SOURCE.AGENTOS.GOVERNANCE",
+          "version": "1"
+        },
+        "requested_action": "CLASSIFY_PLAN",
+        "signals": [
+          "ORCHESTRATOR.COORDINATION"
+        ],
+        "scope": "ORCHESTRATOR_ONLY"
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NO_WORKFLOW_SIDE_EFFECT",
+      "error_code": "ORCHESTRATOR_OPERATION_FORBIDDEN",
+      "zero_side_effects": true
+    }
+  }
+}

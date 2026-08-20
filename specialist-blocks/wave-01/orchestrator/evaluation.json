@@ -1,0 +1,128 @@
+{
+  "schema": "agentos.specialist_evaluation.v1",
+  "version": 1,
+  "receipt_id": "specialist-eval.orchestrator.v1",
+  "block_id": "specialist.control.orchestrator",
+  "candidate_digest": "5e17efee23c0ce378b4e8377748787a1370c56aa72e53aceaf36b1e3afc9f219",
+  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
+  "harness": "deterministic-static-specialist-harness.v1",
+  "pre_admission_evaluator": "control/orchestrator-coordination-package-evaluator.mjs",
+  "implementation_entrypoint": "evaluateOrchestratorCoordinationBoundary",
+  "implementation_artifacts": [
+    "control/orchestrator-coordination-boundary-gate.mjs",
+    "schemas/orchestrator-coordination-boundary-input.v1.json",
+    "schemas/orchestrator-coordination-boundary-result.v1.json"
+  ],
+  "authority_status": "NON_AUTHORITATIVE_OPERATIONAL_EVIDENCE_ONLY",
+  "cases": [
+    {
+      "case_id": "orchestrator-authority_conflict",
+      "class": "authority_conflict",
+      "expected": "ESCALATE",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-broad_when_narrow_exists",
+      "class": "broad_when_narrow_exists",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-cross_provider_version_claim",
+      "class": "cross_provider_version_claim",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-data_limit",
+      "class": "data_limit",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-duplicate_sibling_authority",
+      "class": "duplicate_sibling_authority",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-false_positive",
+      "class": "false_positive",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-handoff",
+      "class": "handoff",
+      "expected": "ROUTE",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-missing_context",
+      "class": "missing_context",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-narrowness",
+      "class": "narrowness",
+      "expected": "ROUTE",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-router_self_accept",
+      "class": "router_self_accept",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-routing",
+      "class": "routing",
+      "expected": "ROUTE",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-silent_scope_expansion",
+      "class": "silent_scope_expansion",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-stale_source",
+      "class": "stale_source",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-tool_limit",
+      "class": "tool_limit",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-umbrella_authority",
+      "class": "umbrella_authority",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-unrelated_scope",
+      "class": "unrelated_scope",
+      "expected": "DENY",
+      "observed": "PENDING"
+    },
+    {
+      "case_id": "orchestrator-unsafe_action",
+      "class": "unsafe_action",
+      "expected": "DENY",
+      "observed": "PENDING"
+    }
+  ],
+  "results": {
+    "passed": 0,
+    "failed": 0,
+    "pending": 17
+  },
+  "disposition": "UTILITY_HARM_PENDING",
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+}

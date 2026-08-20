@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "10-proof-acceptance",
+  "block_id": "specialist.control.orchestrator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Orchestrator Coordination and Integration Governor: Is independent review bound to the exact candidate, gates, fixtures, source lock, and result bytes?",
+  "evidence": [
+    "candidate_digest",
+    "candidate_identity",
+    "gate.10-proof-acceptance.answer",
+    "gate.10-proof-acceptance.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "11-lifecycle-recovery-archive",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "11-lifecycle-recovery-archive"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "b80643af9db1a4eac26f055afd6e793a27a0e939911f07569ff4b1f4f748ff0f"
+}

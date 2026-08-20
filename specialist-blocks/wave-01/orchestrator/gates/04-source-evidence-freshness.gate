@@ -1,0 +1,37 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "04-source-evidence-freshness",
+  "block_id": "specialist.control.orchestrator",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Orchestrator Coordination and Integration Governor: Are candidate, source-lock identity, version, and observation evidence current and independently refreshable?",
+  "evidence": [
+    "candidate_digest",
+    "candidate_identity",
+    "gate.04-source-evidence-freshness.answer",
+    "gate.04-source-evidence-freshness.evidence",
+    "source_lock_identity"
+  ],
+  "next": {
+    "YES": "05-context-completeness",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "05-context-completeness"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "3625a09bb37a1e946cd7de05d178a5c1258ebc28b45c3d40c07dd48985a2ba3e"
+}

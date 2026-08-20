@@ -8,8 +8,8 @@
     "canonical_library_roster": "specialist-blocks/registry/roster.v1.json",
     "master_inventory": "specialist-blocks/registry/master-inventory.v1.json",
     "permanent_role_registry": "specialist-blocks/registry/permanent-role-registry.v1.json",
-    "package_count": 126,
-    "current_package_count": 125,
+    "package_count": 127,
+    "current_package_count": 126,
     "archived_package_count": 1,
     "entry_type_counts": {
       "AGENT_ROLE": 96,
@@ -28534,68 +28534,261 @@
       "display_name": "Orchestrator",
       "entry_type": "AGENT_ROLE",
       "tier": "PERMANENT_AGENTOS_ROLES",
-      "canonical_block_id": "AGENTOS.AGENTOS.ORCHESTRATOR.PACKAGE",
+      "canonical_block_id": "specialist.control.orchestrator",
       "package_path": "specialist-blocks/wave-01/orchestrator",
       "family": "plan-coordination",
-      "exact_narrow_purpose": "Permanent Orchestrator role: Plan coordination and acceptance package is not present yet.",
+      "exact_narrow_purpose": "Coordinate typed plans, integration evidence, and governed handoffs while preserving custody and stopping before workflow mutation, lifecycle action, delivery, or project change.",
       "applicability_triggers": [
-        "Bootstrap resolves this role from the sealed permanent-role registry."
+        "orchestrator",
+        "coordination",
+        "plan",
+        "integration",
+        "handoff",
+        "candidate",
+        "continuation",
+        "authority",
+        "candidate",
+        "custody",
+        "request",
+        "requested_action",
+        "signals",
+        "source_lock"
       ],
       "authority": [
-        "Only the narrowly declared permanent role responsibility; Agent Spawner retains lifecycle authority."
+        "NO_PRODUCT_WRITE;_NO_LIFECYCLE_WRITE;_NO_SPAWN;_NO_ADMISSION;_NO_MERGE;_NO_DEPLOY;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+        "{\"allowed_authority\":[\"independent evaluation receipt\",\"portable AgentOS governance contract\",\"typed candidate and dependency evidence\",\"versioned primary source\"],\"precedence\":[\"advisory evidence\",\"explicit owner authority\",\"human safety and emergency authority\",\"portable governance hard controls\",\"project context\",\"versioned primary source\"],\"prohibited_authority\":[\"lifecycle or delivery side effect\",\"opaque or stale citation\",\"orchestrator preference as authority\",\"provider account facts\",\"self-authored acceptance\",\"unbound chat\"],\"jurisdiction_rule\":\"This generic coordination block does not decide regulated, provider-specific, product, or deployment applicability; require typed entity, activity, data class, version, effective date, and requirement mapping before any dependent route advances.\",\"escalation_rule\":\"When authority conflicts or applicability is incomplete, preserve custody, deny the dependent route, and escalate to typed independent authority; unrelated work continues.\",\"acceptance_authority\":\"INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT\"}"
       ],
       "forbidden_actions": [
-        "Do not spawn, admit, archive, despawn, or mutate another role unless sealed governance explicitly assigns it.",
-        "Do not self-admit, self-review, or write consumer state."
+        "approve a candidate, gate, release, or its own package",
+        "change governance, memory, roster, or model policy",
+        "execute arbitrary processes or commands",
+        "expose credentials, secrets, or protected data",
+        "infer missing authority, candidate, source, or custody facts",
+        "merge, deploy, publish, or mutate project state",
+        "spawn, admit, archive, or despawn any agent or seed"
       ],
       "stop_conditions": [
-        "Stop when the package, required gate tree, current model route, or independent review is missing.",
-        "Return a typed defect to Agent Spawner for contradictions, stale evidence, or invalid handoffs."
+        "{\"candidate_entry\":\"Package, reuse contract, source lock, twelve gates, seventeen executable hostile fixtures, evaluation dossier, and handoff exist with matching digests.\",\"evaluation_entry\":\"An independent evaluator reruns the exact candidate and hostile fixture set through the real coordination boundary; static syntax is insufficient and utility/harm review remains pending.\",\"suspension\":\"Suspend on stale source, invalidated authority, failed independent evaluation, custody mismatch, unsafe scope, or reuse-key incompatibility.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
       ],
       "required_blocks": [
         "specialist.foundation.authority-jurisdiction-gate",
         "specialist.foundation.evaluation-admission-gate",
         "specialist.foundation.evidence-freshness-gate",
-        "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate"
       ],
       "knowledge_context_inputs": [
-        "sealed permanent-role registry",
-        "canonical package path: specialist-blocks/wave-01/orchestrator",
-        "current global model-policy snapshot",
-        "project-scoped typed context only"
+        "candidate and source identity binding",
+        "dependency-safe handoff and liveness evidence",
+        "independent review and invalidation semantics",
+        "orchestration versus execution and approval boundaries",
+        "typed authority, evidence, custody, and stop conditions",
+        "authority",
+        "candidate",
+        "custody",
+        "request",
+        "requested_action",
+        "signals",
+        "source_lock",
+        "source.w3c-prov-dm",
+        "source.git-scm-book",
+        "source.openssf-scorecard",
+        "source.agentos-governance"
       ],
       "deterministic_gates": {
-        "status": "MISSING_PACKAGE",
-        "manifest_path": null,
-        "gates": []
+        "status": "BOUND",
+        "manifest_path": "specialist-blocks/wave-01/orchestrator/gates/manifest.json",
+        "gates": [
+          {
+            "gate_id": "00-intake",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/00-intake.gate",
+            "file_sha256": "04646587ed94d108532004c8b9112b8fa7c35b7fcf9f7fa5b7898b099a31b630"
+          },
+          {
+            "gate_id": "01-applicability",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/01-applicability.gate",
+            "file_sha256": "facdbec4ca18ff8bf247c0c15129cc2d5be18020b488b2b52a1500b441bf7bb2"
+          },
+          {
+            "gate_id": "02-authority-precedence",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/02-authority-precedence.gate",
+            "file_sha256": "f7ad91133e7a88d37bcc12d7a00f485bf33c769ac1ac3942bb51e791e86927eb"
+          },
+          {
+            "gate_id": "03-scope-nongoals",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/03-scope-nongoals.gate",
+            "file_sha256": "c12b15efe42b9ee0bb875d47d98d8ea7f3a749d041f56302bf45b4c9fbff5ee8"
+          },
+          {
+            "gate_id": "04-source-evidence-freshness",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/04-source-evidence-freshness.gate",
+            "file_sha256": "f04512beb88925d642ec62f6bca8d533fd8ed42bbb8b3c3b4c381616d2f01da5"
+          },
+          {
+            "gate_id": "05-context-completeness",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/05-context-completeness.gate",
+            "file_sha256": "dfbcba511d638156aa5322f33c45ddca48afd72422bbc0f9df1472655774690e"
+          },
+          {
+            "gate_id": "06-tool-resource-custody",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/06-tool-resource-custody.gate",
+            "file_sha256": "330ddb458aeb63b8b2ab83c8dba3eb21b65deb80608a661d7c0d332bdc5e3063"
+          },
+          {
+            "gate_id": "07-data-secret-privacy",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/07-data-secret-privacy.gate",
+            "file_sha256": "173f00f2d359506e26c9b6b981c29711a54ebfda6d856ac886513f9b32725c35"
+          },
+          {
+            "gate_id": "08-build-browser-runtime",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/08-build-browser-runtime.gate",
+            "file_sha256": "c13fe56b75304cbcbde5a59e84991e7c4020430071932575e6dd6fdc66389573"
+          },
+          {
+            "gate_id": "09-output-handoff",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/09-output-handoff.gate",
+            "file_sha256": "ff279137a6285cd567bf6770491bcfb706c6a39146f78592bb5769e8a7a0bca4"
+          },
+          {
+            "gate_id": "10-proof-acceptance",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/10-proof-acceptance.gate",
+            "file_sha256": "e53652fd01f6bba4738671e5c15799ea4594f1f3ec329882d11f7af79240f05e"
+          },
+          {
+            "gate_id": "11-lifecycle-recovery-archive",
+            "path": "specialist-blocks/wave-01/orchestrator/gates/11-lifecycle-recovery-archive.gate",
+            "file_sha256": "62302cc9dcd5c3ce3c9ab9767abf30a24e20065fac06a6799c1b626a2746128d"
+          }
+        ]
       },
       "hostile_fixtures": {
-        "status": "MISSING_PACKAGE",
-        "fixtures": []
+        "status": "BOUND",
+        "fixtures": [
+          {
+            "fixture_id": "specialist.control.orchestrator.AUTHORITY_CONFLICT",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/authority_conflict.json",
+            "file_sha256": "71cb0940f018d681f9990c08ad95a082ffc3fa9d0fd1e949f39e54fdb9bc7678",
+            "expected_outcome": "ESCALATE"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.BROAD_WHEN_NARROW_EXISTS",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/broad_when_narrow_exists.json",
+            "file_sha256": "74c11b321f7d0272c032483e7efa97152dec223d404ad82cd549d289ac653edc",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.CROSS_PROVIDER_VERSION_CLAIM",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/cross_provider_version_claim.json",
+            "file_sha256": "433da2e46e0c5b4e53cb979a089f73c2820c8cfd95a91ca671a33f013ef0bd07",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.DATA_LIMIT",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/data_limit.json",
+            "file_sha256": "9d4a8258b9219ae685e2a01df747040b3733ae41264ad3ca063e6c05e8abbb65",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.DUPLICATE_SIBLING_AUTHORITY",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/duplicate_sibling_authority.json",
+            "file_sha256": "e0cc6d84dc75db070e7104cf4a13b972fa514b05d6989a238cb278335e490d36",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.FALSE_POSITIVE",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/false_positive.json",
+            "file_sha256": "446b00fefd647e21c15e958aa111f41056ef9339ecc436a5eb0d349f7da2d732",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.HANDOFF",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/handoff.json",
+            "file_sha256": "3d43fb9cf8ef5f8b8e68253773745c38e4233d1c2ee90168d9bce1bce3dbddd3",
+            "expected_outcome": "ROUTE"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.MISSING_CONTEXT",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/missing_context.json",
+            "file_sha256": "a0a2ef80d8758b5ae73f893df57081ef8881b19664888ee87e232a9b11177fe9",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.NARROWNESS",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/narrowness.json",
+            "file_sha256": "01a2627b285477e7c93168cb672b64c1dd25d9967a0387704df0280e1a6974bc",
+            "expected_outcome": "ROUTE"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.ROUTER_SELF_ACCEPT",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/router_self_accept.json",
+            "file_sha256": "a40450209c7107d89f3704372163ed5e93eb8dc1578a208c7e7545f223126701",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.ROUTING",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/routing.json",
+            "file_sha256": "b8b90cdb4c5b200381149245b83c77d9c751aa5bffa0804b090e3ec18de49ab1",
+            "expected_outcome": "ROUTE"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.SILENT_SCOPE_EXPANSION",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/silent_scope_expansion.json",
+            "file_sha256": "ec8609dafd7d721f2f24fd566a75b2fc5dfd5ddf5f323ed811edcb75cfd46580",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.STALE_SOURCE",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/stale_source.json",
+            "file_sha256": "1efc0f29a73ea243eaf840138a44aa0a6db7ba3ba45f88ddf456a648017df8d2",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.TOOL_LIMIT",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/tool_limit.json",
+            "file_sha256": "f9313f99680dee7f1407a949c1548567a63d18a1e0a3552f4ccdb34d51dda39a",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.UMBRELLA_AUTHORITY",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/umbrella_authority.json",
+            "file_sha256": "af623bcc32deaa52cbc4b01fc38edd3f0028c824cfd1ce99e3b306cafb998db8",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.UNRELATED_SCOPE",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/unrelated_scope.json",
+            "file_sha256": "0fcffc3b96c857cf70263f4aa3b6c3380724661810d03ad129f13c5622665341",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.orchestrator.UNSAFE_ACTION",
+            "path": "specialist-blocks/wave-01/orchestrator/fixtures/unsafe_action.json",
+            "file_sha256": "9b6a4f520a805af0b2a13462d485de74a0e44feae236dfa958c84dac83c7ef7d",
+            "expected_outcome": "DENY"
+          }
+        ]
       },
       "required_evidence_handoff": {
         "evidence_fields": [
-          "complete canonical package",
-          "executed deterministic gates",
-          "hostile fixtures",
-          "independent review and one-use admission"
+          "source_lock",
+          "freshness_policy",
+          "claim_rule",
+          "unknown_rule"
         ],
-        "handoff_path": null,
-        "handoff_file_sha256": null,
+        "handoff_path": "specialist-blocks/wave-01/orchestrator/handoff.json",
+        "handoff_file_sha256": "42c48d71f8fb4cb075510387fbf0fde3d35f36dfc2f748773dd71e67840acd98",
         "independent_review_required": true,
-        "receipt_id": null
+        "receipt_id": "specialist-eval.orchestrator.v1"
       },
       "lifecycle": {
         "kind": "PERMANENT_ROLE",
         "build_rules": [
-          "Build and qualify exactly one permanent role package at a time."
+          "{\"candidate_entry\":\"Package, reuse contract, source lock, twelve gates, seventeen executable hostile fixtures, evaluation dossier, and handoff exist with matching digests.\",\"evaluation_entry\":\"An independent evaluator reruns the exact candidate and hostile fixture set through the real coordination boundary; static syntax is insufficient and utility/harm review remains pending.\",\"suspension\":\"Suspend on stale source, invalidated authority, failed independent evaluation, custody mismatch, unsafe scope, or reuse-key incompatibility.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
         ],
-        "seed_rule": "Permanent roles use governed admission and never perform work from an inert seed.",
-        "worker_rule": "Permanent work begins only after Spawner admission and current context readback.",
-        "permanent_rule": "The sealed registry owns the canonical permanent identity.",
-        "archive_rule": "Only Spawner may archive or supersede the role after durable handoff and zero references."
+        "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
+        "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
+        "permanent_rule": "One canonical permanent identity, admitted once by Spawner and held under its lifecycle custody.",
+        "archive_rule": "Archive or supersede only through Spawner after scope closure, evidence preservation, zero references, and durable readback."
       },
       "model_route": {
         "task_class": "BROAD_ARCHITECTURE",
@@ -28608,39 +28801,50 @@
         "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT"
       },
       "dependency_predecessors": [
-        "AGENTOS.SPAWNER",
-        "AGENTOS_CONTROLLER"
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate"
       ],
       "likely_consumers": [
         "AgentOS bootstrap",
         "Agent Spawner",
-        "project workflow"
+        "Controller",
+        "Product Owner",
+        "Memory",
+        "Runtime",
+        "Scheduler",
+        "Orchestrator"
       ],
       "reuse_likelihood": {
-        "total": 91.55,
+        "total": 94.05,
         "expected_frequency": 98,
         "dependency_centrality": 94,
         "cross_project_reuse": 92,
         "risk_reduction": 98,
         "architecture_coverage": 100,
-        "finish_cost": 95,
+        "finish_cost": 45,
         "rationale": "P0 priority combines permanent_agentos_roles centrality, cross-project reuse, risk reduction, and completion cost; Plan coordination and acceptance package is not present yet.."
       },
       "risk": {
         "criticality": "CRITICAL",
-        "reason": "Permanent role authority affects every later project workflow and requires independent admission."
+        "reason": "PERMANENT_AGENTOS_ROLES entry covers plan-coordination; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "PLANNED_MISSING_PACKAGE",
-      "qa_state": "MISSING_PACKAGE",
-      "independent_evaluation_state": "PENDING_PACKAGE_BUILD",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
-        "links": [],
-        "invalidate_when": [
-          "permanent-role registry changes",
-          "package or gate bytes change",
-          "global model-policy snapshot changes"
+        "links": [
+          "specialist-blocks/wave-01/orchestrator/evaluation.json"
         ],
-        "rebuild_rule": "Spawner must create the package, bind exact files, execute gates and fixtures, then obtain independent acceptance before admission."
+        "invalidate_when": [
+          "block semantic digest changes",
+          "source lock or authoritative evidence changes",
+          "gate or hostile fixture bytes change",
+          "global model-policy snapshot or permanent-role registry changes"
+        ],
+        "rebuild_rule": "Invalidate dependent compiled contexts and seeds, preserve history, resolve current bytes, re-run deterministic gates, then obtain a new independent receipt before reuse."
       }
     },
     {
@@ -39297,8 +39501,8 @@
       "stable_agent_id": "AGENTOS.ORCHESTRATOR",
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
-      "priority_score": 91.55,
-      "reason": "Blocked until the canonical package is built and qualified."
+      "priority_score": 94.05,
+      "reason": "Waits for dependency-safe permanent-role predecessors."
     },
     {
       "rank": 8,
@@ -40013,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "c6cb549249b627776e73cec71253b3c26e34ead37157eb9fd5448ac3a16f1be0"
+  "roster_sha256": "eb121eabcce9cd41ef114ca09e9ccf700013bdc3da934f62f78a8367ffe3d4b4"
 }

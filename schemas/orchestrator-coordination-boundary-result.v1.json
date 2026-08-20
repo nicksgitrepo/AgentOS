@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/orchestrator-coordination-boundary-result.v1.json",
+  "title": "Project-agnostic Orchestrator coordination boundary result",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "error_code", "classification_allowed", "external_side_effects", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.orchestrator_coordination_boundary_result.v1"}, "version": {"const": 1},
+    "disposition": {"enum": ["DENY", "ESCALATE", "ROUTE"]}, "route": {"type": "string"}, "error_code": {"type": "string"}, "classification_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["spawn_calls", "admission_calls", "archive_calls", "despawn_calls", "merge_calls", "deployment_calls", "credential_accesses", "state_changes"], "properties": {"spawn_calls": {"const": 0}, "admission_calls": {"const": 0}, "archive_calls": {"const": 0}, "despawn_calls": {"const": 0}, "merge_calls": {"const": 0}, "deployment_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "missing_fields": {"type": "array", "items": {"type": "string"}}, "handoff": {"type": "object"}, "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "state_rules": {"route": "Only complete current coordination evidence may route to a named owner.", "deny": "Forbidden workflow, lifecycle, delivery, or external-state operations fail closed.", "side_effects": "Every counter remains zero; the gate is descriptive and non-authoritative."}
+}

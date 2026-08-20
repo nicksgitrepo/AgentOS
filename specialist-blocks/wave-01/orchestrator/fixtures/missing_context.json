@@ -1,0 +1,25 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.orchestrator",
+  "fixture_id": "specialist.control.orchestrator.MISSING_CONTEXT",
+  "class": "missing_context",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Typed hostile Orchestrator vector for missing_context; it must be evaluated through the real coordination boundary with no workflow side effects.",
+  "vector": {
+    "entrypoint": "control/orchestrator-coordination-boundary-gate.mjs#evaluateOrchestratorCoordinationBoundary",
+    "input": {
+      "schema": "agentos.orchestrator_coordination_boundary_input.v1",
+      "version": 1,
+      "request_kind": "PLAN_COORDINATION",
+      "evidence": {}
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "TYPED_CONTEXT_REQUIRED",
+      "error_code": "ORCHESTRATOR_CONTEXT_INCOMPLETE",
+      "zero_side_effects": true
+    }
+  }
+}

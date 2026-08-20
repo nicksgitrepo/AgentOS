@@ -1,0 +1,51 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.orchestrator",
+  "fixture_id": "specialist.control.orchestrator.STALE_SOURCE",
+  "class": "stale_source",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Typed hostile Orchestrator vector for stale_source; it must be evaluated through the real coordination boundary with no workflow side effects.",
+  "vector": {
+    "entrypoint": "control/orchestrator-coordination-boundary-gate.mjs#evaluateOrchestratorCoordinationBoundary",
+    "input": {
+      "schema": "agentos.orchestrator_coordination_boundary_input.v1",
+      "version": 1,
+      "request_kind": "PLAN_COORDINATION",
+      "evidence": {
+        "authority": {
+          "status": "CURRENT",
+          "source_status": "CURRENT"
+        },
+        "custody": {
+          "status": "BOUND",
+          "ref": "opaque:CUSTODY.ORCHESTRATOR.001",
+          "owner": "AGENTOS.ORCHESTRATOR"
+        },
+        "candidate": {
+          "identity": "CANDIDATE.ORCHESTRATOR.001",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "review_status": "INDEPENDENT_CURRENT",
+          "package_scope": "ORCHESTRATOR_COORDINATION_ONLY"
+        },
+        "source_lock": {
+          "status": "STALE",
+          "identity": "SOURCE.AGENTOS.GOVERNANCE",
+          "version": "1"
+        },
+        "requested_action": "CLASSIFY_PLAN",
+        "signals": [
+          "ORCHESTRATOR.COORDINATION"
+        ],
+        "scope": "ORCHESTRATOR_ONLY"
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "ORCHESTRATOR_SOURCE_STALE_OR_UNVERIFIED",
+      "zero_side_effects": true
+    }
+  }
+}

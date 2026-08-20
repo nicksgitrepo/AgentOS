@@ -1,0 +1,319 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.orchestrator",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "foundation",
+  "title": "Orchestrator Coordination and Integration Governor",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "purpose": "Coordinate typed plans, integration evidence, and governed handoffs while preserving custody and stopping before workflow mutation, lifecycle action, delivery, or project change.",
+  "scope": {
+    "included": [
+      "candidate and integration review evidence",
+      "conflict and stale-evidence escalation",
+      "continuation and liveness evidence classification",
+      "dependency-directed handoff routing",
+      "typed plan and wave coordination evidence"
+    ],
+    "non_goals": [
+      "accepting product intent or writing project memory",
+      "approving its own package or any ordinary lane completion",
+      "executing commands or using providers or credentials",
+      "merging, releasing, deploying, publishing, or changing project state",
+      "spawning, admitting, archiving, or despawning agents or seeds"
+    ],
+    "smallest_sufficient_rule": "Coordinate only the declared plan, candidate, or handoff condition; route execution, lifecycle, product, and delivery authority to its named owner."
+  },
+  "atomic_scope_statement": "Project-agnostic coordination of typed plans, candidate reviews, and handoff evidence; it does not spawn, admit, archive, despawn, merge, deploy, publish, or change project state.",
+  "permitted_decisions": [
+    "classify a typed coordination or integration request",
+    "classify whether candidate and source evidence is complete and current",
+    "issue a typed owner handoff",
+    "return NOT_APPLICABLE when no coordination condition is in scope",
+    "route missing or conflicting evidence to typed escalation"
+  ],
+  "forbidden_decisions": [
+    "approve a candidate, gate, release, or its own package",
+    "change governance, memory, roster, or model policy",
+    "execute arbitrary processes or commands",
+    "expose credentials, secrets, or protected data",
+    "infer missing authority, candidate, source, or custody facts",
+    "merge, deploy, publish, or mutate project state",
+    "spawn, admit, archive, or despawn any agent or seed"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_LIFECYCLE_WRITE;_NO_SPAWN;_NO_ADMISSION;_NO_MERGE;_NO_DEPLOY;_NO_SELF_ACCEPTANCE;_TYPED_HANDOFF_ONLY",
+  "required_upstream_router": null,
+  "sibling_conflicts": [],
+  "composition_rules": [
+    "compose only with an explicitly typed coordination request, current candidate identity, source lock, and declared custody",
+    "preserve the smallest sufficient coordination scope and unrelated work",
+    "route lifecycle, delivery, product, memory, or governance changes to their named owner",
+    "unknown closes only the dependent coordination route"
+  ],
+  "escalation_target": "Controller for workflow regulation; Spawner for lifecycle or governance repair; Product Owner for unresolved intent; typed integration owner for delivery decisions",
+  "split_required_when": [
+    "merge, release, deployment, or external-state action is requested",
+    "plan coordination differs from candidate integration review",
+    "project or consumer data is introduced",
+    "workflow authority differs from lifecycle or delivery authority"
+  ],
+  "required_knowledge": [
+    "candidate and source identity binding",
+    "dependency-safe handoff and liveness evidence",
+    "independent review and invalidation semantics",
+    "orchestration versus execution and approval boundaries",
+    "typed authority, evidence, custody, and stop conditions"
+  ],
+  "routing": {
+    "signals": [
+      "orchestrator",
+      "coordination",
+      "plan",
+      "integration",
+      "handoff",
+      "candidate",
+      "continuation"
+    ],
+    "deny_if": [
+      "ambiguous candidate or source identity",
+      "missing authority, custody, or independent review",
+      "requested lifecycle, delivery, product, memory, or external-state action",
+      "stale or unverifiable source"
+    ],
+    "selection_rule": "SELECT_SMALLEST_SUFFICIENT_SET;_ATOMIC_SPECIALISTS_BEAT_UMBRELLA_ROUTERS"
+  },
+  "intake": {
+    "context_schema": "schemas/specialist-context.v1.json",
+    "required_context": [
+      "authority",
+      "candidate",
+      "custody",
+      "request",
+      "requested_action",
+      "signals",
+      "source_lock"
+    ],
+    "optional_context": [
+      "evaluation_receipt",
+      "handoff_receipt",
+      "runtime_readback"
+    ],
+    "acceptance_signals": [
+      "candidate integration review",
+      "continuation evidence",
+      "dependency handoff",
+      "typed plan coordination request"
+    ],
+    "rejection_signals": [
+      "ambiguous candidate or source",
+      "lifecycle, delivery, product, or external-state request",
+      "missing authority or custody",
+      "stale or unverifiable evidence"
+    ],
+    "deny_if_missing": [
+      "authority",
+      "authority.activity",
+      "authority.data_class",
+      "authority.entity",
+      "authority.jurisdiction",
+      "candidate",
+      "candidate.digest",
+      "candidate.identity",
+      "candidate.review_status",
+      "custody",
+      "request",
+      "requested_action",
+      "signals",
+      "source_lock",
+      "source_lock.identity",
+      "source_lock.version"
+    ]
+  },
+  "output": {
+    "contract_id": "specialist-output.orchestrator.v1",
+    "typed_schema": "schemas/specialist-output.v1.json",
+    "required_fields": [
+      "evidence",
+      "findings",
+      "handoff",
+      "scope",
+      "status",
+      "unknowns"
+    ],
+    "evidence_obligations": [
+      "authority, custody, candidate, and source identity result",
+      "dependency and continuation evidence",
+      "exact twelve-gate trace",
+      "independent review and unknown ledger"
+    ],
+    "handoff_fields": [
+      "block_id",
+      "candidate_digest",
+      "next_action",
+      "residuals",
+      "status"
+    ]
+  },
+  "authority": {
+    "allowed_authority": [
+      "independent evaluation receipt",
+      "portable AgentOS governance contract",
+      "typed candidate and dependency evidence",
+      "versioned primary source"
+    ],
+    "precedence": [
+      "advisory evidence",
+      "explicit owner authority",
+      "human safety and emergency authority",
+      "portable governance hard controls",
+      "project context",
+      "versioned primary source"
+    ],
+    "prohibited_authority": [
+      "lifecycle or delivery side effect",
+      "opaque or stale citation",
+      "orchestrator preference as authority",
+      "provider account facts",
+      "self-authored acceptance",
+      "unbound chat"
+    ],
+    "jurisdiction_rule": "This generic coordination block does not decide regulated, provider-specific, product, or deployment applicability; require typed entity, activity, data class, version, effective date, and requirement mapping before any dependent route advances.",
+    "escalation_rule": "When authority conflicts or applicability is incomplete, preserve custody, deny the dependent route, and escalate to typed independent authority; unrelated work continues.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Require source identity, version, retrieved date, immutable identity, and content digest when available; stale, future, conflicting, or unknown evidence denies the dependent coordination route.",
+    "claim_rule": "Claims are limited to the exact candidate, plan, source, dependency, and declared coordination scope; orchestration evidence never grants execution or delivery authority.",
+    "unknown_rule": "UNKNOWN records missing candidate identity, source version, authority, custody, independent review, or dependency evidence and closes only the dependent route; unrelated work continues."
+  },
+  "controls": {
+    "read": [
+      "candidate package",
+      "declared source records",
+      "synthetic typed coordination evidence",
+      "typed authority corpus"
+    ],
+    "write": [
+      "own append-only candidate package",
+      "typed handoff receipt"
+    ],
+    "tools": [
+      "deterministic validator",
+      "local filesystem read/write within package scope",
+      "read-only governance and candidate evidence"
+    ],
+    "data": [
+      "aggregate or synthetic coordination evidence only",
+      "no credentials, secrets, consumer data, or project files",
+      "no external state or process control",
+      "public source metadata only"
+    ],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "DENY",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "recovery": [
+      "close only the dependent coordination route",
+      "preserve unrelated work and custody",
+      "record the exact missing or conflicting field",
+      "refresh evidence or escalate to typed authority",
+      "resume only after a fresh typed recheck"
+    ],
+    "terminal_statuses": [
+      "DENIED",
+      "ESCALATED",
+      "NOT_APPLICABLE",
+      "WAITING_WITH_RECEIPT"
+    ]
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, reuse contract, source lock, twelve gates, seventeen executable hostile fixtures, evaluation dossier, and handoff exist with matching digests.",
+    "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile fixture set through the real coordination boundary; static syntax is insufficient and utility/harm review remains pending.",
+    "suspension": "Suspend on stale source, invalidated authority, failed independent evaluation, custody mismatch, unsafe scope, or reuse-key incompatibility.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": [
+      "00-intake",
+      "01-applicability",
+      "02-authority-precedence",
+      "03-scope-nongoals",
+      "04-source-evidence-freshness",
+      "05-context-completeness",
+      "06-tool-resource-custody",
+      "07-data-secret-privacy",
+      "08-build-browser-runtime",
+      "09-output-handoff",
+      "10-proof-acceptance",
+      "11-lifecycle-recovery-archive"
+    ],
+    "outcomes": [
+      "YES",
+      "NO",
+      "UNKNOWN",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "schema_path": "schemas/specialist-block.v1.json",
+  "dependencies": [
+    "specialist.foundation.authority-jurisdiction-gate",
+    "specialist.foundation.evaluation-admission-gate",
+    "specialist.foundation.evidence-freshness-gate",
+    "specialist.foundation.scope-non-goal-gate",
+    "specialist.foundation.tool-custody-gate"
+  ],
+  "conflicts": [],
+  "aliases": [],
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.orchestrator",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Reuse only the exact block-lock key and revision when the block digest, source lock, gate pack, and typed authority context match; never infer cross-edition compatibility.",
+    "freshness_rule": "Revalidate source lock, immutable identity, effective date, and candidate digest before reuse; UNKNOWN closes the dependent action."
+  },
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.orchestrator.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_classes": [
+      "authority_conflict",
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "false_positive",
+      "handoff",
+      "missing_context",
+      "narrowness",
+      "router_self_accept",
+      "routing",
+      "silent_scope_expansion",
+      "stale_source",
+      "tool_limit",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ]
+  },
+  "block_sha256": "5e17efee23c0ce378b4e8377748787a1370c56aa72e53aceaf36b1e3afc9f219"
+}
