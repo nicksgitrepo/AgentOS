@@ -3359,7 +3359,7 @@
     },
     "software_language_runtime_router_candidate_handoff": {
       "path": "specialist-blocks/wave-02/software-language-runtime-router/handoff.json",
-      "sha256": "cf37d3bc6927d70122a78a918cd63e63d04877f4958965cb04b43e935c0bbbde"
+      "sha256": "e1d415731425eb458ff26d614b286c90f9d536f301f4e6576327649305c746f0"
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",
