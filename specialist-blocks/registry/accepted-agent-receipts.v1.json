@@ -41,6 +41,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.CONTROL_WORKTREE_CUSTODY",
+      "package_path": "specialist-blocks/wave-04/worktree-custody",
+      "candidate_commit": "4483ee43ba1179250ee93c22f8a48e08ec626fee",
+      "candidate_tree": "87da1c97241dc6892374cb9a5736d1e5cdc986e5",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/4483ee43ba1179250ee93c22f8a48e08ec626fee",
+      "receipt_sha256": "021ca027f165b1a6cf618377e98af732422361747ce40c5c04556af4a82fd3df",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "package_path": "specialist-blocks/wave-02/data-router",
       "candidate_commit": "ad8f1a84c673d00a6f000067f836731884dfcd51",
@@ -171,5 +181,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "2c350bb05ddcf58478670ccbfc229fa12018de09fb65cf589d3d0dea02491f2a"
+  "ledger_sha256": "602277df6ac89936a04588ea3f6becd9abf45ef637eb30092b117541b08196cc"
 }

@@ -80,6 +80,9 @@ assert.match(acceptedCentralIntegrator.build_state, /^ACCEPTED_/u, "Central Inte
 const acceptedReleaseManager = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.CONTROL_RELEASE_MANAGER");
 assert(acceptedReleaseManager, "Release Manager missing from roster");
 assert.match(acceptedReleaseManager.build_state, /^ACCEPTED_/u, "Release Manager is not marked accepted in the readback index");
-assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.CONTROL_WORKTREE_CUSTODY");
+const acceptedWorktreeCustody = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.CONTROL_WORKTREE_CUSTODY");
+assert(acceptedWorktreeCustody, "Worktree/Custody Manager missing from roster");
+assert.match(acceptedWorktreeCustody.build_state, /^ACCEPTED_/u, "Worktree/Custody Manager is not marked accepted in the readback index");
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.ASSURANCE_ENTERPRISE_ROUTER");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);
