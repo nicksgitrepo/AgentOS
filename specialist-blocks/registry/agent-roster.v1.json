@@ -12565,9 +12565,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/concurrent-authorization/evaluation.json"
@@ -39772,17 +39772,17 @@
       "rank": 41,
       "stable_agent_id": "AGENT.SECURITY_CONCURRENT_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 42,
       "stable_agent_id": "AGENT.SECURITY_CVE_APPLICABILITY",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 43,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "35e1a9eab4b608b6db008a95a9aeae4a1b1557ec52b86c91b9933efb53a37a37"
+  "roster_sha256": "2c23f7c855ead9da9b9dea27189e0217dec02382bfc6fd1016e2d20d096a9499"
 }
