@@ -111,6 +111,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.FINANCE_ACCOUNTING_ROUTER",
+      "package_path": "specialist-blocks/wave-06/accounting-router",
+      "candidate_commit": "ac9624afd10d5812cd2c3ea8ccd39bfc911a1486",
+      "candidate_tree": "cb72429750b9b2395f2b0dea02c390619779cef4",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/ac9624afd10d5812cd2c3ea8ccd39bfc911a1486",
+      "receipt_sha256": "9b8694ca00d08d8404facf0a9f83332e64e14868ec995a8a02aad1bcefee7034",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER",
       "package_path": "specialist-blocks/wave-02/provider-edge-router",
       "candidate_commit": "3994c3bfb699b226afeb3d5e34f12acbd42b1408",
@@ -221,5 +231,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "ee80e5146a2ca1e4b599bbede072780262593b80a0d6efdd5f66686506e9cabd"
+  "ledger_sha256": "fe3b82307b2ac01bc2bd7ea359be6a5347ed4ddc82386c9604684d3b8580fd24"
 }
