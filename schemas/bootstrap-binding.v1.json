@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "942113f161dcc3ccd9a35c294c69c691f4ddd543d6fcf6892e6f9e3778c5f659"
+      "sha256": "906f3b3eb05ffd3dca696f94f93b29f346f3c3a8def05480e2e8ae3d6eb85e33"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3504,6 +3504,34 @@
     "regulatory_applicability_router_candidate_handoff": {
       "path": "specialist-blocks/wave-06/regulatory-applicability-router/handoff.json",
       "sha256": "22edc56edaa8ed59549e304f3c510b8646115356096c28bd2fc922138ca6dd75"
+    },
+    "owasp_api_top10_router_boundary_gate": {
+      "path": "control/owasp-api-top10-router-boundary-gate.mjs",
+      "sha256": "df90e9ef7d680cf736feef8c49c1dd44d53d6409e10e9e2eb28d470d45e44327"
+    },
+    "owasp_api_top10_router_boundary_input_contract": {
+      "path": "schemas/owasp-api-top10-router-boundary-input.v1.json",
+      "sha256": "8ec030a01781f93d50c2922a26a978ccf544c25cca22ebafb73cb1c603e143cf"
+    },
+    "owasp_api_top10_router_boundary_result_contract": {
+      "path": "schemas/owasp-api-top10-router-boundary-result.v1.json",
+      "sha256": "af241fab2cb6673b21c44815aa63530dde0915a94ac87209fb66fa161f6a9f90"
+    },
+    "owasp_api_top10_router_package_operational_evaluation_contract": {
+      "path": "schemas/owasp-api-top10-router-package-operational-evaluation.v1.json",
+      "sha256": "db0c608944bdc79806bbb832a929c42787d388b1fe2de24afb93daeaff43da38"
+    },
+    "owasp_api_top10_router_package_operational_evaluator": {
+      "path": "control/owasp-api-top10-router-package-evaluator.mjs",
+      "sha256": "586f3c6d0563b4156e8b76f9e18fa190e037ba21c7642885b78eaa911949f3c0"
+    },
+    "owasp_api_top10_router_boundary_verifier": {
+      "path": "tests/verify-owasp-api-top10-router-boundary.mjs",
+      "sha256": "ff455f1c327bdc81e1bb3ea9a102ef75849677a08009144fca12dc5d6bd88c8a"
+    },
+    "owasp_api_top10_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/owasp-api-top10-router/handoff.json",
+      "sha256": "e1cc450458239b1ed2bd9fd4faaac310c69c571429f99f15f3aea2b68e340ab7"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
