@@ -9466,9 +9466,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/ios-swiftui/evaluation.json"
@@ -10400,9 +10400,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/responsive-web/evaluation.json"
@@ -39732,17 +39732,17 @@
       "rank": 36,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 37,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_PRODUCT_INTERACTION",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 38,
@@ -39750,7 +39750,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 39,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "8c2cd7a1b8b36bbeff44fa8d4d0c9dc365dc62e548f2ea5aa97c4bb6e6716340"
+  "roster_sha256": "c7fb203f27fd9b72c07118f2c5d59b0cb62f810b28c104407eb277204344708e"
 }
