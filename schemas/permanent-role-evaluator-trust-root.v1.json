@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.permanent_role_evaluator_trust_root.v1",
+  "title": "Canonical trust root for permanent-role independent evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "registry_path", "registry_sha256", "admission_path", "admission_sha256", "evaluator_id", "evaluator_role", "scope", "authority_epoch", "root_registry_path", "root_registry_sha256", "root_public_key_pem", "evaluator_public_key_pem", "trust_root_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.permanent_role_evaluator_trust_root.v1"},
+    "version": {"const": 1},
+    "registry_path": {"type": "string", "pattern": "^specialist-blocks/control-plane/agent-spawner/[^/]+\\.json$"},
+    "registry_sha256": {"$ref": "#/$defs/sha256"},
+    "admission_path": {"type": "string", "pattern": "^specialist-blocks/control-plane/agent-spawner/[^/]+\\.json$"},
+    "admission_sha256": {"$ref": "#/$defs/sha256"},
+    "evaluator_id": {"type": "string", "minLength": 3},
+    "evaluator_role": {"const": "AGENT.INDEPENDENT_EVALUATOR"},
+    "scope": {"const": "FULL_PERMANENT_ROLE_PACKAGE"},
+    "authority_epoch": {"type": "integer", "minimum": 1},
+    "root_registry_path": {"type": "string", "pattern": "^specialist-blocks/control-plane/agent-spawner/[^/]+\\.json$"},
+    "root_registry_sha256": {"$ref": "#/$defs/sha256"},
+    "root_public_key_pem": {"type": "string", "pattern": "^-----BEGIN PUBLIC KEY-----[\\s\\S]+-----END PUBLIC KEY-----\\n?$"},
+    "evaluator_public_key_pem": {"type": "string", "pattern": "^-----BEGIN PUBLIC KEY-----[\\s\\S]+-----END PUBLIC KEY-----\\n?$"},
+    "trust_root_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

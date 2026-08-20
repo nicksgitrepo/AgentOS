@@ -648,6 +648,14 @@
       "path": "specialist-blocks/control-plane/agent-spawner/canonical-evaluator-trust-root.v1.json",
       "sha256": "68a731a5e9e4488e381809ad78acbde3e6e2ea7b4bf25d11e47aa96a29021c34"
     },
+    "permanent_role_evaluator_trust_root": {
+      "path": "specialist-blocks/control-plane/agent-spawner/permanent-role-evaluator-trust-root.v1.json",
+      "sha256": "5f86d21359771e6e47ad9cbed7020e82fa9c0cfb27c402c8d649583117ffee23"
+    },
+    "permanent_role_evaluator_trust_root_contract": {
+      "path": "schemas/permanent-role-evaluator-trust-root.v1.json",
+      "sha256": "cae3a7c0077a6ce0b1926f97e7003f48e5ea8a6f665a9d5a03b8f1eb06e4f36e"
+    },
     "spawner_external_reviewer_registry": {
       "path": "specialist-blocks/control-plane/agent-spawner/external-reviewer-registry.v1.json",
       "sha256": "42779b29fa613a5b947e1dfb29537b24d1f591401362bd9e4fdb3345e5b2cb04"
@@ -834,7 +842,19 @@
     },
     "controller_specialist_package_verifier": {
       "path": "tests/verify-controller-specialist-package.mjs",
-      "sha256": "cea696bd156885a88a0f1ed770cc294cb06a75d601663176ac11f314356e284d"
+      "sha256": "dd29f5ead2a9ae053a56bdc43050562691288081bc5cb09552c58c8e42832df0"
+    },
+    "controller_specialist_block": {
+      "path": "specialist-blocks/wave-01/project-controller/block.json",
+      "sha256": "baef34204b920b90a6f2970a262f616c74e83b47e7cb1f2441f4e76b41f403e9"
+    },
+    "controller_specialist_evaluation": {
+      "path": "specialist-blocks/wave-01/project-controller/evaluation.json",
+      "sha256": "960c1df25092fddef6d50242f3b41783600f52bd485cff6d4b274880088381de"
+    },
+    "controller_specialist_handoff": {
+      "path": "specialist-blocks/wave-01/project-controller/handoff.json",
+      "sha256": "72e26c3e193b728d39e796ff9f4b6c800e2aad24e3f04ed96e3f7ff0dc62aae2"
     },
     "controller_startup_runner_contract": {
       "path": "schemas/controller-startup-runner.v1.json",
@@ -1711,7 +1731,7 @@
     },
     "permanent_role_external_review_controller": {
       "path": "control/permanent-role-external-review-store.mjs",
-      "sha256": "56e407b452f5d45a794bb2d39ae50628ec318358eb427ebcb0e06792875f5d5e"
+      "sha256": "b99c401987eae98eb766d7e1c2689e41cf39a1f56163af63d85ceadcb4676011"
     },
     "permanent_role_external_review_verifier": {
       "path": "tests/verify-permanent-role-external-review-store.mjs",
@@ -1723,11 +1743,19 @@
     },
     "permanent_role_governed_admission_controller": {
       "path": "control/permanent-role-governed-admission.mjs",
-      "sha256": "d6697aaa3adc1d487c68dd7c0fe3f7b8e05ebcca408b5658f9e3dee7fa7b1644"
+      "sha256": "7ba73fb58c04cc50f78add8d83b3df22a4e9d98e863db7bbf5a6298818187cd7"
     },
     "permanent_role_governed_admission_verifier": {
       "path": "tests/verify-permanent-role-governed-admission.mjs",
       "sha256": "f7932d42fb3086dd9c7a5472b0ad4acb88998b4da51f03076ecfc13130f5f92c"
+    },
+    "permanent_role_package_evaluator_controller": {
+      "path": "control/permanent-role-package-evaluator.mjs",
+      "sha256": "1e8e083a66149fc3b417374fa897d2fdcd4b02fb1dcd8f8102cba40f49f195fe"
+    },
+    "permanent_role_package_evaluator_verifier": {
+      "path": "tests/verify-controller-package-evaluator.mjs",
+      "sha256": "03e1e72c02071df55cc9e0ecfbf6812b4526d81f9eb10c81a6e04d1e08292e9f"
     },
     "permanent_role_registry": {
       "path": "specialist-blocks/registry/permanent-role-registry.v1.json",
@@ -3011,11 +3039,11 @@
     },
     "reusable_agent_roster_compiler": {
       "path": "control/reusable-agent-roster-compiler.mjs",
-      "sha256": "711906db73ec077b7b81100a8c2507cdf102adb96b3e07643694e2046eac95d0"
+      "sha256": "e93de659347552071c964d3bcf965038ea05298e8a1eb95b46d74b743fd503bf"
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "40573fd52317b94c43ef7008ca72a5635ee142c3a0466996d13ff605a15b91c9"
+      "sha256": "fc51c60e8de5a304e1a0cafe48329c22a9aa307789f00fda58b48dff8eecb438"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",

@@ -29,8 +29,8 @@ for (const denied of ["campaign", "phase", "task", "despawn", "deploy", "memory"
 const evaluation = read("evaluation.json");
 assert.equal(evaluation.receipt_id, "specialist-eval.project-controller.v2");
 assert.equal(evaluation.candidate_digest, block.block_sha256);
-assert.equal(evaluation.disposition, "UTILITY_HARM_PENDING");
-assert.deepEqual(evaluation.results, {passed: 0, failed: 0, pending: 17});
+assert.equal(evaluation.disposition, "EXECUTED_REVIEW_REQUIRED");
+assert.deepEqual(evaluation.results, {passed: 17, failed: 0, pending: 0});
 assert.equal(evaluation.model_requirement, "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE");
 
 const fixtureManifest = read("hostile-fixtures.manifest.json");
@@ -55,7 +55,7 @@ for (const fixtureName of fixtureNames) {
   assert(Object.keys(fixture.vector.input).length > 0, `${fixtureName} lacks hostile input`);
   assert(fixture.vector.assertions.length >= 3, `${fixtureName} lacks side-effect assertions`);
   assert(fixture.vector.assertions.some((value) => /zero|remains zero|no adapter/iu.test(value)), `${fixtureName} lacks a zero-adapter assertion`);
-  assert(evaluation.cases.some((item) => item.class === fixture.class && item.expected === fixture.expected && item.observed === "PENDING"));
+  assert(evaluation.cases.some((item) => item.class === fixture.class && item.expected === fixture.expected && item.observed === "PASS"));
   const manifestEntry = fixtureManifest.entries.find((entry) => entry.fixture_id === fixture.fixture_id);
   assert(manifestEntry, `${fixtureName} is absent from the hostile fixture manifest`);
   assert.equal(crypto.createHash("sha256").update(fs.readFileSync(path.join(packageDir, "fixtures", fixtureName))).digest("hex"), manifestEntry.file_sha256);

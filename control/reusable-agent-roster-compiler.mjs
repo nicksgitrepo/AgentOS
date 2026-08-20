@@ -66,7 +66,7 @@ function gateInventory(root, relativePath, block) {
   const paths = manifest.gate_paths ?? [];
   const gates = ids.flatMap((gateId) => {
     const declared = paths.find((candidate) => candidate.endsWith(`${gateId}.gate`)) ?? `gates/${gateId}.gate`;
-    const gatePath = path.join(path.dirname(manifestPath), declared).split(path.sep).join("/");
+    const gatePath = (declared.startsWith("gates/") ? path.join(relativePath, declared) : path.join(path.dirname(manifestPath), declared)).split(path.sep).join("/");
     return exists(root, gatePath) ? [{gate_id: gateId, path: gatePath, file_sha256: fileSha(root, gatePath)}] : [];
   });
   return {status: gates.length === ids.length ? "BOUND" : "INCOMPLETE", manifest_path: manifestPath, gates};

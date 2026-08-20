@@ -275,7 +275,7 @@
   "evaluation": {
     "dossier_path": "evaluation.json",
     "receipt_id": "specialist-eval.project-controller.v2",
-    "disposition": "UTILITY_HARM_PENDING",
+    "disposition": "EXECUTED_REVIEW_REQUIRED",
     "independent_reviewer_required": true,
     "fixture_classes": [
       "authority_conflict",
@@ -307,5 +307,5 @@
     "edition_rule": "Changes to Controller identity, operation registry, timer, workflow authority, or role separation create a new immutable revision.",
     "freshness_rule": "Authority, model-policy, or operation-registry changes invalidate affected contexts and require a new governed readback without silently changing this package."
   },
-  "block_sha256": "ac5c3b6cc774c305ff70609d9bb08f29121e981fc71663a8691c29300ab87694"
+  "block_sha256": "6b2dba9fb90096ae143266684e0e3cf8ce2955d4f27b28b5fedc8cf1c8aa206e"
 }

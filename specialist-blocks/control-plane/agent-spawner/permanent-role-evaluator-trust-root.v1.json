@@ -1,0 +1,17 @@
+{
+  "schema": "agentos.permanent_role_evaluator_trust_root.v1",
+  "version": 1,
+  "registry_path": "specialist-blocks/control-plane/agent-spawner/independent-evaluator-registry.v2.json",
+  "registry_sha256": "edf653fc52325244f6ae31e0e0c7c894afe17fceabbc4a7dde9183b532cd0a60",
+  "admission_path": "specialist-blocks/control-plane/agent-spawner/independent-evaluator-admission.v1.json",
+  "admission_sha256": "e76bfde2bf6f7f35e77ef7a4eabda1edbbe8f3dc80ebfd8b8a9bd6730f439e95",
+  "evaluator_id": "EVALUATOR.EXTERNAL.AGENTOS.SPAWNER.V1",
+  "evaluator_role": "AGENT.INDEPENDENT_EVALUATOR",
+  "scope": "FULL_PERMANENT_ROLE_PACKAGE",
+  "authority_epoch": 1,
+  "root_registry_path": "specialist-blocks/control-plane/agent-spawner/canonical-evaluator-trust-root.v1.json",
+  "root_registry_sha256": "cf2768ab6d275db8b5bb3129e5d9ce639996353af16d08b5feb40acb8d841673",
+  "root_public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAlVFbC1tnRIZF94knqMXm0MwTeIcvC5mvR0E+Okuiwj0=\n-----END PUBLIC KEY-----\n",
+  "evaluator_public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAYuMJo4JVkP3fpTPF3GVy5pTj8blQs5CdhySCVbIaakU=\n-----END PUBLIC KEY-----\n",
+  "trust_root_sha256": "d3a23e0e64cc32097be3edd6ae02c2ce10665bced29a7701b5729c214789c1f9"
+}
