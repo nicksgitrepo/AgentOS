@@ -11,9 +11,10 @@ dependencies, scores, gates, fixtures, model routes, and build state.
 The Spawner is already admitted and is reused by its immutable receipt. The
 Controller, Product Owner, Memory, Runtime, Scheduler, and Orchestrator
 packages have passed their independent checks and are reused by their exact
-candidate readbacks. The current package is Security Router; only one package
-may be in qualification at a time. A package is not built merely because a
-name exists: its exact
+candidate readbacks. Security Router has now passed its independent check and
+is registered as an accepted platform package. The current package is Data
+Router; only one package may be in qualification at a time. A package is not
+built merely because a name exists: its exact
 blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic
 QA, and independent evaluation must all be current.
 
@@ -58,10 +59,11 @@ from the accepted global model-policy snapshot, with freshness, availability,
 context, cost, concurrency, fallback, and escalation checks applied at spawn.
 Seeds are immutable clean checkpoints and never perform work.
 
-The current queue item is `AGENT.SECURITY_ROUTER`. Its package, gates, hostile
+The current queue item is `AGENT.DATA_ROUTER`. Its package, gates, hostile
 vectors, model route, and local proof are next for one-at-a-time qualification.
-All other entries remain queued or blocked on predecessors as recorded in the
-machine registry. The acceptance ledger is a read-only index of exact
+Security Router is accepted from its exact independent receipt. All other
+entries remain queued or blocked on predecessors as recorded in the machine
+registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.
 
 The machine-readable source of the full backlog is

@@ -11,6 +11,16 @@
   },
   "entries": [
     {
+      "stable_agent_id": "AGENT.SECURITY_ROUTER",
+      "package_path": "specialist-blocks/wave-02/security-router",
+      "candidate_commit": "31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
+      "candidate_tree": "286772957d36e5a2762ef8102f0d9afac65ba784",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/31e72c16f092ab4d38ea31722ef1f201f33c7fd7",
+      "receipt_sha256": "7947d53d5bba1bdf344314f9ada187d988f3e1b1f1dfa82b7d18d2e72ba6ff5f",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENTOS.MEMORY",
       "package_path": "specialist-blocks/wave-01/memory",
       "candidate_commit": "a51ff068c3369b66722c759958fade8b0523fdd3",
@@ -71,5 +81,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "9f4dd533868dbee2c92e4dc52efc4828ac1cd6e3f8abf95fdf6e3c0b2e74a169"
+  "ledger_sha256": "0f175d2f85a96d676425baf6e18a15775b8022c341f2a04c6d76cd9641fe6077"
 }
