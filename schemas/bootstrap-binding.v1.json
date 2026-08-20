@@ -3928,6 +3928,34 @@
     "specialist_routing_index": {
       "path": "specialist-blocks/registry/routing-index.v1.json",
       "sha256": "4b054806600899237392c3d8edb19f2d6b0b682cd2d20e21d2f5573707c55449"
+    },
+    "android_kotlin_boundary_gate": {
+      "path": "control/android-kotlin-boundary-gate.mjs",
+      "sha256": "9f94c87292d67f21e65811966675eb3aca6950e4146c3088e1d0853b87d43d05"
+    },
+    "android_kotlin_boundary_input_contract": {
+      "path": "schemas/android-kotlin-boundary-input.v1.json",
+      "sha256": "b48bf2e75ab9297bf8fbdbb3a7b3203c8b5939b38f330016aa90935a9bc31239"
+    },
+    "android_kotlin_boundary_result_contract": {
+      "path": "schemas/android-kotlin-boundary-result.v1.json",
+      "sha256": "680820e23aa3e1bf7b157e2b8c00f59c8727ca7ff98ab2842164f1b301a3a86c"
+    },
+    "android_kotlin_package_operational_evaluation_contract": {
+      "path": "schemas/android-kotlin-package-operational-evaluation.v1.json",
+      "sha256": "4e0e3d00e45378ee4a34e01da9657b9b5735ea290a7b2e9ae0c9f3b64740b220"
+    },
+    "android_kotlin_package_operational_evaluator": {
+      "path": "control/android-kotlin-package-evaluator.mjs",
+      "sha256": "3546045dc753cfe27ac44f06dd3bdf5a48b9878bd58d60ccf94a18b7ed867ba5"
+    },
+    "android_kotlin_boundary_verifier": {
+      "path": "tests/verify-android-kotlin-boundary.mjs",
+      "sha256": "b1497c70985f0665bfd9e45e997e58792f1076541766891b0669f79fb7092570"
+    },
+    "android_kotlin_candidate_handoff": {
+      "path": "specialist-blocks/wave-05/android-kotlin/handoff.json",
+      "sha256": "d984b6073077c0b0a934873faa6ee603157e2a6c76ad6dbea62dc80987bbec37"
     }
   },
   "compatibility_only": {

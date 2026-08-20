@@ -1,9 +1,95 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "specialist.product-client.android-kotlin.SILENT_SCOPE_EXPANSION",
   "block_id": "specialist.product-client.android-kotlin",
   "class": "silent_scope_expansion",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for silent_scope_expansion; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable typed adversarial vector for Android/Kotlin routing; no project, consumer, secret, or provider data.",
+  "vector": {
+    "entrypoint": "control/android-kotlin-boundary-gate.mjs#evaluateAndroidKotlinBoundary",
+    "input": {
+      "schema": "agentos.android_kotlin_boundary_input.v1",
+      "version": 1,
+      "request_kind": "CLASSIFY_ANDROID_KOTLIN",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "android_kotlin_domain": "ANDROID_KOTLIN",
+        "control_identity": "CONTROL.ANDROID_KOTLIN_ROUTER",
+        "control_activity": "CLASSIFY_ANDROID_KOTLIN_APPLICABILITY",
+        "control_entity": "CLIENT_SURFACE",
+        "control_scope": "VERSIONED_ANDROID_KOTLIN_APPLICABILITY",
+        "control_version": "1",
+        "policy_status": "CURRENT",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.ANDROID_JETPACK_COMPOSE",
+        "source_version": "CURRENT",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-20",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "android_kotlin_signal": "CLIENT.ANDROID_KOTLIN",
+        "signal_status": "BOUND",
+        "task_status": "ANDROID_KOTLIN_CLASSIFICATION",
+        "context_status": "ANDROID_KOTLIN_ROUTER_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ROUTE",
+        "requested_tools": [
+          "READ_ANDROID_KOTLIN_SIGNAL",
+          "READ_SOURCE_LOCK",
+          "READ_ANDROID_KOTLIN_REQUIREMENTS",
+          "READ_CONTEXT",
+          "READ_APPLICABILITY_RULES"
+        ],
+        "required_block_identities": [
+          "BLOCK.CLIENT.AUTHORITY",
+          "BLOCK.CLIENT.EVIDENCE",
+          "BLOCK.CLIENT.SCOPE",
+          "BLOCK.CLIENT.CUSTODY",
+          "BLOCK.CLIENT.HANDOFF",
+          "BLOCK.CLIENT.ROUTER"
+        ],
+        "model_policy_status": "CURRENT",
+        "model_route_status": "BOUND",
+        "standard_edition": "CURRENT",
+        "verification_level": "BASELINE",
+        "applicability_status": "BOUND",
+        "authority_scope": "ANDROID_KOTLIN",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "verification_requested": false,
+        "acceptance_requested": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": true,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "ANDROID_KOTLIN_ROUTER_SCOPE_EXPANSION_FORBIDDEN",
+      "external_side_effects": {
+        "source_reads": 0,
+        "protected_data_reads": 0,
+        "verification_runs": 0,
+        "standard_mutations": 0,
+        "memory_writes": 0,
+        "acceptance_calls": 0,
+        "credential_accesses": 0,
+        "state_changes": 0
+      }
+    }
+  }
 }
