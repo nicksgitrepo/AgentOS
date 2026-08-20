@@ -11,6 +11,16 @@
   },
   "entries": [
     {
+      "stable_agent_id": "AGENT.AI_SEARCH_ROUTER",
+      "package_path": "specialist-blocks/wave-06/search-router",
+      "candidate_commit": "3ce6dcafe7d5cfbdef0895e66bd5aa6f3a1b6231",
+      "candidate_tree": "690f5b2a898e22a4db616db30bed99e53f89c88b",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/3ce6dcafe7d5cfbdef0895e66bd5aa6f3a1b6231",
+      "receipt_sha256": "8920f281f9dc66ff974d942c3d1762dcf61f8cec021e42c5a162f2ff26ba5325",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_ROUTER",
       "package_path": "specialist-blocks/wave-02/assurance-enterprise-router",
       "candidate_commit": "9b9f289c3639f75a9a3174a926f30d31fc9ed640",
@@ -201,5 +211,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "91a68b4e313561312e0bf07819adb8c8c1740758617551d9f6bb9ff3308f2800"
+  "ledger_sha256": "61dbff91537de8183d3583ff0f8bb6afa514feda64648d9fc818f2edf955f9c7"
 }

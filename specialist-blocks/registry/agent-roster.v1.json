@@ -786,9 +786,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers ai-search; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/search-router/evaluation.json"
@@ -39612,17 +39612,17 @@
       "rank": 21,
       "stable_agent_id": "AGENT.AI_SEARCH_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 77.05,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 22,
       "stable_agent_id": "AGENT.DOMAIN_WORKFLOW_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.05,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 23,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "869e9bee207aa93595636e7ab72945e331ef97462ae4f89f622336e11f94c2ca"
+  "roster_sha256": "63d2342aaaace0e7ed6bfae428672a038aedbee52f675dd722308032082a0926"
 }
