@@ -201,6 +201,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
+      "package_path": "specialist-blocks/wave-05/ios-swiftui",
+      "candidate_commit": "cf28087a15d981987e2a67e48a13834cd5c4d971",
+      "candidate_tree": "972d6166fd4afbb3297aec8cabcab2fbdde9204a",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/cf28087a15d981987e2a67e48a13834cd5c4d971",
+      "receipt_sha256": "332b60fb6ec9fb5a0bf0ba7d32c13bb39ef3417d9bf622278378d666aa7b8259",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ROUTER",
       "package_path": "specialist-blocks/wave-02/product-client-router",
       "candidate_commit": "7e9350d90cd3b06d5bd2b80836e14660af3dd662",
@@ -351,5 +361,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "f687b33771553be3b16075ec1abc6325b2611123bc4bd9465ca57e40f9aa0e98"
+  "ledger_sha256": "f5690f8cab2954538389638a3017c57580919d5196e216eb49f29414570a5ff2"
 }
