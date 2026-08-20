@@ -13818,13 +13818,13 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_INDEPENDENT_PASS",
+      "qa_state": "INDEPENDENT_PASS_READBACK",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
-        "links": [
-          "specialist-blocks/wave-03/dependency-vulnerability/evaluation.json"
-        ],
+      "links": [
+        "specialist-blocks/wave-03/dependency-vulnerability/evaluation.json"
+      ],
         "invalidate_when": [
           "block semantic digest changes",
           "source lock or authoritative evidence changes",
@@ -14129,9 +14129,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_INDEPENDENT_PASS",
+      "qa_state": "INDEPENDENT_PASS_READBACK",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/double-submission/evaluation.json"
@@ -39804,17 +39804,17 @@
       "rank": 45,
       "stable_agent_id": "AGENT.SECURITY_DEPENDENCY_VULNERABILITY",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 46,
       "stable_agent_id": "AGENT.SECURITY_DOUBLE_SUBMISSION",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 47,

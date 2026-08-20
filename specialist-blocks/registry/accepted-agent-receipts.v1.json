@@ -321,6 +321,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_DEPENDENCY_VULNERABILITY",
+      "package_path": "specialist-blocks/wave-03/dependency-vulnerability",
+      "candidate_commit": "111a85674b658750c46e5a3181d85479dd59e7ec",
+      "candidate_tree": "aabd81a5ccc9226eb8e679f2c0349890d6d273fb",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/111a85674b658750c46e5a3181d85479dd59e7ec",
+      "receipt_sha256": "206b36785bcabdad9285b268b9088aaca2026227b2ff07fe5e15be1a3f360d77",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
       "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
@@ -441,5 +451,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "1857faab816566ff665b46a895fad67a42727f7fcfcb4bd9e990b679d8c8f45d"
+  "ledger_sha256": "5f4946c224f9f606ee01c9ed716694338c0699ec32a00b48baaea76ca0012305"
 }
