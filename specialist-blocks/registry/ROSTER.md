@@ -64,10 +64,11 @@ Seeds are immutable clean checkpoints and never perform work.
 
 Security Router, Data Router, Observability Router, Provider/Edge Router,
 Desktop/Offline/Realtime Client Router, Product/Client Contract Router,
-Software Language/Runtime Router, and Bootstrap/Project Initializer are
-accepted from their exact independent receipts. The current queue item is
-`AGENT.CONTROL_CENTRAL_INTEGRATOR`; its package, gates, hostile vectors, model route,
-and local proof are next for one-at-a-time qualification. All other
+Software Language/Runtime Router, Bootstrap/Project Initializer, and Central
+Integrator are accepted from their exact independent receipts. The current
+queue item is `AGENT.CONTROL_RELEASE_MANAGER`; its package, gates, hostile
+vectors, model route, and local proof are next for one-at-a-time
+qualification. All other
 entries remain queued or blocked on predecessors as recorded in the machine
 registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.

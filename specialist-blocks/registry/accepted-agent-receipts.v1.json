@@ -21,6 +21,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.CONTROL_CENTRAL_INTEGRATOR",
+      "package_path": "specialist-blocks/wave-04/central-integrator",
+      "candidate_commit": "39b75da4a9f9db9c1306624378892c36636cf1b5",
+      "candidate_tree": "6aacb46ce3151cc6df8dc40e3a00eb3d2a6a9fd4",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/39b75da4a9f9db9c1306624378892c36636cf1b5",
+      "receipt_sha256": "ed2ccd1ece3e4d28ff8e81d23aefaa8b0e5ba9e3fe76061204a5e76ee9d17e66",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "package_path": "specialist-blocks/wave-02/data-router",
       "candidate_commit": "ad8f1a84c673d00a6f000067f836731884dfcd51",
@@ -151,5 +161,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "b62b27aad6d079ae121146206ada482d2f4837b391069da83fe395038ac7b1b9"
+  "ledger_sha256": "f429c140f0518d38fac23ed30a78976098eda072ae5b238fb246049feffb46d7"
 }

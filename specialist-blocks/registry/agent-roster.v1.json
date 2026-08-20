@@ -2000,9 +2000,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/central-integrator/evaluation.json"
@@ -39572,17 +39572,17 @@
       "rank": 16,
       "stable_agent_id": "AGENT.CONTROL_CENTRAL_INTEGRATOR",
       "tier": "PLATFORM_AGENTS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 79.85,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 17,
       "stable_agent_id": "AGENT.CONTROL_RELEASE_MANAGER",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 79.85,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 18,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "ad4c5369d14210c7480ba55079b250bd469fb0bbe265f87346d162f304e87a09"
+  "roster_sha256": "657e59a4812d81239989fd43e5612bb50d1254e6d08c9a3fd652cce1eccfefc4"
 }

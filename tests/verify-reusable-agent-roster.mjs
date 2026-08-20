@@ -74,6 +74,9 @@ assert.match(acceptedSoftwareLanguageRuntime.build_state, /^ACCEPTED_/u, "Softwa
 const acceptedBootstrapInitializer = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER");
 assert(acceptedBootstrapInitializer, "Bootstrap/Project Initializer missing from roster");
 assert.match(acceptedBootstrapInitializer.build_state, /^ACCEPTED_/u, "Bootstrap/Project Initializer is not marked accepted in the readback index");
-assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.CONTROL_CENTRAL_INTEGRATOR");
+const acceptedCentralIntegrator = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.CONTROL_CENTRAL_INTEGRATOR");
+assert(acceptedCentralIntegrator, "Central Integrator missing from roster");
+assert.match(acceptedCentralIntegrator.build_state, /^ACCEPTED_/u, "Central Integrator is not marked accepted in the readback index");
+assert.equal(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.CONTROL_RELEASE_MANAGER");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);
