@@ -4437,7 +4437,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-04/observability-router/handoff.json",
-        "handoff_file_sha256": "173b3398999b43bfa0a665d04cfb2cf469c3b0539e7d76d16ea213f985b109e1",
+        "handoff_file_sha256": "3e111f6ee9ee786d4fa400252bd28214c324ce1ecf696b0194a732bdac1a79b8",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.observability-router.v1"
       },
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6a36437daae949e13774ab3d8baf4c875009a70704f687e30878a711a4c1e7ab"
+  "roster_sha256": "0e3e29f599a912f7c29b450b274f7fd98dfa769a515de633962785dd859e4023"
 }

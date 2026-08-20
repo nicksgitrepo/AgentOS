@@ -5,8 +5,8 @@
   "block_id": "specialist.delivery-operations.observability-router",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "6591708df08efa676662fc8ed9cf8855bc06a00bba31c2fa1fe993ef673530dd",
-  "source_commit": "a6407f4c991d1768596f43f2f29d5a91d8044c0c",
-  "source_tree": "2c392cf5d4f4a0fdb942c8d37fd09d3d836ef2f2",
+  "source_commit": "c673d11e57f14b93f84b5d11eb6365ba714a9a63",
+  "source_tree": "d537a7fa516e0a352ca016f837a4dceafac829f3",
   "changed_paths": [
     "specialist-blocks/wave-04/observability-router/block.json",
     "specialist-blocks/wave-04/observability-router/evaluation.json",
