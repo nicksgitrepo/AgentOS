@@ -2303,9 +2303,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers foundation; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "UTILITY_HARM_PENDING",
-      "independent_evaluation_state": "UTILITY_HARM_PENDING",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
+      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/independent-auditor/evaluation.json"
@@ -39604,17 +39604,17 @@
       "rank": 20,
       "stable_agent_id": "AGENT.CONTROL_INDEPENDENT_AUDITOR",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 77.85,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 21,
       "stable_agent_id": "AGENT.AI_SEARCH_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 77.05,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 22,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "8199f452514515c182f01ccd1e8272054e662d7da2f9201a1c8b8c05380b440d"
+  "roster_sha256": "7ba0b461e9f6710ef0477b1191aa082d4cf45a8e50db97872a9f9a7391a114af"
 }

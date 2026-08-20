@@ -41,6 +41,16 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
+      "stable_agent_id": "AGENT.CONTROL_INDEPENDENT_AUDITOR",
+      "package_path": "specialist-blocks/wave-01/independent-auditor",
+      "candidate_commit": "0b2967211e68cd214aed84a52d2e492870e336c9",
+      "candidate_tree": "a0772819d79819c940feb732d7e47ce71bc11cdd",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/0b2967211e68cd214aed84a52d2e492870e336c9",
+      "receipt_sha256": "799f204858f235097bf5bf0ea17980088894e4d02e363acaf013aae95258b68d",
+      "readback_scope": "EXACT_RECEIPT_RETAINED"
+    },
+    {
       "stable_agent_id": "AGENT.CONTROL_RELEASE_MANAGER",
       "package_path": "specialist-blocks/wave-04/release-manager",
       "candidate_commit": "6e337cc579b3efc757329ad3d276b6f7bdbe0b36",
@@ -191,5 +201,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "abeaaa080ed8845111e321388e93a12673b75cdff72b7fa22c1d3cbefc72a16c"
+  "ledger_sha256": "91a68b4e313561312e0bf07819adb8c8c1740758617551d9f6bb9ff3308f2800"
 }
