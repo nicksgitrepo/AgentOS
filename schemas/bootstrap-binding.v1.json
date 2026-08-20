@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "7d2f9e44ed27c062d76b697e8f266f3af79dcd18ed2c132de70d577f111767cb"
+      "sha256": "e19df99553091bc134c175365386e17935e18850e3e21cf439e4a99e35ee9763"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3588,6 +3588,34 @@
     "owasp_web_top10_router_candidate_handoff": {
       "path": "specialist-blocks/wave-03/owasp-web-top10-router/handoff.json",
       "sha256": "db13662375aef317a085468c136ad4cb1a136ab3b735a43f2f0601e86be9ce5c"
+    },
+    "supply_chain_router_boundary_gate": {
+      "path": "control/supply-chain-router-boundary-gate.mjs",
+      "sha256": "edeb30c67b33d7e153bf333798a535b47496ffe6718ea9740675271c0bc2e18a"
+    },
+    "supply_chain_router_boundary_input_contract": {
+      "path": "schemas/supply-chain-router-boundary-input.v1.json",
+      "sha256": "00e83b0d305beb27a9758199d363c0478ab47a0be93cb7f4c40b1c719b934cf6"
+    },
+    "supply_chain_router_boundary_result_contract": {
+      "path": "schemas/supply-chain-router-boundary-result.v1.json",
+      "sha256": "10e52d1d1fccf83bf3264e97ecadf08af4b2b6219860cf884e0718225ea6ac52"
+    },
+    "supply_chain_router_package_operational_evaluation_contract": {
+      "path": "schemas/supply-chain-router-package-operational-evaluation.v1.json",
+      "sha256": "cf288da555b3c9ed0e4e772fb5b4fae55f987b90f711cef4d233fe1f1c4b0a12"
+    },
+    "supply_chain_router_package_operational_evaluator": {
+      "path": "control/supply-chain-router-package-evaluator.mjs",
+      "sha256": "87b82c713048c3efd429dfb71f566d1d49995fd6f0cef974e74a108d6e87263f"
+    },
+    "supply_chain_router_boundary_verifier": {
+      "path": "tests/verify-supply-chain-router-boundary.mjs",
+      "sha256": "f650afd3b6a58e04f9c68ffecd0c6c5d7eceef029e2c5793496a04a10f6bfbba"
+    },
+    "supply_chain_router_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/supply-chain-router/handoff.json",
+      "sha256": "57c3f5c3fea4fcf02383977b50596083fe64bf23a99a81abea3f6ad629f66577"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",

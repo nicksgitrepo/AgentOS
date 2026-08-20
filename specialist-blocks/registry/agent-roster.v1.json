@@ -25879,103 +25879,103 @@
           {
             "fixture_id": "specialist.security.supply-chain-router.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/authority_conflict.json",
-            "file_sha256": "92f1bc732ffe15a8806b2c4f15a8f4c79c9eacaef20471b112c87a2ce18d4fb0",
+            "file_sha256": "37ceed7e9c763e4c0511c543c466482e6aab7efef44c1e2de43121f06e298e01",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "47f1f559a6b8564d52e5bc1dc32e1f1d744a5341a978d4c2542c8ab1fc7b2518",
+            "file_sha256": "012e344d7d0b98ad4845abfbd740c5e1a351e67d07727a9f7df5b7cc1873c0dc",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "3cd7c1096fac89dc955530b39466d2eef37a9eda5d555b33262901d4441fac35",
+            "file_sha256": "507aacf349d2b410df75527e7b302bd89cbbe2dc07d629633e19bbf832c4cc7f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.DATA_LIMIT",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/data_limit.json",
-            "file_sha256": "7268324978cf32ccafee07a28e15b5d3aa5e8baa3be59969018c602392ae1141",
+            "file_sha256": "601be91bb5bd457db3e7d66d37cd398adcba58603f99ddfdc725b59846e5f04d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "f789ec21f7667b32550492dbc381a37e43e340efecd1f681460e81d429564dc1",
+            "file_sha256": "5069b43e5b1131bf9812b8b062560bc15093de48de9fa27da29aec50bb4c4e22",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/false_positive.json",
-            "file_sha256": "eab76a561c6d922204f338d107320c6e6ee18ee78c72b76f4e95de4e4239c80e",
+            "file_sha256": "c8f49965fca4bbdb751470c3cce1acdd44741418f7ca312a815e42b68bad4c73",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.HANDOFF",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/handoff.json",
-            "file_sha256": "0f5337d4bb8976c0a09ffb64dc1222b1b382488b187f82ba6d16fc06f86123a8",
+            "file_sha256": "476d0f7c8588d8359548c9d2f2d3943015363c201aa4f547ec4f8467e675cd66",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/missing_context.json",
-            "file_sha256": "1fd5090588a1840f8a0ba8914a2fbe62c54ca6f1f3da72237c2e6b67b376b086",
+            "file_sha256": "ade6a9ac00b024da16911b65d19d4bfcd9a8b54054cbab522a15b99cf4e993ab",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.NARROWNESS",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/narrowness.json",
-            "file_sha256": "a758e2221c06fa7132780bb5ea0400c35c07424726b2f557aa5eb1d7a6a7ca81",
+            "file_sha256": "efa3bc2e3d446e4aef08443a3bce37c6c877aded8bb994f9ffca2c0fb42b96d8",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/router_self_accept.json",
-            "file_sha256": "731c952e5e939751de72c2e5d0f6c12e05ae697967947ef1c0aa158474790c27",
+            "file_sha256": "d25ca782aa7aec5f0b406d99b0ba3c2576194a5aa32d8fd01bff76257691ec8d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.ROUTING",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/routing.json",
-            "file_sha256": "622ff6d36460e9cff33293aea1a01665643ac5d2042406166baa0ff3b778179f",
+            "file_sha256": "6df8b1092c4e6eb02311e61af8ad18b271ee3dcad0e0b2190c8d4a40a17f34a1",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/silent_scope_expansion.json",
-            "file_sha256": "adf06a2f473807972f1ea33f44910856b38d3d543f237143674f11d0d3289b2f",
+            "file_sha256": "d0b05ae5d2024ad36b9b9158ca4b60d24f7e7972326877305f1c27740a43cf04",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.STALE_SOURCE",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/stale_source.json",
-            "file_sha256": "7b148b699283d38764e0e0b31c07de8d454452131eca749b2420bcfa39c16525",
+            "file_sha256": "e26bb55d9b81f6a85141cab55bb7680d0e4f684ebded4c6c1d834e52855ade1f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.TOOL_LIMIT",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/tool_limit.json",
-            "file_sha256": "20587aed601775cd09b63128712b64ad830c7769da235cd20eaa37332f02cce2",
+            "file_sha256": "b9268787ef777fafc4c1cd7bd8f0a1fbd8ace72172585966b79b993e7c5a59be",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/umbrella_authority.json",
-            "file_sha256": "3d6e04a90f11c23ee933f5d779335e551c40077186ce066736d49f3a8e87efca",
+            "file_sha256": "5498a392cfc6a1bc65c953a8789e8217a90a223ab35b37a4e1182c820990ead5",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/unrelated_scope.json",
-            "file_sha256": "0872c149dc116a31268c3866cf5f9712a236fb5ba31821afc10079aebefcae13",
+            "file_sha256": "cd1b90d627fdf546f023176a26767f4559feaa76b2d17b2d6a3bc795d6e13379",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.security.supply-chain-router.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-03/supply-chain-router/fixtures/unsafe_action.json",
-            "file_sha256": "89df5ac952d6cf7dc61a5a409a7f53145bd2b58b9445337dc3f2f4bccc22189a",
+            "file_sha256": "272451a33a179dd5a0cd77b014279a33581a111e204ab25061e06b54b4d97d69",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "2125d1d06cecbb126cecfa288293e57dff2c4bc9a08c82c63b42ef00025ab1ee"
+  "roster_sha256": "ffa7a452df7f1218b6426143b0017eac97ec7fdca17bb512cd397ac2538429f2"
 }
