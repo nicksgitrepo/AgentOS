@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "713c928f362fef9dfe2f367738e6f295cb72bd6cf4cd08c446478c1b79e08a89"
+      "sha256": "91a15d26baf26a21c767df35786ecd9fb52ea4ca1d6afa8a85fb8b5223bd381a"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4514,6 +4514,34 @@
     "abac_candidate_handoff": {
       "path": "specialist-blocks/wave-03/abac/handoff.json",
       "sha256": "cf0d38d30ae5ec342dfd868268f54377297ed85159358edf49e4ad9dbbb2ab50"
+    },
+    "auth_cache_residue_boundary_gate": {
+      "path": "control/auth-cache-residue-boundary-gate.mjs",
+      "sha256": "fa5df159e7db7b728ac63b72848e0ae9367203600c96fac76843a95e6a7a7987"
+    },
+    "auth_cache_residue_boundary_input_contract": {
+      "path": "schemas/auth-cache-residue-boundary-input.v1.json",
+      "sha256": "7a1dd240a174564241ee6d6eb344becfd7edad60fdb56a679eaca92ed4c9817b"
+    },
+    "auth_cache_residue_boundary_result_contract": {
+      "path": "schemas/auth-cache-residue-boundary-result.v1.json",
+      "sha256": "9b58d73aaee4de77eeaf32e48894d20ed8f566e74fc8747fc63117d102bda80d"
+    },
+    "auth_cache_residue_package_operational_evaluation_contract": {
+      "path": "schemas/auth-cache-residue-package-operational-evaluation.v1.json",
+      "sha256": "8f8821d35364592ebeb30457c6353ddb9adec3728543f2546e852d10eeab9346"
+    },
+    "auth_cache_residue_package_operational_evaluator": {
+      "path": "control/auth-cache-residue-package-evaluator.mjs",
+      "sha256": "bd06ff842f2fb7a44d83f23560b178188f58f1187f0145a50f0648df7b9d0937"
+    },
+    "auth_cache_residue_boundary_verifier": {
+      "path": "tests/verify-auth-cache-residue-boundary.mjs",
+      "sha256": "22b4245d57270c3cec1177659a98e2eab87708e3b3619496cae53f43c8e69c06"
+    },
+    "auth_cache_residue_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/cache-residue/handoff.json",
+      "sha256": "c9535721c446f2932bc86acf3b032f4d1443139e3c84f77dd8bd98f1466e4e15"
     },
     "worktree_custody_boundary_gate": {
       "path": "control/worktree-custody-boundary-gate.mjs",
