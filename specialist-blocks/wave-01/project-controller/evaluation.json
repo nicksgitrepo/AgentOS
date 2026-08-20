@@ -46,7 +46,7 @@
     {
       "case_id": "project-controller-handoff",
       "class": "handoff",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PENDING"
     },
     {

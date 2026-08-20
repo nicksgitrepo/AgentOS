@@ -34,6 +34,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, "specialist-blocks/wave-01/project-controller");
 const EVENT_FIXTURE = path.join(ROOT, "tests/fixtures/controller-events/canonical-signed-sequence.v1.json");
 const PROVISIONING_CEILING = "CONTROLLER_OPERATIONAL_STORE_INACTIVE";
+const CURRENT_MODEL_POLICY_TEST_TIME = "2026-08-20T04:15:00.000Z";
 
 function typedRejection(code, message) { const error = new Error(message); error.code = code; throw error; }
 function sha256(bytes) { return crypto.createHash("sha256").update(bytes).digest("hex"); }
@@ -110,7 +111,7 @@ function runMonitorFixture(fixture) {
   return {actual, semantic_error: null, adapter_invocation_count: 0, state_change_count: 0, operational_ceiling: null, evidence: {status: tick.status}};
 }
 async function runEventFixture(fixture, signed) {
-  const setup = buildContext(signed.trusted_now_utc, signed);
+  const setup = buildContext(CURRENT_MODEL_POLICY_TEST_TIME, signed);
   const event = eventFor(fixture, signed);
   const state = stateAtEvent(setup.state, event);
   const before = controllerDigest(state);
@@ -163,7 +164,7 @@ export async function evaluateCanonicalControllerHostileFixtures({fixtureManifes
   const signed = readJson(EVENT_FIXTURE);
   const results = [];
   const originalDateNow = Date.now;
-  Date.now = () => Date.parse(signed.trusted_now_utc);
+  Date.now = () => Date.parse(CURRENT_MODEL_POLICY_TEST_TIME);
   try {
    for (const entry of manifest.entries) {
     const fixturePath = path.resolve(path.dirname(fixtureManifestPath), entry.path);

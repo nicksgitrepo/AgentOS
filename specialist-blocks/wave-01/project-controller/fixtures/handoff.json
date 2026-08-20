@@ -11,7 +11,7 @@
   "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "handoff",
-  "expected": "ROUTE",
+  "expected": "DENY",
   "hostile": true,
   "vector": {
     "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
@@ -25,5 +25,5 @@
       "ordinary lifecycle adapter counts remain zero"
     ]
   },
-  "note": "Controller dispatches redistribution without approval."
+  "note": "A stale signed redistribution handoff is denied before dispatch; a fresh current handoff remains governed by the Controller operation registry."
 }

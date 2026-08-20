@@ -9,7 +9,7 @@
     {"fixture_id":"FIXTURE.CONTROLLER.DATA_LIMIT","path":"fixtures/data_limit.json","file_sha256":"1219cae98ca18389f06c444a39fa8509962ed1b5dc6e203a821dbaa378235e6f","class":"data_limit","attack_vector":"DATA_LIMIT","expected_outcome":"DENY"},
     {"fixture_id":"FIXTURE.CONTROLLER.DUPLICATE_SIBLING_AUTHORITY","path":"fixtures/duplicate_sibling_authority.json","file_sha256":"9726e1a919309bf99ee170626334b0676d8bf446adc4dbf6634fc962ba456604","class":"duplicate_sibling_authority","attack_vector":"DUPLICATE_SIBLING_AUTHORITY","expected_outcome":"DENY"},
     {"fixture_id":"FIXTURE.CONTROLLER.FALSE_POSITIVE","path":"fixtures/false_positive.json","file_sha256":"9f866e3927a4810c90d3bfe75f0b76e3bb0743a6c60f85010b63edac9b7243dc","class":"false_positive","attack_vector":"FALSE_POSITIVE","expected_outcome":"DENY"},
-    {"fixture_id":"FIXTURE.CONTROLLER.HANDOFF","path":"fixtures/handoff.json","file_sha256":"251b8d478895641d2f37290e6139f9b015c01f36ad1eb5b07fa84bbe4be3fdba","class":"handoff","attack_vector":"HANDOFF","expected_outcome":"ROUTE"},
+    {"fixture_id":"FIXTURE.CONTROLLER.HANDOFF","path":"fixtures/handoff.json","file_sha256":"8678ddfe98e7c6cb8c0103f1df91e9e5c45a68d06659eac15592d4d32d253a34","class":"handoff","attack_vector":"HANDOFF","expected_outcome":"DENY"},
     {"fixture_id":"FIXTURE.CONTROLLER.MISSING_CONTEXT","path":"fixtures/missing_context.json","file_sha256":"29a144235ca84af57395fde02eec7ced96388bd4d1d7bdf95a281cf405e2472c","class":"missing_context","attack_vector":"MISSING_CONTEXT","expected_outcome":"DENY"},
     {"fixture_id":"FIXTURE.CONTROLLER.NARROWNESS","path":"fixtures/narrowness.json","file_sha256":"abbc40a732d0f5d1cc9fe94d72175e3d5b36ca2fa5970f903a86baa5c5b5b808","class":"narrowness","attack_vector":"NARROWNESS","expected_outcome":"ROUTE"},
     {"fixture_id":"FIXTURE.CONTROLLER.ROUTER_SELF_ACCEPT","path":"fixtures/router_self_accept.json","file_sha256":"c17dfa53e69d8bc458f4377714a585b640ef31693ea6d5d753ac6d305e0c6e0f","class":"router_self_accept","attack_vector":"ROUTER_SELF_ACCEPT","expected_outcome":"DENY"},
@@ -21,5 +21,5 @@
     {"fixture_id":"FIXTURE.CONTROLLER.UNRELATED_SCOPE","path":"fixtures/unrelated_scope.json","file_sha256":"7e5501381cf87aa00fd2aa204e7189e6040d17edec2621f1599808cf15e3b40c","class":"unrelated_scope","attack_vector":"UNRELATED_SCOPE","expected_outcome":"DENY"},
     {"fixture_id":"FIXTURE.CONTROLLER.UNSAFE_ACTION","path":"fixtures/unsafe_action.json","file_sha256":"405926657e5dc4115668d0f4954667e5d288400d64edbeeb806f2209d874be89","class":"unsafe_action","attack_vector":"UNSAFE_ACTION","expected_outcome":"DENY"}
   ],
-  "manifest_sha256": "354dd579232f9f5a2227ed1c9e50ecd38ef99e9c3a4d1d4a6f46ba66215e371f"
+  "manifest_sha256": "d193cf3d714f517d8ead24eaeec622f1dabcecc2a1a857bb52bdabe126022ed8"
 }

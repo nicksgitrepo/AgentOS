@@ -770,7 +770,7 @@
     },
     "controller_hostile_evaluator_controller": {
       "path": "control/controller-hostile-fixture-evaluator.mjs",
-      "sha256": "abaecb40778300c45c8c5cfea63df3413109720503ee7a8a27fce15ddb2cedd2"
+      "sha256": "ea72671e72c1e3285f56b2c6c29c627a8be5a7f94ec615226ea2240afd241794"
     },
     "controller_import_planner": {
       "path": "control/controller-import-planner.mjs",
