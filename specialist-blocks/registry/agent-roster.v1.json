@@ -2780,103 +2780,103 @@
           {
             "fixture_id": "specialist.control.worktree-custody.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/authority_conflict.json",
-            "file_sha256": "6cdd201354f208e20f156613a1450f4b444ee8e1cf05e33baafa0b4627b22145",
+            "file_sha256": "708e89da9d2f98a7a7e12b8470b4dce2a0eeeb6f3e4a717c32d384440898a32c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "88f5f1f9ddbe0b745640104431f8aa0fa60358942ef3cccf65333e9bfbb70470",
+            "file_sha256": "a72ab7d56e788f696b6fc3386fe0c981c350ff0a5d5b290683e73cdac931421c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "a8b3fb4d3bffbda24ca480c73c1f21d4f6b8fd41faec3ab8bc96ac3ca82b1825",
+            "file_sha256": "f0c1375d6c8044ca3d2bf18c46b4d5bdf013b4a90d64f2d844e78b036ce98ef3",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.DATA_LIMIT",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/data_limit.json",
-            "file_sha256": "6899bdfeab23af05c8b19ddde621fdea8bb40b49ea28d9f1e3d4f2ebfe375f38",
+            "file_sha256": "0c4e2f7e937687f50ea657dc93f4d61c04e7d098e9f588181b877ef781130b3c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "7ef37fd77d4fc5e70b7ed2d4af8fdd5de389658b4baf6acbbfe84451ea5ce7d2",
+            "file_sha256": "d18bd921ca01bb4e713ef39b590985ebecd06c2d11839c93f716cc99afbc85cf",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/false_positive.json",
-            "file_sha256": "85ff72abd97b2ff250b70997294408a8a09279402d2d29d46e61216db520d183",
+            "file_sha256": "69d7bcc349f7a1c3a757c84674bd3efae69142bbf6b655ae8ba0bd952661fce1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.HANDOFF",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/handoff.json",
-            "file_sha256": "a7a6bdab40095909910f78f4fea5e61f63e0df541bbff88107e69ab79e9efae8",
+            "file_sha256": "3be7cb27016381e1911c911a3f1cfc9e1cbf1b68656495c2e0a0619947467003",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/missing_context.json",
-            "file_sha256": "69770f6cc75e236fbad0b98605de0bba7ea98d34cd8d0006327c0c95b2095960",
+            "file_sha256": "39be58c31f4b5e4faddf40be47291f63cb1b22d6af9100efe62d3d7eb7e0d6d2",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.NARROWNESS",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/narrowness.json",
-            "file_sha256": "c841d5adbf07473a5c045b51d894bacb13d21ff0ce35409d564e685f234509c2",
+            "file_sha256": "3f2e726b26e31e9c961bde28ce569d6dbe5975ed5b5e884dc707f79b38f80567",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/router_self_accept.json",
-            "file_sha256": "a2cd9bccafce2aae2c76e8a91203aeaba2334b974a68fe920298b60c99217030",
+            "file_sha256": "d269857947981c6b83e4d0c2a799e91b9aeefe14e13522f32316f3b082ffd260",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.ROUTING",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/routing.json",
-            "file_sha256": "605d563ca0615f8c96db417fc43aca95c74768d55588fd392cecf669d326725f",
+            "file_sha256": "fa077bd077564db63570d959468d5fa0e49de407fcbaac1dd8eac1701cac0343",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/silent_scope_expansion.json",
-            "file_sha256": "314d35268637e3aa03831ca29dacf79cf04d89b4a7c188933dfb3da918c73f90",
+            "file_sha256": "26fc89b3c06ecf225fe75f059aeffca2370be8b92a306088061a7fbc3cb57366",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.STALE_SOURCE",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/stale_source.json",
-            "file_sha256": "f81aee1ec514211912acaf7d6d7c51f27a53c9785c5dcf673b1da6bdab095c05",
+            "file_sha256": "1b09da5a8c9baa28119298526914fef675e554a17a6f7e57785f888ad9a0e568",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.TOOL_LIMIT",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/tool_limit.json",
-            "file_sha256": "f5d9f471c2bbc9442328a557473eb872baa92e6203f20cd983f7eed8d7ed6918",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "db36b48bf5eb8b4ba2349e24b275dee6f027d96e180b0d34c1255a7136addcf1",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/umbrella_authority.json",
-            "file_sha256": "81ef519665ec040d1dcc75eeb1a72fb12421ea7c499ee7f00d2fba94df06ad92",
+            "file_sha256": "dd972b1cb89d49835391cf361a8402ab0181a9a556fa26a5d792a1ad530dc58e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/unrelated_scope.json",
-            "file_sha256": "9a12eb99e9f9daf26afe82c29d41ff48fd52cfe175fbd81e3f7b05e5dd2c7abd",
+            "file_sha256": "1c5a07a5700661e1e391bee60b97d2f9bbcf4040d56ed99d167bc97bbd815ae2",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.worktree-custody.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-04/worktree-custody/fixtures/unsafe_action.json",
-            "file_sha256": "f2461910be8565feeaef7a01ce04cd37cbb5fdb76ae7af149fc12baac336de70",
+            "file_sha256": "3d1e82238c8ec299c8d9b31baf7f83f91804db7e64f283650024fa59b9653b21",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "63f5e4791a0afca8d8c1385bd5974aac35ee45f9ea348db11cf1a68a4b5334cb"
+  "roster_sha256": "3479936397d9a7352915da996ad3a2fb197f436df1fbf39963c174605c6ae967"
 }

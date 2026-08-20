@@ -3111,7 +3111,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "350d4f94d8ed37c1bcb11d655f2678801035bf8c0166765096bd30fe8e4d2866"
+      "sha256": "940452c90e759d3c46d9e20ff4d9160e14d990175fc2e1c9417b676bb8f07714"
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
@@ -3228,6 +3228,34 @@
     "release_manager_candidate_handoff": {
       "path": "specialist-blocks/wave-04/release-manager/handoff.json",
       "sha256": "389e817da2ce163a083cfb5a95df3776e26c64ebd54c5cba0b352414990c096c"
+    },
+    "worktree_custody_boundary_gate": {
+      "path": "control/worktree-custody-boundary-gate.mjs",
+      "sha256": "447715df2ceac8576a1c8c388545c3c104b0b03cfb7c12405ead4ef46300dcda"
+    },
+    "worktree_custody_boundary_input_contract": {
+      "path": "schemas/worktree-custody-boundary-input.v1.json",
+      "sha256": "eef37a1d62878faf29cf0f2a15e1691a0a21b4e5c13618ad25b3a2502c4c6d8b"
+    },
+    "worktree_custody_boundary_result_contract": {
+      "path": "schemas/worktree-custody-boundary-result.v1.json",
+      "sha256": "1f09f3b3d0402eb8a19f05cf6bb7404776be16a9cf6d357fe924b632d3f05f0f"
+    },
+    "worktree_custody_package_operational_evaluation_contract": {
+      "path": "schemas/worktree-custody-package-operational-evaluation.v1.json",
+      "sha256": "54749f12378634423286843ae56453bf96bb94e157cc7963e9f6c7cf8af0cf2f"
+    },
+    "worktree_custody_package_operational_evaluator": {
+      "path": "control/worktree-custody-package-evaluator.mjs",
+      "sha256": "baad8ffd2f4b10595c1a93c6cb018433f4331262fbc1234f8bb6c59cab27e48c"
+    },
+    "worktree_custody_boundary_verifier": {
+      "path": "tests/verify-worktree-custody-boundary.mjs",
+      "sha256": "09ef0947d1e23bd8805443a9888ca3064f2e6294cc5e2c79b3f10255aabffba0"
+    },
+    "worktree_custody_candidate_handoff": {
+      "path": "specialist-blocks/wave-04/worktree-custody/handoff.json",
+      "sha256": "3d6b60d53be553ff822420c0ae08e3315d9a5a19768dc025b27e3d1dd400e129"
     },
     "orchestrator_coordination_boundary_gate": {
       "path": "control/orchestrator-coordination-boundary-gate.mjs",
