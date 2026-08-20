@@ -5,8 +5,8 @@
   "block_id": "specialist.control.release-manager",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "e2595ba339b5fd2963c02a6507d8c305c602676052f30df8425347dc5f32a236",
-  "source_commit": "a6407f4c991d1768596f43f2f29d5a91d8044c0c",
-  "source_tree": "2c392cf5d4f4a0fdb942c8d37fd09d3d836ef2f2",
+  "source_commit": "12774b28e13d7ccb5044f7bd70790c38e8aac5cb",
+  "source_tree": "0e858315ac9c7a629ccffb90d9bee21c3212c505",
   "changed_paths": [
     "specialist-blocks/wave-04/release-manager/block.json",
     "specialist-blocks/wave-04/release-manager/evaluation.json",
