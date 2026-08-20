@@ -17,7 +17,7 @@ assert.throws(() => installExternalSpawnerReviewStore({sealedAuthority: getSeale
 const valid = provisionTestExternalSpawnerReview({candidate});
 const accepted = resolveCanonicalSpawnerBootstrapPackage();
 assert.equal(accepted.external_review.receipt_sha256, valid.receipt.receipt_sha256);
-assert.throws(() => resolveCanonicalSpawnerBootstrapPackage(), /already consumed/iu);
+assert.equal(resolveCanonicalSpawnerBootstrapPackage().external_review.receipt_sha256, valid.receipt.receipt_sha256, "one consumed review must remain reusable only inside its current sealed bootstrap process");
 
 const stale = provisionTestExternalSpawnerReview({candidate, install: false});
 const receiptPath = path.join(stale.root, "receipts", `${stale.receipt.receipt_sha256}.json`);

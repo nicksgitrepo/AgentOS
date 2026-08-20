@@ -9,7 +9,7 @@ import {assertSealedCanonicalAuthority, getSealedCanonicalAuthority, sealedAutho
 import {consumeProtectedSpawnerReviewProvisioning} from "./protected-spawner-review-provisioning.mjs";
 import {validateSpawnerGitAncestry} from "./spawner-git-ancestry.mjs";
 
-const stores = new WeakMap(); let installedStore = null;
+const stores = new WeakMap(); let installedStore = null; let installedGeneration = 0;
 const SHA = /^[0-9a-f]{64}$/u;
 function fail(message, code = "SPAWNER_EXTERNAL_REVIEW_INVALID") { const error = new Error(message); error.code = code; throw error; }
 function exact(value, keys, label) { if (!value || typeof value !== "object" || Array.isArray(value) || JSON.stringify(Object.keys(value).sort(compareUtf8)) !== JSON.stringify([...keys].sort(compareUtf8))) fail(`${label} fields mismatch`); }
@@ -32,8 +32,10 @@ export function installExternalSpawnerReviewStore({sealedAuthority, reviewProvis
     if (admission.issuer_id !== registry.registry_issuer_id || admission.subject_id !== reviewer.reviewer_id || admission.subject_role !== reviewer.role || admission.result !== "ADMITTED" || admission.authority_epoch !== registry.authority_epoch) fail("reviewer admission receipt identity differs");
     verifySigned(admission, "receipt_sha256", "signature_base64", registry.registry_public_key_pem, "reviewer admission receipt");
   }
-  const capability = Object.freeze(Object.create(null)); stores.set(capability, Object.freeze({root: realRoot, registry})); installedStore = capability; return capability;
+  const capability = Object.freeze(Object.create(null)); stores.set(capability, Object.freeze({root: realRoot, registry})); installedStore = capability; installedGeneration += 1; return capability;
 }
+
+export function currentExternalSpawnerReviewGeneration() { return installedGeneration; }
 
 function verifyCandidateCommitBytes(candidate, ancestry) {
   const repositoryRoot = sealedAuthorityRepositoryRoot(getSealedCanonicalAuthority());

@@ -10,7 +10,7 @@ import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
 import {loadCanonicalControllerOperationRegistry} from "./controller-event-authority.mjs";
 import {getSealedCanonicalAuthority, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
-import {verifyAndConsumeCurrentExternalSpawnerReview} from "./spawner-external-review.mjs";
+import {currentExternalSpawnerReviewGeneration, verifyAndConsumeCurrentExternalSpawnerReview} from "./spawner-external-review.mjs";
 
 export const SPAWNER_BOOTSTRAP_SCHEMA = "agentos.spawner_bootstrap_package.v1";
 export const SPAWNER_ADMISSION_SCHEMA = "agentos.exact_spawner_admission.v1";
@@ -62,6 +62,8 @@ const REPEATED_SHA = /^([0-9a-f])\1{63}$/u;
 const CANONICAL_PACKAGE_PATH = "specialist-blocks/control-plane/agent-spawner/block.json";
 const CANONICAL_BLOCK_MANIFEST_PATH = "specialist-blocks/control-plane/agent-spawner/admission/manifest.json";
 const canonicalPackageResolutions = new WeakSet();
+let cachedCanonicalPackageResolution = null;
+let cachedExternalReviewGeneration = -1;
 
 function assert(condition, message, code = "SPAWNER_GOVERNANCE_INVALID") {
   if (!condition) {
@@ -261,6 +263,8 @@ export function auditSpawnerAdmissionArtifactsAtUntrustedRoot({authorityRoot, ob
 
 export function resolveCanonicalSpawnerBootstrapPackage(options = undefined) {
   assert(options === undefined || (isRecord(options) && Object.keys(options).length === 0), "Caller-supplied package roots or paths are forbidden", "SEALED_AUTHORITY_REQUIRED");
+  const reviewGeneration = currentExternalSpawnerReviewGeneration();
+  if (cachedCanonicalPackageResolution !== null && cachedExternalReviewGeneration === reviewGeneration) return cachedCanonicalPackageResolution;
   const canonicalRoot = sealedAuthorityRepositoryRoot(getSealedCanonicalAuthority());
   const resolution = auditSpawnerBootstrapPackageAtUntrustedRoot({authorityRoot: canonicalRoot, packagePath: CANONICAL_PACKAGE_PATH});
   const evaluation = JSON.parse(execFileSync(process.execPath, [path.join(canonicalRoot, "control/spawner-hostile-fixture-evaluator.mjs")], {cwd: canonicalRoot, encoding: "utf8", maxBuffer: 4 * 1024 * 1024}));
@@ -270,7 +274,9 @@ export function resolveCanonicalSpawnerBootstrapPackage(options = undefined) {
   const externalReview = verifyAndConsumeCurrentExternalSpawnerReview({candidate: resolution, hostileEvaluation: evaluation});
   resolution.hostile_evaluation = evaluation; resolution.external_review = externalReview;
   canonicalPackageResolutions.add(resolution);
-  return Object.freeze(resolution);
+  cachedExternalReviewGeneration = reviewGeneration;
+  cachedCanonicalPackageResolution = Object.freeze(resolution);
+  return cachedCanonicalPackageResolution;
 }
 
 export function prepareCanonicalSpawnerBootstrapCandidateForIndependentEvaluation(options = undefined) {

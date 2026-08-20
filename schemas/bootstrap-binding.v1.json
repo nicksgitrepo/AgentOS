@@ -2615,7 +2615,7 @@
     },
     "spawner_bootstrap_governance_controller": {
       "path": "control/spawner-bootstrap-governance.mjs",
-      "sha256": "e98ed519714d0e733212fc6ea17927dbb87fa9677ba83ca7b5171d82edf92fe3"
+      "sha256": "46f1db0e0a3cd46e2a8c9e29cde8b0f2425ba3b617b57239f0a874fbc9b2f25f"
     },
     "spawner_bootstrap_package_contract": {
       "path": "schemas/spawner-bootstrap-package.v1.json",
@@ -2767,11 +2767,11 @@
     },
     "spawner_external_review_controller": {
       "path": "control/spawner-external-review.mjs",
-      "sha256": "90cac9e8f8d474d646a56054bb29a4ff5778e1a604860b323d2ccafe93923f66"
+      "sha256": "f36ae72292ce96e89f0b28f331d0007616f24f1fa27f09c735080705af9fd4af"
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",
-      "sha256": "2a0e5fc17793c62943b7c51e4d79f82cf682817c92c0e9f8f0e65493ef95715d"
+      "sha256": "49d3b94aabf96f7bd266d84b5d2cc9c3c3461174d497d57d27ea32432ab02c08"
     },
     "spawner_feature_implementation_loop_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/feature-implementation-loop.gate",
