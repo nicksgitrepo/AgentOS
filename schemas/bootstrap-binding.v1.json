@@ -1428,11 +1428,11 @@
     },
     "collaborative_audit_workflow_contract": {
       "path": "schemas/collaborative-audit-workflow.v1.json",
-      "sha256": "e5b36a252accb2e38721df2dc1535c32e39839f35409875a59b57ac7689d8939"
+      "sha256": "fc5e247401d1200e6a1da9c60bd53ae75c6cd256226c76db5edc479ab9d9ca00"
     },
     "collaborative_audit_workflow_controller": {
       "path": "control/collaborative-audit-workflow.mjs",
-      "sha256": "de8156576252eef148fd39df5a4b71112c8109e1b351626e13820b406323b3eb"
+      "sha256": "570235e8747092ecef8d23e5d6f570f986c4cdcf53a39f7b0e27c6157e794713"
     },
     "collaborative_audit_workflow_verifier": {
       "path": "tests/verify-collaborative-audit-workflow.mjs",
@@ -2183,7 +2183,7 @@
     },
     "auditor_round_custody_controller": {
       "path": "control/auditor-round-custody.mjs",
-      "sha256": "cbb3436478e999420c53d90430f320d5558fd9658de83b4e2157083922edee51"
+      "sha256": "8450b040929fab5c99d018361be38436d8829be22fda18e5161d96661f0165e6"
     },
     "auditor_round_custody_contract": {
       "path": "schemas/auditor-round-custody.v1.json",
@@ -2191,15 +2191,15 @@
     },
     "auditor_round_custody_verifier": {
       "path": "tests/verify-auditor-round-custody.mjs",
-      "sha256": "31a19434e0ccf581e9e32d26f68e92429758f99c798d99ec0424bea6090bc858"
+      "sha256": "29fe29df5802c8099f4d62736dbad5a53b883f8568db5ac3b69b28a91de692f2"
     },
     "auditor_round_review_authority_controller": {
       "path": "control/auditor-round-review-authority.mjs",
-      "sha256": "fed204545a2bfb55237e40e761cb0a2fcdc482ee35e4ca1bfbc6e13d7c28674b"
+      "sha256": "5e0d4ed3fe1c4085a4469d95df6c2a2416b32cdcaaa29cd43e7e7f0ef107a577"
     },
     "auditor_round_review_authority_contract": {
       "path": "schemas/auditor-round-independent-review.v1.json",
-      "sha256": "5873fce6e0eab9f1470357deb711ff77622be5db9a9c3fd314ea37245e3cf717"
+      "sha256": "8c6f8c806101e25b288a3428a775dc434ae417794feda36a21b1bb992b042efa"
     },
     "auditor_round_review_authority_verifier": {
       "path": "tests/verify-auditor-round-review-authority.mjs",
@@ -2227,7 +2227,7 @@
     },
     "independent_auditor_package_operational_evaluator": {
       "path": "control/independent-auditor-package-evaluator.mjs",
-      "sha256": "6d8c544bc402bfead5ecd415018aba566aad59da860bdf8cc163704d598f88b8"
+      "sha256": "fc53ec037afca46a02993838db5f22d0c7343f614274725a961a027bf817ed80"
     },
     "independent_clearance_applicability_contract": {
       "path": "schemas/independent-clearance-applicability.v1.json",
