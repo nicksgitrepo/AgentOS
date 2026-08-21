@@ -4884,7 +4884,7 @@
     },
     {
       "block_id": "specialist.security.idempotency",
-      "candidate_digest": "1853c0f1cea9e03d21a1b5150e16aead9a60212edf801c8bcc33ff7d03dbcdcc",
+      "candidate_digest": "08e950578fbc97030b96ba5d46e487023e8bfd9e4d249f415cf8546f5885dc82",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Idempotency; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -4922,7 +4922,9 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.agentos-idempotency",
+        "source.atomic-specialization-law",
+        "source.owasp-asvs-5-0-0"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -10200,5 +10202,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "4219a86ddc8f14ef33cd8b16d72058ca0d378ab23d09e4e106721850cda3d8fb"
+  "roster_sha256": "d5c0a4f6c654a6faeee88b04d80c24e8c1bf943d6c26f2f78dce3659bc971a2f"
 }

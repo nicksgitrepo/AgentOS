@@ -233,6 +233,61 @@
     "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
     "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
   },
+  "authority_binding": {
+    "status": "BOUND",
+    "stable_agent_id": "AGENT.SECURITY_IDEMPOTENCY",
+    "custody_owner": "AGENT.SECURITY.IDEMPOTENCY",
+    "custody_ref": "opaque:IDEMPOTENCY.CUSTODY",
+    "upstream_router": "specialist.security.access-control-router",
+    "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT",
+    "caller_substitution": "DENY_UNLESS_EXACT_REPOSITORY_DIGESTS_MATCH"
+  },
+  "context_binding": {
+    "status": "BOUND",
+    "schema": "schemas/idempotency-boundary-input.v1.json",
+    "required_evidence": [
+      "candidate_digest",
+      "concurrency_scope",
+      "context_receipt_sha256",
+      "idempotency_key",
+      "model_route_sha256",
+      "operation_context_sha256",
+      "operation_identity",
+      "source_manifest_sha256",
+      "standard_block_sha256",
+      "upstream_router_result_sha256"
+    ],
+    "unknown_rule": "UNKNOWN closes only the dependent analysis and never licenses inference or substitution."
+  },
+  "memory_binding": {
+    "status": "TYPED_HANDOFF_ONLY",
+    "read_namespace": "SPECIALIST_CANDIDATE_EVIDENCE",
+    "write_allowed": false,
+    "consumer_memory": "EXTERNAL_PROJECT_TYPED_CONTEXT",
+    "invalidation_event": "IDEMPOTENCY_EVIDENCE_SUPERSEDED"
+  },
+  "model_binding": {
+    "task_class": "SECURITY_REVIEW",
+    "minimum_capability": 59,
+    "required_capabilities": [
+      "CODE",
+      "SECURITY",
+      "TOOLS"
+    ],
+    "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT",
+    "fallback": "DENY_ON_SNAPSHOT_OR_ROUTE_MISMATCH"
+  },
+  "invalidation": {
+    "status": "CONTENT_ADDRESSED",
+    "invalidate_when": [
+      "block semantic digest changes",
+      "gate or hostile fixture bytes change",
+      "global model-policy snapshot or permanent-role registry changes",
+      "source lock or authoritative evidence changes"
+    ],
+    "rebuild_rule": "Invalidate dependent contexts and seeds, preserve history, resolve current bytes, rerun deterministic gates, and obtain a new independent receipt before reuse."
+  },
   "gate_path": "gates/00-intake.gate",
   "gate_pack": {
     "manifest_path": "gates/manifest.json",
@@ -274,6 +329,7 @@
     "receipt_id": "specialist-eval.idempotency.v1",
     "disposition": "STATIC_PASS_REVIEW_REQUIRED",
     "independent_reviewer_required": true,
+    "fixture_policy": "EXACT_DECLARED",
     "fixture_classes": [
       "authority_conflict",
       "broad_when_narrow_exists",
@@ -304,5 +360,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "1853c0f1cea9e03d21a1b5150e16aead9a60212edf801c8bcc33ff7d03dbcdcc"
+  "block_sha256": "08e950578fbc97030b96ba5d46e487023e8bfd9e4d249f415cf8546f5885dc82"
 }
