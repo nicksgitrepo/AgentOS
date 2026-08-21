@@ -57,6 +57,7 @@
     "gate_semantic_inventory_sha256:d103c5149592df4908b413208c5e369e22ede398bbcd6691f20adad2be236843",
     "model_route_sha256:9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
     "context_receipt_sha256:bc0c9a60325055070321407dfbd85de9be45cb2ed603a2cc1620c89129902ff0",
+    "upstream_router_file_sha256:7cb64aac3a89adc6dcb611237025160743bd40bc44edd99d4919184de78d039a",
     "upstream_router_result_sha256:f6509c0e3fe9af7ab5a19ea58ebb2a63c7af1a7db61043c8570a92968fdc507d"
   ],
   "residuals": [

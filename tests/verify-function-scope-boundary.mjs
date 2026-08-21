@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {createHash} from "node:crypto";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {evaluateFunctionScopeBoundary, FUNCTION_SCOPE_INPUT_SCHEMA, FUNCTION_SCOPE_RESULT_SCHEMA} from "../control/function-scope-boundary-gate.mjs";
@@ -18,6 +19,11 @@ const input = {schema: FUNCTION_SCOPE_INPUT_SCHEMA, version: 1, request_kind: "S
 }};
 const denied = evaluateFunctionScopeBoundary(input);
 assert.equal(denied.schema, FUNCTION_SCOPE_RESULT_SCHEMA); assert.equal(denied.disposition, "DENY"); assert.equal(denied.error_code, "FUNCTION_SCOPE_OPERATION_FORBIDDEN");
+assert.equal(denied.analysis_allowed, false); assert.equal(denied.acceptance_allowed, false); assert.equal(denied.authorization_decision_allowed, false); assert.equal(denied.policy_mutation_allowed, false);
+assert.equal(denied.result_sha256, canonicalDigest({...denied, result_sha256: null}));
+const routed = structuredClone(input); routed.request_kind = "ANALYZE_FUNCTION_SCOPE";
+const routedResult = evaluateFunctionScopeBoundary(routed);
+assert.equal(routedResult.disposition, "ROUTE"); assert.equal(routedResult.analysis_allowed, true); assert.equal(routedResult.acceptance_allowed, false); assert.equal(routedResult.authorization_decision_allowed, false); assert.equal(routedResult.policy_mutation_allowed, false); assert.equal(routedResult.handoff.execution_instruction, false);
 const missingTenantScope = structuredClone(input); missingTenantScope.request_kind = "ANALYZE_FUNCTION_SCOPE"; missingTenantScope.evidence.tenant_scope_status = "MISSING";
 assert.throws(() => evaluateFunctionScopeBoundary(missingTenantScope), (error) => error?.code === "FUNCTION_SCOPE_TENANT_SCOPE_REQUIRED");
 const wrongAuthorityScope = structuredClone(input); wrongAuthorityScope.request_kind = "ANALYZE_FUNCTION_SCOPE"; wrongAuthorityScope.evidence.authority_scope = "OTHER_SCOPE";
@@ -72,4 +78,53 @@ try {
 } finally {
   fs.rmSync(modelTemp, {recursive: true, force: true});
 }
+
+// The upstream router is part of Function Scope authority.  A source mutation
+// must fail closed before a happy-path router receipt can be reused.
+const routerTemp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-function-scope-router-mutation-"));
+try {
+  fs.cpSync(path.join(repositoryRoot, "control"), path.join(routerTemp, "control"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "wave-03", "function-scope"), path.join(routerTemp, "specialist-blocks", "wave-03", "function-scope"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "standards", "owasp-asvs"), path.join(routerTemp, "specialist-blocks", "standards", "owasp-asvs"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "registry"), path.join(routerTemp, "specialist-blocks", "registry"), {recursive: true});
+  fs.mkdirSync(path.join(routerTemp, "fixtures"), {recursive: true});
+  fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(routerTemp, "fixtures", "model-policy-snapshot.initial.v1.json"));
+  fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(routerTemp, "fixtures", "model-policy-evidence"), {recursive: true});
+  const routerPath = path.join(routerTemp, "control", "access-control-router-boundary-gate.mjs");
+  const routerSource = fs.readFileSync(routerPath, "utf8");
+  assert(routerSource.includes("if (FORBIDDEN.has(input.request_kind))"));
+  fs.writeFileSync(routerPath, routerSource.replace("if (FORBIDDEN.has(input.request_kind))", "if (false && FORBIDDEN.has(input.request_kind))"));
+  const isolatedAuthority = await import(`${pathToFileURL(path.join(routerTemp, "control", "function-scope-authority-binding.mjs")).href}?router-mutation=${Date.now()}`);
+  assert.throws(() => isolatedAuthority.resolveFunctionScopeCanonicalAuthority(), (error) => error?.code === "FUNCTION_SCOPE_UPSTREAM_ROUTER_PROVENANCE_INVALID");
+} finally {
+  fs.rmSync(routerTemp, {recursive: true, force: true});
+}
+
+// Recomputed roster bytes are still insufficient: the exact gate inventory
+// must remain present and one-to-one after the roster is rehashed.
+const rosterTemp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-function-scope-roster-mutation-"));
+try {
+  fs.cpSync(path.join(repositoryRoot, "control"), path.join(rosterTemp, "control"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "wave-03", "function-scope"), path.join(rosterTemp, "specialist-blocks", "wave-03", "function-scope"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "standards", "owasp-asvs"), path.join(rosterTemp, "specialist-blocks", "standards", "owasp-asvs"), {recursive: true});
+  const rosterDirectory = path.join(rosterTemp, "specialist-blocks", "registry"); fs.mkdirSync(rosterDirectory, {recursive: true});
+  fs.copyFileSync(path.join(repositoryRoot, "specialist-blocks", "registry", "agent-roster.v1.json"), path.join(rosterDirectory, "agent-roster.v1.json"));
+  fs.mkdirSync(path.join(rosterTemp, "fixtures"), {recursive: true});
+  fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(rosterTemp, "fixtures", "model-policy-snapshot.initial.v1.json"));
+  fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(rosterTemp, "fixtures", "model-policy-evidence"), {recursive: true});
+  const rosterPath = path.join(rosterDirectory, "agent-roster.v1.json");
+  const roster = JSON.parse(fs.readFileSync(rosterPath, "utf8"));
+  const rosterEntry = roster.entries.find((entry) => entry.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE");
+  delete rosterEntry.deterministic_gates;
+  fs.writeFileSync(rosterPath, `${JSON.stringify(roster, null, 2)}\n`);
+  const mutatedRosterSha = createHash("sha256").update(fs.readFileSync(rosterPath)).digest("hex");
+  const isolatedBindingPath = path.join(rosterTemp, "control", "function-scope-authority-binding.mjs");
+  const isolatedBinding = fs.readFileSync(isolatedBindingPath, "utf8").replace(/FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "[0-9a-f]{64}"/u, `FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "${mutatedRosterSha}"`);
+  fs.writeFileSync(isolatedBindingPath, isolatedBinding);
+  const isolatedAuthority = await import(`${pathToFileURL(isolatedBindingPath).href}?roster-mutation=${Date.now()}`);
+  assert.throws(() => isolatedAuthority.resolveFunctionScopeCanonicalAuthority(), (error) => error?.code === "FUNCTION_SCOPE_ROSTER_GATE_PROVENANCE_INVALID");
+} finally {
+  fs.rmSync(rosterTemp, {recursive: true, force: true});
+}
+
 console.log("PASS Function Scope boundary: 17 executable adversarial vectors, fixture-bound expectations, mutation proof, and zero side effects");

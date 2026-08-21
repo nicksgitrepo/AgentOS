@@ -21,6 +21,29 @@ const read = (file) => fs.readFileSync(file, "utf8");
 const json = (file) => JSON.parse(read(file));
 function fail(message, code = "FUNCTION_SCOPE_EVALUATION_INVALID") { const error = new Error(message); error.code = code; throw error; }
 function assert(value, message, code) { if (!value) fail(message, code); }
+const RESULT_BASE_KEYS = Object.freeze(["schema", "version", "disposition", "route", "analysis_allowed", "acceptance_allowed", "authorization_decision_allowed", "policy_mutation_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"]);
+const RESULT_SIDE_EFFECT_KEYS = Object.freeze(["candidate_reads", "source_reads", "protected_data_reads", "authorization_decisions", "policy_mutations", "project_writes", "memory_writes", "credential_accesses", "state_changes"]);
+const RESULT_SHA256 = /^[0-9a-f]{64}$/u;
+function assertBoundaryResult(actual, expected, label) {
+  assert(actual && typeof actual === "object" && !Array.isArray(actual), `${label} result is not an object`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+  const expectedKeys = expected.disposition === "ROUTE" ? [...RESULT_BASE_KEYS, "selected_specialist", "handoff"] : RESULT_BASE_KEYS;
+  assert(JSON.stringify(Object.keys(actual).sort()) === JSON.stringify(expectedKeys.slice().sort()), `${label} result fields differ`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+  assert(actual.schema === "agentos.function_scope_boundary_result.v1" && actual.version === 1, `${label} result identity differs`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+  assert(actual.disposition === expected.disposition && actual.route === expected.route && actual.error_code === expected.error_code, `${label} result disposition/route/error differs`, "FUNCTION_SCOPE_HOSTILE_RESULT_FAILED");
+  assert(actual.analysis_allowed === (expected.disposition === "ROUTE"), `${label} analysis capability is not derived from the expected route`, "FUNCTION_SCOPE_RESULT_CAPABILITY_INVALID");
+  assert(actual.acceptance_allowed === false && actual.authorization_decision_allowed === false && actual.policy_mutation_allowed === false, `${label} result exposes forbidden capability`, "FUNCTION_SCOPE_RESULT_CAPABILITY_INVALID");
+  assert(actual.external_side_effects && typeof actual.external_side_effects === "object" && !Array.isArray(actual.external_side_effects), `${label} side-effect readback is invalid`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+  assert(JSON.stringify(Object.keys(actual.external_side_effects).sort()) === JSON.stringify(RESULT_SIDE_EFFECT_KEYS.slice().sort()), `${label} side-effect fields differ`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+  assert(RESULT_SIDE_EFFECT_KEYS.every((key) => actual.external_side_effects[key] === 0), `${label} side-effect readback is non-zero`, "FUNCTION_SCOPE_RESULT_SIDE_EFFECT");
+  assert(typeof actual.input_sha256 === "string" && RESULT_SHA256.test(actual.input_sha256) && typeof actual.result_sha256 === "string" && RESULT_SHA256.test(actual.result_sha256), `${label} result digests are invalid`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+  assert(actual.result_sha256 === canonicalDigest({...actual, result_sha256: null}), `${label} result digest is not self-consistent`, "FUNCTION_SCOPE_RESULT_DIGEST_INVALID");
+  if (expected.disposition === "ROUTE") {
+    assert(actual.selected_specialist === "specialist.security.function-scope", `${label} selected specialist is not canonical`, "FUNCTION_SCOPE_RESULT_CAPABILITY_INVALID");
+    assert(actual.handoff && typeof actual.handoff === "object" && !Array.isArray(actual.handoff) && JSON.stringify(Object.keys(actual.handoff).sort()) === JSON.stringify(["execution_instruction", "next_action", "status"].sort()), `${label} handoff is not typed`, "FUNCTION_SCOPE_RESULT_SCHEMA_INVALID");
+    assert(actual.handoff.status === "WAITING_WITH_RECEIPT" && typeof actual.handoff.next_action === "string" && actual.handoff.execution_instruction === false, `${label} handoff widens authority`, "FUNCTION_SCOPE_RESULT_CAPABILITY_INVALID");
+  }
+  return actual;
+}
 function inventory(root) {
   const files = ["block.json", "sources.lock", "gates/manifest.json", "gates/execution.json", "evaluation.json", "handoff.json"];
   for (const name of fs.readdirSync(path.join(root, "gates")).filter((name) => name.endsWith(".gate"))) files.push(`gates/${name}`);
@@ -94,8 +117,7 @@ function gateExecutions(root, manifest, fixtureMap, block, standard, authority) 
     const fixtureExpected = fixtureEntry.fixture.expected; const vectorInput = fixtureEntry.fixture.vector.input; const overrides = {request_kind: vectorInput.request_kind, evidence_overrides: vectorInput.evidence_overrides, adversarial_flags: entry.adversarial_flags ?? {}};
     if (Object.keys(overrides.adversarial_flags).length === 0) assert(JSON.stringify(entry.expected) === JSON.stringify(fixtureExpected) && JSON.stringify(entry.expected) === JSON.stringify(fixtureEntry.fixture.vector.expected_readback), `Function Scope gate expected result is not bound to fixture: ${entry.gate_id}`, "FUNCTION_SCOPE_GATE_EXPECTATION_UNBOUND");
     const actual = evaluateFunctionScopeBoundary(inputFor(entry.fixture_class, block.block_sha256, standard, overrides, authority));
-    assert(actual.disposition === entry.expected.disposition && actual.route === entry.expected.route && actual.error_code === entry.expected.error_code, `Function Scope gate execution failed: ${entry.gate_id}`, "FUNCTION_SCOPE_GATE_EXECUTION_FAILED");
-    assert(Object.values(actual.external_side_effects).every((value) => value === 0), `Function Scope gate side effect observed: ${entry.gate_id}`, "FUNCTION_SCOPE_GATE_SIDE_EFFECT");
+    assertBoundaryResult(actual, entry.expected, `Function Scope gate ${entry.gate_id}`);
     results.push({gate_id: entry.gate_id, fixture_class: entry.fixture_class, entrypoint: execution.evaluator_entrypoint, expected: entry.expected, actual: {disposition: actual.disposition, route: actual.route, error_code: actual.error_code, result_sha256: actual.result_sha256}, side_effects: actual.external_side_effects});
   }
   assert(seen.size === manifest.ordered_gate_ids.length, "Function Scope gate execution coverage is incomplete", "FUNCTION_SCOPE_GATE_EXECUTION_COVERAGE_INVALID");
@@ -132,7 +154,7 @@ export async function evaluateFunctionScopePackage() {
   const gateManifest = json(path.join(root, "gates/manifest.json")); const gateExecution = gateExecutions(root, gateManifest, map, block, standard, authority);
   for (const entry of [...map.values()].sort((a, b) => a.fixture.class.localeCompare(b.fixture.class))) {
     const fixture = entry.fixture; const expected = fixture.expected; const input = inputFor(fixture.class, block.block_sha256, standard, {request_kind: fixture.vector.input.request_kind, evidence_overrides: fixture.vector.input.evidence_overrides}, authority); const actual = evaluateFunctionScopeBoundary(input);
-    assert(actual.disposition === expected.disposition && actual.route === expected.route && actual.error_code === expected.error_code, `Function Scope vector failed: ${fixture.class}`, "FUNCTION_SCOPE_HOSTILE_RESULT_FAILED"); assert(Object.values(actual.external_side_effects).every((value) => value === 0), "Function Scope side effect observed", "FUNCTION_SCOPE_SIDE_EFFECT");
+    assertBoundaryResult(actual, expected, `Function Scope vector ${fixture.class}`);
     results.push({fixture_id: fixture.fixture_id, fixture_class: fixture.class, fixture_file_sha256: entry.file_sha256, entrypoint: "control/function-scope-boundary-gate.mjs#evaluateFunctionScopeBoundary", entrypoint_invoked: true, semantic_execution_completed: true, expected_outcome: expected.disposition, actual_outcome: actual.disposition, expected_route: expected.route, actual_route: actual.route, expected_error_code: expected.error_code, actual_error_code: actual.error_code, external_side_effects: actual.external_side_effects, result_sha256: canonicalDigest({class: fixture.class, expected, actual: actual.result_sha256})});
   }
   const evaluationArtifact = {value: json(path.join(root, "evaluation.json")), file_sha256: sha(fs.readFileSync(path.join(root, "evaluation.json")))};
