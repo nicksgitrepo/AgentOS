@@ -21,7 +21,7 @@ function makeRound(overrides = {}) {
   };
   const fixtureBase = {fixture_id: "FIXTURE.ADVERSARIAL.1", fixture_sha256: digest("fixture-bytes"), input_sha256: digest("fixture-input"), entrypoint: "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", invoked: true, expected_disposition: "DENY", observed_disposition: "DENY", expected_error_code: "INDEPENDENT_AUDITOR_OPERATION_FORBIDDEN", observed_error_code: "INDEPENDENT_AUDITOR_OPERATION_FORBIDDEN", negative_assertions: ["adapter_invocations=0", "state_changes=0"], side_effects: sideEffects(), result_sha256: null};
   fixtureBase.result_sha256 = digest({...fixtureBase, result_sha256: null});
-  const gate = {gate_id: "GATE.ADVERSARIAL.1", gate_sha256: digest("gate-bytes"), fixture_ids: [fixtureBase.fixture_id], executed: true, observed_status: "DENY", negative_assertions: ["unsafe-route-denied"], result_sha256: null};
+  const gate = {gate_id: "GATE.ADVERSARIAL.1", gate_sha256: digest("gate-bytes"), fixture_ids: [fixtureBase.fixture_id], entrypoint: "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", executed: true, observed_status: "DENY", negative_assertions: ["unsafe-route-denied"], execution_receipt_sha256: digest("gate-execution"), result_sha256: null};
   gate.result_sha256 = digest({...gate, result_sha256: null});
   const execution = {status: "COMPLETE", entrypoints_real: true, metadata_only: false, timeout_or_silence: false, fixture_inventory_complete: true, gate_inventory_complete: true, fixtures: [fixtureBase], gates: [gate], side_effects: sideEffects(), execution_sha256: null};
   execution.execution_sha256 = digest({...execution, execution_sha256: null});
