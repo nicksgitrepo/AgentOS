@@ -4229,7 +4229,7 @@
     },
     "spawner_external_review_controller": {
       "path": "control/spawner-external-review.mjs",
-      "sha256": "6ec1c2ab630d6f7caafc2622ce6cc16986be73daaaf6ae6002776578e94428ee"
+      "sha256": "17c52edb4e8d4b55163ff16afc72c2427a45f7437c305589d8c33fcf10f2f656"
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",

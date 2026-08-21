@@ -195,9 +195,26 @@ function writeReplayHead(headPath, {bindingSha256, schema, version}, prior, root
 function consume(root, registry, receipt) {
   const globalRoot = stores.get(installedStore)?.globalRoot;
   if (!globalRoot) fail("external review global replay store is unavailable", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  // Serialize every consumption against the shared ledger first, then the
+  // per-review ledger.  The global lock prevents two different review stores
+  // from both accepting the same receipt between read and append; acquiring
+  // in this fixed order avoids lock inversion.
+  const globalLockPath = safePath(globalRoot, `${GLOBAL_REVIEW_LEDGER_NAME}.lock`, {allowMissingLeaf: true});
   const lockPath = safePath(root, "consumed-reviews.jsonl.lock", {allowMissingLeaf: true});
+  let globalLock;
   let lock;
-  try { lock = fs.openSync(lockPath, "wx", 0o600); } catch (error) { if (error.code === "EEXIST") fail("external review consumption is concurrently locked", "SPAWNER_EXTERNAL_REVIEW_CONCURRENT"); throw error; }
+  try {
+    globalLock = fs.openSync(globalLockPath, "wx", 0o600);
+    try { lock = fs.openSync(lockPath, "wx", 0o600); } catch (error) {
+      try { fs.closeSync(globalLock); } catch {}
+      try { fs.unlinkSync(globalLockPath); } catch {}
+      if (error.code === "EEXIST") fail("external review consumption is concurrently locked", "SPAWNER_EXTERNAL_REVIEW_CONCURRENT");
+      throw error;
+    }
+  } catch (error) {
+    if (error.code === "EEXIST") fail("external review consumption is concurrently locked", "SPAWNER_EXTERNAL_REVIEW_CONCURRENT");
+    throw error;
+  }
   try {
     const state = parseLedger(root, registry);
     const global = parseLedgerAt(globalRoot, GLOBAL_REVIEW_LEDGER_NAME, GLOBAL_REVIEW_LEDGER_BINDING, GLOBAL_REVIEW_LEDGER_SCHEMA, GLOBAL_REVIEW_LEDGER_VERSION);
@@ -217,7 +234,12 @@ function consume(root, registry, receipt) {
     const globalReadback = fs.readFileSync(global.ledgerPath, "utf8");
     if (globalReadback !== globalNext.map((entry) => `${canonicalJson(entry)}\n`).join("")) fail("external review global replay ledger readback differs", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
     writeReplayHead(global.headPath, {bindingSha256: GLOBAL_REVIEW_LEDGER_BINDING, schema: GLOBAL_REVIEW_LEDGER_SCHEMA, version: GLOBAL_REVIEW_LEDGER_VERSION}, globalNext, globalRoot);
-  } finally { try { fs.closeSync(lock); } catch {} try { fs.unlinkSync(lockPath); } catch {} }
+  } finally {
+    try { fs.closeSync(lock); } catch {}
+    try { fs.unlinkSync(lockPath); } catch {}
+    try { fs.closeSync(globalLock); } catch {}
+    try { fs.unlinkSync(globalLockPath); } catch {}
+  }
 }
 
 export function verifyAndConsumeCurrentExternalSpawnerReview({candidate, hostileEvaluation} = {}) {
