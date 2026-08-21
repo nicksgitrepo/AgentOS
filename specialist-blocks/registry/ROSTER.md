@@ -4,8 +4,9 @@
 
 `AGENTOS.REPAIR` is the next eligible package after the already accepted
 permanent roles. It is a project-agnostic campaign builder, not a permanent
-role and not a deployer. Its package is candidate-only (`CANDIDATE` / `OFF`)
-until one independent evaluator accepts the frozen candidate.
+role and not a deployer. Its package remains candidate-only and inactive
+(`CANDIDATE` / `OFF`); one independent evaluator has now passed the frozen
+candidate, but sealed Spawner admission is still required before any spawn.
 
 It exposes five isolated modes: `FULL_IMPORT`, `FULL_AUDIT_REPAIR`,
 `TARGETED_REPAIR`, `LEGACY_MIGRATION`, and `RELEASE_HARDENING`. Import keeps
@@ -23,7 +24,8 @@ The current Repair package contains twelve deterministic gates, nineteen
 executable hostile vectors, an immutable inert seed, mode-isolation rules,
 bounded retry/BLOCKED_EXACT handling, cumulative non-regression, finding
 deduplication, crash-resume checkpoints, resource ceilings, and independent
-final-review requirements. It is not admitted or spawned yet.
+final-review requirements. It is independently qualified from the exact
+candidate readback, but it is not admitted or spawned yet.
 
 The current canonical campaign registry is
 `specialist-blocks/registry/agent-roster.v1.json`. It is generated from the
@@ -50,9 +52,9 @@ Observability/Incident Router are now accepted from their exact independent
 receipts. The current queue item is the next eligible package recorded in the
 machine registry; its package, gates, hostile vectors, model route, and local
 proof are next for one-at-a-time qualification.
-All other
-`AGENTOS.REPAIR` is deliberately inserted at the head of the next eligible
-queue position after those permanent roles. All other entries remain queued or
+`AGENTOS.REPAIR` is independently accepted from one exact evaluator readback
+and remains the current owner-intake handoff; it is deliberately kept at the
+head of the next eligible queue position after those permanent roles. All other entries remain queued or
 blocked on predecessors as recorded in the machine registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.
 
