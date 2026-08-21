@@ -152,6 +152,7 @@ for (const mutation of ["receipt_ref", "row_removed"]) {
     fs.writeFileSync(bindingPath, fs.readFileSync(bindingPath, "utf8").replace(/FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "[0-9a-f]{64}"/u, `FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "${rosterSha}"`));
     const acceptancePath = path.join(acceptanceTemp, "specialist-blocks", "registry", "accepted-agent-receipts.v1.json");
     const acceptanceLedger = JSON.parse(fs.readFileSync(acceptancePath, "utf8"));
+    acceptanceLedger.entries = acceptanceLedger.entries.filter((entry) => entry.stable_agent_id !== "AGENT.SECURITY_FUNCTION_SCOPE");
     acceptanceLedger.entries.push({stable_agent_id: "AGENT.SECURITY_FUNCTION_SCOPE", package_path: "specialist-blocks/wave-03/function-scope", candidate_commit: "4e1ac9d4ef9aa9646ce7d0cd5c046e1a8600c13e", candidate_tree: "87777e1974888e4e520f4206ed61a87e75e0e266", independent_status: "PASS", receipt_ref: "INDEPENDENT_EVALUATOR_HANDOFF/4e1ac9d4ef9aa9646ce7d0cd5c046e1a8600c13e", receipt_sha256: null, readback_scope: "READBACK_SUMMARY_ONLY"});
     acceptanceLedger.entries.sort((a, b) => a.stable_agent_id.localeCompare(b.stable_agent_id));
     if (mutation === "receipt_ref") {
