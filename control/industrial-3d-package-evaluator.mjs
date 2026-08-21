@@ -128,7 +128,17 @@ export async function evaluateIndustrial3dPackage() {
     package_root_sha256: canonicalDigest(digests), package_block_sha256: block.block_sha256, source_manifest_sha256: authority.source_manifest_sha256,
     standard_block_sha256: authority.standard_block_sha256, standard_source_manifest_sha256: authority.standard_source_manifest_sha256, model_snapshot_sha256: authority.model_snapshot_sha256,
     model_route_sha256: authority.model_route_sha256, context_receipt_sha256: authority.context_receipt_sha256, memory_readback_sha256: authority.memory_readback_sha256,
-    fixture_contract_sha256: authority.fixture_contract_sha256, upstream_router_result_sha256: authority.router_result_sha256, gate_execution: gateExecution,
+    fixture_contract_sha256: authority.fixture_contract_sha256, upstream_router_file_sha256: authority.router_file_sha256,
+    upstream_router_block_sha256: authority.router_block_sha256, upstream_router_fixture_sha256: authority.router_fixture_file_sha256,
+    upstream_router_input_sha256: authority.router_input_sha256, upstream_router_expected_sha256: authority.router_expected_sha256,
+    upstream_router_model_snapshot_sha256: authority.router_model_policy.global_snapshot_sha256, upstream_router_model_route_sha256: authority.router_model_policy.global_route_sha256,
+    upstream_router_model_policy_claim: authority.router_model_policy.router_claim, upstream_router_model_binding_status: authority.router_model_policy.status,
+    upstream_router_result_sha256: authority.router_result_sha256, agent_roster_semantic_sha256: authority.registry.agent_roster_semantic_sha256,
+    specialist_roster_semantic_sha256: authority.registry.specialist_roster_semantic_sha256, atomic_inventory_semantic_sha256: authority.registry.atomic_inventory_semantic_sha256,
+    routing_index_semantic_sha256: authority.registry.routing_index_semantic_sha256, registry_contract_sha256: authority.registry.registry_contract_sha256,
+    registry_agent_state: authority.registry.registry_agent_state, agent_roster_status: authority.registry.agent_roster_status,
+    specialist_roster_status: authority.registry.specialist_roster_status, atomic_inventory_status: authority.registry.atomic_inventory_status,
+    routing_index_status: authority.registry.routing_index_status, registry_activation: authority.registry.registry_activation, gate_execution: gateExecution,
     fixture_results: results, mutation_sensitivity: sensitivity, independent_signature_required: true, evaluation_sha256: null,
   };
   evaluation.evaluation_sha256 = canonicalDigest({...evaluation, evaluation_sha256: null});

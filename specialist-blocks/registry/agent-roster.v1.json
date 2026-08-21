@@ -6098,7 +6098,7 @@
         "write Product or consumer state"
       ],
       "stop_conditions": [
-        "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\",\"rollback\":\"Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint.\"}"
+        "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, typed handoff, reconciled upstream model-policy receipt, and inactive semantic registry contract have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\",\"rollback\":\"Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint.\"}"
       ],
       "required_blocks": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -6200,103 +6200,103 @@
           {
             "fixture_id": "industrial-3d-authority_conflict",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/authority_conflict.json",
-            "file_sha256": "1a9f975c499da1f3349c193de5dd149e2b3660710a305f2d10bc6fc71e60b899",
+            "file_sha256": "32540cb9d377efd139f8288324ae9a09ed04f8271199e903aafe6a0926f988af",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "f964f54d451160133abc167cd70066997aca8af7ffa902fe47c1b96b13aa0268",
+            "file_sha256": "c8d4f95e40ef60a6d77a9c5a916d05b3392a7e27f88998770bcde1eff78af17a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-cross_provider_version_claim",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "bf28253576f7a8c580311bc7566d9a5c5092667eb6599b45c05d34cf6b1cfceb",
+            "file_sha256": "d98f82fd40f717856026f9b5e5814f1e61a199125402a08f9efba62d0eac590d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-data_limit",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/data_limit.json",
-            "file_sha256": "55643dc226b6aa9e0f571c299b79b815bedf774a0915b887b1204f4767af5c8b",
+            "file_sha256": "1b5b3345620a0e1761639adbebad47d86d2213d008159d5a2d3aa6c9e6811511",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "industrial-3d-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "401e96bb6533f7c49165c8ea985a5119e0a84d5e632842157ecf2cef2aeb3bdf",
+            "file_sha256": "51bce02bca94099d71f05a8ee8ab3e637f3d8fe832ffa21321e71a92d2e18d2a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-false_positive",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/false_positive.json",
-            "file_sha256": "de9d0432705c0b7547d82a68929e5c557d4a1db76d69d83e75daa542d2786026",
+            "file_sha256": "97b28ef3023691e85affbf77e43af90b7b1024ad670571742612271ce1faa11c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-handoff",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/handoff.json",
-            "file_sha256": "0ab3c6b9feb3a6d327eff6c95bb658c53b854e4dbcdf296905c4bb0a86ac43e2",
+            "file_sha256": "9e3bea048fc4c86d169fa761891cb1fdeded78df10996574b86e7a3f5c6869d9",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "industrial-3d-missing_context",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/missing_context.json",
-            "file_sha256": "ea0dc1e2f45599feed2890576449a1c2b6ee9793cd6b88dcdba5d06fa70115e1",
+            "file_sha256": "d4069f3d446d3ac05d736c11e56c0bcf5effd7f9cb6f90ef4c66285c3fbf0b4e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-narrowness",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/narrowness.json",
-            "file_sha256": "5071eeb07ac5edfc411c02853b5cbfe3175964d72f65fedd5cfec3b63e596f02",
+            "file_sha256": "472f318445a724539cae181b6788c8be0dc008f141575776fd941c6917d13ac9",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "industrial-3d-router_self_accept",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/router_self_accept.json",
-            "file_sha256": "fa34f3e480a2a28b3e7b5c4bd9f56e9de54e4452ede0af9a08caced8a8ee23c4",
+            "file_sha256": "84fcd1d134c189e48215968881d8424f21399837b2c81060dcdea2b915c13de3",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-routing",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/routing.json",
-            "file_sha256": "9f538889698b578fcd1bafb0b4eb00bdeaaaca68c2ed7de78eae56c31d33ffba",
+            "file_sha256": "fb92bcadadff80236e4f54cbc1f074ebfbcf3cc563f14355076489b296afedb5",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "industrial-3d-silent_scope_expansion",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/silent_scope_expansion.json",
-            "file_sha256": "4aa0184503e1962cc8f7979777519fbc32c13dd6fd3e2b3807440a4102f25354",
+            "file_sha256": "dd03b7afdd1b7dce79414a9da10c1f09850795a72c9ad637d9617ec076175dda",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-stale_source",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/stale_source.json",
-            "file_sha256": "7df5e62bdeee7547443ca53ddacc06b75539dce157c40aee71976b5ffc9d4ca5",
+            "file_sha256": "a89d4d737caa8af196c882f01b6faa849b4e6c4d89353bece668cc9fecd7988a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-tool_limit",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/tool_limit.json",
-            "file_sha256": "f5c78bc21d36797cfb549fe50213701c333148e57332d0fa8d017444e88f5a20",
+            "file_sha256": "dfa63c3f7c95222ec1d79a8df7e693cfd3a2ee05ee23ce8e1d55240c023d598e",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "industrial-3d-umbrella_authority",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/umbrella_authority.json",
-            "file_sha256": "de7273f41dac1139686a54c9764b473c186751eb91d178d72eeb2117b55b00e3",
+            "file_sha256": "0935e107dfc3661ef4fd005da34a459e8e8045d853ca3b2bfe280b3d176af9d4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-unrelated_scope",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/unrelated_scope.json",
-            "file_sha256": "ea2ea03a4855cae8977aa2e3013c4b705914cc15e4000af1fc2808cc42f9a92f",
+            "file_sha256": "f2f4103ec77e8aae0bddc6d1e6c8453a82c52c719325bfb47d5de3b8e2863dd7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "industrial-3d-unsafe_action",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/unsafe_action.json",
-            "file_sha256": "6aaacf9b2619172eeed73295e23886a3ab5704638f09096fedb8f179268ea7f7",
+            "file_sha256": "ffc75637bb96d1f512fc8472b514aea54bc4b8081225ba38a01efcb152070b18",
             "expected_outcome": "DENY"
           }
         ]
@@ -6310,14 +6310,14 @@
           "context_invalidation_policy"
         ],
         "handoff_path": "specialist-blocks/wave-06/industrial-3d/handoff.json",
-        "handoff_file_sha256": "4f4ec8f5db02468b86257870cfc10519d6d301153232b34ab080768b3107ffde",
+        "handoff_file_sha256": "ee5666a12b6ae980ac419916f495b8959caf2f6c81a9579062dff5079b67679d",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.industrial-3d.v1"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
         "build_rules": [
-          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\",\"rollback\":\"Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint.\"}"
+          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, typed handoff, reconciled upstream model-policy receipt, and inactive semantic registry contract have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\",\"rollback\":\"Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint.\"}"
         ],
         "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
         "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
@@ -40425,5 +40425,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "d110415808411a27ff5e48311c2833a61455938dbe2d87b4e0ae0450a3f1bdc1"
+  "roster_sha256": "3d8cad943c9aa775a7b9f413f5126b2b9a11be1174011b8cff18544d7abdafb6"
 }
