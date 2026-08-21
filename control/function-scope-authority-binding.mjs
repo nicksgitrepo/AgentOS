@@ -27,7 +27,7 @@ export const FUNCTION_SCOPE_MODEL_TASK_CLASS = "SECURITY_REVIEW";
 export const FUNCTION_SCOPE_MODEL_CAPABILITY_FLOOR = 59;
 export const FUNCTION_SCOPE_MODEL_CAPABILITIES = Object.freeze(["CODE", "SECURITY", "TOOLS"]);
 export const FUNCTION_SCOPE_MODEL_SNAPSHOT_SHA256 = "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27";
-export const FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "444efef8e42d2e841475b4175599811471f68aebb61d4d3ba648db2118c36491";
+export const FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "ce062ba33866d32cdc4c5d0d7fd85b40647a5d447967ab10603b7695c8f8552e";
 export const FUNCTION_SCOPE_UPSTREAM_ROUTER_FILE_SHA256 = "7cb64aac3a89adc6dcb611237025160743bd40bc44edd99d4919184de78d039a";
 export const FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   block: "ac0f316100f81f6bc7ae7d8f46a1406ef8772a14ccc62e9b7f8b50e2e0ab9c21",
@@ -35,13 +35,14 @@ export const FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   gate_manifest: "5e2937bcc500f0ff598fed4208272b4c76b462c77e96a1e6fe00d23558c05456",
   gate_execution: "023d502bb1b6e882f51e33315226b7f765d4d4def823b93f3b6cb28bdc0f7eab",
   evaluation: "76e08d38dd355a0e06c801632fde9201ac43125f47dab280da6cb0dfbeb2f1a4",
-  handoff: "c629af768519e58473030512f2988279928f1247c3f65e2dc9d0a65aee147f6a",
+  handoff: "9fcccb77c22019353db8ae3d6d78fcb90b43992b2ef480ddede7226cd3435665",
   model_snapshot: "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d",
 });
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = path.join(ROOT, FUNCTION_SCOPE_PACKAGE_PATH);
 const ROSTER_PATH = path.join(ROOT, "specialist-blocks/registry/agent-roster.v1.json");
+const ACCEPTANCE_LEDGER_PATH = path.join(ROOT, "specialist-blocks/registry/accepted-agent-receipts.v1.json");
 const MODEL_PATH = path.join(ROOT, "fixtures/model-policy-snapshot.initial.v1.json");
 const STANDARD_PATH = path.join(ROOT, "specialist-blocks/standards/owasp-asvs/block.json");
 const STANDARD_SOURCES_PATH = path.join(ROOT, "specialist-blocks/standards/owasp-asvs/sources.lock");
@@ -148,6 +149,14 @@ export function resolveFunctionScopeCanonicalAuthority() {
   assert(entry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION" || entry.build_state === "ACCEPTED_QUALIFIED", "Function Scope roster state is invalid", "FUNCTION_SCOPE_ROSTER_STATE_INVALID");
   assert(entry.model_route?.task_class === FUNCTION_SCOPE_MODEL_TASK_CLASS && entry.model_route.minimum_capability === FUNCTION_SCOPE_MODEL_CAPABILITY_FLOOR && JSON.stringify(entry.model_route.required_capabilities) === JSON.stringify(FUNCTION_SCOPE_MODEL_CAPABILITIES) && entry.model_route.route_source === "GLOBAL_MODEL_POLICY_SNAPSHOT", "Function Scope model route is not canonical", "FUNCTION_SCOPE_MODEL_ROUTE_INVALID");
 
+  const acceptanceArtifact = readJson(ACCEPTANCE_LEDGER_PATH, "Reusable-agent acceptance ledger");
+  const acceptanceLedger = acceptanceArtifact.value;
+  assert(acceptanceLedger.schema === "agentos.reusable_agent_acceptance_ledger.v1" && acceptanceLedger.status === "READ_ONLY_INDEPENDENT_EVALUATION_INDEX" && acceptanceLedger.project_agnostic === true && acceptanceLedger.ledger_sha256 === canonicalDigest(body(acceptanceLedger, "ledger_sha256")), "Function Scope acceptance ledger identity is invalid", "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_INVALID");
+  const acceptance = acceptanceLedger.entries?.filter((candidate) => candidate.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE");
+  assert(acceptance?.length === 1, "Function Scope acceptance ledger row is missing or duplicated", "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_ROW_INVALID");
+  const acceptanceEntry = acceptance[0];
+  assert(acceptanceEntry.package_path === FUNCTION_SCOPE_PACKAGE_PATH && /^[0-9a-f]{40}$/u.test(acceptanceEntry.candidate_commit) && /^[0-9a-f]{40}$/u.test(acceptanceEntry.candidate_tree) && acceptanceEntry.independent_status === "PASS" && acceptanceEntry.receipt_ref === `INDEPENDENT_EVALUATOR_HANDOFF/${acceptanceEntry.candidate_commit}` && ((acceptanceEntry.readback_scope === "READBACK_SUMMARY_ONLY" && acceptanceEntry.receipt_sha256 === null) || (acceptanceEntry.readback_scope === "EXACT_RECEIPT_RETAINED" && /^[0-9a-f]{64}$/u.test(acceptanceEntry.receipt_sha256))), "Function Scope acceptance receipt is not a canonical independent readback", "FUNCTION_SCOPE_ACCEPTANCE_RECEIPT_INVALID");
+
   const sourceArtifact = readJson(path.join(PACKAGE, "sources.lock"), "Function Scope source lock");
   assert(sourceArtifact.file_sha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.source_lock, "Function Scope source lock file is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID");
   const source = sourceArtifact.value;
@@ -222,6 +231,7 @@ export function resolveFunctionScopeCanonicalAuthority() {
     standard_block_sha256: standard.block_sha256, standard_source_manifest_sha256: standardSources.manifest_sha256,
     gate_manifest_sha256: manifest.manifest_sha256, gate_manifest_file_sha256: manifestArtifact.file_sha256, gate_semantic_inventory_sha256: gateSemanticInventorySha256,
     gates: Object.freeze(gates), fixtures: Object.freeze(fixtures), model: Object.freeze(modelRoute), model_route_sha256: modelRouteSha256,
+    acceptance_ledger_file_sha256: acceptanceArtifact.file_sha256, acceptance_candidate_commit: acceptanceEntry.candidate_commit, acceptance_candidate_tree: acceptanceEntry.candidate_tree, acceptance_receipt_ref: acceptanceEntry.receipt_ref,
     router_file_sha256: routerFileSha256, router_result_sha256: routerResult.result_sha256, context_sha256: contextSha256, custody_ref: FUNCTION_SCOPE_CUSTODY_REF,
   });
 }
@@ -249,7 +259,7 @@ export function assertFunctionScopeCommittedHandoff({authority = resolveFunction
   for (const item of evaluation.cases) assert(expectedClasses.has(item.class) && item.observed === "PASS" && ["DENY", "ROUTE"].includes(item.expected), `Function Scope evaluation case ${item.class} is not a current PASS`, "FUNCTION_SCOPE_EVALUATION_DOSSIER_INVALID");
   exactKeys(handoff, ["schema", "version", "handoff_id", "block_id", "disposition", "candidate_digest", "source_commit", "source_tree", "changed_paths", "proof", "residuals", "next_action", "authority"], "Function Scope committed handoff");
   assert(handoff.schema === "agentos.specialist_handoff.v1" && handoff.version === 1 && handoff.handoff_id === "specialist-handoff.function-scope.v1" && handoff.block_id === FUNCTION_SCOPE_BLOCK_ID && handoff.disposition === "WAITING_WITH_RECEIPT" && handoff.candidate_digest === authority.block_sha256 && handoff.authority === "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION", "Function Scope handoff identity differs", "FUNCTION_SCOPE_HANDOFF_INVALID");
-  assert(handoff.proof.includes(`evaluation_file_sha256:${evaluationFileSha256}`) && handoff.proof.includes(`gate_semantic_inventory_sha256:${authority.gate_semantic_inventory_sha256}`) && handoff.proof.includes(`model_route_sha256:${authority.model_route_sha256}`) && handoff.proof.includes(`upstream_router_file_sha256:${authority.router_file_sha256}`), "Function Scope handoff is not bound to current execution artifacts", "FUNCTION_SCOPE_HANDOFF_INVALID");
+  assert(handoff.proof.includes(`evaluation_file_sha256:${evaluationFileSha256}`) && handoff.proof.includes(`gate_semantic_inventory_sha256:${authority.gate_semantic_inventory_sha256}`) && handoff.proof.includes(`model_route_sha256:${authority.model_route_sha256}`) && handoff.proof.includes(`context_receipt_sha256:${authority.context_sha256}`) && handoff.proof.includes(`upstream_router_file_sha256:${authority.router_file_sha256}`), "Function Scope handoff is not bound to current execution artifacts", "FUNCTION_SCOPE_HANDOFF_INVALID");
   assert(typeof handoffFileSha256 === "string" && SHA256.test(handoffFileSha256), "Function Scope handoff file digest is invalid", "FUNCTION_SCOPE_HANDOFF_INVALID");
   return true;
 }

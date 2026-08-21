@@ -109,6 +109,7 @@ try {
   fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "standards", "owasp-asvs"), path.join(rosterTemp, "specialist-blocks", "standards", "owasp-asvs"), {recursive: true});
   const rosterDirectory = path.join(rosterTemp, "specialist-blocks", "registry"); fs.mkdirSync(rosterDirectory, {recursive: true});
   fs.copyFileSync(path.join(repositoryRoot, "specialist-blocks", "registry", "agent-roster.v1.json"), path.join(rosterDirectory, "agent-roster.v1.json"));
+  fs.copyFileSync(path.join(repositoryRoot, "specialist-blocks", "registry", "accepted-agent-receipts.v1.json"), path.join(rosterDirectory, "accepted-agent-receipts.v1.json"));
   fs.mkdirSync(path.join(rosterTemp, "fixtures"), {recursive: true});
   fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(rosterTemp, "fixtures", "model-policy-snapshot.initial.v1.json"));
   fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(rosterTemp, "fixtures", "model-policy-evidence"), {recursive: true});
@@ -125,6 +126,35 @@ try {
   assert.throws(() => isolatedAuthority.resolveFunctionScopeCanonicalAuthority(), (error) => error?.code === "FUNCTION_SCOPE_ROSTER_GATE_PROVENANCE_INVALID");
 } finally {
   fs.rmSync(rosterTemp, {recursive: true, force: true});
+}
+
+// The acceptance index is a read-only authority input, not a shape-only
+// hint.  A valid-looking receipt reference substitution or removal of the
+// Function Scope row must close authority before any package evaluation.
+for (const mutation of ["receipt_ref", "row_removed"]) {
+  const acceptanceTemp = fs.mkdtempSync(path.join(os.tmpdir(), `agentos-function-scope-acceptance-${mutation}-`));
+  try {
+    fs.cpSync(path.join(repositoryRoot, "control"), path.join(acceptanceTemp, "control"), {recursive: true});
+    fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "wave-03", "function-scope"), path.join(acceptanceTemp, "specialist-blocks", "wave-03", "function-scope"), {recursive: true});
+    fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "standards", "owasp-asvs"), path.join(acceptanceTemp, "specialist-blocks", "standards", "owasp-asvs"), {recursive: true});
+    fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "registry"), path.join(acceptanceTemp, "specialist-blocks", "registry"), {recursive: true});
+    fs.mkdirSync(path.join(acceptanceTemp, "fixtures"), {recursive: true});
+    fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(acceptanceTemp, "fixtures", "model-policy-snapshot.initial.v1.json"));
+    fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(acceptanceTemp, "fixtures", "model-policy-evidence"), {recursive: true});
+    const acceptancePath = path.join(acceptanceTemp, "specialist-blocks", "registry", "accepted-agent-receipts.v1.json");
+    const acceptanceLedger = JSON.parse(fs.readFileSync(acceptancePath, "utf8"));
+    if (mutation === "receipt_ref") {
+      acceptanceLedger.entries.find((entry) => entry.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE").receipt_ref = "INDEPENDENT_EVALUATOR_HANDOFF/0000000000000000000000000000000000000000";
+    } else {
+      acceptanceLedger.entries = acceptanceLedger.entries.filter((entry) => entry.stable_agent_id !== "AGENT.SECURITY_FUNCTION_SCOPE");
+    }
+    acceptanceLedger.ledger_sha256 = canonicalDigest({...acceptanceLedger, ledger_sha256: null});
+    fs.writeFileSync(acceptancePath, `${JSON.stringify(acceptanceLedger, null, 2)}\n`);
+    const isolatedAuthority = await import(`${pathToFileURL(path.join(acceptanceTemp, "control", "function-scope-authority-binding.mjs")).href}?acceptance-${mutation}=${Date.now()}`);
+    assert.throws(() => isolatedAuthority.resolveFunctionScopeCanonicalAuthority(), (error) => mutation === "receipt_ref" ? error?.code === "FUNCTION_SCOPE_ACCEPTANCE_RECEIPT_INVALID" : error?.code === "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_ROW_INVALID");
+  } finally {
+    fs.rmSync(acceptanceTemp, {recursive: true, force: true});
+  }
 }
 
 console.log("PASS Function Scope boundary: 17 executable adversarial vectors, fixture-bound expectations, mutation proof, and zero side effects");
