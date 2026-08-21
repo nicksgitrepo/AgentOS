@@ -27,7 +27,7 @@ const roster = identity.entries.find((entry) => entry.binding_id === "specialist
 assert.deepEqual(roster, {
   binding_id: "specialist_roster_registry",
   path: "specialist-blocks/registry/roster.v1.json",
-  sha256: "67bf31be4ec809ea9ac66ee0306471da2cea71efcf184f0e1596f71154d68f6",
+  sha256: "67bf31be4ec809ea9eac66ee0306471da2cea71efcf184f0e1596f71154d68f6",
 });
 const rosterSha = crypto.createHash("sha256").update(fs.readFileSync(path.join(root, roster.path))).digest("hex");
 assert.equal(rosterSha, roster.sha256);
