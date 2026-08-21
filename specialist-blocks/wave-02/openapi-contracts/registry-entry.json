@@ -1,0 +1,23 @@
+{
+  "schema": "agentos.openapi_contracts_registry_entry.v1",
+  "version": 1,
+  "stable_agent_id": "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS",
+  "block_id": "specialist.product-client.openapi-contracts",
+  "package_path": "specialist-blocks/wave-02/openapi-contracts",
+  "status": "CANDIDATE_READY_FOR_QUALIFICATION",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "admission_allowed": false,
+  "scope": "OpenAPI 3.1.1 HTTP contract identity, operation/schema traceability, and versioned contract findings only.",
+  "gate_manifest": "specialist-blocks/wave-02/openapi-contracts/gates/manifest.json",
+  "gate_execution": "specialist-blocks/wave-02/openapi-contracts/gates/execution.json",
+  "fixture_directory": "specialist-blocks/wave-02/openapi-contracts/operational-fixtures",
+  "model_policy_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+  "model_route_sha256": "19765c28f66a809b8b9b51f5ebede70eded1a73dfaf06797eb2175fa15db57bf",
+  "context_sha256": "09011f18ffa2585e238d41660b869ddba3048e9d02504c001f0b0a4a9679f092",
+  "independent_review_required": true,
+  "independent_auditor_model": "gpt-5.6-luna",
+  "independent_auditor_reasoning_effort": "max",
+  "invalidation_rule": "INVALIDATE_DEPENDENT_CONTEXT;_PRESERVE_HISTORY;_REQUIRE_FRESH_BINDING",
+  "registry_entry_sha256": "ddfbd4b6f0330e728fabc6e68a870f505b18d995dfb5e7f283c109685d627392"
+}

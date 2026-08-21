@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/openapi-contracts-context-binding.v1.json",
+  "title": "AgentOS OpenAPI Contract Context Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "package", "required_context", "optional_context", "source_lock", "standard", "upstream_router", "model_policy", "candidate", "custody", "invalidation_triggers", "invalidation_rule", "context_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contracts_context_binding.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.product-client.openapi-contracts"},
+    "package": {"const": "specialist-blocks/wave-02/openapi-contracts"},
+    "required_context": {"type": "array", "minItems": 8},
+    "optional_context": {"type": "array"},
+    "source_lock": {"type": "object"},
+    "standard": {"type": "object"},
+    "upstream_router": {"type": "object"},
+    "model_policy": {"type": "object"},
+    "candidate": {"type": "object"},
+    "custody": {"type": "object"},
+    "invalidation_triggers": {"type": "array", "minItems": 1},
+    "invalidation_rule": {"const": "INVALIDATE_DEPENDENT_CONTEXT;_PRESERVE_HISTORY;_REQUIRE_FRESH_BINDING"},
+    "context_sha256": {"pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/openapi-contracts-candidate-binding.v1.json",
+  "title": "AgentOS OpenAPI Contract Candidate Review Binding",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "status", "package_id", "block_id", "stable_agent_id", "candidate_commit", "candidate_tree", "base_commit", "rollback", "package_root_sha256", "package_files", "block_sha256", "gate_inventory", "fixture_inventory", "model_policy", "context", "custody", "review", "scope", "admission_allowed", "activation", "binding_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contracts_candidate_binding.v1"},
+    "version": {"const": 1},
+    "status": {"const": "FROZEN_FOR_INDEPENDENT_REVIEW"},
+    "package_id": {"const": "specialist-blocks/wave-02/openapi-contracts"},
+    "block_id": {"const": "specialist.product-client.openapi-contracts"},
+    "stable_agent_id": {"const": "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS"},
+    "candidate_commit": {"pattern": "^[0-9a-f]{40}$"},
+    "candidate_tree": {"pattern": "^[0-9a-f]{40}$"},
+    "base_commit": {"pattern": "^[0-9a-f]{40}$"},
+    "package_root_sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "block_sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "admission_allowed": {"const": false},
+    "activation": {"const": "OFF"},
+    "binding_sha256": {"pattern": "^[0-9a-f]{64}$"}
+  }
+}

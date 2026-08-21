@@ -116,5 +116,19 @@
     "pending": 0
   },
   "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION",
+  "operational_entrypoint": "control/openapi-contracts-package-evaluator.mjs#evaluateOpenApiContractsPackage",
+  "operational_evaluation_schema": "agentos.specialist_openapi_contracts_package_operational_evaluation.v1",
+  "operational_status": "PASS_PENDING_INDEPENDENT_REVIEW",
+  "operational_deterministic_readback": "PASS",
+  "operational_fixture_entrypoint": "control/openapi-contracts-boundary-gate.mjs#evaluateOpenApiContractsBoundary",
+  "gate_execution_manifest": "gates/execution.json",
+  "model_policy_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+  "model_route_sha256": "19765c28f66a809b8b9b51f5ebede70eded1a73dfaf06797eb2175fa15db57bf",
+  "independent_auditor_model": "gpt-5.6-luna",
+  "independent_auditor_reasoning_effort": "max",
+  "context_sha256": "09011f18ffa2585e238d41660b869ddba3048e9d02504c001f0b0a4a9679f092",
+  "source_manifest_sha256": "e5b3cb2d184c0b0a06d8eac625800372cef364713dba68702962fc5a8be8b728",
+  "admission_allowed": false,
+  "activation": "OFF"
 }

@@ -1,0 +1,75 @@
+{
+  "schema": "agentos.openapi_contracts_context_binding.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.openapi-contracts",
+  "package": "specialist-blocks/wave-02/openapi-contracts",
+  "required_context": [
+    "api.contract",
+    "api.version",
+    "authority",
+    "candidate.identity",
+    "custody",
+    "request",
+    "signals",
+    "source_lock"
+  ],
+  "optional_context": [
+    "evaluation_receipt",
+    "project_context",
+    "runtime_readback"
+  ],
+  "source_lock": {
+    "source_id": "source.atomic-specialization-law",
+    "source_version": "1",
+    "manifest_sha256": "e5b3cb2d184c0b0a06d8eac625800372cef364713dba68702962fc5a8be8b728",
+    "effective_date": "2026-08-11",
+    "retrieved_date": "2026-08-11"
+  },
+  "standard": {
+    "block_id": "specialist.standard.openapi-3-1-1",
+    "block_sha256": "dd51614d340d8227cd1c6b4e2d9adc6a20468c11a2736ee517326c527ad50695",
+    "source_manifest_sha256": "a378fd4727af797beeb31f02f39e31addd67c5f97372d5c534d5b5a70a897122",
+    "version": "3.1.1"
+  },
+  "upstream_router": {
+    "block_id": "specialist.product-client.router",
+    "block_sha256": "909b0a2f5408292ed415383c7df3469f6f1aba28de1c2579219419390289b560",
+    "receipt_sha256": "9a0bf5e62761207bc75bd784465138ac8c0337caea34d5d9e1621a69d84c71e2"
+  },
+  "model_policy": {
+    "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "route_sha256": "19765c28f66a809b8b9b51f5ebede70eded1a73dfaf06797eb2175fa15db57bf",
+    "task_class": "NARROW_CODING",
+    "model_id": "gpt-5.6-luna",
+    "reasoning_effort": "max",
+    "spawn_eligible": false
+  },
+  "candidate": {
+    "block_sha256": "171b4e51575523b9f16e52dad3092b522d3fcd00c1fcd3ac4d27cebc9b55a43c",
+    "commit": null,
+    "tree": null
+  },
+  "custody": {
+    "status": "BOUND",
+    "owner": "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS",
+    "builder_only": true,
+    "independent_auditor_read_only": true
+  },
+  "invalidation_triggers": [
+    "block_digest_changed",
+    "source_lock_digest_changed",
+    "standard_block_digest_changed",
+    "standard_source_manifest_changed",
+    "upstream_router_digest_changed",
+    "upstream_router_receipt_changed",
+    "model_policy_snapshot_changed",
+    "model_route_changed",
+    "context_schema_changed",
+    "candidate_commit_changed",
+    "candidate_tree_changed",
+    "custody_changed",
+    "review_receipt_stale"
+  ],
+  "invalidation_rule": "INVALIDATE_DEPENDENT_CONTEXT;_PRESERVE_HISTORY;_REQUIRE_FRESH_BINDING",
+  "context_sha256": "09011f18ffa2585e238d41660b869ddba3048e9d02504c001f0b0a4a9679f092"
+}

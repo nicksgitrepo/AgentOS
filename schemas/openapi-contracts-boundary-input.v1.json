@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/openapi-contracts-boundary-input.v1.json",
+  "title": "AgentOS OpenAPI HTTP Contract Boundary Input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contracts_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"enum": ["ANALYZE_OPENAPI_CONTRACT", "ROUTE_OPENAPI_CONTRACT", "NOT_APPLICABLE", "UNRELATED_REQUEST", "SPAWN", "ADMIT", "ACTIVATE", "ARCHIVE", "DESPAWN", "DEPLOY", "PUBLISH", "WRITE_PROJECT", "WRITE_CONTRACT", "WRITE_MEMORY", "ACCEPT", "SELF_REVIEW", "SELECT_IMPLEMENTATION"]},
+    "evidence": {"type": "object", "additionalProperties": true, "required": ["authority_status", "custody_status", "custody_owner", "custody_ref", "source_status", "source_identity", "source_version", "candidate_status", "candidate_digest", "api_contract", "api_version", "contract_identity", "operation_identity", "operation_path", "operation_method", "schema_identity", "schema_ref", "contract", "context_status", "context_complete", "context_sha256", "requested_action", "requested_tools", "required_block_identities", "model_policy_status", "model_route_status", "model_snapshot_sha256", "model_route_sha256", "model_auditor_model", "model_auditor_reasoning_effort", "standard_id", "standard_version", "standard_block_sha256", "standard_source_manifest_sha256", "adversarial_flags"]}
+  }
+}

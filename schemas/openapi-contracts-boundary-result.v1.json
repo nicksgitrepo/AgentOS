@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/openapi-contracts-boundary-result.v1.json",
+  "title": "AgentOS OpenAPI HTTP Contract Boundary Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "analysis_allowed", "acceptance_allowed", "implementation_selection_allowed", "lifecycle_mutation_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contracts_boundary_result.v1"},
+    "version": {"const": 1},
+    "disposition": {"enum": ["ROUTE", "DENY", "ESCALATE", "NOT_APPLICABLE"]},
+    "route": {"type": "string", "minLength": 1},
+    "analysis_allowed": {"type": "boolean"},
+    "acceptance_allowed": {"const": false},
+    "implementation_selection_allowed": {"const": false},
+    "lifecycle_mutation_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": {"const": 0}},
+    "error_code": {"type": "string", "minLength": 1},
+    "input_sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "result_sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "selected_specialist": {"const": "specialist.product-client.openapi-contracts"},
+    "handoff": {"type": "object"},
+    "unknowns": {"type": "array"},
+    "missing_fields": {"type": "array"}
+  }
+}

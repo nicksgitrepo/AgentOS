@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/openapi-contracts-gate-execution.v1.json",
+  "title": "AgentOS OpenAPI Contract Gate Execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "evaluator_entrypoint", "ordered_gate_ids", "executions"],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contracts_gate_execution.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.product-client.openapi-contracts"},
+    "evaluator_entrypoint": {"const": "control/openapi-contracts-package-evaluator.mjs#evaluateOpenApiContractsPackage"},
+    "ordered_gate_ids": {"type": "array", "minItems": 12, "maxItems": 12},
+    "executions": {"type": "array", "minItems": 12, "maxItems": 12}
+  }
+}

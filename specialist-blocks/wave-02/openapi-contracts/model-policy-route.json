@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.openapi_contracts_model_route.v1",
+  "version": 1,
+  "status": "PREPARED_INACTIVE",
+  "task_class": "NARROW_CODING",
+  "model_id": "gpt-5.6-luna",
+  "reasoning_effort": "max",
+  "policy_reasoning_preference": "high",
+  "capability_floor": 49,
+  "required_capabilities": [
+    "CODE",
+    "TOOLS"
+  ],
+  "selected_capability_score": 52,
+  "context_floor_tokens": 64000,
+  "selected_context_tokens": 1050000,
+  "host_available": true,
+  "host_supports_requested_reasoning": true,
+  "spawn_eligible": false,
+  "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+  "route_sha256": "19765c28f66a809b8b9b51f5ebede70eded1a73dfaf06797eb2175fa15db57bf"
+}

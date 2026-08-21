@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/openapi-contracts-lifecycle.v1.json",
+  "title": "AgentOS OpenAPI Contract Lifecycle Readback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "from", "to", "actor", "allowed", "reason", "invalidation_triggers", "independent_receipt", "new_revision", "archive_receipt", "activation", "admission_allowed", "lifecycle_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contracts_lifecycle_readback.v1"},
+    "version": {"const": 1},
+    "from": {"type": "string"},
+    "to": {"type": "string"},
+    "actor": {"type": "string"},
+    "allowed": {"type": "boolean"},
+    "reason": {"type": "string"},
+    "invalidation_triggers": {"type": "array"},
+    "independent_receipt": {"type": "boolean"},
+    "new_revision": {"type": "boolean"},
+    "archive_receipt": {"type": "boolean"},
+    "activation": {"enum": ["OFF", "ON"]},
+    "admission_allowed": {"type": "boolean"},
+    "lifecycle_sha256": {"pattern": "^[0-9a-f]{64}$"}
+  }
+}
