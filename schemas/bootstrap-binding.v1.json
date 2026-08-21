@@ -956,15 +956,15 @@
     },
     "autonomous_blocker_route_contract": {
       "path": "schemas/autonomous-blocker-route.v1.json",
-      "sha256": "3475315c1d52f78a41219c49df3974bad27b3a8b666527ae1d5aa20d252823ed"
+      "sha256": "8d6261a3ae1fc2ae1f24aa55e64c57b8009ec833fe9a4bd368f161fcc2572126"
     },
     "autonomous_blocker_route_controller": {
       "path": "control/autonomous-blocker-routing.mjs",
-      "sha256": "cf4c255c55003292a81d47953168672f93cb283dd03a6fb1aed487338be73633"
+      "sha256": "56708d58fc084109e95115d96e3d4796652054fb8975ccf72ad4949c2a260d92"
     },
     "autonomous_blocker_route_verifier": {
       "path": "tests/verify-autonomous-blocker-routing.mjs",
-      "sha256": "72cc9f6329130d34bef7fde1f56c5def00e51aed1d4f09484e084753e3e34e30"
+      "sha256": "70a93ec7580676464e86ca4df60b0a119c8f43a86c93e29559bbfd5228b1582c"
     },
     "bootstrap_answer_contract": {
       "path": "schemas/bootstrap-answer.v1.json",

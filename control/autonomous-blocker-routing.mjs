@@ -157,8 +157,9 @@ export function validateAutonomousBlockerRoute(route) {
   requireText(route.evidence_ceiling, "autonomous evidence ceiling", 8);
   sortedUnique(route.safe_alternatives, "autonomous safe alternatives");
   validateSuccessor(route.successor, {required: route.blocker_class !== "TRUE_BLOCKER"});
-  exactKeys(route.remote, ["required", "available", "optional", "local_candidate_ready", "push_deferred", "route"], "autonomous remote facts");
+  exactKeys(route.remote, ["required", "available", "optional", "status", "local_candidate_ready", "push_deferred", "route"], "autonomous remote facts");
   for (const key of ["required", "available", "optional", "local_candidate_ready", "push_deferred"]) assert(typeof route.remote[key] === "boolean", `autonomous remote fact ${key} is invalid`);
+  assert(["NOT_APPLICABLE", "LOCAL_CANDIDATE_READY", "REMOTE_AVAILABLE"].includes(route.remote.status), "autonomous remote status is invalid");
   assert(["NOT_APPLICABLE", "REMOTE_AVAILABLE", "REMOTE_PUSH_DEFERRED"].includes(route.remote.route), "autonomous remote route is invalid");
   validateResources(route.resources);
   assert(typeof route.owner_decision_required === "boolean", "autonomous owner-decision flag is invalid");
@@ -177,7 +178,7 @@ export function validateAutonomousBlockerRoute(route) {
   if (route.blocker_class === "NONE") assert(route.lane_state === "READY", "clear route must be ready");
   if (!route.remote.available && route.remote.optional) {
     assert(route.blocker_class === "CAPABILITY_GAP", "optional remote absence must be a capability gap");
-    assert(route.remote.local_candidate_ready === true && route.remote.push_deferred === true && route.remote.route === "REMOTE_PUSH_DEFERRED", "optional remote absence must preserve a local candidate");
+    assert(route.remote.status === "LOCAL_CANDIDATE_READY" && route.remote.local_candidate_ready === true && route.remote.push_deferred === true && route.remote.route === "REMOTE_PUSH_DEFERRED", "optional remote absence must preserve a local candidate");
   }
   requireSha(route.route_sha256, "autonomous blocker route digest");
   assert(route.route_sha256 === canonicalDigest(routeBody(route)), "autonomous blocker route digest mismatch");
@@ -213,6 +214,7 @@ export function compileAutonomousBlockerRoute({
     required: remote.required === true,
     available: remote.available !== false,
     optional: remote.optional === true,
+    status: remote.available === false && remote.optional === true ? "LOCAL_CANDIDATE_READY" : remote.available !== false ? (remote.required ? "REMOTE_AVAILABLE" : "NOT_APPLICABLE") : "NOT_APPLICABLE",
     local_candidate_ready: remote.available === false && remote.optional === true,
     push_deferred: remote.available === false && remote.optional === true,
     route: remote.available === false && remote.optional === true ? "REMOTE_PUSH_DEFERRED" : remote.required ? "REMOTE_AVAILABLE" : "NOT_APPLICABLE",

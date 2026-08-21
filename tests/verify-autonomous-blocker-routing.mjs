@@ -40,7 +40,7 @@ const remoteGap = compileAutonomousBlockerRoute({
 assert.equal(remoteGap.schema, AUTONOMOUS_BLOCKER_ROUTING_SCHEMA);
 assert.equal(remoteGap.global_state, "RUNNING");
 assert.equal(remoteGap.lane_state, "WAITING_FOR_CAPABILITY");
-assert.deepEqual(remoteGap.remote, {required: true, available: false, optional: true, local_candidate_ready: true, push_deferred: true, route: "REMOTE_PUSH_DEFERRED"});
+assert.deepEqual(remoteGap.remote, {required: true, available: false, optional: true, status: "LOCAL_CANDIDATE_READY", local_candidate_ready: true, push_deferred: true, route: "REMOTE_PUSH_DEFERRED"});
 assertAutonomousTurnCloseout({route: remoteGap});
 
 const evidenceGap = compileAutonomousBlockerRoute({
@@ -92,4 +92,3 @@ globalStopTamper.route_sha256 = "0".repeat(64);
 assert.throws(() => validateAutonomousBlockerRoute(globalStopTamper), /global work running|digest mismatch/u);
 
 console.log("PASS autonomous blocker routing: true blockers stop globally; capability gaps, evidence ceilings, and repairable failures stay lane-scoped with same-turn successors; optional remote is local-ready/deferred");
-
