@@ -270,6 +270,7 @@
     "receipt_id": "specialist-eval.cloudflare-cache.v1",
     "disposition": "STATIC_PASS_REVIEW_REQUIRED",
     "independent_reviewer_required": true,
+    "fixture_policy": "EXACT_DECLARED",
     "fixture_classes": [
       "authority_conflict",
       "broad_when_narrow_exists",
@@ -300,5 +301,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "f9e5bdccb6c797add9816b0b398a8aeb5622ea2a07a0af6e8f1e357d750f3981"
+  "block_sha256": "386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6"
 }

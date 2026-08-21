@@ -11,13 +11,13 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Cloudflare Cache Rules: does the exact 11-lifecycle-recovery-archive condition pass without expanding this atomic specialist scope?",
+  "question": "Cloudflare Cache Rules: Does lifecycle, rollback, archive, and custody release preserve an inert candidate?",
   "evidence": [
-    "block_sha256",
-    "gate.11-lifecycle-recovery-archive.answer",
-    "gate.11-lifecycle-recovery-archive.evidence",
-    "source_lock_identity",
-    "upstream_router_identity"
+    "activation",
+    "archive_rule",
+    "custody_release",
+    "lifecycle",
+    "rollback"
   ],
   "next": {
     "YES": "OUTCOME:ROUTE",
@@ -33,5 +33,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "154a4001d0cab384b8698ea61f4268b0a96ca6608032d5c4161f344c512d98d8"
+  "gate_sha256": "da003dbaba8091bdfa13e0bb7b2ab699d3eed4829aa98a876ad429a3dc8e9b50"
 }

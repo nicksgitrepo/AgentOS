@@ -11,13 +11,12 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Cloudflare Cache Rules: does the exact 02-authority-precedence condition pass without expanding this atomic specialist scope?",
+  "question": "Cloudflare Cache Rules: Does portable and explicit authority resolve without conflict or duplicate sibling ownership?",
   "evidence": [
-    "block_sha256",
-    "gate.02-authority-precedence.answer",
-    "gate.02-authority-precedence.evidence",
-    "source_lock_identity",
-    "upstream_router_identity"
+    "authority_scope",
+    "authority_status",
+    "custody_status",
+    "duplicate_authority"
   ],
   "next": {
     "YES": "03-scope-nongoals",
@@ -33,5 +32,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "fba7004e684893aa1049632e54a96027e66259f216e4b29bb2b66e794801fddf"
+  "gate_sha256": "e9040531e5a5c39ffe9ec0f7fb616f09f9718885ca04d2b11332581368d2a210"
 }

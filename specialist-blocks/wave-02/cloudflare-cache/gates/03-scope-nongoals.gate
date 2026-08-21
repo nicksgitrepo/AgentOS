@@ -11,13 +11,13 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Cloudflare Cache Rules: does the exact 03-scope-nongoals condition pass without expanding this atomic specialist scope?",
+  "question": "Cloudflare Cache Rules: Does the request remain narrow and inside the cache-rule scope and declared non-goals?",
   "evidence": [
-    "block_sha256",
-    "gate.03-scope-nongoals.answer",
-    "gate.03-scope-nongoals.evidence",
-    "source_lock_identity",
-    "upstream_router_identity"
+    "cache_rule_status",
+    "cache_scope_status",
+    "non_goals",
+    "requested_action",
+    "scope"
   ],
   "next": {
     "YES": "04-source-evidence-freshness",
@@ -33,5 +33,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "ee30a67abf29fb77b320a7db043bf836d6a1bc72d63646b7c132450cac28d81d"
+  "gate_sha256": "2c89257a56cc9d664b87ab25292c6f865db59814d1933eb20bf5ec271d4feb2e"
 }

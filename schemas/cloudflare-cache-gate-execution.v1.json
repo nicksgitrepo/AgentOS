@@ -1,0 +1,18 @@
+{
+  "$id": "https://agentos.dev/schemas/cloudflare-cache-gate-execution.v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentOS Cloudflare Cache Rules gate execution",
+  "type": "object",
+  "required": ["schema", "version", "block_id", "evaluator_entrypoint", "boundary_entrypoint", "ordered_gate_ids", "executions", "execution_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.cloudflare_cache_gate_execution.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.platform.cloudflare-cache"},
+    "evaluator_entrypoint": {"const": "control/cloudflare-cache-package-evaluator.mjs#evaluateCloudflareCachePackage"},
+    "boundary_entrypoint": {"const": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary"},
+    "ordered_gate_ids": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "string"}},
+    "executions": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "object"}},
+    "execution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
