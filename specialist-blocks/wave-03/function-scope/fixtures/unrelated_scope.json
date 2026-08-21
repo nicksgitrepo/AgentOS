@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "unrelated_scope",
-  "expected": "DENY",
+  "fixture_id": "function-scope-unrelated_scope",
+  "expected": {"disposition": "DENY", "route": "NO_FUNCTION_SCOPE", "error_code": "FUNCTION_SCOPE_NOT_APPLICABLE"},
   "hostile": true,
   "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
 }

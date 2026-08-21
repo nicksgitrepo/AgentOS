@@ -113,6 +113,12 @@ export function routeSpecialists({library, signals = [], context = {}, requested
       missingUpstream = true;
       continue;
     }
+    const missingRouterContext = (router.intake?.required_context ?? []).filter((key) => !contextHas(context, key));
+    if (missingRouterContext.length > 0) {
+      denials.push({outcome: "UNKNOWN", reason: `Atomic selection requires upstream router context ${routerId}.`, missing_context: missingRouterContext.sort()});
+      missingUpstream = true;
+      continue;
+    }
     selected.push(routerId);
   }
   if (missingUpstream) return {status: "UNKNOWN", selected: [], denials, signals: normalizedSignals};

@@ -1906,7 +1906,8 @@
         "identity.model",
         "request",
         "signals",
-        "source_lock"
+        "source_lock",
+        "tenant.scope"
       ],
       "select": [
         "specialist.security.function-scope"
@@ -1914,6 +1915,7 @@
       "deny_if": [
         "missing authority",
         "missing source lock",
+        "missing tenant scope",
         "scope expansion",
         "stale or superseded source",
         "unresolved standard version",
@@ -3941,5 +3943,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "e278caa0034fbf14387b228c4e06898b64fc6fcd6762bfb387708dd2c9552fc3"
+  "routing_sha256": "ab314cac69397aa0a54edaff905987d4a12e56c225349dd5d89e34f0c8632e42"
 }

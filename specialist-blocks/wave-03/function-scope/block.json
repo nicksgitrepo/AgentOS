@@ -73,6 +73,7 @@
     "deny_if": [
       "missing authority",
       "missing source lock",
+      "missing tenant scope",
       "scope expansion",
       "stale or superseded source",
       "unresolved standard version",
@@ -90,7 +91,8 @@
       "identity.model",
       "request",
       "signals",
-      "source_lock"
+      "source_lock",
+      "tenant.scope"
     ],
     "optional_context": [
       "evaluation_receipt",
@@ -103,7 +105,8 @@
       "candidate.identity",
       "custody",
       "identity.model",
-      "source_lock"
+      "source_lock",
+      "tenant.scope"
     ],
     "acceptance_signals": [
       "function authorization",
@@ -265,7 +268,6 @@
     "specialist.foundation.role-intake-classifier",
     "specialist.foundation.scope-non-goal-gate",
     "specialist.foundation.tool-custody-gate",
-    "specialist.security.access-control-router",
     "specialist.standard.owasp-asvs"
   ],
   "conflicts": [],
@@ -305,5 +307,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "48d011f88b7340358988a6e6c496d535e1d5cccbc7292d0d204c95b8384ea24d"
+  "block_sha256": "941ae5224e512c2d49429c8c2894e4d2cb2aa8fcc29577a0db4be9c0ad56d43f"
 }

@@ -11,6 +11,33 @@
     "authority": {"type": "object"},
     "source_lock": {"type": "object"},
     "custody": {"type": "object"},
-    "requested_action": {"type": "string", "minLength": 1}
+    "requested_action": {"type": "string", "minLength": 1},
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boundary"],
+      "properties": {"boundary": {"type": "string", "minLength": 1}}
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity"],
+      "properties": {"identity": {"type": "string", "minLength": 1}}
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model"],
+      "properties": {"model": {"type": "string", "minLength": 1}}
+    },
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope"],
+      "properties": {"scope": {"type": "string", "minLength": 1}}
+    },
+    "project_context": {"type": "object"},
+    "evaluation_receipt": {"type": "object"},
+    "runtime_readback": {"type": "object"}
   }
 }
