@@ -10,12 +10,12 @@ import {openSpawnerLifecycleStore, readSpawnerLifecycleStore, consumeSpawnerLife
 export const AGENT_LIFECYCLE_CUSTODY_SCHEMA = "agentos.agent_lifecycle_custody.v2";
 export const SPAWN_AUTHORITIES = Object.freeze(["SPAWNER"]);
 export const TEMPORARY_ROLE_KINDS = Object.freeze(["BUILDER", "AUDITOR", "VALIDATOR", "HOSTILE_CRITIC", "ESCALATION_BUILDER"]);
-export const LIFECYCLE_TRANSITION_KINDS = Object.freeze(["HANDOFF_ACCEPTED", "SCOPE_CLOSED", "EVIDENCE_PRESERVED", "WORKTREE_RELEASED", "CUSTODY_RELEASED"]);
+export const LIFECYCLE_TRANSITION_KINDS = Object.freeze(["HANDOFF_ACCEPTED", "SCOPE_CLOSED", "EVIDENCE_PRESERVED", "WORKTREE_RELEASED", "CUSTODY_RELEASED", "EXIT_GOVERNANCE_REVIEWED"]);
 
 const ID = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const REF = /^ref:[a-z-]+\/[0-9a-f]{64}$/u;
 const lifecycleAuthorities = new WeakMap();
-const RECEIPT_KIND = Object.freeze({HANDOFF_ACCEPTED: "HANDOFF_ACCEPTANCE", SCOPE_CLOSED: "SCOPE_CLOSEOUT", EVIDENCE_PRESERVED: "EVIDENCE_PRESERVATION", WORKTREE_RELEASED: "WORKTREE_RELEASE", CUSTODY_RELEASED: "CUSTODY_RELEASE"});
+const RECEIPT_KIND = Object.freeze({HANDOFF_ACCEPTED: "HANDOFF_ACCEPTANCE", SCOPE_CLOSED: "SCOPE_CLOSEOUT", EVIDENCE_PRESERVED: "EVIDENCE_PRESERVATION", WORKTREE_RELEASED: "WORKTREE_RELEASE", CUSTODY_RELEASED: "CUSTODY_RELEASE", EXIT_GOVERNANCE_REVIEWED: "EXIT_GOVERNANCE_REVIEW"});
 
 function fail(message, code = "AGENT_LIFECYCLE_CUSTODY_INVALID") { const error = new Error(message); error.code = code; throw error; }
 function assert(condition, message, code) { if (!condition) fail(message, code); }
@@ -66,7 +66,7 @@ export function authorizeAgentDespawn(options = {}) {
   exactOptions(options, ["authority", "requestId", "agentId", "transitionReceiptRef"], "Despawn request");
   const {authority, requestId, agentId, transitionReceiptRef} = options, state = authorityState(authority); id(requestId, "Despawn request"); id(agentId, "Despawn agent"); reference(transitionReceiptRef, "Despawn transition receipt");
   const events = readSpawnerLifecycleStore(state.lifecycleStore).events.filter((event) => event.agent_id === agentId), spawn = events.find((event) => event.event_kind === "SPAWN_AUTHORIZED"); assert(spawn, "Agent has no canonical spawn record");
-  const required = ["HANDOFF_ACCEPTED", "SCOPE_CLOSED", "EVIDENCE_PRESERVED", "WORKTREE_RELEASED", "CUSTODY_RELEASED"], missing = required.filter((kind) => !events.some((event) => event.event_kind === kind)); assert(missing.length === 0, `Agent despawn evidence is incomplete: ${missing.join(",")}`); assert(!events.some((event) => event.event_kind === "DESPAWN_AUTHORIZED"), "Agent is already despawned");
+  const required = ["HANDOFF_ACCEPTED", "SCOPE_CLOSED", "EVIDENCE_PRESERVED", "WORKTREE_RELEASED", "CUSTODY_RELEASED", "EXIT_GOVERNANCE_REVIEWED"], missing = required.filter((kind) => !events.some((event) => event.event_kind === kind)); assert(missing.length === 0, `Agent despawn evidence is incomplete: ${missing.join(",")}`); assert(!events.some((event) => event.event_kind === "DESPAWN_AUTHORIZED"), "Agent is already despawned");
   const appended = appendFromReceipt(state, {eventKind: "DESPAWN_AUTHORIZED", requestId, agentId, roleId: spawn.role_id, admissionReceiptRef: spawn.admission_receipt_ref, transitionReceiptRef});
   const receipt = {schema: "agentos.agent_despawn_authorization.v2", version: 2, issuer_role: "AGENTOS.SPAWNER", request_id: requestId, agent_id: agentId, role_id: spawn.role_id, transition_receipt_ref: transitionReceiptRef, lifecycle_event_sha256: appended.event.event_sha256, project_identity_sha256: readSpawnerLifecycleStore(state.lifecycleStore).project_identity_sha256, recoverability: "HANDOFF_EVIDENCE_AND_ZERO_REFERENCES_PROVEN", receipt_sha256: null}; receipt.receipt_sha256 = canonicalDigest(receiptBody(receipt)); return Object.freeze(receipt);
 }
@@ -74,5 +74,5 @@ export function authorizeAgentDespawn(options = {}) {
 export function requiredAuditorCloseout(options = {}) {
   exactOptions(options, ["authority", "agentId"], "Auditor closeout request"); const {authority, agentId} = options, state = authorityState(authority); id(agentId, "Auditor agent");
   const events = readSpawnerLifecycleStore(state.lifecycleStore).events.filter((event) => event.agent_id === agentId), spawn = events.find((event) => event.event_kind === "SPAWN_AUTHORIZED"); assert(spawn, "Auditor closeout requires a canonical spawn record");
-  return events.some((event) => event.event_kind === "HANDOFF_ACCEPTED") ? "SPAWNER_DESPAWN_REQUIRES_REMAINING_TYPED_RECEIPTS" : "PRESERVE_READ_ONLY_AUDITOR_UNTIL_HANDOFF";
+  return events.some((event) => event.event_kind === "HANDOFF_ACCEPTED") ? "SPAWNER_DESPAWN_REQUIRES_EXIT_GOVERNANCE_REVIEW_AND_REMAINING_TYPED_RECEIPTS" : "PRESERVE_READ_ONLY_AUDITOR_UNTIL_HANDOFF";
 }

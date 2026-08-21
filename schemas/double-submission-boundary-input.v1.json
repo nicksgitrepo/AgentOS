@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.double_submission_boundary_input.v1",
+  "title": "Double Submission specialist typed boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.double_submission_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string"},
+    "evidence": {"type": "object", "additionalProperties": false}
+  }
+}

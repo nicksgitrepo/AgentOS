@@ -14,7 +14,7 @@ export const SPAWNER_LIFECYCLE_STORE_SCHEMA = "agentos.spawner_lifecycle_store.v
 export const SPAWNER_LIFECYCLE_RECEIPT_SCHEMA = "agentos.spawner_lifecycle_transition_receipt.v1";
 export const SPAWNER_LIFECYCLE_EVENT_KINDS = Object.freeze([
   "SPAWN_AUTHORIZED", "HANDOFF_ACCEPTED", "SCOPE_CLOSED", "EVIDENCE_PRESERVED",
-  "WORKTREE_RELEASED", "CUSTODY_RELEASED", "DESPAWN_AUTHORIZED",
+  "WORKTREE_RELEASED", "CUSTODY_RELEASED", "EXIT_GOVERNANCE_REVIEWED", "DESPAWN_AUTHORIZED",
 ]);
 const RELATIVE_LEDGER = "project-state/agent-lifecycle-events.jsonl";
 const RELATIVE_AUTHORITY = "project-state/lifecycle-authority.json";
@@ -23,21 +23,21 @@ const RELATIVE_RECEIPTS = "project-state/lifecycle-transition-receipts";
 const GENESIS = "0".repeat(64);
 const SHA = /^[0-9a-f]{64}$/u;
 const ID = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
-const RECEIPT_REF = /^ref:(spawner-admission|admission|handoff|scope|evidence|worktree-release|custody-release|lifecycle)\/([0-9a-f]{64})$/u;
+const RECEIPT_REF = /^ref:(spawner-admission|admission|handoff|scope|evidence|worktree-release|custody-release|exit-governance|lifecycle)\/([0-9a-f]{64})$/u;
 const stores = new WeakMap();
 
 const REQUIRED_PREDECESSOR = Object.freeze({
   SPAWN_AUTHORIZED: null, HANDOFF_ACCEPTED: "SPAWN_AUTHORIZED", SCOPE_CLOSED: "HANDOFF_ACCEPTED",
   EVIDENCE_PRESERVED: "SCOPE_CLOSED", WORKTREE_RELEASED: "EVIDENCE_PRESERVED",
-  CUSTODY_RELEASED: "WORKTREE_RELEASED", DESPAWN_AUTHORIZED: "CUSTODY_RELEASED",
+  CUSTODY_RELEASED: "WORKTREE_RELEASED", EXIT_GOVERNANCE_REVIEWED: "CUSTODY_RELEASED", DESPAWN_AUTHORIZED: "EXIT_GOVERNANCE_REVIEWED",
 });
 const RECEIPT_KIND = Object.freeze({
   SPAWN_AUTHORIZED: "SPAWN_ADMISSION", HANDOFF_ACCEPTED: "HANDOFF_ACCEPTANCE", SCOPE_CLOSED: "SCOPE_CLOSEOUT",
   EVIDENCE_PRESERVED: "EVIDENCE_PRESERVATION", WORKTREE_RELEASED: "WORKTREE_RELEASE",
-  CUSTODY_RELEASED: "CUSTODY_RELEASE", DESPAWN_AUTHORIZED: "DESPAWN_ELIGIBILITY",
+  CUSTODY_RELEASED: "CUSTODY_RELEASE", EXIT_GOVERNANCE_REVIEWED: "EXIT_GOVERNANCE_REVIEW", DESPAWN_AUTHORIZED: "DESPAWN_ELIGIBILITY",
 });
-const RECEIPT_PREFIX = Object.freeze({SPAWN_ADMISSION: "admission", SPAWNER_ADMISSION: "spawner-admission", HANDOFF_ACCEPTANCE: "handoff", SCOPE_CLOSEOUT: "scope", EVIDENCE_PRESERVATION: "evidence", WORKTREE_RELEASE: "worktree-release", CUSTODY_RELEASE: "custody-release", DESPAWN_ELIGIBILITY: "lifecycle"});
-const RECEIPT_ISSUER = Object.freeze({SPAWNER_ADMISSION: "AGENTOS.INDEPENDENT_EVALUATOR", SPAWN_ADMISSION: "AGENTOS.INDEPENDENT_EVALUATOR", HANDOFF_ACCEPTANCE: "AGENTOS.ORCHESTRATOR", SCOPE_CLOSEOUT: "AGENTOS.ORCHESTRATOR", EVIDENCE_PRESERVATION: "AGENTOS.ORCHESTRATOR", WORKTREE_RELEASE: "AGENTOS.SPAWNER", CUSTODY_RELEASE: "AGENTOS.SPAWNER", DESPAWN_ELIGIBILITY: "AGENTOS.SPAWNER"});
+const RECEIPT_PREFIX = Object.freeze({SPAWN_ADMISSION: "admission", SPAWNER_ADMISSION: "spawner-admission", HANDOFF_ACCEPTANCE: "handoff", SCOPE_CLOSEOUT: "scope", EVIDENCE_PRESERVATION: "evidence", WORKTREE_RELEASE: "worktree-release", CUSTODY_RELEASE: "custody-release", EXIT_GOVERNANCE_REVIEW: "exit-governance", DESPAWN_ELIGIBILITY: "lifecycle"});
+const RECEIPT_ISSUER = Object.freeze({SPAWNER_ADMISSION: "AGENTOS.INDEPENDENT_EVALUATOR", SPAWN_ADMISSION: "AGENTOS.INDEPENDENT_EVALUATOR", HANDOFF_ACCEPTANCE: "AGENTOS.ORCHESTRATOR", SCOPE_CLOSEOUT: "AGENTOS.ORCHESTRATOR", EVIDENCE_PRESERVATION: "AGENTOS.ORCHESTRATOR", WORKTREE_RELEASE: "AGENTOS.SPAWNER", CUSTODY_RELEASE: "AGENTOS.SPAWNER", EXIT_GOVERNANCE_REVIEW: "AGENTOS.SPAWNER", DESPAWN_ELIGIBILITY: "AGENTOS.SPAWNER"});
 
 function fail(message, code = "SPAWNER_LIFECYCLE_STORE_INVALID", details = null) { const error = new Error(message); error.code = code; if (details !== null) error.details = details; throw error; }
 function assert(value, message, code, details) { if (!value) fail(message, code, details); }
@@ -154,7 +154,9 @@ export function readSpawnerLifecycleStore(capability) {
 }
 
 function validateReceipt(receipt, state) {
-  exact(receipt, ["schema", "version", "receipt_ref", "receipt_kind", "project_identity_sha256", "project_store_id", "agent_id", "role_id", "admission_receipt_ref", "request_id", "issuer_role", "subject_sha256", "assertions", "spawner_context_sha256", "model_snapshot_sha256", "model_selection_sha256", "occurred_at_utc", "receipt_sha256"], "Lifecycle transition receipt");
+  const receiptKeys = ["schema", "version", "receipt_ref", "receipt_kind", "project_identity_sha256", "project_store_id", "agent_id", "role_id", "admission_receipt_ref", "request_id", "issuer_role", "subject_sha256", "assertions", "spawner_context_sha256", "model_snapshot_sha256", "model_selection_sha256", "occurred_at_utc", "receipt_sha256"];
+  if (receipt?.receipt_kind === "EXIT_GOVERNANCE_REVIEW") receiptKeys.push("retrospective_sha256", "disposition_sha256", "proposals_dispositioned");
+  exact(receipt, receiptKeys, "Lifecycle transition receipt");
   assert(receipt.schema === SPAWNER_LIFECYCLE_RECEIPT_SCHEMA && receipt.version === 1 && Object.values(RECEIPT_KIND).concat("SPAWNER_ADMISSION").includes(receipt.receipt_kind), "Lifecycle receipt identity/kind differs");
   assert(receipt.issuer_role === RECEIPT_ISSUER[receipt.receipt_kind], "Lifecycle receipt issuer is not authorized for its transition kind");
   const match = RECEIPT_REF.exec(receipt.receipt_ref); assert(match && match[1] === RECEIPT_PREFIX[receipt.receipt_kind] && match[2] === receipt.receipt_sha256, "Lifecycle receipt reference differs from content");
@@ -163,9 +165,10 @@ function validateReceipt(receipt, state) {
   assert(RECEIPT_REF.test(receipt.admission_receipt_ref) && SHA.test(receipt.subject_sha256) && receipt.receipt_sha256 === canonicalDigest(receiptBody(receipt)), "Lifecycle receipt digest/binding is invalid");
   assert(receipt.spawner_context_sha256 === state.spawnerContext.context_sha256 && receipt.model_snapshot_sha256 === state.spawnerContext.snapshot_sha256 && receipt.model_selection_sha256 === canonicalDigest(state.spawnerContext.compact_selection), "Lifecycle receipt model/Spawner context is stale");
   assert(Number.isFinite(Date.parse(receipt.occurred_at_utc)) && Date.parse(receipt.occurred_at_utc) <= Date.now() && Date.now() - Date.parse(receipt.occurred_at_utc) <= 86_400_000, "Lifecycle receipt time is invalid, future, or stale");
-  const a = receipt.assertions; exact(a, ["admission_current", "handoff_accepted", "scope_closed", "evidence_preserved", "worktree_reference_count", "custody_reference_count", "despawn_eligible"], "Lifecycle receipt assertions");
-  const expected = {SPAWNER_ADMISSION: ["admission_current"], SPAWN_ADMISSION: ["admission_current"], HANDOFF_ACCEPTANCE: ["handoff_accepted"], SCOPE_CLOSEOUT: ["scope_closed"], EVIDENCE_PRESERVATION: ["evidence_preserved"], WORKTREE_RELEASE: ["worktree_reference_count"], CUSTODY_RELEASE: ["custody_reference_count"], DESPAWN_ELIGIBILITY: ["despawn_eligible"]}[receipt.receipt_kind];
+  const a = receipt.assertions; const assertionKeys = ["admission_current", "handoff_accepted", "scope_closed", "evidence_preserved", "worktree_reference_count", "custody_reference_count", "despawn_eligible"]; if (receipt.receipt_kind === "EXIT_GOVERNANCE_REVIEW") assertionKeys.push("exit_review_dispositioned", "memory_proposals_dispositioned"); exact(a, assertionKeys, "Lifecycle receipt assertions");
+  const expected = {SPAWNER_ADMISSION: ["admission_current"], SPAWN_ADMISSION: ["admission_current"], HANDOFF_ACCEPTANCE: ["handoff_accepted"], SCOPE_CLOSEOUT: ["scope_closed"], EVIDENCE_PRESERVATION: ["evidence_preserved"], WORKTREE_RELEASE: ["worktree_reference_count"], CUSTODY_RELEASE: ["custody_reference_count"], EXIT_GOVERNANCE_REVIEW: ["exit_review_dispositioned", "memory_proposals_dispositioned"], DESPAWN_ELIGIBILITY: ["despawn_eligible"]}[receipt.receipt_kind];
   for (const field of expected) assert(field.endsWith("_count") ? a[field] === 0 : a[field] === true, `Lifecycle receipt did not prove ${field}`);
+  if (receipt.receipt_kind === "EXIT_GOVERNANCE_REVIEW") { assert(SHA.test(receipt.retrospective_sha256) && SHA.test(receipt.disposition_sha256), "Exit review digest binding is invalid"); assert(Number.isSafeInteger(receipt.proposals_dispositioned) && receipt.proposals_dispositioned >= 0, "Exit review proposal count is invalid"); }
   return receipt;
 }
 

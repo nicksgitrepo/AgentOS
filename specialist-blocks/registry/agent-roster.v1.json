@@ -13966,103 +13966,103 @@
           {
             "fixture_id": "specialist.security.double-submission.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-03/double-submission/fixtures/authority_conflict.json",
-            "file_sha256": "7a4932ef74088e32e2161902608c8b7d9dc629aa9cb06c1fc74b1d58705193ef",
+            "file_sha256": "968ed254c5f859ed411736359bff40b996d8f61cb1fc0b866743f4bb0247c308",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.BROAD_WHEN_NARROW_EXISTS",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e2bd15a9191316ea23a69f2f37cb6bc0958e93f77643c464b94d7879e83c21c0",
+          "fixture_id": "specialist.security.double-submission.BROAD_WHEN_NARROW_EXISTS",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/broad_when_narrow_exists.json",
+            "file_sha256": "9275da41a44785e01ed70ff755c3c742c86a80ab607d5428853468de82b1a508",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.CROSS_PROVIDER_VERSION_CLAIM",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "60febe7fcd9f7d385a277d9283914189b1f7aec5ad327ca427c26d7f77670084",
+          "fixture_id": "specialist.security.double-submission.CROSS_PROVIDER_VERSION_CLAIM",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/cross_provider_version_claim.json",
+            "file_sha256": "8bfda8621defc4610ade15d849ffb6185f70db41f1d794a7fbbff7fa1e1f7bb0",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.DATA_LIMIT",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/data_limit.json",
-            "file_sha256": "0f92ace5e57fff237888b1f640d10e8e85e2ede4782e47266c3ee3dea4548e4b",
+          "fixture_id": "specialist.security.double-submission.DATA_LIMIT",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/data_limit.json",
+            "file_sha256": "639accf2f651c5ed2e53c3006ca6b4839e3cb1800c00a0bc2efa5f5c855d9776",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.double-submission.DUPLICATE_SIBLING_AUTHORITY",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "a45ae4e779a4fd9c1f58b583e8fc6fd204ac4ef6c1492bfc38a0ab654066961d",
+          "fixture_id": "specialist.security.double-submission.DUPLICATE_SIBLING_AUTHORITY",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/duplicate_sibling_authority.json",
+            "file_sha256": "2f64277c6179794670f3d0286220d6f25096b94918dbf3d6221aa8d35c8a3fce",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.FALSE_POSITIVE",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/false_positive.json",
-            "file_sha256": "e4d2ba3ce06fbee834d19731672aff3ec575a1cad4fd9a4603697e4b6b3dbeae",
+          "fixture_id": "specialist.security.double-submission.FALSE_POSITIVE",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/false_positive.json",
+            "file_sha256": "85dccb7c70d648bf2144116701370b6a2908a6484365f8bb4247ab37b743b3fc",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.HANDOFF",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/handoff.json",
-            "file_sha256": "8d3bace5724848eb51b39f7004c48ddd999c002ef65a4a0a6a4613c0e2b8b1e8",
+          "fixture_id": "specialist.security.double-submission.HANDOFF",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/handoff.json",
+            "file_sha256": "5a6bf34fbf636f208ef739238f30418cd15d596d2761ebe04ffa6fdd630f71b7",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.double-submission.MISSING_CONTEXT",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/missing_context.json",
-            "file_sha256": "d4a1a9f1a75587710e9959201bcca5a6a23bb19431aad8ee6bfba4d18ce40d67",
+          "fixture_id": "specialist.security.double-submission.MISSING_CONTEXT",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/missing_context.json",
+            "file_sha256": "866e320c53a8669144e579a55cb30fc7c867f725ff9f08603f036f0771fa2e7a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.NARROWNESS",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/narrowness.json",
-            "file_sha256": "1c52f50558d8245951de3adf7d4a3a39f3b7b2e596e2266b59578ff0541ac9df",
+          "fixture_id": "specialist.security.double-submission.NARROWNESS",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/narrowness.json",
+            "file_sha256": "c25895415ef61e4f8d9c43abe6cb22eaed9b957c4bd67f6d97b22d21edc71ded",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.double-submission.ROUTER_SELF_ACCEPT",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/router_self_accept.json",
-            "file_sha256": "e5a42ca030503c7006a43dd25e771db316edad125c6edc527a7cdfd4e7888a4b",
+          "fixture_id": "specialist.security.double-submission.ROUTER_SELF_ACCEPT",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/router_self_accept.json",
+            "file_sha256": "62e275f404051f1cf187547a30b05a73e006942a3c2e48cf6a98e8b03abc6530",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.ROUTING",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/routing.json",
-            "file_sha256": "e287b55fa4f679c65ce66cfa60dfb6ec8b855458f22f43d260a599508496290f",
+          "fixture_id": "specialist.security.double-submission.ROUTING",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/routing.json",
+            "file_sha256": "436f2f27d7d1fb32e4149f434dbea1568367401b745ac11b525c52720d1a1e56",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.double-submission.SILENT_SCOPE_EXPANSION",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/silent_scope_expansion.json",
-            "file_sha256": "01acf3e6402d3be23c5ddd405ca1858028909a7c5455a616405cc47875c223a6",
+          "fixture_id": "specialist.security.double-submission.SILENT_SCOPE_EXPANSION",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/silent_scope_expansion.json",
+            "file_sha256": "566fe386df6a3edbc0587b9334995cec964e33d67a381e20a5dcc3706f87d854",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.STALE_SOURCE",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/stale_source.json",
-            "file_sha256": "92e8a58cab4a8aa05dba6c802ffcae804c69df9c8a6d80511bf90715e22ea77c",
+          "fixture_id": "specialist.security.double-submission.STALE_SOURCE",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/stale_source.json",
+            "file_sha256": "ac08af63597bb889c925b3ec1b5dc4948f6dc79eabae9690dcd6c035a91dc283",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.TOOL_LIMIT",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/tool_limit.json",
-            "file_sha256": "053f72b5bad11c72fef707c159c3e7a49dc1d5c7a9fbe4d6c14aac2d68f36f9f",
+          "fixture_id": "specialist.security.double-submission.TOOL_LIMIT",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/tool_limit.json",
+            "file_sha256": "d72f0d8716caacd79cee8fa061fe390f8c767160338fdffb30b4d2fd3f3a043a",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.double-submission.UMBRELLA_AUTHORITY",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/umbrella_authority.json",
-            "file_sha256": "5649732c0009b19309e1a75f1c8d0a85b2437e744efec568652d4b89b1d0897d",
+          "fixture_id": "specialist.security.double-submission.UMBRELLA_AUTHORITY",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/umbrella_authority.json",
+            "file_sha256": "687720726cf0cdc05717fdd0557a5c069790841aeb72d39a143dee196ebd499b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.UNRELATED_SCOPE",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/unrelated_scope.json",
-            "file_sha256": "d731dc996c49bf7f9d82a448dc915af3429d5cfe440b07c5fd6e6dac062f2cbd",
+          "fixture_id": "specialist.security.double-submission.UNRELATED_SCOPE",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/unrelated_scope.json",
+            "file_sha256": "ba38afd08d78472c20f8ebea92cb1c6c949e1d8340c70ebc8a8c19a0212ee1d0",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.double-submission.UNSAFE_ACTION",
-            "path": "specialist-blocks/wave-03/double-submission/fixtures/unsafe_action.json",
-            "file_sha256": "cf5e6eb27d267e146bcb157fba6017e8d328bf7c910d8d760aa688272ad4e346",
+          "fixture_id": "specialist.security.double-submission.UNSAFE_ACTION",
+          "path": "specialist-blocks/wave-03/double-submission/fixtures/unsafe_action.json",
+            "file_sha256": "3cda48a9de8e33df43f4cfa127ceb9e5f9ad70ed8719e088050bcab4fbc1bf41",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "dae25141a99f22bfff726df5a0622de53b6c17ce2a787a2953d66cd5c2de8fe9"
+  "roster_sha256": "1ea0b48637fffa48b15b26510368860ac72c0abaf62349c678cd17dfddd4082d"
 }

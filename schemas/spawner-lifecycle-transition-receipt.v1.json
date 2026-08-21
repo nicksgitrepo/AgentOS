@@ -8,8 +8,8 @@
   "properties": {
     "schema": {"const": "agentos.spawner_lifecycle_transition_receipt.v1"},
     "version": {"const": 1},
-    "receipt_ref": {"type": "string", "pattern": "^ref:(spawner-admission|admission|handoff|scope|evidence|worktree-release|custody-release|lifecycle)/[0-9a-f]{64}$"},
-    "receipt_kind": {"enum": ["SPAWNER_ADMISSION", "SPAWN_ADMISSION", "HANDOFF_ACCEPTANCE", "SCOPE_CLOSEOUT", "EVIDENCE_PRESERVATION", "WORKTREE_RELEASE", "CUSTODY_RELEASE", "DESPAWN_ELIGIBILITY"]},
+    "receipt_ref": {"type": "string", "pattern": "^ref:(spawner-admission|admission|handoff|scope|evidence|worktree-release|custody-release|exit-governance|lifecycle)/[0-9a-f]{64}$"},
+    "receipt_kind": {"enum": ["SPAWNER_ADMISSION", "SPAWN_ADMISSION", "HANDOFF_ACCEPTANCE", "SCOPE_CLOSEOUT", "EVIDENCE_PRESERVATION", "WORKTREE_RELEASE", "CUSTODY_RELEASE", "EXIT_GOVERNANCE_REVIEW", "DESPAWN_ELIGIBILITY"]},
     "project_identity_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "project_store_id": {"type": "string"},
     "agent_id": {"type": "string"},
@@ -29,13 +29,18 @@
         "evidence_preserved": {"type": "boolean"},
         "worktree_reference_count": {"type": "integer", "minimum": 0},
         "custody_reference_count": {"type": "integer", "minimum": 0},
-        "despawn_eligible": {"type": "boolean"}
+        "despawn_eligible": {"type": "boolean"},
+        "exit_review_dispositioned": {"type": "boolean"},
+        "memory_proposals_dispositioned": {"type": "boolean"}
       }
     },
     "spawner_context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "model_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "model_selection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "occurred_at_utc": {"type": "string", "format": "date-time"},
-    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "retrospective_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposals_dispositioned": {"type": "integer", "minimum": 0}
   }
 }

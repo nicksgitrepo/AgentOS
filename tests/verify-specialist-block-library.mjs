@@ -48,6 +48,16 @@ assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 19, CONTROL_PL
 
 for (const record of first.records) {
   const packageDir = record.packageDir;
+  const compiledRosterBlock = first.roster.blocks.find((block) => block.block_id === record.block.block_id);
+  assert.deepEqual(compiledRosterBlock.exit_governance_review, {
+    schema: "agentos.exit_governance_review.v1",
+    required_before: ["CAPABILITY_REVOCATION", "ARCHIVE"],
+    agent_response: "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+    proposal_layers: ["GLOBAL", "PROJECT", "ROLE", "TECHNOLOGY_OR_STANDARD", "ENVIRONMENT", "TASK"],
+    spawner_disposition: ["ACCEPT", "REJECT_WITH_REASON", "DEFER_WITH_EXACT_EVIDENCE_GAP"],
+    accepted_change_route: "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+    memory_rule: "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE",
+  });
   const packageFixtureClasses = [...new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES, ...(record.block.evaluation?.fixture_classes ?? [])])];
   assert.equal(record.block.gate_pack.ordered_gate_ids.length, 12);
   assert.deepEqual(record.block.gate_pack.outcomes, GATE_OUTCOMES);

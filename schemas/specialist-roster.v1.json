@@ -15,7 +15,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["block_id", "candidate_digest", "role_kind", "atomic_scope_statement", "permitted_decisions", "forbidden_decisions", "maximum_authority", "required_upstream_router", "sibling_conflicts", "composition_rules", "escalation_target", "split_required_when", "priority", "family", "revision", "status", "primary_sources", "dependencies", "conflicts", "gate_path", "schema_path", "evaluator_receipt", "owner", "lifecycle", "activation"],
+        "required": ["block_id", "candidate_digest", "role_kind", "atomic_scope_statement", "permitted_decisions", "forbidden_decisions", "maximum_authority", "required_upstream_router", "sibling_conflicts", "composition_rules", "escalation_target", "split_required_when", "priority", "family", "revision", "status", "primary_sources", "dependencies", "conflicts", "gate_path", "schema_path", "evaluator_receipt", "owner", "lifecycle", "activation", "exit_governance_review"],
         "properties": {
           "block_id": {"type": "string", "pattern": "^specialist\\.[a-z0-9-]+\\.[a-z0-9-]+$"},
           "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -41,7 +41,21 @@
           "evaluator_receipt": {"type": "string", "pattern": "^specialist-eval\\.[a-z0-9-]+\\.v[0-9]+$"},
           "owner": {"const": "specialist-library-controller"},
           "lifecycle": {"const": "NOT_ADMITTED"},
-          "activation": {"const": "OFF"}
+          "activation": {"const": "OFF"},
+          "exit_governance_review": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["schema", "required_before", "agent_response", "proposal_layers", "spawner_disposition", "accepted_change_route", "memory_rule"],
+            "properties": {
+              "schema": {"const": "agentos.exit_governance_review.v1"},
+              "required_before": {"const": ["CAPABILITY_REVOCATION", "ARCHIVE"]},
+              "agent_response": {"const": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS"},
+              "proposal_layers": {"const": ["GLOBAL", "PROJECT", "ROLE", "TECHNOLOGY_OR_STANDARD", "ENVIRONMENT", "TASK"]},
+              "spawner_disposition": {"const": ["ACCEPT", "REJECT_WITH_REASON", "DEFER_WITH_EXACT_EVIDENCE_GAP"]},
+              "accepted_change_route": {"const": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION"},
+              "memory_rule": {"const": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"}
+            }
+          }
         }
       }
     },

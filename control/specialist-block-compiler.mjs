@@ -52,6 +52,15 @@ export const CORE_EVALUATION_CLASSES = Object.freeze([
   "unsafe_action",
   "handoff",
 ]);
+export const EXIT_GOVERNANCE_REVIEW_CONTRACT = Object.freeze({
+  schema: "agentos.exit_governance_review.v1",
+  required_before: ["CAPABILITY_REVOCATION", "ARCHIVE"],
+  agent_response: "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+  proposal_layers: ["GLOBAL", "PROJECT", "ROLE", "TECHNOLOGY_OR_STANDARD", "ENVIRONMENT", "TASK"],
+  spawner_disposition: ["ACCEPT", "REJECT_WITH_REASON", "DEFER_WITH_EXACT_EVIDENCE_GAP"],
+  accepted_change_route: "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+  memory_rule: "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE",
+});
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -597,6 +606,7 @@ function compileRoster(records) {
     owner: "specialist-library-controller",
     lifecycle: "NOT_ADMITTED",
     activation: "OFF",
+    exit_governance_review: EXIT_GOVERNANCE_REVIEW_CONTRACT,
   })).sort((left, right) => left.block_id.localeCompare(right.block_id));
   const aliases = [];
   for (const {block} of records) for (const alias of block.aliases) aliases.push({alias, canonical_block_id: block.block_id, reason: "Declared package alias; canonical block owns the authority."});

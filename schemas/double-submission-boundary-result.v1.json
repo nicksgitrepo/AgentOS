@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.double_submission_boundary_result.v1",
+  "title": "Double Submission specialist typed boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "routing_allowed", "acceptance_allowed", "certification_allowed", "submission_mutation_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.double_submission_boundary_result.v1"},
+    "version": {"const": 1},
+    "disposition": {"enum": ["DENY", "ROUTE", "ESCALATE"]},
+    "route": {"type": "string"},
+    "routing_allowed": {"type": "boolean"},
+    "acceptance_allowed": {"const": false},
+    "certification_allowed": {"const": false},
+    "submission_mutation_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false},
+    "error_code": {"type": "string"},
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

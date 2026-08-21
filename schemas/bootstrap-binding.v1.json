@@ -584,11 +584,11 @@
     },
     "agent_lifecycle_custody_contract": {
       "path": "schemas/agent-lifecycle-custody.v1.json",
-      "sha256": "a9a72052dc2f6b51847ae6f9d6c763fbf4106c98af0296fb7e3a53bd206ad5d5"
+      "sha256": "54cfc99cdb8fdef27909d8f895bb877bbf5c66543214e858d00dc150ef04740c"
     },
     "agent_lifecycle_custody_controller": {
       "path": "control/agent-lifecycle-custody.mjs",
-      "sha256": "222f918127b784f61de0d3decf5eac1a0ecd22e0631599e0d46d835532dd85e5"
+      "sha256": "ee16620329e015fc2c326fc9225c636d52cee8dafac3fe474a4c8ef3d4660068"
     },
     "agent_lifecycle_custody_opaque_verifier": {
       "path": "tests/verify-agent-lifecycle-custody-opaque.mjs",
@@ -597,6 +597,26 @@
     "agent_lifecycle_custody_v2_contract": {
       "path": "schemas/agent-lifecycle-custody.v2.json",
       "sha256": "18707d5968f9dea9c4c71f86ac1af1cb2769bbceeb81d56a0272a3190156f651"
+    },
+    "double_submission_boundary_controller": {
+      "path": "control/double-submission-boundary-gate.mjs",
+      "sha256": "2863d38670ccd766bf75b981d68e048f5159772f16a48a2818d0a9a231ae3591"
+    },
+    "double_submission_boundary_input_contract": {
+      "path": "schemas/double-submission-boundary-input.v1.json",
+      "sha256": "4f978762aa9a5f893a366ac2e69c67c9f9601c86cfaa2aa8e5acfa897b7ccfc5"
+    },
+    "double_submission_boundary_result_contract": {
+      "path": "schemas/double-submission-boundary-result.v1.json",
+      "sha256": "01a4c64536c3ed4e7a4fe96f88b69f12dd32407a8171fc0503c9e29befad73e1"
+    },
+    "double_submission_package_evaluator_controller": {
+      "path": "control/double-submission-package-evaluator.mjs",
+      "sha256": "1619df81f4788a2c379607415d682c3e3563eb1b907dc431332ce5da37bad2ca"
+    },
+    "double_submission_boundary_verifier": {
+      "path": "tests/verify-double-submission-boundary.mjs",
+      "sha256": "146af657df1c9a0d5ed3004311a0c033537c340319f5c994722b33bdfa30edb9"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -3789,7 +3809,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "bce177a32f25b96e88d3f06eb0ba352276d62860e0636cd3f2bdf90ffd4c7bbc"
+      "sha256": "30377d2aa458201821dbf38be124c807bf91ffbcdc1c4ea8ef9f92b916370771"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4233,11 +4253,23 @@
     },
     "spawner_lifecycle_store_controller": {
       "path": "control/spawner-lifecycle-store.mjs",
-      "sha256": "ffa4c0a14aef2a61863da1265850f55c85dd00b0f52cd4359249a285dc26f883"
+      "sha256": "88464ccc90f8c6c4e8b43d6274c9fc16d2afd95203a3469e43c76d7940ed9342"
     },
     "spawner_lifecycle_transition_receipt_contract": {
       "path": "schemas/spawner-lifecycle-transition-receipt.v1.json",
-      "sha256": "6444059af9a7594ae0a30ef4489a1acbb1608056df8c026fffdcf258407a237f"
+      "sha256": "671b1fd1d6dd4a2ad98d09d6e65fda2830a77af5a2133c80119e87b371c416fe"
+    },
+    "exit_governance_review_controller": {
+      "path": "control/exit-governance-review.mjs",
+      "sha256": "0a888ea17acb892735a1e9953c805ba267edc84ff3c3fbbb56c5a241436a5519"
+    },
+    "exit_governance_review_contract": {
+      "path": "schemas/exit-governance-review.v1.json",
+      "sha256": "121d8769003d3bde19c369cca42ef1cc36a7231eb05e2d7894a78df85036ba13"
+    },
+    "exit_governance_review_verifier": {
+      "path": "tests/verify-exit-governance-review.mjs",
+      "sha256": "bcd2567f6a62e0680b41d8fcb4c99af5e281e97bae879ea20820d1745972a799"
     },
     "spawner_ownership_classification_contract": {
       "path": "schemas/spawner-ownership-classification.v1.json",
@@ -4257,7 +4289,15 @@
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",
-      "sha256": "1e9cf216c63c2a60d03e1b87ef64131e3f2512a9d3684982d9ededc223a77786"
+      "sha256": "6ac5ec60a4fd4e6b1b6a06cb0fadd7e6c18d6bfcfa1b97c89c845680f5cb2520"
+    },
+    "specialist_block_compiler_controller": {
+      "path": "control/specialist-block-compiler.mjs",
+      "sha256": "26592727de920a784d59a3c562f86f88390ff38a8ae722b970060bad5e1c93be"
+    },
+    "specialist_roster_contract": {
+      "path": "schemas/specialist-roster.v1.json",
+      "sha256": "5c61e81d738e3b92fcaba060b6ebeaad1c2c5795893a0c9bd581906a3509400b"
     },
     "specialist_evaluation_contract": {
       "path": "schemas/specialist-evaluation.v1.json",
