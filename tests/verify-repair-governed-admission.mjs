@@ -25,7 +25,7 @@ try {
   assert.throws(() => prepareRepairAdmissionAuthority({globalGovernanceAuthorityStore: governance.authorityStore, root: "/tmp"}), (error) => error.code === "REPAIR_CALLER_AUTHORITY_FORBIDDEN");
   assert.throws(() => resolveRepairAdmission({authority: {}, admissionReceiptRef: `ref:temporary-role-review/${"a".repeat(64)}`, requestId: "REQUEST.REPAIR.INTAKE", ownerIntakeRef: "ref:owner-intake/WAIT"}), (error) => error.code === "REPAIR_ADMISSION_AUTHORITY_REQUIRED");
   assert.throws(() => resolveRepairAdmission({authority, admissionReceiptRef: `ref:temporary-role-review/${"a".repeat(64)}`, requestId: "REQUEST.REPAIR.INTAKE", ownerIntakeRef: "ref:owner-intake/WAIT", pass: true}), (error) => error.code === "REPAIR_CALLER_AUTHORITY_FORBIDDEN");
-  assert.throws(() => resolveRepairAdmission({authority, admissionReceiptRef: `ref:temporary-role-review/${"a".repeat(64)}`, requestId: "REQUEST.REPAIR.INTAKE", ownerIntakeRef: "ref:owner-intake/019fab2f-c6a8-7232-bb19-93a316cdc15c"}), (error) => ["REPAIR_CANDIDATE_NOT_FROZEN", "REPAIR_INDEPENDENT_CLEARANCE_REQUIRED", "REPAIR_EXTERNAL_REVIEW_PROVISIONING_REQUIRED"].includes(error.code));
+  assert.throws(() => resolveRepairAdmission({authority, admissionReceiptRef: `ref:temporary-role-review/${"a".repeat(64)}`, requestId: "REQUEST.REPAIR.INTAKE", ownerIntakeRef: "ref:owner-intake/OWNER_REQUEST"}), (error) => ["REPAIR_CANDIDATE_NOT_FROZEN", "REPAIR_INDEPENDENT_CLEARANCE_REQUIRED", "REPAIR_EXTERNAL_REVIEW_PROVISIONING_REQUIRED"].includes(error.code));
 } finally {
   fs.rmSync(authorityRoot, {recursive: true, force: true});
 }

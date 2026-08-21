@@ -4897,7 +4897,7 @@
     },
     "repair_governed_admission_verifier": {
       "path": "tests/verify-repair-governed-admission.mjs",
-      "sha256": "59910563ac3fbde257e3d22bb98e7bb6a505dab2ab28c0b3f9dab4a37fd81fcc"
+      "sha256": "fa85eafcab8eddeb2e7c4b7fe1f940cdb269ad42658a8f67aa2282fc67166111"
     },
     "repair_external_review_controller": {
       "path": "control/repair-external-review-store.mjs",
