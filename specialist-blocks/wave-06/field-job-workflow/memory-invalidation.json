@@ -1,0 +1,22 @@
+{
+  "schema": "agentos.specialist_memory_context_invalidation.v1",
+  "version": 1,
+  "block_id": "specialist.domain.field-job-workflow",
+  "status": "BOUND_CANDIDATE",
+  "memory_scope": "TYPED_HANDOFF_ONLY",
+  "write_allowed": false,
+  "edges": [
+    {"changed": "candidate_block", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "source_manifest", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "model_policy_snapshot", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "model_route", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "upstream_router_result", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "custody_ref", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "context_contract", "invalidates": ["context_projection", "workflow_route", "handoff", "evaluation"]},
+    {"changed": "context_projection", "invalidates": ["workflow_route", "handoff", "evaluation"]},
+    {"changed": "workflow_route", "invalidates": ["handoff", "evaluation"]},
+    {"changed": "handoff", "invalidates": ["evaluation"]}
+  ],
+  "closure_policy": "Any changed candidate, source, model, router, custody, or context contract invalidates dependent context, route, handoff, and evaluation; typed handoff is the only memory boundary and stale records are never reused.",
+  "graph_sha256": "eab3573fa90c3dbd676f602919485167e595466df3a8c7b2faa4b80ff2390788"
+}

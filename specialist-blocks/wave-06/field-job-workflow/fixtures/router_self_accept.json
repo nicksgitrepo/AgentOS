@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.ROUTER_SELF_ACCEPT",
   "class": "router_self_accept",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for router_self_accept; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_INDEPENDENT_REVIEW_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SELF_ACCEPTANCE_FORBIDDEN"},
+  "note": "The authoring/router lane cannot self-accept its candidate.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"self_acceptance": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_INDEPENDENT_REVIEW_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SELF_ACCEPTANCE_FORBIDDEN"}}
 }

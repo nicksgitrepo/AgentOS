@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.specialist_context_projection.v1",
+  "version": 1,
+  "block_id": "specialist.domain.field-job-workflow",
+  "status": "BOUND_CANDIDATE_CONTEXT",
+  "context_contract_id": "specialist-context.field-job-workflow.v1",
+  "required_fields": ["authority", "candidate.identity", "custody", "request", "signals", "source_lock", "workflow.dependencies", "workflow.domain", "workflow.phase", "workflow.task", "model_policy", "model_route", "memory_invalidation"],
+  "source_manifest_sha256": "9705bb8fd93bc1ba58faaca9fb415e740c3e05de3916a4b014918a58c96eaa42",
+  "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+  "model_route_sha256": "ecc4315ae5235b904d2d00e25a9935b9c28219898706226f6a786661c4b05bab",
+  "memory_scope": "TYPED_HANDOFF_ONLY",
+  "memory_write_allowed": false,
+  "dependency_artifacts": ["candidate_block", "source_manifest", "model_policy_snapshot", "model_route", "upstream_router_result", "custody_ref", "context_contract"],
+  "invalidation_triggers": ["block_sha256", "source_manifest_sha256", "model_policy_snapshot_sha256", "model_route_sha256", "upstream_router_result_sha256", "custody_ref", "context_contract_sha256"],
+  "context_sha256": "1190d063330533f0922ff0bb1be265dee92a816b9e5adced2dba351179ac91c1"
+}

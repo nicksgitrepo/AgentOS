@@ -11,11 +11,14 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 10-proof-acceptance condition pass without expanding this atomic specialist scope?",
+  "question": "Is proof read back from the real public entrypoint and independent evaluator, while acceptance, admission, activation, and self-review remain forbidden?",
   "evidence": [
+    "acceptance_authority",
     "block_sha256",
     "gate.10-proof-acceptance.answer",
     "gate.10-proof-acceptance.evidence",
+    "independent_signature_required",
+    "mutation_sensitivity",
     "source_lock_identity",
     "upstream_router_identity"
   ],
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "b46e441eb3494b042dcb39de8a821e9e7b01c781f12c91f0e80f3e5658401195"
+  "gate_sha256": "d975d1bd4d0b9d15185e5d067761c0220d16d04aabf2e54715dcc66f26da141a"
 }

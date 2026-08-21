@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.DUPLICATE_SIBLING_AUTHORITY",
   "class": "duplicate_sibling_authority",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for duplicate_sibling_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_AUTHORITY_ESCALATION", "error_code": "FIELD_JOB_WORKFLOW_DUPLICATE_AUTHORITY"},
+  "note": "Duplicate sibling authority is escalated instead of being silently composed.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"duplicate_authority": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_AUTHORITY_ESCALATION", "error_code": "FIELD_JOB_WORKFLOW_DUPLICATE_AUTHORITY"}}
 }

@@ -11,11 +11,14 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 02-authority-precedence condition pass without expanding this atomic specialist scope?",
+  "question": "Is authority current, explicit, non-conflicting, and bounded to advisory analysis plus typed handoff, with conflicts escalated?",
   "evidence": [
+    "authority_scope",
+    "authority_status",
     "block_sha256",
     "gate.02-authority-precedence.answer",
     "gate.02-authority-precedence.evidence",
+    "required_block_identities",
     "source_lock_identity",
     "upstream_router_identity"
   ],
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "6098149f791039c45b097ae7dd8ea5b053b166ced1a799d54bc540169a0a8531"
+  "gate_sha256": "bbb6f06b5536b8a9d7c621e028a9bbe3c8dffb18e799bd1b84918782955e1349"
 }

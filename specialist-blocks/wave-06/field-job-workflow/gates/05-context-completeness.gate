@@ -11,11 +11,14 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 05-context-completeness condition pass without expanding this atomic specialist scope?",
+  "question": "Is typed context complete, including authority, custody, candidate identity, source lock, workflow fields, model route, and memory invalidation binding?",
   "evidence": [
     "block_sha256",
+    "context_receipt_sha256",
     "gate.05-context-completeness.answer",
     "gate.05-context-completeness.evidence",
+    "memory_binding_sha256",
+    "model_route_sha256",
     "source_lock_identity",
     "upstream_router_identity"
   ],
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "210709374589f58227090862067b0a6441e4691d03000a6571d357f0785b3ecc"
+  "gate_sha256": "716f1df050e3f744d000b69bbe853a66e93fae72884f2fd76876198819897b4c"
 }

@@ -11,11 +11,14 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 11-lifecycle-recovery-archive condition pass without expanding this atomic specialist scope?",
+  "question": "Are candidate, evaluation, suspension, recovery, archive, reactivation, model-policy, and context-invalidation transitions bound to the immutable digest and receipt?",
   "evidence": [
     "block_sha256",
     "gate.11-lifecycle-recovery-archive.answer",
     "gate.11-lifecycle-recovery-archive.evidence",
+    "lifecycle_status",
+    "memory_binding_sha256",
+    "model_snapshot_sha256",
     "source_lock_identity",
     "upstream_router_identity"
   ],
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "6688c6164570ba7754b2fe8fd7ecf661aed9003e1cb79c7792bf8c688f747e4c"
+  "gate_sha256": "fe20a2f9aed5773bc279e13602abdd988721621a4d01c38cdd2a5fbe47e39efe"
 }

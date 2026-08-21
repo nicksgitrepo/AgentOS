@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.UNSAFE_ACTION",
   "class": "unsafe_action",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "NO_FIELD_WORKFLOW_SIDE_EFFECT", "error_code": "FIELD_JOB_WORKFLOW_OPERATION_FORBIDDEN"},
+  "note": "Unsafe field instructions or operational side effects are denied at the public boundary.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"unsafe_action": true}}}, "expected_readback": {"disposition": "DENY", "route": "NO_FIELD_WORKFLOW_SIDE_EFFECT", "error_code": "FIELD_JOB_WORKFLOW_OPERATION_FORBIDDEN"}}
 }

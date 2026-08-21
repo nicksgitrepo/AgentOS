@@ -1753,7 +1753,7 @@
     },
     {
       "block_id": "specialist.domain.field-job-workflow",
-      "candidate_digest": "d67ada3b085af8ceb93454d33830c15de9879b71ce1bb7be2a4097827071c814",
+      "candidate_digest": "ad3ae083c3f7f052a7b78ab8ad1db8c2989148fc5d70c847236895afb57ab9e7",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Field Job Workflow; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -5087,7 +5087,8 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.owasp-asvs-5-0-0"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -10202,5 +10203,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "d5c0a4f6c654a6faeee88b04d80c24e8c1bf943d6c26f2f78dce3659bc971a2f"
+  "roster_sha256": "d07417d5ba1a3a70b39e5be5ee09a42cc1fe7f6bfa984d7d2dc72f600a60ea51"
 }

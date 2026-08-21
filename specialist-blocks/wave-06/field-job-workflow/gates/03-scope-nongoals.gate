@@ -11,13 +11,16 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 03-scope-nongoals condition pass without expanding this atomic specialist scope?",
+  "question": "Does the request remain the smallest sufficient named field-job phase, task, dependency, or handoff without broad or silent scope expansion?",
   "evidence": [
     "block_sha256",
     "gate.03-scope-nongoals.answer",
     "gate.03-scope-nongoals.evidence",
+    "requested_action",
+    "scope_non_goals",
     "source_lock_identity",
-    "upstream_router_identity"
+    "upstream_router_identity",
+    "workflow_signal"
   ],
   "next": {
     "YES": "04-source-evidence-freshness",
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "70d7784d3cf007f1e04f5c4cdacffdfddbf108de72fec9fdeb465220ab31f8ad"
+  "gate_sha256": "bcb5c9748b67ae93a9aa9e2089d108a4661c60144bd50d957af1fc51f040fb15"
 }

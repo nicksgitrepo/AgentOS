@@ -4317,7 +4317,7 @@
     },
     "specialist_roster_registry": {
       "path": "specialist-blocks/registry/roster.v1.json",
-      "sha256": "67bf31be4ec809ea9eac66ee0306471da2cea71efcf184f0e1596f71154d68f6"
+      "sha256": "46e47c4f73b01bddcb90e52d5ebdbd99d39ffab0c02592ce1e763cabb375aec1"
     },
     "specialist_routing_index": {
       "path": "specialist-blocks/registry/routing-index.v1.json",

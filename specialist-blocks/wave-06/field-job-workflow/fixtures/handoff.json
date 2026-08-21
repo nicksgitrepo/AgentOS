@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.HANDOFF",
   "class": "handoff",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for handoff; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"},
+  "note": "A valid narrow request produces a waiting typed handoff without execution authority.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ROUTE_FIELD_JOB_WORKFLOW", "evidence_overrides": {}}, "expected_readback": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"}}
 }

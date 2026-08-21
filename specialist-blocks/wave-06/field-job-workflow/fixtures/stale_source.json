@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.STALE_SOURCE",
   "class": "stale_source",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_SOURCE_REFRESH_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SOURCE_STALE_OR_UNVERIFIED"},
+  "note": "Stale or unverifiable source evidence denies the dependent action and requires refresh.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"stale_source": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_SOURCE_REFRESH_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SOURCE_STALE_OR_UNVERIFIED"}}
 }

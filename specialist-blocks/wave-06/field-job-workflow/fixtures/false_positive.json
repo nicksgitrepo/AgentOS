@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.FALSE_POSITIVE",
   "class": "false_positive",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_TYPED_EVIDENCE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_FINDING_UNSUPPORTED"},
+  "note": "Unsupported findings are denied rather than converted into operational or safety claims.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"false_positive": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_TYPED_EVIDENCE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_FINDING_UNSUPPORTED"}}
 }

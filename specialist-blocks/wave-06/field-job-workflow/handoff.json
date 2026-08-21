@@ -4,31 +4,38 @@
   "handoff_id": "specialist-handoff.field-job-workflow.v1",
   "block_id": "specialist.domain.field-job-workflow",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "d67ada3b085af8ceb93454d33830c15de9879b71ce1bb7be2a4097827071c814",
-  "source_commit": "7ba72b318dd7ee48fa64f7ee8bbb6e412524496e",
-  "source_tree": "050a8eea7c8e63cf97a164519d925943bc9eeba5",
+  "candidate_digest": "ad3ae083c3f7f052a7b78ab8ad1db8c2989148fc5d70c847236895afb57ab9e7",
+  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
+  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
   "changed_paths": [
     "specialist-blocks/wave-06/field-job-workflow/block.json",
+    "specialist-blocks/wave-06/field-job-workflow/context.json",
     "specialist-blocks/wave-06/field-job-workflow/evaluation.json",
-    "specialist-blocks/wave-06/field-job-workflow/gates/manifest.json",
+    "specialist-blocks/wave-06/field-job-workflow/gates/execution.json",
+    "specialist-blocks/wave-06/field-job-workflow/memory-invalidation.json",
+    "specialist-blocks/wave-06/field-job-workflow/model-route.json",
+    "specialist-blocks/wave-06/field-job-workflow/registry-entry.json",
     "specialist-blocks/wave-06/field-job-workflow/handoff.json",
     "specialist-blocks/wave-06/field-job-workflow/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",
-    "hostile-fixture-catalog",
+    "12-gate-real-entrypoint-readback",
+    "17-executable-hostile-fixtures",
+    "boundary-mutation-sensitivity",
+    "context-and-memory-invalidation-closure",
+    "global-model-policy-narrow-coding-route",
     "independent-reviewer-required",
-    "p5-domain-ai-3d-reg-finance-scope-and-authority",
-    "reusable-standard-dependency-identities",
-    "source-lock-digest",
-    "upstream-router-closure"
+    "p5-domain-field-workflow-scope-and-authority",
+    "source-freshness-and-upstream-router-closure"
   ],
   "residuals": [
     "applicability and project context remain external",
     "candidate is not admitted or activated",
-    "independent utility/harm evaluation has not run",
-    "main AgentOS 3.0 integration owner must intake exact digest"
+    "canonical external Spawner reviewer provisioning is unavailable: BLOCKED_EXACT SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+    "independent hostile reviewer must execute the frozen candidate and return typed PASS or findings",
+    "main AgentOS 3.0 integration owner must intake the exact immutable digest"
   ],
-  "next_action": "Route the immutable P5 atomic specialist candidate through independent evaluation; preserve activation OFF.",
+  "next_action": "Run the operational evaluator, freeze the resulting immutable candidate commit/tree, request a fresh read-only GPT-5.6 Luna max hostile audit, and preserve activation OFF.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

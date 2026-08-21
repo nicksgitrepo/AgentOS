@@ -1,0 +1,88 @@
+{
+  "schema": "agentos.field_job_workflow_registry_entry.v1",
+  "version": 1,
+  "stable_agent_id": "AGENT.DOMAIN_FIELD_JOB_WORKFLOW",
+  "block_id": "specialist.domain.field-job-workflow",
+  "package_path": "specialist-blocks/wave-06/field-job-workflow",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+  "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+  "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+  "block_sha256": "ad3ae083c3f7f052a7b78ab8ad1db8c2989148fc5d70c847236895afb57ab9e7",
+  "source_lock": {
+    "path": "specialist-blocks/wave-06/field-job-workflow/sources.lock",
+    "manifest_sha256": "9705bb8fd93bc1ba58faaca9fb415e740c3e05de3916a4b014918a58c96eaa42"
+  },
+  "model_route": {
+    "path": "specialist-blocks/wave-06/field-job-workflow/model-route.json",
+    "task_class": "NARROW_CODING",
+    "model_id": "gpt-5.6-luna",
+    "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "route_sha256": "ecc4315ae5235b904d2d00e25a9935b9c28219898706226f6a786661c4b05bab"
+  },
+  "context_projection": {
+    "path": "specialist-blocks/wave-06/field-job-workflow/context.json",
+    "context_sha256": "1190d063330533f0922ff0bb1be265dee92a816b9e5adced2dba351179ac91c1",
+    "memory_scope": "TYPED_HANDOFF_ONLY",
+    "memory_write_allowed": false
+  },
+  "memory_invalidation": {
+    "path": "specialist-blocks/wave-06/field-job-workflow/memory-invalidation.json",
+    "graph_sha256": "eab3573fa90c3dbd676f602919485167e595466df3a8c7b2faa4b80ff2390788",
+    "write_allowed": false
+  },
+  "gates": {
+    "manifest_path": "specialist-blocks/wave-06/field-job-workflow/gates/manifest.json",
+    "execution_path": "specialist-blocks/wave-06/field-job-workflow/gates/execution.json",
+    "execution_sha256": "12d19ade509fc32f30c9cdb5b73bbc6e6f389229d4db0d4d1720c67654c91a7e",
+    "ordered": [
+      {"gate_id": "00-intake", "path": "specialist-blocks/wave-06/field-job-workflow/gates/00-intake.gate", "file_sha256": "2faa5c090e981897b1e62fa6b1da7df77c8ec6abdea659cfb1c24142e0be715a"},
+      {"gate_id": "01-applicability", "path": "specialist-blocks/wave-06/field-job-workflow/gates/01-applicability.gate", "file_sha256": "f5f5d17fd4ccc0efb638b766b5ffece38c0fdba9106c04c52125e4369e18db84"},
+      {"gate_id": "02-authority-precedence", "path": "specialist-blocks/wave-06/field-job-workflow/gates/02-authority-precedence.gate", "file_sha256": "7c2c42a237564071cc8859b2e31b9154c81b28c580b7f70f9a5a4cfce8f6b413"},
+      {"gate_id": "03-scope-nongoals", "path": "specialist-blocks/wave-06/field-job-workflow/gates/03-scope-nongoals.gate", "file_sha256": "12cfe6dcc6508ecf396f144b00eeb27f437d43f7e16e2c4bb85d033d50342492"},
+      {"gate_id": "04-source-evidence-freshness", "path": "specialist-blocks/wave-06/field-job-workflow/gates/04-source-evidence-freshness.gate", "file_sha256": "7c19e7386425ba064c63e259cb276ab5774fe3f890883a91d37df0aa66b65d2d"},
+      {"gate_id": "05-context-completeness", "path": "specialist-blocks/wave-06/field-job-workflow/gates/05-context-completeness.gate", "file_sha256": "37e97a52019774935c8ec6e6e2ae65406f93715105a21a62a2b1560639961b84"},
+      {"gate_id": "06-tool-resource-custody", "path": "specialist-blocks/wave-06/field-job-workflow/gates/06-tool-resource-custody.gate", "file_sha256": "2abadd2b60f9c50fd70860b6b61603cd87d95bf371d5321dfb55fc1d1f1ac496"},
+      {"gate_id": "07-data-secret-privacy", "path": "specialist-blocks/wave-06/field-job-workflow/gates/07-data-secret-privacy.gate", "file_sha256": "86d4b353b0ff5d7a43081e9651fe623296e814784edda423c5fa432509c44c3a"},
+      {"gate_id": "08-build-browser-runtime", "path": "specialist-blocks/wave-06/field-job-workflow/gates/08-build-browser-runtime.gate", "file_sha256": "2bcbe6a3e7cc007431bb4286dcba979df816b8b37280456a54f0c97116c356b2"},
+      {"gate_id": "09-output-handoff", "path": "specialist-blocks/wave-06/field-job-workflow/gates/09-output-handoff.gate", "file_sha256": "00c428a2784ab7ce69ca571b0b48b1e5529c3ec8053d445776129e6c49f54acd"},
+      {"gate_id": "10-proof-acceptance", "path": "specialist-blocks/wave-06/field-job-workflow/gates/10-proof-acceptance.gate", "file_sha256": "d2304dc4a5cb2e6123d5c76e61d1dc1d171cccc923e1a8f41547e4184ca23eda"},
+      {"gate_id": "11-lifecycle-recovery-archive", "path": "specialist-blocks/wave-06/field-job-workflow/gates/11-lifecycle-recovery-archive.gate", "file_sha256": "2019ecfc8374639ad42e1316106829e2ee7df7c0c7d14379a5713da0e839c22e"}
+    ]
+  },
+  "hostile_fixtures": [
+    {"class": "authority_conflict", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/authority_conflict.json", "file_sha256": "2cf8620783ed41a359c5d0afb938df8b7163a5e470af070dc12df6bd1acc983a"},
+    {"class": "broad_when_narrow_exists", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/broad_when_narrow_exists.json", "file_sha256": "843bc1b0f8a321b3b7e232d22fad31a6a65825b64473ef3354664156f64d53eb"},
+    {"class": "cross_provider_version_claim", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/cross_provider_version_claim.json", "file_sha256": "b2aaeec694e9fba1e16f217c2ae5917bcff7c311b7d03f0e45a8283cd165da3a"},
+    {"class": "data_limit", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/data_limit.json", "file_sha256": "254cb8e60c5c5adf5566e6b832565cf4ee4e19314e0349040a37316a231fa92b"},
+    {"class": "duplicate_sibling_authority", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/duplicate_sibling_authority.json", "file_sha256": "4103987dd5084d80595444ae784f6667e36e15c18cdd7be89367c44e479389ee"},
+    {"class": "false_positive", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/false_positive.json", "file_sha256": "9d932947c119311a4cffa97e0439ba0061ef2dab71520550fad09cdd5c0a4fea"},
+    {"class": "handoff", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/handoff.json", "file_sha256": "61641880af87a5d8373c1eb80a86f5de5e28aba7acbb78a9a03f0d130a5f0627"},
+    {"class": "missing_context", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/missing_context.json", "file_sha256": "2e309455c843df7cd72767bd1d8a48da834af58f3efb8260ac3b532a96780d69"},
+    {"class": "narrowness", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/narrowness.json", "file_sha256": "6c1cb8663d55d9ea5506c2bcd662e370a107545c5cb8d72243c9d47812c4bb83"},
+    {"class": "router_self_accept", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/router_self_accept.json", "file_sha256": "ad4e61f6ad78d6aa50a410740d1a700bd68f0021bf16f920a590e1b2ac73f330"},
+    {"class": "routing", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/routing.json", "file_sha256": "399c234f7592b7d80ed6afd3fcc952f4d195cd6c2dee80998091b740dc4b469d"},
+    {"class": "silent_scope_expansion", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/silent_scope_expansion.json", "file_sha256": "0d0c0f749d2d74ac4c30e708481d83c316f2d29e1d360be3d49534e90c956796"},
+    {"class": "stale_source", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/stale_source.json", "file_sha256": "347dbfef1968e5b620318e70fea102b89c54b0e419af142acaaf3ac631746e4f"},
+    {"class": "tool_limit", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/tool_limit.json", "file_sha256": "497b0009f7f232ef569306ca8626f17c65617abbe79b7a35440807fe9973401c"},
+    {"class": "umbrella_authority", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/umbrella_authority.json", "file_sha256": "f85ab04ec944ff5f5c3cd1e465cff8d95c783230dd639fe8c857fdc23929fd36"},
+    {"class": "unrelated_scope", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/unrelated_scope.json", "file_sha256": "01c8b10f5701edfb8a349bb45b652faf96d5520fa9beedb77bb28eb441217e4f"},
+    {"class": "unsafe_action", "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/unsafe_action.json", "file_sha256": "6cd487dde56f3a52d20790bef5c1bfc6a3d1104e6b8098d4aca41a3093cc09ce"}
+  ],
+  "handoff": {
+    "path": "specialist-blocks/wave-06/field-job-workflow/handoff.json",
+    "file_sha256": "88dfbad1086bc2b021a0849d8716f0816f50d0d1663690049c20683833d16f20",
+    "independent_review_required": true
+  },
+  "evaluation": {
+    "path": "specialist-blocks/wave-06/field-job-workflow/evaluation.json",
+    "disposition": "EXECUTED_REVIEW_REQUIRED",
+    "canonical_external_admission": "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED"
+  },
+  "focused_test": "tests/verify-field-job-workflow-boundary.mjs",
+  "custody_ref": "opaque:FIELD_JOB_WORKFLOW.CUSTODY",
+  "rollback_rule": "Revert the candidate commit on the isolated lane branch; never mutate or reuse the source checkout.",
+  "independent_review_required": true,
+  "registry_sha256": "91ae13a33750fe999fe4b84122b9a9383a821e73b39f6d0c2d258806f054ae49"
+}
