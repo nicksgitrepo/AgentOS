@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "cross_provider_version_claim",
-  "expected": "DENY",
+  "fixture_id": "search-rag-cross_provider_version_claim",
   "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"AI_SEARCH_RAG_SOURCE_STALE_OR_UNVERIFIED"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"cross_provider":true}}},"expected_readback":{"disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"AI_SEARCH_RAG_SOURCE_STALE_OR_UNVERIFIED"}}
 }

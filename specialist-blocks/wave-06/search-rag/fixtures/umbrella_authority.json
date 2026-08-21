@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "umbrella_authority",
-  "expected": "DENY",
+  "fixture_id": "search-rag-umbrella_authority",
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"AI_SEARCH_RAG_SCOPE_EXPANSION_FORBIDDEN"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"broad_claim":true}}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"AI_SEARCH_RAG_SCOPE_EXPANSION_FORBIDDEN"}}
 }

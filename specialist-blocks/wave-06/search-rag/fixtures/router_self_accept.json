@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "router_self_accept",
-  "expected": "DENY",
+  "fixture_id": "search-rag-router_self_accept",
   "hostile": true,
-  "note": "Synthetic hostile fixture for router_self_accept; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"INDEPENDENT_REVIEW_REQUIRED","error_code":"AI_SEARCH_RAG_SELF_ACCEPTANCE_FORBIDDEN"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"self_acceptance":true}}},"expected_readback":{"disposition":"DENY","route":"INDEPENDENT_REVIEW_REQUIRED","error_code":"AI_SEARCH_RAG_SELF_ACCEPTANCE_FORBIDDEN"}}
 }

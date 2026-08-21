@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "unrelated_scope",
-  "expected": "DENY",
+  "fixture_id": "search-rag-unrelated_scope",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"NO_SEARCH_RAG","error_code":"AI_SEARCH_RAG_NOT_APPLICABLE"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"UNRELATED_REQUEST","evidence_overrides":{}},"expected_readback":{"disposition":"DENY","route":"NO_SEARCH_RAG","error_code":"AI_SEARCH_RAG_NOT_APPLICABLE"}}
 }

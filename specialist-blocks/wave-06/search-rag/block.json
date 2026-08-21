@@ -140,7 +140,7 @@
   },
   "output": {
     "contract_id": "specialist-output.search-rag.v1",
-    "typed_schema": "schemas/specialist-output.v1.json",
+    "typed_schema": "schemas/ai-search-rag-boundary-result.v1.json",
     "required_fields": [
       "evidence",
       "findings",
@@ -150,12 +150,16 @@
       "unknowns"
     ],
     "evidence_obligations": [
+      "AI.SEARCH_RAG signal and atomic evidence boundary",
       "exact source lock identity",
       "gate trace",
+      "model-policy route receipt",
       "specialist.standard.nist-ai-rmf-1-0 hash",
       "specialist.standard.nist-genai-profile-1-0 hash",
       "typed context",
-      "unknown ledger"
+      "typed memory/binding receipt",
+      "unknown ledger",
+      "upstream AI/Search/RAG router receipt"
     ],
     "handoff_fields": [
       "block_id",
@@ -252,11 +256,11 @@
     ]
   },
   "lifecycle_rules": {
-    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
-    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
-    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
-    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
-    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+    "candidate_entry": "Block, source lock, twelve executable gates, seventeen hostile vectors, decision tree, gate execution manifest, evaluation dossier, and typed handoff have matching digests.",
+    "evaluation_entry": "Independent evaluator reruns retrieval narrowness, upstream router binding, missing-context, stale-source, authority, custody, unsafe-action, memory-boundary, and handoff cases.",
+    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, router/model drift, memory-binding drift, or failed utility/harm review.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; preserve the exact source/tree and invalidate compiled contexts.",
+    "reactivation": "Create or validate a new revision, invalidate old bindings and memory receipts, and rerun independent evaluation; never silently reactivate an old digest."
   },
   "gate_path": "gates/00-intake.gate",
   "gate_pack": {
@@ -330,5 +334,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "c661430c0f7b9da3c833a914f9f3cb1d4b4e9fe3d02303dc6b3db9447eb2a3ce"
+  "block_sha256": "fbef32ad5f105ad32ca7d2e245c76baae6e040d94961bd7ddf1a70e97215e3fe"
 }

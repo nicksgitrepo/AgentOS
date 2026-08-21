@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "duplicate_sibling_authority",
-  "expected": "DENY",
+  "fixture_id": "search-rag-duplicate_sibling_authority",
   "hostile": true,
-  "note": "Synthetic hostile fixture for duplicate_sibling_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"AI_SEARCH_RAG_AUTHORITY_CONFLICT"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"duplicate_authority":true}}},"expected_readback":{"disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"AI_SEARCH_RAG_AUTHORITY_CONFLICT"}}
 }

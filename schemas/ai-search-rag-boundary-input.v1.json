@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/ai-search-rag-boundary-input.v1.json",
+  "title": "AgentOS AI Search/RAG specialist boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.ai_search_rag_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string"},
+    "evidence": {"type": "object"}
+  }
+}

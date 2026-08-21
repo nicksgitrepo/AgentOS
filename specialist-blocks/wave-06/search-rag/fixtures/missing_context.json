@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "missing_context",
-  "expected": "DENY",
+  "fixture_id": "search-rag-missing_context",
   "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"AI_SEARCH_RAG_CONTEXT_INCOMPLETE"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"missing_context":true}}},"expected_readback":{"disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"AI_SEARCH_RAG_CONTEXT_INCOMPLETE"}}
 }

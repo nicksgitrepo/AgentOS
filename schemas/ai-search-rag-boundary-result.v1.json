@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/ai-search-rag-boundary-result.v1.json",
+  "title": "AgentOS AI Search/RAG specialist boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "analysis_allowed", "acceptance_allowed", "answer_generation_allowed", "corpus_writes_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.ai_search_rag_boundary_result.v1"},
+    "version": {"const": 1},
+    "disposition": {"enum": ["DENY", "ROUTE"]},
+    "route": {"type": "string"},
+    "selected_specialist": {"const": "specialist.ai.search-rag"},
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "next_action", "execution_instruction"],
+      "properties": {
+        "status": {"const": "WAITING_WITH_RECEIPT"},
+        "next_action": {"type": "string", "minLength": 1},
+        "execution_instruction": {"const": false}
+      }
+    },
+    "analysis_allowed": {"type": "boolean"},
+    "acceptance_allowed": {"const": false},
+    "answer_generation_allowed": {"const": false},
+    "corpus_writes_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": {"const": 0}},
+    "error_code": {"type": "string"},
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

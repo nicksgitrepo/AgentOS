@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.search-rag.v1",
   "block_id": "specialist.ai.search-rag",
-  "candidate_digest": "c661430c0f7b9da3c833a914f9f3cb1d4b4e9fe3d02303dc6b3db9447eb2a3ce",
+  "candidate_digest": "fbef32ad5f105ad32ca7d2e245c76baae6e040d94961bd7ddf1a70e97215e3fe",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-p5-domain-ai-3d-reg-finance-harness.v1",
   "cases": [
@@ -28,7 +28,7 @@
     {
       "case_id": "search-rag-data_limit",
       "class": "data_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {
@@ -88,7 +88,7 @@
     {
       "case_id": "search-rag-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {

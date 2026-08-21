@@ -312,105 +312,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.ai.search-rag.AUTHORITY_CONFLICT",
+            "fixture_id": "search-rag-authority_conflict",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/authority_conflict.json",
-            "file_sha256": "3264119df109e048d35855527ac37ed0c6751e9cb6c0ad803d29f739ebadc044",
+            "file_sha256": "86990bb5b521aedd548abd28e8e7d0645c828bcd6073f2c2aacd84f36e4dc05b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "search-rag-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "0fe1e4efe052b255ee4499243a616fa556eceed89a2ec02781c34760df20aec7",
+            "file_sha256": "115e48c87d94e7763879ae3b5dd1ec913f2162006eba92d004038432466517cd",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "search-rag-cross_provider_version_claim",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "94d4bae22b455752a2317785ab04ed90dc1209e049d6c42c5f072d0959b9601a",
+            "file_sha256": "72dd4b6932a61e58f2101832b6fc3dea11b04ae1c9aeb3ee950e4a9bb06b444c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.DATA_LIMIT",
+            "fixture_id": "search-rag-data_limit",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/data_limit.json",
-            "file_sha256": "9a8c3a63d99104ad73d7aba422b1c521f3ecb0345208362bb43bf9611fb03f5c",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "289e8971c981862236a75cf56e091b64dcc9b95bf1dbfd22bc908e6044d22c73",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "search-rag-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "be9d7cecc2bbcf0ae73de2a6624694f0f1aa9e3fd2c5d0c9ae0515f8f6d55d61",
+            "file_sha256": "eeff447587b55927a2008037d1011ca354f84b411dd756a039c0ce495932a837",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.FALSE_POSITIVE",
+            "fixture_id": "search-rag-false_positive",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/false_positive.json",
-            "file_sha256": "d41ff605d3e00282ae135db22756b80f2cfac390b1f301039418518979513f61",
+            "file_sha256": "a5802cb6a24a785663b1f6fc9be7aa62f2fb1577dd1974b180b8c381ee10ed70",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.HANDOFF",
+            "fixture_id": "search-rag-handoff",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/handoff.json",
-            "file_sha256": "ba8cdb2c1315ab17187e81874017a203c124db1a89fd45be857e0304a74aa9f4",
+            "file_sha256": "e21b25fc3485eba32f6015cb5195ca26b7ace39b364ef13920c90109db232c6a",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.MISSING_CONTEXT",
+            "fixture_id": "search-rag-missing_context",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/missing_context.json",
-            "file_sha256": "9b1da07935baf4aca3ca889ae7a995ea3bf4cd581863c3212880514ce496e715",
+            "file_sha256": "7611fc0d345149c76c34fb530bdc5f47887ebacc0be0c0f06224cecbdcae8040",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.NARROWNESS",
+            "fixture_id": "search-rag-narrowness",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/narrowness.json",
-            "file_sha256": "b03b2790187c2ab8040fd2dbcf76c02586d96bee4a9ed5af15dfdff6828f9543",
+            "file_sha256": "54f68c8f4e413ba0d48cd78065872dde931e705e8b3b5aef205e546e0feb745a",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.ROUTER_SELF_ACCEPT",
+            "fixture_id": "search-rag-router_self_accept",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/router_self_accept.json",
-            "file_sha256": "a8675fc8740e7854a7bded40e5186a90daa600ec007fa467dc805770bd3f5694",
+            "file_sha256": "36bb3eabc3997f6d58b63eff2a9b6f549a67e7fc214419668ad0edfef8cf175d",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.ROUTING",
+            "fixture_id": "search-rag-routing",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/routing.json",
-            "file_sha256": "f4046a4c666a353e83ab7f7578943ebc04966b23e1503271e148d3b43bc11c04",
+            "file_sha256": "2442ff407972f95e74768d49e827f8aecb83b27ae33ab0f081b805f36cbf1537",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "search-rag-silent_scope_expansion",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/silent_scope_expansion.json",
-            "file_sha256": "96fba7c3834adc030ab8dd23656c612cbf3aa967b0efe2d79e88b03dfa6fd4a1",
+            "file_sha256": "0c935482ec4a28d842c18124241fae029e0cdb6dd9963a4f685d90598b09f5b7",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.STALE_SOURCE",
+            "fixture_id": "search-rag-stale_source",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/stale_source.json",
-            "file_sha256": "ff4cace14c5f54efbb8b4da7eed7840d4ed182c34377773c73c9670ba516d1cb",
+            "file_sha256": "7f7a6557c05c397d2fff3f35b03eafefd91d109f6458af4e5cfd49a9b82a3a4a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.TOOL_LIMIT",
+            "fixture_id": "search-rag-tool_limit",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/tool_limit.json",
-            "file_sha256": "bdb78fc67dd2304d1b816710e7f578125aadde7ac9d39d760b05037eba44d805",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "164ca5af612f7dbd9f443dcd00d7c83fe1f5963ff85dd6300c838338f4ed3eb4",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.UMBRELLA_AUTHORITY",
+            "fixture_id": "search-rag-umbrella_authority",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/umbrella_authority.json",
-            "file_sha256": "92d4fa926599056b2c733d8c6bc9e3b762082c9cee38e371902acde1bc15cf6c",
+            "file_sha256": "2ca4a22486f5adde99c7374dd1488c43de199251a46336d717a9e8183be59566",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.UNRELATED_SCOPE",
+            "fixture_id": "search-rag-unrelated_scope",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/unrelated_scope.json",
-            "file_sha256": "389664657ea13c42be3aa46590b6b4f6a3eb1ad8c860043c0784aae7848555d4",
+            "file_sha256": "89fe421f7bb2c8bf5458f7353e973b9f21dc302ef61bf99584088d2c22f49cf3",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.ai.search-rag.UNSAFE_ACTION",
+            "fixture_id": "search-rag-unsafe_action",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/unsafe_action.json",
-            "file_sha256": "b5c84a9e0eb06912bda4db7a374e8f22e850b9f805c5500a0e413b0ce5f4b37a",
+            "file_sha256": "f8f6932085ceb2850d962b563ae535c20f11977f033f31a0d16ba32e370193f6",
             "expected_outcome": "DENY"
           }
         ]
@@ -420,17 +420,24 @@
           "source_lock",
           "freshness_policy",
           "claim_rule",
-          "unknown_rule"
+          "unknown_rule",
+          "retrieval_signal",
+          "upstream_router_result",
+          "decision_tree",
+          "gate_execution",
+          "model_route",
+          "memory_binding",
+          "invalidation_rule"
         ],
         "handoff_path": "specialist-blocks/wave-06/search-rag/handoff.json",
-        "handoff_file_sha256": "40c029ee4ba1247ba55a76203018c8811e4a4366f8049ef57ebe24890bd8a675",
+        "handoff_file_sha256": "6edaa80e786cd759625bd5ca5fac739911e0c55aae5d5aedfe1db389b2140e2d",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.search-rag.v1"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
         "build_rules": [
-          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+          "{\"candidate_entry\":\"Block, source lock, twelve executable gates, seventeen hostile vectors, decision tree, gate execution manifest, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns retrieval narrowness, upstream router binding, missing-context, stale-source, authority, custody, unsafe-action, memory-boundary, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, router/model drift, memory-binding drift, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; preserve the exact source/tree and invalidate compiled contexts.\",\"reactivation\":\"Create or validate a new revision, invalidate old bindings and memory receipts, and rerun independent evaluation; never silently reactivate an old digest.\"}"
         ],
         "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
         "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
@@ -480,7 +487,10 @@
       "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-06/search-rag/evaluation.json"
+          "specialist-blocks/wave-06/search-rag/evaluation.json",
+          "specialist-blocks/wave-06/search-rag/decision-tree.json",
+          "specialist-blocks/wave-06/search-rag/gates/execution.json",
+          "specialist-blocks/wave-06/search-rag/handoff.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40424,5 +40434,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "12e548a2924acaa5fa2c0c2b6e6be2cf0620be3758826d5248ef25550244f0eb"
 }

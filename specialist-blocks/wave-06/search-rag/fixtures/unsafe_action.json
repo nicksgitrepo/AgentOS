@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.ai.search-rag",
   "class": "unsafe_action",
-  "expected": "DENY",
+  "fixture_id": "search-rag-unsafe_action",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition":"DENY","route":"NO_SEARCH_RAG_SIDE_EFFECT","error_code":"AI_SEARCH_RAG_OPERATION_FORBIDDEN"},
+  "vector": {"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"request_kind":"WRITE_PROJECT","evidence_overrides":{}},"expected_readback":{"disposition":"DENY","route":"NO_SEARCH_RAG_SIDE_EFFECT","error_code":"AI_SEARCH_RAG_OPERATION_FORBIDDEN"}}
 }

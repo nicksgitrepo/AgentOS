@@ -4,24 +4,38 @@
   "handoff_id": "specialist-handoff.search-rag.v1",
   "block_id": "specialist.ai.search-rag",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "c661430c0f7b9da3c833a914f9f3cb1d4b4e9fe3d02303dc6b3db9447eb2a3ce",
-  "source_commit": "7ba72b318dd7ee48fa64f7ee8bbb6e412524496e",
-  "source_tree": "050a8eea7c8e63cf97a164519d925943bc9eeba5",
+  "candidate_digest": "fbef32ad5f105ad32ca7d2e245c76baae6e040d94961bd7ddf1a70e97215e3fe",
+  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
+  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
   "changed_paths": [
     "specialist-blocks/wave-06/search-rag/block.json",
     "specialist-blocks/wave-06/search-rag/evaluation.json",
     "specialist-blocks/wave-06/search-rag/gates/manifest.json",
+    "specialist-blocks/wave-06/search-rag/gates/execution.json",
+    "specialist-blocks/wave-06/search-rag/decision-tree.json",
     "specialist-blocks/wave-06/search-rag/handoff.json",
-    "specialist-blocks/wave-06/search-rag/sources.lock"
+    "specialist-blocks/wave-06/search-rag/sources.lock",
+    "specialist-blocks/wave-06/search-rag/fixtures/*.json"
   ],
   "proof": [
     "12-gate-pack-digests",
     "hostile-fixture-catalog",
+    "17-operational-hostile-vectors-through-ai-search-rag-boundary",
+    "zero-side-effect-readbacks",
     "independent-reviewer-required",
     "p5-domain-ai-3d-reg-finance-scope-and-authority",
     "reusable-standard-dependency-identities",
     "source-lock-digest",
-    "upstream-router-closure"
+    "upstream-router-closure",
+    "model-policy-snapshot-route",
+    "typed-memory-binding-and-invalidation",
+    "decision_tree_sha256:f44e680b785452edcfe9d5ff0c9759dd93b7f0f70a4203ec1d6b5d9bb109f9ec",
+    "gate_execution_sha256:e9a123b24c390088b3d794cb635f636a02938dcb960ae287a3da783b9b79c9ca",
+    "model_route_sha256:97a653ec06f36e1dea28aed122b143e57b1ee49d63c299a98d64721c9aa77caf",
+    "context_receipt_sha256:4263ccc9fdaa4e970ed4484dbac780ea0c184f89613190fe8ec9bb19669e47b7",
+    "memory_binding_sha256:14bf17e0ea696d6e5911ef60f7ef9ad50dc19966ed8363e540761bab4e3c40c5",
+    "upstream_router_file_sha256:621c59420e6dbac1562687635eb9a1bc763ab49fd959163a4064d94007fa13d3",
+    "evaluation_file_sha256:7c3992392845322174b1c0058a12a16452b0c0ee85fc66cb70f73e3b890b908c"
   ],
   "residuals": [
     "applicability and project context remain external",

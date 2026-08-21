@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.ai_search_rag_decision_tree.v1",
+  "version": 1,
+  "block_id": "specialist.ai.search-rag",
+  "entry": "00-intake",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"],
+  "nodes": [
+    {"node_id":"00-intake","gate_id":"00-intake","yes":"01-applicability","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"01-applicability"},
+    {"node_id":"01-applicability","gate_id":"01-applicability","yes":"02-authority-precedence","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"02-authority-precedence"},
+    {"node_id":"02-authority-precedence","gate_id":"02-authority-precedence","yes":"03-scope-nongoals","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"03-scope-nongoals"},
+    {"node_id":"03-scope-nongoals","gate_id":"03-scope-nongoals","yes":"04-source-evidence-freshness","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"04-source-evidence-freshness"},
+    {"node_id":"04-source-evidence-freshness","gate_id":"04-source-evidence-freshness","yes":"05-context-completeness","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"05-context-completeness"},
+    {"node_id":"05-context-completeness","gate_id":"05-context-completeness","yes":"06-tool-resource-custody","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"06-tool-resource-custody"},
+    {"node_id":"06-tool-resource-custody","gate_id":"06-tool-resource-custody","yes":"07-data-secret-privacy","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"07-data-secret-privacy"},
+    {"node_id":"07-data-secret-privacy","gate_id":"07-data-secret-privacy","yes":"08-build-browser-runtime","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"08-build-browser-runtime"},
+    {"node_id":"08-build-browser-runtime","gate_id":"08-build-browser-runtime","yes":"09-output-handoff","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"09-output-handoff"},
+    {"node_id":"09-output-handoff","gate_id":"09-output-handoff","yes":"10-proof-acceptance","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"10-proof-acceptance"},
+    {"node_id":"10-proof-acceptance","gate_id":"10-proof-acceptance","yes":"11-lifecycle-recovery-archive","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"11-lifecycle-recovery-archive"},
+    {"node_id":"11-lifecycle-recovery-archive","gate_id":"11-lifecycle-recovery-archive","yes":"OUTCOME:ROUTE","no":"OUTCOME:DENY","unknown":"OUTCOME:UNKNOWN_DEPENDENT_ONLY","not_applicable":"OUTCOME:ROUTE"}
+  ],
+  "default_rule": "UNKNOWN_CLOSES_ONLY_DEPENDENT_ACTION;_NO_SILENT_SCOPE_OR_AUTHORITY_ADDITION",
+  "memory_binding_rule": "TYPED_HANDOFF_ONLY;_NO_PROJECT_MEMORY_WRITE",
+  "invalidation_rule": "INVALIDATE_AND_REBUILD_DEPENDENTS_ON_BLOCK_SOURCE_STANDARD_ROUTER_MODEL_OR_CONTEXT_CHANGE",
+  "decision_tree_sha256": "f44e680b785452edcfe9d5ff0c9759dd93b7f0f70a4203ec1d6b5d9bb109f9ec"
+}

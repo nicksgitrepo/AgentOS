@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/ai-search-rag-decision-tree.v1.json",
+  "title": "AgentOS AI Search/RAG specialist decision tree",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "entry", "answer_type", "allowed_outcomes", "nodes", "default_rule", "memory_binding_rule", "invalidation_rule", "decision_tree_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.ai_search_rag_decision_tree.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.ai.search-rag"},
+    "entry": {"const": "00-intake"},
+    "answer_type": {"const": "FOUR_VALUED"},
+    "allowed_outcomes": {"const": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]},
+    "nodes": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "object"}},
+    "default_rule": {"const": "UNKNOWN_CLOSES_ONLY_DEPENDENT_ACTION;_NO_SILENT_SCOPE_OR_AUTHORITY_ADDITION"},
+    "memory_binding_rule": {"const": "TYPED_HANDOFF_ONLY;_NO_PROJECT_MEMORY_WRITE"},
+    "invalidation_rule": {"const": "INVALIDATE_AND_REBUILD_DEPENDENTS_ON_BLOCK_SOURCE_STANDARD_ROUTER_MODEL_OR_CONTEXT_CHANGE"},
+    "decision_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

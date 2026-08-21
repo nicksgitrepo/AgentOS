@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/ai-search-rag-gate-execution.v1.json",
+  "title": "AgentOS AI Search/RAG executable gate manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "evaluator_entrypoint", "decision_tree_path", "decision_tree_sha256", "ordered_gate_ids", "executions"],
+  "properties": {
+    "schema": {"const": "agentos.ai_search_rag_gate_execution.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.ai.search-rag"},
+    "evaluator_entrypoint": {"const": "control/ai-search-rag-package-evaluator.mjs#evaluateAiSearchRagPackage"},
+    "decision_tree_path": {"const": "specialist-blocks/wave-06/search-rag/decision-tree.json"},
+    "decision_tree_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ordered_gate_ids": {"type": "array", "minItems": 12, "maxItems": 12, "uniqueItems": true, "items": {"type": "string"}},
+    "executions": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "object"}}
+  }
+}
