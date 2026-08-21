@@ -3809,7 +3809,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "f3ca0559ad951def12544f7904fb045d07c45f23878c235c55264eea14b92eeb"
+      "sha256": "6b85e7cd0a2c66f82befe5c70b1be2277555097ae42771b320f4c59ee5a71eb6"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4305,7 +4305,7 @@
     },
     "specialist_roster_registry": {
       "path": "specialist-blocks/registry/roster.v1.json",
-      "sha256": "db3a980a51d57721ab3afa7ec0a2cf04cc657b4bd09bfd6e009b1766136ce797"
+      "sha256": "3a9f4edef9e3e8a8ec194f51972480525739465e3ef050eae3b39ec124e33bee"
     },
     "specialist_routing_index": {
       "path": "specialist-blocks/registry/routing-index.v1.json",
@@ -4581,7 +4581,7 @@
     },
     "function_scope_candidate_handoff": {
       "path": "specialist-blocks/wave-03/function-scope/handoff.json",
-      "sha256": "b68dc0c36a547e29783ce3a8d4922db5e23a6795b441e265cf65b8c3b3a613c1"
+      "sha256": "29a32d14a3758c0c254fa82b5f8fd982d8ed632dd8f94e6565cccaaa0454b197"
     },
     "function_scope_gate_execution_manifest": {
       "path": "specialist-blocks/wave-03/function-scope/gates/execution.json",

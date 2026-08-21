@@ -4801,7 +4801,7 @@
     },
     {
       "block_id": "specialist.security.function-scope",
-      "candidate_digest": "941ae5224e512c2d49429c8c2894e4d2cb2aa8fcc29577a0db4be9c0ad56d43f",
+      "candidate_digest": "f726682b8b6fab0d53c472558c97fd7ac0de4286c4f4856b6940de3c99cbca93",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Function Scope Authorization; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -4848,6 +4848,7 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
+        "specialist.security.access-control-router",
         "specialist.standard.owasp-asvs"
       ],
       "conflicts": [],
@@ -10199,5 +10200,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "db953f09b9a8e6d2b61d3f1d8f998ac56ba16cf0a043117aa42f4fe5362dc032"
+  "roster_sha256": "4219a86ddc8f14ef33cd8b16d72058ca0d378ab23d09e4e106721850cda3d8fb"
 }

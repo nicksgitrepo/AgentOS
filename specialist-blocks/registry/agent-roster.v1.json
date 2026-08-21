@@ -14403,7 +14403,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/function-scope/handoff.json",
-        "handoff_file_sha256": "b68dc0c36a547e29783ce3a8d4922db5e23a6795b441e265cf65b8c3b3a613c1",
+        "handoff_file_sha256": "29a32d14a3758c0c254fa82b5f8fd982d8ed632dd8f94e6565cccaaa0454b197",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.function-scope.v1"
       },
@@ -40489,5 +40489,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "7bc0b910b4f44d7441c2d74dce6f2ff385dedc8135de0ec95c75a9c3550281be"
+  "roster_sha256": "4f223c162d715c3aa4dfb6e16ca97539a194c947b3088808b282f22d288505c9"
 }
