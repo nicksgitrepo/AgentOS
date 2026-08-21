@@ -9,7 +9,11 @@ import {scanPersistedRecord} from "./persisted-record-privacy.mjs";
 export const INDEPENDENT_AUDITOR_INPUT_SCHEMA = "agentos.independent_auditor_boundary_input.v1";
 export const INDEPENDENT_AUDITOR_RESULT_SCHEMA = "agentos.independent_auditor_boundary_result.v1";
 const SHA256 = /^[0-9a-f]{64}$/u;
+const GIT_ID = /^[0-9a-f]{40}$/u;
 const OPAQUE_REF = /^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$/u;
+const ROUND_REF = /^opaque:round:[A-Z0-9._:/-]{1,180}$/u;
+const WORKTREE_REF = /^opaque:worktree:[A-Z0-9._:/-]{1,180}$/u;
+const TASK_ID = /^TASK\.AUDITOR\.[A-Z0-9._:-]{2,160}$/u;
 const ID = /^[A-Z][A-Z0-9._:-]{1,160}$/u;
 const REQUESTS = new Set(["EVALUATE_CANDIDATE", "RECHECK_EARLIER_PACKAGES", "NOT_APPLICABLE", "UNRELATED_REQUEST", "REPAIR", "ACCEPT", "ADMIT", "ACTIVATE", "MERGE", "PUSH", "DEPLOY", "PUBLISH", "WRITE_PROJECT", "WRITE_MEMORY", "SELF_REVIEW", "SPAWN", "DESPAWN"]);
 const FORBIDDEN = new Set(["REPAIR", "ACCEPT", "ADMIT", "ACTIVATE", "MERGE", "PUSH", "DEPLOY", "PUBLISH", "WRITE_PROJECT", "WRITE_MEMORY", "SELF_REVIEW", "SPAWN", "DESPAWN"]);
@@ -30,9 +34,17 @@ function validateInput(input) {
   exactKeys(input, new Set(["schema", "version", "request_kind", "review"]), "independent auditor input");
   assert(input.schema === INDEPENDENT_AUDITOR_INPUT_SCHEMA && input.version === 1, "independent auditor schema mismatch", "INDEPENDENT_AUDITOR_SCHEMA_MISMATCH");
   assert(typeof input.request_kind === "string" && REQUESTS.has(input.request_kind), "independent auditor request is not recognized", "INDEPENDENT_AUDITOR_REQUEST_INVALID");
-  exactKeys(input.review, new Set(["candidate_ref", "candidate_digest", "candidate_status", "package_scope", "author_identity", "evaluator_identity", "evaluator_status", "independence_status", "gate_status", "fixture_status", "source_status", "custody_status", "model_policy_status", "requested_action", "requested_tools", "required_blocks", "earlier_packages_status", "new_findings", "recheck_scope", "project_data_present", "secret_data_present", "adversarial_flags"]), "independent auditor review");
+  exactKeys(input.review, new Set(["candidate_ref", "candidate_digest", "candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1", "candidate_status", "package_scope", "author_identity", "evaluator_identity", "auditor_task_id", "auditor_task_status", "auditor_round_ref", "auditor_round_sha256", "builder_worktree_ref", "auditor_worktree_ref", "read_only_verified", "candidate_mutation_allowed", "merge_allowed", "deploy_allowed", "execution_status", "evaluator_status", "independence_status", "gate_status", "fixture_status", "source_status", "custody_status", "model_policy_status", "requested_action", "requested_tools", "required_blocks", "earlier_packages_status", "new_findings", "recheck_scope", "project_data_present", "secret_data_present", "adversarial_flags"]), "independent auditor review");
   const r = input.review;
   for (const key of ["candidate_ref"]) ref(r[key], `review.${key}`);
+  for (const key of ["candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1"]) { bounded(r[key], `review.${key}`, 40); assert(GIT_ID.test(r[key]), `review.${key} is not a Git identity`, "INDEPENDENT_AUDITOR_CANDIDATE_ID_INVALID"); }
+  assert(ROUND_REF.test(r.auditor_round_ref), "review.auditor_round_ref is not an immutable round reference", "INDEPENDENT_AUDITOR_ROUND_REF_INVALID");
+  assert(WORKTREE_REF.test(r.builder_worktree_ref) && WORKTREE_REF.test(r.auditor_worktree_ref) && r.builder_worktree_ref !== r.auditor_worktree_ref, "review worktree custody is not isolated", "INDEPENDENT_AUDITOR_WORKTREE_CUSTODY_INVALID");
+  assert(TASK_ID.test(r.auditor_task_id), "review.auditor_task_id is not a governed auditor task", "INDEPENDENT_AUDITOR_TASK_INVALID");
+  for (const key of ["auditor_round_sha256"]) digest(r[key], `review.${key}`);
+  for (const key of ["read_only_verified", "candidate_mutation_allowed", "merge_allowed", "deploy_allowed"]) assert(typeof r[key] === "boolean", `review.${key} must be boolean`, "INDEPENDENT_AUDITOR_BOOLEAN_INVALID");
+  assert(r.read_only_verified === true && r.candidate_mutation_allowed === false && r.merge_allowed === false && r.deploy_allowed === false, "review custody grants an unsafe action", "INDEPENDENT_AUDITOR_CUSTODY_WEAKENED");
+  assert(r.auditor_task_status === "ADMITTED_CURRENT" && r.execution_status === "READY_FOR_EVALUATION", "review task or execution readback is not current", "INDEPENDENT_AUDITOR_TASK_UNAVAILABLE");
   for (const key of ["candidate_status", "package_scope", "author_identity", "evaluator_identity", "evaluator_status", "independence_status", "gate_status", "fixture_status", "source_status", "custody_status", "model_policy_status", "requested_action", "earlier_packages_status", "recheck_scope"]) bounded(r[key], `review.${key}`);
   digest(r.candidate_digest, "review.candidate_digest");
   for (const key of ["author_identity", "evaluator_identity"]) id(r[key], `review.${key}`);
@@ -46,7 +58,7 @@ function validateInput(input) {
   assert(scanPersistedRecord(input).safe, "independent auditor input contains protected or secret-like data", "INDEPENDENT_AUDITOR_PRIVACY_DENIED");
 }
 
-function missing(review) { return ["candidate_ref", "candidate_digest", "candidate_status", "package_scope", "author_identity", "evaluator_identity", "evaluator_status", "independence_status", "gate_status", "fixture_status", "source_status", "custody_status", "model_policy_status", "requested_action", "requested_tools", "required_blocks", "earlier_packages_status", "recheck_scope", "adversarial_flags"].filter((key) => review[key] === undefined || review[key] === null || review[key] === "" || (Array.isArray(review[key]) && review[key].length === 0)); }
+function missing(review) { return ["candidate_ref", "candidate_digest", "candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1", "candidate_status", "package_scope", "author_identity", "evaluator_identity", "auditor_task_id", "auditor_task_status", "auditor_round_ref", "auditor_round_sha256", "builder_worktree_ref", "auditor_worktree_ref", "execution_status", "evaluator_status", "independence_status", "gate_status", "fixture_status", "source_status", "custody_status", "model_policy_status", "requested_action", "requested_tools", "required_blocks", "earlier_packages_status", "recheck_scope", "adversarial_flags"].filter((key) => review[key] === undefined || review[key] === null || review[key] === "" || (Array.isArray(review[key]) && review[key].length === 0)); }
 
 export function evaluateIndependentAuditorBoundary(input) {
   validateInput(input);
@@ -76,5 +88,5 @@ export function evaluateIndependentAuditorBoundary(input) {
     return result("ROUTE", "EARLIER_PACKAGE_RECHECK", "INDEPENDENT_AUDITOR_RECHECK_REQUIRED", input, {selected_owner: "AGENTOS.SPAWNER", recheck: {policy: "ALL_EARLIER_NON_ARCHIVED_PACKAGES", receipt_authority: false}});
   }
   if (r.new_findings === true && r.earlier_packages_status !== "RECHECK_REQUIRED") return result("DENY", "EARLIER_PACKAGE_RECHECK", "INDEPENDENT_AUDITOR_RECHECK_REQUIRED", input, {selected_owner: "AGENTOS.SPAWNER"});
-  return result("ROUTE", "EVALUATION_RECEIPT_TO_SPAWNER", "INDEPENDENT_AUDITOR_EVALUATION_READY", input, {selected_owner: "AGENTOS.SPAWNER", receipt: {status: "TYPED_EVALUATION_ONLY", admission_allowed: false, activation_allowed: false}});
+  return result("ROUTE", "EVALUATION_RECEIPT_TO_SPAWNER", "INDEPENDENT_AUDITOR_EVALUATION_READY", input, {selected_owner: "AGENTOS.SPAWNER", round: {status: "READY_FOR_REAL_EXECUTION", round_ref: r.auditor_round_ref, round_sha256: r.auditor_round_sha256, task_id: r.auditor_task_id}, receipt: {status: "TYPED_EVALUATION_ONLY", admission_allowed: false, activation_allowed: false}});
 }

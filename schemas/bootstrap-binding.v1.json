@@ -2181,13 +2181,25 @@
       "path": "schemas/imported-rapid-development-owner-approval.v1.json",
       "sha256": "26188471699fc125d9a92d28d3992b9a68d5fbb076003e473dae7fc15d88c582"
     },
+    "auditor_round_custody_controller": {
+      "path": "control/auditor-round-custody.mjs",
+      "sha256": "b44b757065868d9ee11fcb678196d6c7d487bbca0bf0fd6a10ce7377755921b6"
+    },
+    "auditor_round_custody_contract": {
+      "path": "schemas/auditor-round-custody.v1.json",
+      "sha256": "db453b793b2a2d1a5a0442558264f81ce85ac93912f9db2fd7fbcf59f759fc96"
+    },
+    "auditor_round_custody_verifier": {
+      "path": "tests/verify-auditor-round-custody.mjs",
+      "sha256": "cc9c1df8f4c5e75ed8913dd03ddbc5b97e48552173668a0db00f760a046290fa"
+    },
     "independent_auditor_boundary_gate": {
       "path": "control/independent-auditor-boundary-gate.mjs",
-      "sha256": "2a2eb6218e34939cc6747786156b958bc50251dc60cee728ee885c461f700748"
+      "sha256": "50c151f3ec65f7ff9c039baae6d0b25d062d63ebd4a0438d5cdf05a3b7814a5b"
     },
     "independent_auditor_boundary_input_contract": {
       "path": "schemas/independent-auditor-boundary-input.v1.json",
-      "sha256": "7ac25813ff13a27a77b47cc8b8d857aca9da59780d32f83b45fcc5a797be27c1"
+      "sha256": "5f4c26e03bd348666f33673c39d23c3265975ba2f773dc4297e9ebe557918b9f"
     },
     "independent_auditor_boundary_result_contract": {
       "path": "schemas/independent-auditor-boundary-result.v1.json",
@@ -2195,7 +2207,7 @@
     },
     "independent_auditor_boundary_verifier": {
       "path": "tests/verify-independent-auditor-boundary.mjs",
-      "sha256": "bb498012fe283277865976019ec8dcab0c4aee7caa32647da352812d7158988f"
+      "sha256": "638a44a30a50b92dd298c3613c1ae7686c8fc1a8daba6f29c871413ee78b19f8"
     },
     "independent_auditor_candidate_handoff": {
       "path": "specialist-blocks/wave-01/independent-auditor/handoff.json",
@@ -2203,7 +2215,7 @@
     },
     "independent_auditor_package_operational_evaluator": {
       "path": "control/independent-auditor-package-evaluator.mjs",
-      "sha256": "b852df12c03bf8137579e5e7d8ac388d9a5cf701d58fddfbb3801083447d95f9"
+      "sha256": "03bca1c2b4c9500b4e0058a556a7e0ddcafa558d0c6bf5b3c8e2f19abdb6f421"
     },
     "independent_clearance_applicability_contract": {
       "path": "schemas/independent-clearance-applicability.v1.json",

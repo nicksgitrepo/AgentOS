@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/auditor-round-custody.v1.json",
+  "title": "Project-agnostic adversarial auditor round custody",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "round_id", "round_kind", "builder_task_id", "auditor_task_id", "builder_identity", "auditor_identity", "candidate", "model_policy", "custody", "execution", "verdict", "issued_at_utc", "expires_at_utc", "round_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.auditor_round_custody.v1"},
+    "version": {"const": 1},
+    "round_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{2,191}$"},
+    "round_kind": {"const": "ADVERSARIAL_AUDIT"},
+    "builder_task_id": {"type": "string", "pattern": "^TASK\\.BUILDER\\.[A-Z0-9._:-]{2,160}$"},
+    "auditor_task_id": {"type": "string", "pattern": "^TASK\\.AUDITOR\\.[A-Z0-9._:-]{2,160}$"},
+    "builder_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{2,191}$"},
+    "auditor_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{2,191}$"},
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_ref", "commit_sha1", "tree_sha1", "package_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "context_sha256", "rollback_commit_sha1", "rollback_tree_sha1", "status"],
+      "properties": {
+        "candidate_ref": {"type": "string", "pattern": "^opaque:(candidate|round):[A-Z0-9._:/-]{1,180}$"},
+        "commit_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "tree_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "gate_inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "fixture_inventory_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "rollback_commit_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "rollback_tree_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "status": {"const": "FROZEN_IMMUTABLE"}
+      }
+    },
+    "model_policy": {
+      "type": "object", "additionalProperties": false, "required": ["snapshot_sha256", "projection_sha256", "model_id", "reasoning_effort", "availability", "status"],
+      "properties": {"snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "projection_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "model_id": {"type": "string", "minLength": 1}, "reasoning_effort": {"type": "string", "minLength": 1}, "availability": {"const": "CURRENT_HOST_AVAILABLE"}, "status": {"const": "CURRENT_BOUND"}}
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false, "required": ["builder_worktree_ref", "auditor_worktree_ref", "builder_custody_receipt_sha256", "auditor_spawn_receipt_sha256", "auditor_task_readback_ref", "candidate_snapshot_sha256", "read_only", "candidate_mutation_allowed", "merge_allowed", "deploy_allowed"],
+      "properties": {
+        "builder_worktree_ref": {"type": "string", "pattern": "^opaque:worktree:[A-Z0-9._:/-]{1,180}$"}, "auditor_worktree_ref": {"type": "string", "pattern": "^opaque:worktree:[A-Z0-9._:/-]{1,180}$"}, "builder_custody_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "auditor_spawn_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "auditor_task_readback_ref": {"type": "string", "pattern": "^opaque:task:[A-Z0-9._:/-]{1,180}$"}, "candidate_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "read_only": {"const": true}, "candidate_mutation_allowed": {"const": false}, "merge_allowed": {"const": false}, "deploy_allowed": {"const": false}
+      }
+    },
+    "execution": {
+      "type": "object", "additionalProperties": false, "required": ["status", "entrypoints_real", "metadata_only", "timeout_or_silence", "fixture_inventory_complete", "gate_inventory_complete", "fixtures", "gates", "side_effects", "execution_sha256"],
+      "properties": {
+        "status": {"const": "COMPLETE"}, "entrypoints_real": {"const": true}, "metadata_only": {"const": false}, "timeout_or_silence": {"const": false}, "fixture_inventory_complete": {"const": true}, "gate_inventory_complete": {"const": true},
+        "fixtures": {"type": "array", "minItems": 1, "uniqueItems": true}, "gates": {"type": "array", "minItems": 1, "uniqueItems": true}, "side_effects": {"type": "object", "additionalProperties": false, "properties": {"candidate_writes": {"const": 0}, "builder_writes": {"const": 0}, "memory_writes": {"const": 0}, "project_writes": {"const": 0}, "credential_accesses": {"const": 0}, "merge_calls": {"const": 0}, "deploy_calls": {"const": 0}, "state_changes": {"const": 0}}}, "execution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "verdict": {"enum": ["PASS", "NOT_APPLICABLE_WITH_EVIDENCE", "FAIL", "UNKNOWN", "BLOCKED_EXACT"]},
+    "issued_at_utc": {"type": "string", "format": "date-time"}, "expires_at_utc": {"type": "string", "format": "date-time"}, "round_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
