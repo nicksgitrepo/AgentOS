@@ -564,6 +564,7 @@
     },
     {
       "route_id": "route.data.postgresql-rls",
+      "family": "data",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "DATA.POSTGRES_RLS",
@@ -3943,5 +3944,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "ab314cac69397aa0a54edaff905987d4a12e56c225349dd5d89e34f0c8632e42"
+  "routing_sha256": "6b057eb454028a4e15ba3167d1b03db03bdbb9a2534d25b8ac177220b9434e0b"
 }

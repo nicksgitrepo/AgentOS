@@ -3318,6 +3318,7 @@
         "specialist.standard.postgresql-17-rls"
       ],
       "knowledge_context_inputs": [
+        "atomic specialization law",
         "policy enablement and enforcement",
         "specialist.standard.postgresql-17-rls",
         "tenant-boundary evidence",
@@ -3330,7 +3331,8 @@
         "request",
         "signals",
         "source_lock",
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.postgresql-17-rls"
       ],
       "deterministic_gates": {
         "status": "BOUND",
@@ -3402,105 +3404,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.data.postgresql-rls.AUTHORITY_CONFLICT",
+            "fixture_id": "postgresql-rls-authority_conflict",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/authority_conflict.json",
-            "file_sha256": "b518df4b8cd28071bd44804396fc615d2578412ae76f8fc9ed47506e50260324",
+            "file_sha256": "2f246308e0555326875e12e3a0c973a626aec7b904f29939713b9ea61913fc37",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "postgresql-rls-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e2de8377c9015f1190418e386cfe8db33800f2034949acf67bc917930cd7aea6",
+            "file_sha256": "464983bc719cb8d8018e4fee8877b33f4808caa60dd40ba863d0644b8b90ce9e",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "postgresql-rls-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "05c761cba4f15b2d0d7a809abee697977a94fc027478b06814398c4e2a57d711",
+            "file_sha256": "c51d41713b04803527f9c6b1f0c8b42272cbce119032413a9d687e1a7f81d2b3",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.DATA_LIMIT",
+            "fixture_id": "postgresql-rls-data_limit",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/data_limit.json",
-            "file_sha256": "2de3c1c6d38d8e2296217c1265e89c12a2932dfab267a6ef0266edceade76db4",
+            "file_sha256": "e2aa9759c874243917d865c89d8b5933a7d517b03cc2adf93d337d74045745b2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "postgresql-rls-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "9ee1e7e0e8c0d44d56c69c912cc1d5626b2b8b1e05ddce8ef3963743d8e01301",
+            "file_sha256": "4db43faaf449cd4ba75dd3e1b0ec6d6517bc6e2b6f9537829d811cf60bbb47fb",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.FALSE_POSITIVE",
+            "fixture_id": "postgresql-rls-false_positive",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/false_positive.json",
-            "file_sha256": "e6af8ec44f71b635de5754ccdc039fde850392afec066a14a35b506fafbbf595",
+            "file_sha256": "939c8c643487e9862037c4f151f1b5730347b29925ea9d060ef19327d8dd2122",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.HANDOFF",
+            "fixture_id": "postgresql-rls-handoff",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/handoff.json",
-            "file_sha256": "93f529941ab2d629ba586aa8da10c21d95d32a1a56245cbf13c3f5ecb3b685d7",
+            "file_sha256": "4365303aebdaf53a570df4eee2e543f70a19e8d390953fc63051782f92eff0ad",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.MISSING_CONTEXT",
+            "fixture_id": "postgresql-rls-missing_context",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/missing_context.json",
-            "file_sha256": "9dcbe050ed90e1d8cc197484680a9230805700fefd8671c7d12efc30137b3b97",
+            "file_sha256": "3d735adc2ee1a3388bb76556129d59a5601ddb7e8dc8d158682fc402427a0ff8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.NARROWNESS",
+            "fixture_id": "postgresql-rls-narrowness",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/narrowness.json",
-            "file_sha256": "56bb9fc0ef7bafe0d8ec3c0c0950abafde58903f34027779863181b90f5843da",
+            "file_sha256": "961036845fbed6101212be19ec0b7f2237c60d35281ba4eba91182e220ea9ed9",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.ROUTER_SELF_ACCEPT",
+            "fixture_id": "postgresql-rls-router_self_accept",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/router_self_accept.json",
-            "file_sha256": "96020bdf640bd6ddeed8a236cc14d712659a468279ffe27c91928d82943c55cf",
+            "file_sha256": "e530c2bb52d457bf21e7e9af1a2291adaf5fce779f22e5c1aa4155b69d4d6328",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.ROUTING",
+            "fixture_id": "postgresql-rls-routing",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/routing.json",
-            "file_sha256": "0e0d4cd85bc61bd443bba90689d0f461dd4c14a984f8b1a229174e7b0657e05e",
+            "file_sha256": "bb9192268a8d00171be92160e0b714e732528bf9f7e75342c9cac55d48bcdaa5",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "postgresql-rls-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/silent_scope_expansion.json",
-            "file_sha256": "b932a8f296ed099dac3a1ebf9b737608a2e2e9dd572346abee0abaff79901b8a",
+            "file_sha256": "5503257ce1a85fc01ea5d024ba950be11eb2ff433ff745032318eef1c6475f12",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.STALE_SOURCE",
+            "fixture_id": "postgresql-rls-stale_source",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/stale_source.json",
-            "file_sha256": "4782053b1a4b23abb5fd936874911c886d41f86200d1fa3742c450a6c4849315",
+            "file_sha256": "c527e5a00b5e31ee56146c938b6c55298f2feb1e675704015e2b7c0ccb44f886",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.TOOL_LIMIT",
+            "fixture_id": "postgresql-rls-tool_limit",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/tool_limit.json",
-            "file_sha256": "56bbcffbbb673999ab829c7b56abe960c80a071d9d35be80238b763bd12d0708",
+            "file_sha256": "a197649754b3a64e4baf70dcc562103c1f0668f5f0b47c415b21d0bfaa102c25",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.UMBRELLA_AUTHORITY",
+            "fixture_id": "postgresql-rls-umbrella_authority",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/umbrella_authority.json",
-            "file_sha256": "632117193b2e409fb2e7149871c0749f705da8135be7f6089bdb0454ee370fe9",
+            "file_sha256": "0ae1d0dd638bccfba96aeb0e65810a52d5cef03def6b3a7573c6f37de5500a3f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.UNRELATED_SCOPE",
+            "fixture_id": "postgresql-rls-unrelated_scope",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/unrelated_scope.json",
-            "file_sha256": "bd948d1fe48235b4c36fc388c1b64a37c890d621b0207e383c8dfa212730d14f",
+            "file_sha256": "bfffcfd0e71e44e1a285c66c7b15734201b365bf1aeaa1b159819d529c3a38b2",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.data.postgresql-rls.UNSAFE_ACTION",
+            "fixture_id": "postgresql-rls-unsafe_action",
             "path": "specialist-blocks/wave-02/postgresql-rls/fixtures/unsafe_action.json",
-            "file_sha256": "7c6aa715bac8be97c68b6b0739555eee5e6fee85baaabbddb7e33bc6c1fd8c31",
+            "file_sha256": "58933e112317d17bb1d8858624211adcb6a600a0141a045799034684fdc54677",
             "expected_outcome": "DENY"
           }
         ]
@@ -3513,7 +3515,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/postgresql-rls/handoff.json",
-        "handoff_file_sha256": "d613e8b85ad5940404c8ee976879b0f8ca4d618cd38ec6c6c38b36aab51228a8",
+        "handoff_file_sha256": "885a130f6ad9e58db61de14ed23628c738ce9eb4528f3e1e6e15cfbaceeb4a9f",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.postgresql-rls.v1"
       },
@@ -3551,12 +3553,12 @@
         "runtime"
       ],
       "reuse_likelihood": {
-        "total": 74.45,
+        "total": 76.25,
         "expected_frequency": 86,
         "dependency_centrality": 55,
         "cross_project_reuse": 78,
         "risk_reduction": 82,
-        "architecture_coverage": 72,
+        "architecture_coverage": 90,
         "finish_cost": 45,
         "rationale": "P1 priority combines platform_agents centrality, cross-project reuse, risk reduction, and completion cost; the data dependency graph determines the score."
       },
@@ -39913,6 +39915,14 @@
     },
     {
       "rank": 34,
+      "stable_agent_id": "AGENT.DATA_POSTGRESQL_RLS",
+      "tier": "PLATFORM_AGENTS",
+      "eligible": true,
+      "priority_score": 76.25,
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+    },
+    {
+      "rank": 35,
       "stable_agent_id": "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_INCIDENT",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39920,7 +39930,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 35,
+      "rank": 36,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ACCESSIBILITY_WCAG",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39928,7 +39938,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 36,
+      "rank": 37,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39936,7 +39946,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 37,
+      "rank": 38,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39944,7 +39954,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 38,
+      "rank": 39,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_PRODUCT_INTERACTION",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39952,7 +39962,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 39,
+      "rank": 40,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_RESPONSIVE_WEB",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39960,7 +39970,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 40,
+      "rank": 41,
       "stable_agent_id": "AGENT.SECURITY_ABAC",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39968,7 +39978,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 41,
+      "rank": 42,
       "stable_agent_id": "AGENT.SECURITY_CACHE_RESIDUE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39976,7 +39986,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 42,
+      "rank": 43,
       "stable_agent_id": "AGENT.SECURITY_CONCURRENT_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39984,7 +39994,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 43,
+      "rank": 44,
       "stable_agent_id": "AGENT.SECURITY_CVE_APPLICABILITY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39992,7 +40002,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 44,
+      "rank": 45,
       "stable_agent_id": "AGENT.SECURITY_CVE_INVENTORY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40000,7 +40010,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 45,
+      "rank": 46,
       "stable_agent_id": "AGENT.SECURITY_DEADLOCK",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40008,7 +40018,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 46,
+      "rank": 47,
       "stable_agent_id": "AGENT.SECURITY_DEPENDENCY_VULNERABILITY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40016,7 +40026,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 47,
+      "rank": 48,
       "stable_agent_id": "AGENT.SECURITY_DOUBLE_SUBMISSION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40024,7 +40034,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 48,
+      "rank": 49,
       "stable_agent_id": "AGENT.SECURITY_FUNCTION_SCOPE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40032,7 +40042,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 49,
+      "rank": 50,
       "stable_agent_id": "AGENT.SECURITY_IDEMPOTENCY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40040,7 +40050,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 50,
+      "rank": 51,
       "stable_agent_id": "AGENT.SECURITY_OBJECT_SCOPE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40048,16 +40058,8 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 51,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API1_OBJECT_AUTHORIZATION",
-      "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
-      "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
-    },
-    {
       "rank": 52,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API10_UNSAFE_API_CONSUMPTION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API1_OBJECT_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40065,7 +40067,7 @@
     },
     {
       "rank": 53,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API2_BROKEN_AUTHENTICATION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API10_UNSAFE_API_CONSUMPTION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40073,7 +40075,7 @@
     },
     {
       "rank": 54,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API3_PROPERTY_AUTHORIZATION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API2_BROKEN_AUTHENTICATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40081,7 +40083,7 @@
     },
     {
       "rank": 55,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API4_RESOURCE_CONSUMPTION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API3_PROPERTY_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40089,7 +40091,7 @@
     },
     {
       "rank": 56,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API5_FUNCTION_AUTHORIZATION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API4_RESOURCE_CONSUMPTION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40097,7 +40099,7 @@
     },
     {
       "rank": 57,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API6_SENSITIVE_BUSINESS_FLOWS",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API5_FUNCTION_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40105,7 +40107,7 @@
     },
     {
       "rank": 58,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API7_SSRF",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API6_SENSITIVE_BUSINESS_FLOWS",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40113,7 +40115,7 @@
     },
     {
       "rank": 59,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API8_MISCONFIGURATION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API7_SSRF",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40121,7 +40123,7 @@
     },
     {
       "rank": 60,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API9_INVENTORY",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API8_MISCONFIGURATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40129,7 +40131,7 @@
     },
     {
       "rank": 61,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API9_INVENTORY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40137,7 +40139,7 @@
     },
     {
       "rank": 62,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40145,7 +40147,7 @@
     },
     {
       "rank": 63,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40153,7 +40155,7 @@
     },
     {
       "rank": 64,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40161,7 +40163,7 @@
     },
     {
       "rank": 65,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A05_INJECTION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40169,7 +40171,7 @@
     },
     {
       "rank": 66,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A06_INSECURE_DESIGN",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A05_INJECTION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40177,7 +40179,7 @@
     },
     {
       "rank": 67,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A06_INSECURE_DESIGN",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40185,7 +40187,7 @@
     },
     {
       "rank": 68,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40193,7 +40195,7 @@
     },
     {
       "rank": 69,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40201,7 +40203,7 @@
     },
     {
       "rank": 70,
-      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40209,7 +40211,7 @@
     },
     {
       "rank": 71,
-      "stable_agent_id": "AGENT.SECURITY_PATCH_REMEDIATION",
+      "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40217,7 +40219,7 @@
     },
     {
       "rank": 72,
-      "stable_agent_id": "AGENT.SECURITY_RACE_CONDITION",
+      "stable_agent_id": "AGENT.SECURITY_PATCH_REMEDIATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40225,7 +40227,7 @@
     },
     {
       "rank": 73,
-      "stable_agent_id": "AGENT.SECURITY_RBAC",
+      "stable_agent_id": "AGENT.SECURITY_RACE_CONDITION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40233,7 +40235,7 @@
     },
     {
       "rank": 74,
-      "stable_agent_id": "AGENT.SECURITY_REBAC",
+      "stable_agent_id": "AGENT.SECURITY_RBAC",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40241,7 +40243,7 @@
     },
     {
       "rank": 75,
-      "stable_agent_id": "AGENT.SECURITY_REPLAY",
+      "stable_agent_id": "AGENT.SECURITY_REBAC",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40249,7 +40251,7 @@
     },
     {
       "rank": 76,
-      "stable_agent_id": "AGENT.SECURITY_REVOCATION",
+      "stable_agent_id": "AGENT.SECURITY_REPLAY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40257,7 +40259,7 @@
     },
     {
       "rank": 77,
-      "stable_agent_id": "AGENT.SECURITY_SBOM",
+      "stable_agent_id": "AGENT.SECURITY_REVOCATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40265,7 +40267,7 @@
     },
     {
       "rank": 78,
-      "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_PROVENANCE",
+      "stable_agent_id": "AGENT.SECURITY_SBOM",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40273,7 +40275,7 @@
     },
     {
       "rank": 79,
-      "stable_agent_id": "AGENT.SECURITY_TENANT_ISOLATION",
+      "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_PROVENANCE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40281,7 +40283,7 @@
     },
     {
       "rank": 80,
-      "stable_agent_id": "AGENT.SECURITY_TOCTOU",
+      "stable_agent_id": "AGENT.SECURITY_TENANT_ISOLATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
@@ -40289,15 +40291,15 @@
     },
     {
       "rank": 81,
-      "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_TEST_ARCHITECT",
-      "tier": "PLATFORM_AGENTS",
+      "stable_agent_id": "AGENT.SECURITY_TOCTOU",
+      "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
-      "priority_score": 74.45,
+      "priority_score": 76.25,
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 82,
-      "stable_agent_id": "AGENT.DATA_POSTGRESQL_RLS",
+      "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_TEST_ARCHITECT",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
@@ -40424,5 +40426,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "fd8b53f576be5024518bf98fa9260f28625b86f4949897162e2ff81c30b8800a"
 }

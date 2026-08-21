@@ -4,12 +4,13 @@
   "handoff_id": "specialist-handoff.postgresql-rls.v1",
   "block_id": "specialist.data.postgresql-rls",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082",
-  "source_commit": "3c6cf8b420c7d4f54ba4c551266a4e27e3cdd913",
-  "source_tree": "a77308b8a879200cb2d0053fabc5c3284f1ba3a4",
+  "candidate_digest": "f819a0166874018f7bbe008a9f9a446c797f5c5d6290d09b98c010cf61798f8a",
+  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
+  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
   "changed_paths": [
     "specialist-blocks/wave-02/postgresql-rls/block.json",
     "specialist-blocks/wave-02/postgresql-rls/evaluation.json",
+    "specialist-blocks/wave-02/postgresql-rls/gates/execution.json",
     "specialist-blocks/wave-02/postgresql-rls/gates/manifest.json",
     "specialist-blocks/wave-02/postgresql-rls/handoff.json",
     "specialist-blocks/wave-02/postgresql-rls/sources.lock"
@@ -19,7 +20,12 @@
     "atomic-scope-and-upstream-router",
     "hostile-fixture-catalog",
     "independent-reviewer-required",
-    "source-lock-digest"
+    "source-lock-digest",
+    "evaluation_file_sha256:eafe1edbac2342bad1b8838b19833e250ed1eccf6f829de9a02f57a4084aa253",
+    "gate_semantic_inventory_sha256:a11e3242e58d866cf07883ef097cf98a591c03acdf2e51bb604d9207848e42c1",
+    "model_route_sha256:cf05b2dd7bc0f36f87b2e09c10119ee5b696db4c4151ac18c8baba1bd3449274",
+    "context_receipt_sha256:499425567c73aca048859cfae669ffd7ab394eea44fd9505b7aaaaf84dbad998",
+    "upstream_router_file_sha256:fd29420a4cdf7c7640564b6cfb4408149dec94028056c0f82dd4e5c348018bca"
   ],
   "residuals": [
     "applicability and project context remain external",

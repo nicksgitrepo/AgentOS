@@ -2,8 +2,100 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.data.postgresql-rls",
+  "fixture_id": "postgresql-rls-stale_source",
   "class": "stale_source",
-  "expected": "DENY",
+  "expected": {
+    "disposition": "DENY",
+    "route": "SOURCE_REFRESH_REQUIRED",
+    "error_code": "POSTGRESQL_RLS_SOURCE_STALE_OR_UNVERIFIED"
+  },
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; all provider, project, consumer, and applicability facts remain external."
+  "note": "Executable hostile vector for stale_source; caller-supplied authority is never accepted.",
+  "vector": {
+    "entrypoint": "control/postgresql-rls-boundary-gate.mjs#evaluatePostgresqlRlsBoundary",
+    "input": {
+      "schema": "agentos.postgresql_rls_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_POSTGRES_RLS",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.DATA_POSTGRESQL_RLS",
+        "custody_ref": "opaque:POSTGRESQL_RLS.CUSTODY",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.POSTGRESQL_17_RLS",
+        "source_version": "17.10",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-21",
+        "candidate_status": "CURRENT_CANDIDATE",
+      "candidate_digest": "f819a0166874018f7bbe008a9f9a446c797f5c5d6290d09b98c010cf61798f8a",
+        "signal": "DATA.POSTGRES_RLS",
+        "signal_status": "BOUND",
+        "context_status": "POSTGRESQL_RLS_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ANALYZE",
+        "requested_tools": [
+          "READ_CANDIDATE",
+          "READ_CONTEXT",
+          "READ_SOURCE_LOCK"
+        ],
+        "required_block_identities": [
+          "specialist.data.router",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.standard.postgresql-17-rls"
+        ],
+        "model_policy_status": "PREPARED_INACTIVE",
+        "model_route_status": "BOUND",
+        "authority_scope": "POSTGRESQL_RLS",
+        "scope": "NARROW",
+        "database_engine": "postgresql",
+        "database_version": "17.10",
+        "tenant_boundary_status": "BOUND",
+        "policy_evidence_status": "BOUND",
+        "bypass_role_evidence_status": "BOUND",
+        "standard_id": "source.postgresql-17-rls",
+        "standard_version": "17.10",
+        "standard_block_sha256": "09b45ba38933b2e46e3bf5fe8b862603d3f5f13c6c8d2950343db31c3e3fbd94",
+        "standard_source_manifest_sha256": "b5e8473072a5b897a945a86e3f75aada19fe06f7a2faa7354594b7ee1645e1d0",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "model_task_class": "NARROW_CODING",
+        "model_capability_floor": 49,
+        "model_required_capabilities": [
+          "CODE",
+          "TOOLS"
+        ],
+        "model_route_sha256": "cf05b2dd7bc0f36f87b2e09c10119ee5b696db4c4151ac18c8baba1bd3449274",
+      "context_receipt_sha256": "499425567c73aca048859cfae669ffd7ab394eea44fd9505b7aaaaf84dbad998",
+        "upstream_router_result_sha256": "435d3434b68747fac050703db19526df9157c93e5956d4d98d2d2e1917bcc124",
+        "memory_binding": "TYPED_HANDOFF_ONLY",
+        "memory_write_requested": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": true,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "POSTGRESQL_RLS_SOURCE_STALE_OR_UNVERIFIED"
+    }
+  }
 }

@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "data",
   "title": "PostgreSQL Row-Level Security",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -46,6 +47,7 @@
     "UNKNOWN closes only the dependent action",
     "compose only with explicitly named dependencies and siblings",
     "must be selected by the required upstream router",
+    "reuse exact specialist.standard.postgresql-17-rls@1.0.0 with block_sha256 09b45ba38933b2e46e3bf5fe8b862603d3f5f13c6c8d2950343db31c3e3fbd94",
     "reuse the exact source lock and version"
   ],
   "escalation_target": "specialist.foundation.evaluation-admission-gate",
@@ -56,7 +58,8 @@
     "provider, framework, or version differs",
     "tool or data custody differs"
   ],
-  "required_knowledge": [
+    "required_knowledge": [
+    "atomic specialization law",
     "policy enablement and enforcement",
     "specialist.standard.postgresql-17-rls",
     "tenant-boundary evidence"
@@ -189,6 +192,7 @@
       "typed handoff receipt"
     ],
     "tools": [
+      "fixture evaluator",
       "local deterministic validator",
       "source-lock reader"
     ],
@@ -272,6 +276,7 @@
     "receipt_id": "specialist-eval.postgresql-rls.v1",
     "disposition": "STATIC_PASS_REVIEW_REQUIRED",
     "independent_reviewer_required": true,
+    "fixture_policy": "EXACT_DECLARED",
     "fixture_classes": [
       "authority_conflict",
       "broad_when_narrow_exists",
@@ -302,5 +307,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082"
+  "block_sha256": "f819a0166874018f7bbe008a9f9a446c797f5c5d6290d09b98c010cf61798f8a"
 }

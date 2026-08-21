@@ -1433,7 +1433,7 @@
     },
     {
       "block_id": "specialist.data.postgresql-rls",
-      "candidate_digest": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082",
+      "candidate_digest": "f819a0166874018f7bbe008a9f9a446c797f5c5d6290d09b98c010cf61798f8a",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: PostgreSQL Row-Level Security; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1456,6 +1456,7 @@
         "UNKNOWN closes only the dependent action",
         "compose only with explicitly named dependencies and siblings",
         "must be selected by the required upstream router",
+        "reuse exact specialist.standard.postgresql-17-rls@1.0.0 with block_sha256 09b45ba38933b2e46e3bf5fe8b862603d3f5f13c6c8d2950343db31c3e3fbd94",
         "reuse the exact source lock and version"
       ],
       "escalation_target": "specialist.foundation.evaluation-admission-gate",
@@ -1467,10 +1468,12 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "data",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.postgresql-17-rls"
       ],
       "dependencies": [
         "specialist.data.router",
@@ -5087,7 +5090,8 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.owasp-asvs-5-0-0"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -10202,5 +10206,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "d5c0a4f6c654a6faeee88b04d80c24e8c1bf943d6c26f2f78dce3659bc971a2f"
+  "roster_sha256": "1aa2d7f233327f61b93e6e68819b22b655138a4254d7526be34bc989382876c7"
 }
