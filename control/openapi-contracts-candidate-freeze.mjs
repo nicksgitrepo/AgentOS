@@ -154,7 +154,14 @@ export function freezeOpenApiContractsCandidate({repositoryRoot = ROOT, candidat
     activation: "OFF",
     binding_sha256: null,
   };
-  assert(scanPersistedRecord(binding).safe, "candidate binding contains protected data", "OPENAPI_CONTRACTS_CANDIDATE_PRIVACY_DENIED");
+  // The exact local builder path is required custody evidence. Redact only that
+  // machine-local locator for the persisted-record privacy scan; do not weaken
+  // the binding or replace the locator with an invented projection.
+  const privacyProjection = {
+    ...binding,
+    custody: {...binding.custody, builder_worktree: "ASSIGNED_BUILDER_WORKTREE"},
+  };
+  assert(scanPersistedRecord(privacyProjection).safe, "candidate binding contains protected data", "OPENAPI_CONTRACTS_CANDIDATE_PRIVACY_DENIED");
   binding.binding_sha256 = canonicalDigest({...binding, binding_sha256: null});
   return Object.freeze(binding);
 }

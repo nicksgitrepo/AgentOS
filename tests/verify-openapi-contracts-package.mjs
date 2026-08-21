@@ -29,6 +29,7 @@ const frozen = freezeOpenApiContractsCandidate({baseCommit});
 assert.match(frozen.candidate_commit, /^[0-9a-f]{40}$/u);
 assert.match(frozen.candidate_tree, /^[0-9a-f]{40}$/u);
 assert.equal(frozen.status, "FROZEN_FOR_INDEPENDENT_REVIEW");
+assert.equal(frozen.custody.builder_worktree, process.cwd());
 assert.equal(frozen.custody.auditor_read_only, true);
 assert.equal(frozen.admission_allowed, false);
 console.log("PASS OpenAPI HTTP Contract package: " + evaluation.fixture_results.length + " hostile public vectors, " + evaluation.gate_execution.length + " executable four-valued gates, source/model/context/lifecycle invalidation, and mutation proof");
