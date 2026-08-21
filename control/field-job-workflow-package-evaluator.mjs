@@ -201,6 +201,7 @@ export async function evaluateFieldJobWorkflowPackage() {
     context_receipt_sha256: authority.context.context.context_sha256,
     memory_invalidation_sha256: authority.invalidation.graph_sha256,
     upstream_router_result_sha256: authority.upstream_result.result_sha256,
+    shared_registry_integration: authority.registry.shared_registry_integration,
     gate_execution: gateExecution,
     fixture_results: fixtureResults,
     mutation_sensitivity: mutation,

@@ -45,6 +45,15 @@ assert.equal(evaluation.mutation_sensitivity.mutation_detected, true);
 assert.equal(evaluation.context_memory_invalidation.status, "PASS");
 assert.equal(evaluation.context_memory_invalidation.write_allowed, false);
 assert.equal(evaluation.canonical_external_admission, "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED");
+assert.equal(authority.registry.shared_registry_integration.schema, "agentos.field_job_workflow_shared_registry_integration_result.v1");
+assert.equal(authority.registry.shared_registry_integration.finding_code, "SHARED_REGISTRY_SPAWNER_INTEGRATION_DRIFT");
+assert.equal(authority.registry.shared_registry_integration.verdict, "BLOCKED_EXACT");
+assert.equal(authority.registry.shared_registry_integration.severity, "HIGH");
+assert.equal(authority.registry.shared_registry_integration.evidence.gate_pin_mismatch_count, 12);
+assert.equal(authority.registry.shared_registry_integration.evidence.fixture_pin_mismatch_count, 17);
+assert.equal(authority.registry.shared_registry_integration.evidence.handoff_pin_mismatch, true);
+assert.equal(authority.registry.shared_registry_integration.evidence.review_state_mismatch, true);
+assert.equal(evaluation.shared_registry_integration.finding_code, "SHARED_REGISTRY_SPAWNER_INTEGRATION_DRIFT");
 
 const dossier = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/wave-06/field-job-workflow/evaluation.json"), "utf8"));
 assert.deepEqual(dossier.results, {passed: 17, failed: 0, pending: 0});

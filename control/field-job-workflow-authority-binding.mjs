@@ -25,6 +25,7 @@ export const FIELD_JOB_WORKFLOW_MODEL_ID = "gpt-5.6-luna";
 export const FIELD_JOB_WORKFLOW_MODEL_CAPABILITY_FLOOR = 49;
 export const FIELD_JOB_WORKFLOW_MODEL_CAPABILITIES = Object.freeze(["CODE", "TOOLS"]);
 export const FIELD_JOB_WORKFLOW_CUSTODY_REF = "opaque:FIELD_JOB_WORKFLOW.CUSTODY";
+export const FIELD_JOB_WORKFLOW_SHARED_REGISTRY_DRIFT_CODE = "SHARED_REGISTRY_SPAWNER_INTEGRATION_DRIFT";
 export const FIELD_JOB_WORKFLOW_TOOLS = Object.freeze([
   "READ_SIGNAL",
   "READ_SOURCE_LOCK",
@@ -224,6 +225,68 @@ function canonicalUpstreamResult(candidateDigest) {
   return result;
 }
 
+function relativeRegularFileSha(relativePath) {
+  if (typeof relativePath !== "string" || path.isAbsolute(relativePath)) return null;
+  const file = path.resolve(ROOT, relativePath);
+  if (file !== ROOT && !file.startsWith(`${ROOT}${path.sep}`)) return null;
+  try {
+    const stat = fs.lstatSync(file);
+    if (!stat.isFile() || stat.isSymbolicLink() || fs.realpathSync.native(file) !== file) return null;
+    return fileSha(file);
+  } catch {
+    return null;
+  }
+}
+
+function sharedPinMismatches(pins, identityKey) {
+  return (Array.isArray(pins) ? pins : []).flatMap((pin, index) => {
+    const expected = typeof pin?.file_sha256 === "string" ? pin.file_sha256 : null;
+    const actual = relativeRegularFileSha(pin?.path);
+    return expected && actual === expected ? [] : [{
+      identity: pin?.[identityKey] ?? pin?.class ?? pin?.fixture_id ?? `index:${index}`,
+      path: pin?.path ?? null,
+      expected_sha256: expected,
+      actual_sha256: actual,
+    }];
+  });
+}
+
+function inspectSharedRegistryIntegration(agentRosterArtifact, agentEntry, packageRegistry) {
+  const gatePinMismatches = sharedPinMismatches(agentEntry?.deterministic_gates?.gates, "gate_id");
+  const fixturePinMismatches = sharedPinMismatches(agentEntry?.hostile_fixtures?.fixtures, "fixture_id");
+  const handoffPin = agentEntry?.required_evidence_handoff;
+  const handoffActual = relativeRegularFileSha(handoffPin?.handoff_path);
+  const handoffPinMismatch = !handoffPin?.handoff_file_sha256 || handoffActual !== handoffPin.handoff_file_sha256;
+  const packageEvaluation = readJson(path.join(PACKAGE, "evaluation.json"), "Field Job Workflow evaluation dossier").value;
+  const reviewStateMismatch = agentEntry?.independent_evaluation_state !== packageEvaluation.disposition;
+  const drift = gatePinMismatches.length > 0 || fixturePinMismatches.length > 0 || handoffPinMismatch || reviewStateMismatch;
+  return Object.freeze({
+    schema: "agentos.field_job_workflow_shared_registry_integration_result.v1",
+    verdict: drift ? "BLOCKED_EXACT" : "ALIGNED",
+    finding_code: drift ? FIELD_JOB_WORKFLOW_SHARED_REGISTRY_DRIFT_CODE : null,
+    severity: drift ? "HIGH" : null,
+    owning_layer: "shared reusable-agent roster / Spawner integration",
+    repair_route: "ISOLATED_SPAWNER_GLOBAL_REPAIR:RUN_REUSABLE_AGENT_ROSTER_COMPILER_THEN_RERUN_SPECIALIST_COMPILER_EVALUATOR_VERIFIER_AND_SEALED_EXTERNAL_REVIEW",
+    residual_ceiling: "NO_CONSUME_ADMIT_ACTIVATE_DEPLOY_OR_PRODUCTION_CLEARANCE;_PUBLIC_BOUNDARY_REMAINS_CANDIDATE_ONLY_READ_ONLY",
+    evidence: {
+      agent_roster_path: "specialist-blocks/registry/agent-roster.v1.json",
+      agent_roster_sha256: agentRosterArtifact.file_sha256,
+      gate_pin_mismatch_count: gatePinMismatches.length,
+      gate_pin_mismatches: gatePinMismatches,
+      fixture_pin_mismatch_count: fixturePinMismatches.length,
+      fixture_pin_mismatches: fixturePinMismatches,
+      handoff_pin_mismatch: handoffPinMismatch,
+      handoff_path: handoffPin?.handoff_path ?? null,
+      handoff_expected_sha256: handoffPin?.handoff_file_sha256 ?? null,
+      handoff_actual_sha256: handoffActual,
+      shared_independent_evaluation_state: agentEntry?.independent_evaluation_state ?? null,
+      package_evaluation_disposition: packageEvaluation.disposition ?? null,
+      review_state_mismatch: reviewStateMismatch,
+      package_registry_evaluation_disposition: packageRegistry?.evaluation?.disposition ?? null,
+    },
+  });
+}
+
 function checkRegistry(block, source, model, context, graph) {
   const agentRosterArtifact = readJson(AGENT_ROSTER_PATH, "Reusable agent roster");
   const agentRoster = agentRosterArtifact.value;
@@ -258,6 +321,7 @@ function checkRegistry(block, source, model, context, graph) {
   assert(packageRegistry.handoff?.path === `${FIELD_JOB_WORKFLOW_PACKAGE_PATH}/handoff.json` && packageRegistry.handoff.file_sha256 === fileSha(handoffPath) && packageRegistry.handoff.independent_review_required === true, "Field Job Workflow registry handoff digest is stale", "FIELD_JOB_WORKFLOW_REGISTRY_HANDOFF_STALE");
   assert(packageRegistry.evaluation?.path === `${FIELD_JOB_WORKFLOW_PACKAGE_PATH}/evaluation.json` && packageRegistry.evaluation.disposition === "EXECUTED_REVIEW_REQUIRED" && packageRegistry.evaluation.canonical_external_admission === "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED", "Field Job Workflow registry evaluation binding is stale", "FIELD_JOB_WORKFLOW_REGISTRY_EVALUATION_INVALID");
   assert(packageRegistry.focused_test === "tests/verify-field-job-workflow-boundary.mjs" && fs.existsSync(path.join(ROOT, packageRegistry.focused_test)) && packageRegistry.custody_ref === FIELD_JOB_WORKFLOW_CUSTODY_REF && packageRegistry.rollback_rule.includes("isolated lane branch"), "Field Job Workflow registry custody binding is incomplete", "FIELD_JOB_WORKFLOW_REGISTRY_CUSTODY_INVALID");
+  const sharedRegistryIntegration = inspectSharedRegistryIntegration(agentRosterArtifact, agentEntry, packageRegistry);
 
   const specialistRoster = readJson(SPECIALIST_ROSTER_PATH, "Compiled specialist roster").value;
   const specialistEntry = specialistRoster.blocks?.find((entry) => entry.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID);
@@ -268,7 +332,7 @@ function checkRegistry(block, source, model, context, graph) {
   const atomic = readJson(ATOMIC_INVENTORY_PATH, "Atomic specialist inventory").value;
   const atomicEntry = atomic.atomic_specialists?.find((entry) => entry.generic_id === "DOMAIN.FIELD_JOB_WORKFLOW");
   assert(atomicEntry && atomicEntry.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && atomicEntry.router === "specialist.domain.workflow-router", "Atomic specialist inventory binding is missing", "FIELD_JOB_WORKFLOW_REGISTRY_BINDING_INVALID");
-  return {agentRoster, agentEntry, packageRegistry, specialistRoster, routing, atomic};
+  return {agentRoster, agentEntry, packageRegistry, shared_registry_integration: sharedRegistryIntegration, specialistRoster, routing, atomic};
 }
 
 function packageFiles() {
