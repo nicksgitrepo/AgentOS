@@ -15,8 +15,21 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.owasp-asvs-5-0-0",
+      "title": "Application Security Verification Standard",
+      "publisher": "OWASP Foundation",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "version": "5.0.0",
+      "effective_date": "2025-05-30",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "owasp-asvs-5.0.0-release-20250530",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound application security verification requirements and identifiers used only as an immutable dependency."
     }
   ],
   "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "dfc605eb864073cfa0fe84781a794bbf94509edf15c6185c8ef6d9b62abd9791"
+  "manifest_sha256": "ab1480688d9d32b92d42be8e0af3b40cc203009dea6cf2193b4ec01a22ccced1"
 }

@@ -3,7 +3,25 @@
   "version": 1,
   "block_id": "specialist.security.object-scope",
   "class": "handoff",
-  "expected": "ROUTE",
+  "fixture_id": "object-scope-handoff",
   "hostile": true,
-  "note": "Synthetic hostile fixture for handoff; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "ROUTE",
+    "route": "OBJECT_SCOPE_ANALYSIS_HANDOFF",
+    "error_code": "OBJECT_SCOPE_ROUTE_READY"
+  },
+  "vector": {
+    "entrypoint": "control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OBJECT_SCOPE",
+      "evidence_overrides": {
+        "adversarial_flags": {}
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "OBJECT_SCOPE_ANALYSIS_HANDOFF",
+      "error_code": "OBJECT_SCOPE_ROUTE_READY"
+    }
+  }
 }

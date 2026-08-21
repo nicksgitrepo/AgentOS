@@ -3,7 +3,27 @@
   "version": 1,
   "block_id": "specialist.security.object-scope",
   "class": "missing_context",
-  "expected": "DENY",
+  "fixture_id": "object-scope-missing_context",
   "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "TYPED_CONTEXT_REQUIRED",
+    "error_code": "OBJECT_SCOPE_CONTEXT_INCOMPLETE"
+  },
+  "vector": {
+    "entrypoint": "control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OBJECT_SCOPE",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "missing_context": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "TYPED_CONTEXT_REQUIRED",
+      "error_code": "OBJECT_SCOPE_CONTEXT_INCOMPLETE"
+    }
+  }
 }
