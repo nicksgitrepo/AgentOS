@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.object-scope",
-  "class": "duplicate_sibling_authority",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for duplicate_sibling_authority; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.object-scope","class":"duplicate_sibling_authority","fixture_id":"object-scope-duplicate_sibling_authority","hostile":true,"expected":{"disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"OBJECT_SCOPE_AUTHORITY_CONFLICT"},"vector":{"entrypoint":"control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary","adversarial_flags":{"duplicate_authority":true}}}

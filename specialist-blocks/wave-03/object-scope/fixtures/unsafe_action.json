@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.object-scope",
-  "class": "unsafe_action",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.object-scope","class":"unsafe_action","fixture_id":"object-scope-unsafe_action","hostile":true,"expected":{"disposition":"DENY","route":"NO_OBJECT_SCOPE_SIDE_EFFECT","error_code":"OBJECT_SCOPE_OPERATION_FORBIDDEN"},"vector":{"entrypoint":"control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary","adversarial_flags":{"unsafe_action":true}}}

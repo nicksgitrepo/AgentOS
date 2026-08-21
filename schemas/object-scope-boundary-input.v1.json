@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/object-scope-boundary-input.v1.json",
+  "title": "Project-agnostic Object Scope Authorization boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.object_scope_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"type": "string"},
+    "evidence": {"type": "object", "additionalProperties": true}
+  }
+}

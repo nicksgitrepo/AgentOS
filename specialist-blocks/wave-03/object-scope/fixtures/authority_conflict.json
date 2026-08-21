@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.object-scope",
-  "class": "authority_conflict",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.object-scope","class":"authority_conflict","fixture_id":"object-scope-authority_conflict","hostile":true,"expected":{"disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"OBJECT_SCOPE_AUTHORITY_CONFLICT"},"vector":{"entrypoint":"control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary","adversarial_flags":{"authority_conflict":true}}}

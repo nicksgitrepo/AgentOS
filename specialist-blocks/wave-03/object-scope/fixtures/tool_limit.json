@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.object-scope",
-  "class": "tool_limit",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.object-scope","class":"tool_limit","fixture_id":"object-scope-tool_limit","hostile":true,"expected":{"disposition":"ROUTE","route":"OBJECT_SCOPE_ANALYSIS_HANDOFF","error_code":"OBJECT_SCOPE_ROUTE_READY"},"vector":{"entrypoint":"control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary","adversarial_flags":{}}}

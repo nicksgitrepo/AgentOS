@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.object-scope",
-  "class": "false_positive",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.object-scope","class":"false_positive","fixture_id":"object-scope-false_positive","hostile":true,"expected":{"disposition":"DENY","route":"TYPED_EVIDENCE_REQUIRED","error_code":"OBJECT_SCOPE_FINDING_UNSUPPORTED"},"vector":{"entrypoint":"control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary","adversarial_flags":{"false_positive":true}}}

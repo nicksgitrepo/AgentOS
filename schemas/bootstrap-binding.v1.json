@@ -642,6 +642,30 @@
       "path": "tests/verify-idempotency-boundary.mjs",
       "sha256": "8053647c2927f878e7edba3913ea96f7edf8148cd0683128a698f653748c2df5"
     },
+    "object_scope_boundary_gate": {
+      "path": "control/object-scope-boundary-gate.mjs",
+      "sha256": "0fd4baf901cdf63b0d84f3a512b121ded7f8b7f200d7699f133cbcda2e806d72"
+    },
+    "object_scope_boundary_input_contract": {
+      "path": "schemas/object-scope-boundary-input.v1.json",
+      "sha256": "12e6c7adbb01729e39a2484551c591bd3cd74eb204e2cf4d60ba719a4c9265f5"
+    },
+    "object_scope_boundary_result_contract": {
+      "path": "schemas/object-scope-boundary-result.v1.json",
+      "sha256": "f60e70e1d329e25b0d668ee2752c7af794c04d52d84f50cda57e9d2468d65b7a"
+    },
+    "object_scope_package_operational_evaluation_contract": {
+      "path": "schemas/object-scope-package-operational-evaluation.v1.json",
+      "sha256": "b240467a0a1def2b2406d436e5069f3559b39e9b0a40d2fea4662ff39e559776"
+    },
+    "object_scope_package_operational_evaluator": {
+      "path": "control/object-scope-package-evaluator.mjs",
+      "sha256": "719e11374d4f2f7461de036374be1d12d666644f1ae2175e2ab6f4ad851cf227"
+    },
+    "object_scope_boundary_verifier": {
+      "path": "tests/verify-object-scope-boundary.mjs",
+      "sha256": "369e931118ef76a83487583cd2e5a0c7bacec0d2068346b8a0566838f142ca0b"
+    },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
       "sha256": "8078bb5030cc7f3e792dd41c028d882ee3bfb968fb70ee2df2c16e20505977b1"
@@ -3833,7 +3857,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "ae17079145e65258f8a0c5e4d19b1e545370b7936eba964ca1aca46031739830"
+      "sha256": "02615c97e831dff53b654bbdc12d24eeded2b46a6397aaf76834d503d545dbde"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
