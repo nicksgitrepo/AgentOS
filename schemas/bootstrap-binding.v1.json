@@ -3809,7 +3809,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "eb17b538802e8a84ccdab01bb5b679a5f694cb2f732dc4500ce0c3c1e44192cf"
+      "sha256": "3bffa7fc2a113831e50fc1b20b731828ae94ab62ae9e057ae613fa0aee6da637"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4573,11 +4573,11 @@
     },
     "function_scope_package_operational_evaluator": {
       "path": "control/function-scope-package-evaluator.mjs",
-      "sha256": "33807776457ba72c15c440672cf58be0e8f376c676a3bf67437b36503f44e237"
+      "sha256": "5417155f458724cfcd0891d7176e305de214b4ca22595904c24b3225d0b2b53c"
     },
     "function_scope_boundary_verifier": {
       "path": "tests/verify-function-scope-boundary.mjs",
-      "sha256": "c12bf719fdc9aacb6af61804d0b8fcdda1f212fcce274b4a1bdf0c5c2278e5ad"
+      "sha256": "6494e6730c80a0cbd8a6f50cc15853132f4a5b8e9aef428ad7b768474acc2a51"
     },
     "function_scope_candidate_handoff": {
       "path": "specialist-blocks/wave-03/function-scope/handoff.json",

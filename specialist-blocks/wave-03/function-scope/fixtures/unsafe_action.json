@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "unsafe_action",
-  "expected": "DENY",
+  "fixture_id": "function-scope-unsafe_action",
+  "expected": {"disposition": "DENY", "route": "NO_FUNCTION_SCOPE_SIDE_EFFECT", "error_code": "FUNCTION_SCOPE_OPERATION_FORBIDDEN"},
   "hostile": true,
   "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
 }

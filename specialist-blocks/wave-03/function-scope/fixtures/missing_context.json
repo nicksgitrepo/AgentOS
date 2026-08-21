@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "missing_context",
-  "expected": "DENY",
+  "fixture_id": "function-scope-missing_context",
+  "expected": {"disposition": "DENY", "route": "TYPED_CONTEXT_REQUIRED", "error_code": "FUNCTION_SCOPE_CONTEXT_INCOMPLETE"},
   "hostile": true,
   "note": "Synthetic hostile fixture for missing_context; provider, project, consumer, secret, and applicability facts remain external."
 }

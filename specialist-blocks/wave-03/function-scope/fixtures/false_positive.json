@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "false_positive",
-  "expected": "DENY",
+  "fixture_id": "function-scope-false_positive",
+  "expected": {"disposition": "DENY", "route": "TYPED_EVIDENCE_REQUIRED", "error_code": "FUNCTION_SCOPE_FINDING_UNSUPPORTED"},
   "hostile": true,
   "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
 }

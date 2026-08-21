@@ -14276,106 +14276,174 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.function-scope.AUTHORITY_CONFLICT",
+            "fixture_id": "function-scope-authority_conflict",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/authority_conflict.json",
-            "file_sha256": "ed89c4175a337ff84d158ae21c9b1bf3176cca021b0f0dd05a773ed43f51a74c",
-            "expected_outcome": "DENY"
+            "file_sha256": "eb937a4c6c944bc7a76b41c0b9c9c0a85013cad11492c93cd1e9f838168986e8",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "CONTROL_PLANE_ESCALATION",
+              "error_code": "FUNCTION_SCOPE_AUTHORITY_CONFLICT"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "function-scope-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "a6eaaca431684fc8126bfceec21021da4e3c451b379c9d13b6c95cdb4671955a",
-            "expected_outcome": "DENY"
+            "file_sha256": "a97d354ae9fcce068c5d13c94066478614543c567800e52f2ac13722f52e43c8",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "NARROW_SCOPE_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_SCOPE_EXPANSION_FORBIDDEN"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "function-scope-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "7c3fc8e8b095a1fba60798f95baece80a2e4a18d6ebc40f390551742914af3de",
-            "expected_outcome": "DENY"
+            "file_sha256": "a96e05830fb978884e5ebfdc8ab93f912b8c97e82591fba8213a9fbafea8d393",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "SOURCE_REFRESH_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_SOURCE_STALE_OR_UNVERIFIED"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.DATA_LIMIT",
+            "fixture_id": "function-scope-data_limit",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/data_limit.json",
-            "file_sha256": "57be4e495c88a832709a236551b8c751c1d2a107d894555e3fe2c5e58fbce2ec",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "5ba2050ec3c383f966a21d6151e486e43c21a752633afe48987c1eacc35a230a",
+            "expected_outcome": {
+              "disposition": "ROUTE",
+              "route": "FUNCTION_SCOPE_ANALYSIS_HANDOFF",
+              "error_code": "FUNCTION_SCOPE_ROUTE_READY"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "function-scope-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "37578b221b5b75d466941e81e0c3668bcdde4e045608cbccbd45a42b42b22074",
-            "expected_outcome": "DENY"
+            "file_sha256": "fee8a8a32785452600a7afa9d6982a82fdd084a5a98d65338cc1448a98f77205",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "CONTROL_PLANE_ESCALATION",
+              "error_code": "FUNCTION_SCOPE_AUTHORITY_CONFLICT"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.FALSE_POSITIVE",
+            "fixture_id": "function-scope-false_positive",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/false_positive.json",
-            "file_sha256": "39e593fb8e2039ec74a32276747c98a5a61d3920a2d79f22579cc5a558818baf",
-            "expected_outcome": "DENY"
+            "file_sha256": "747e6194ab25d8ea78d9fafd389a7d721b22f3fe2aca1f7cbf3f4febf3d41b10",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "TYPED_EVIDENCE_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_FINDING_UNSUPPORTED"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.HANDOFF",
+            "fixture_id": "function-scope-handoff",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/handoff.json",
-            "file_sha256": "9dccada8018cac215ec2455a0b33fdb9d0fa91b7f540e18c14f1359e4c53bd54",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "68ffe26549b3037f9e887fc748c3222f4f990aa439b87fd9ed83bd75e688c3ba",
+            "expected_outcome": {
+              "disposition": "ROUTE",
+              "route": "FUNCTION_SCOPE_ANALYSIS_HANDOFF",
+              "error_code": "FUNCTION_SCOPE_ROUTE_READY"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.MISSING_CONTEXT",
+            "fixture_id": "function-scope-missing_context",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/missing_context.json",
-            "file_sha256": "3b94e59cf55877c2acaeb5c4d56d89eb0c2dfa2054c2987a618960b0957a384e",
-            "expected_outcome": "DENY"
+            "file_sha256": "53f9dbbadd053f95d03daf4246b8645dc41f992a1acac34aa9b427f56201ae95",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "TYPED_CONTEXT_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_CONTEXT_INCOMPLETE"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.NARROWNESS",
+            "fixture_id": "function-scope-narrowness",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/narrowness.json",
-            "file_sha256": "7650a211ff669605f837ce7dbbf48e17a0a42396a215903a64417117f9e84450",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "3b91a012e21ff08e39103ced505e606d89752662cd146fe4eed1821d41c46b2d",
+            "expected_outcome": {
+              "disposition": "ROUTE",
+              "route": "FUNCTION_SCOPE_ANALYSIS_HANDOFF",
+              "error_code": "FUNCTION_SCOPE_ROUTE_READY"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.ROUTER_SELF_ACCEPT",
+            "fixture_id": "function-scope-router_self_accept",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/router_self_accept.json",
-            "file_sha256": "57d3f55aff87796e71e03c27632b5711ee9b37a394dab790cff30f94be2b349e",
-            "expected_outcome": "DENY"
+            "file_sha256": "1ca315654c962950b4a6b8423c0b0becbfb2aff19dfe0ed3c7037da5b96cc7f2",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "INDEPENDENT_REVIEW_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_SELF_ACCEPTANCE_FORBIDDEN"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.ROUTING",
+            "fixture_id": "function-scope-routing",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/routing.json",
-            "file_sha256": "727eada358c2843483dd68e00245bc1ed81e7eaaf945fedab7bf7ed714bdaa55",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "e0d8e663be0e2861716989f7a1318d4c5eb65fec6a2d30615b8055c68803e61a",
+            "expected_outcome": {
+              "disposition": "ROUTE",
+              "route": "FUNCTION_SCOPE_ANALYSIS_HANDOFF",
+              "error_code": "FUNCTION_SCOPE_ROUTE_READY"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "function-scope-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/silent_scope_expansion.json",
-            "file_sha256": "06ff0acb9a3cd5d13a3f767fd03656268f1b892c20f47c9a441263709da3b3e3",
-            "expected_outcome": "DENY"
+            "file_sha256": "1e96b9294100962ba485ca38a92231026be24c2a777481ae07392539cd9e87a9",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "NARROW_SCOPE_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_SCOPE_EXPANSION_FORBIDDEN"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.STALE_SOURCE",
+            "fixture_id": "function-scope-stale_source",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/stale_source.json",
-            "file_sha256": "39c5645672314b76dd9a70d2a016cd1078b573dc38804de3c3356446107cec38",
-            "expected_outcome": "DENY"
+            "file_sha256": "ec4d18ae38c101137e2f66dc739bd399a0fd8685238efc0574d11c4062bfec8b",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "SOURCE_REFRESH_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_SOURCE_STALE_OR_UNVERIFIED"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.TOOL_LIMIT",
+            "fixture_id": "function-scope-tool_limit",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/tool_limit.json",
-            "file_sha256": "00b084d2702d6c63afd2e13057a41c565cf2dbda03fbf5667807881c976a9196",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "6e722f7d716a42300c10bd7af751841987e61c16ea97ed40b531ba77bd4814d1",
+            "expected_outcome": {
+              "disposition": "ROUTE",
+              "route": "FUNCTION_SCOPE_ANALYSIS_HANDOFF",
+              "error_code": "FUNCTION_SCOPE_ROUTE_READY"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.UMBRELLA_AUTHORITY",
+            "fixture_id": "function-scope-umbrella_authority",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/umbrella_authority.json",
-            "file_sha256": "6cb3dffe27b2b157895a4091c45851749403358c095e5e5be6ed17169545a302",
-            "expected_outcome": "DENY"
+            "file_sha256": "ab6f75a710f63be1662a1020243491e3d8848af69ce6fb426ec829fa3a3681c1",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "NARROW_SCOPE_REQUIRED",
+              "error_code": "FUNCTION_SCOPE_SCOPE_EXPANSION_FORBIDDEN"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.UNRELATED_SCOPE",
+            "fixture_id": "function-scope-unrelated_scope",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/unrelated_scope.json",
-            "file_sha256": "fcfda9d3ee494727fdf62150e453b91f5233c32bd9a73e6c8e10a35635afca37",
-            "expected_outcome": "DENY"
+            "file_sha256": "ea89b6f624bfa6f6b52d54a1cff0f987bfcfdc64105455eb759aad996bda8540",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "NO_FUNCTION_SCOPE",
+              "error_code": "FUNCTION_SCOPE_NOT_APPLICABLE"
+            }
           },
           {
-            "fixture_id": "specialist.security.function-scope.UNSAFE_ACTION",
+            "fixture_id": "function-scope-unsafe_action",
             "path": "specialist-blocks/wave-03/function-scope/fixtures/unsafe_action.json",
-            "file_sha256": "23fa67dad8d5003383a9e6cb6cdb1994cba2b05a67381f3099e8880fca62029e",
-            "expected_outcome": "DENY"
+            "file_sha256": "e3e064c31d090b1f769fe698fe71f30cf8c724d1ab6ec72213b9a730d1803c0d",
+            "expected_outcome": {
+              "disposition": "DENY",
+              "route": "NO_FUNCTION_SCOPE_SIDE_EFFECT",
+              "error_code": "FUNCTION_SCOPE_OPERATION_FORBIDDEN"
+            }
           }
         ]
       },
@@ -40548,5 +40616,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "089deaec8fe56890f092becb9a9cc8f78e73efd07cb21c3c49c7c57c1888b9c5"
+  "roster_sha256": "0e755007f5a6e648df8635c55d8c4860265ab43df085359c3414e59a244b4294"
 }

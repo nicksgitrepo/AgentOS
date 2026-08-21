@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "duplicate_sibling_authority",
-  "expected": "DENY",
+  "fixture_id": "function-scope-duplicate_sibling_authority",
+  "expected": {"disposition": "DENY", "route": "CONTROL_PLANE_ESCALATION", "error_code": "FUNCTION_SCOPE_AUTHORITY_CONFLICT"},
   "hostile": true,
   "note": "Synthetic hostile fixture for duplicate_sibling_authority; provider, project, consumer, secret, and applicability facts remain external."
 }

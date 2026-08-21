@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "umbrella_authority",
-  "expected": "DENY",
+  "fixture_id": "function-scope-umbrella_authority",
+  "expected": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "FUNCTION_SCOPE_SCOPE_EXPANSION_FORBIDDEN"},
   "hostile": true,
   "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
 }

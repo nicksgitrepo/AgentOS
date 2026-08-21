@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "cross_provider_version_claim",
-  "expected": "DENY",
+  "fixture_id": "function-scope-cross_provider_version_claim",
+  "expected": {"disposition": "DENY", "route": "SOURCE_REFRESH_REQUIRED", "error_code": "FUNCTION_SCOPE_SOURCE_STALE_OR_UNVERIFIED"},
   "hostile": true,
   "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
 }

@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {fileURLToPath, pathToFileURL} from "node:url";
 import {evaluateFunctionScopeBoundary, FUNCTION_SCOPE_INPUT_SCHEMA, FUNCTION_SCOPE_RESULT_SCHEMA} from "../control/function-scope-boundary-gate.mjs";
 import {evaluateFunctionScopePackage} from "../control/function-scope-package-evaluator.mjs";
 const evaluation = await evaluateFunctionScopePackage();
@@ -11,4 +15,22 @@ const input = {schema: FUNCTION_SCOPE_INPUT_SCHEMA, version: 1, request_kind: "S
 }};
 const denied = evaluateFunctionScopeBoundary(input);
 assert.equal(denied.schema, FUNCTION_SCOPE_RESULT_SCHEMA); assert.equal(denied.disposition, "DENY"); assert.equal(denied.error_code, "FUNCTION_SCOPE_OPERATION_FORBIDDEN");
-console.log("PASS Function Scope boundary: 17 executable adversarial vectors, mutation proof, and zero side effects");
+
+// The evaluator must use the fixture's committed expected route/error, not echo
+// whatever the implementation happened to return.  Run an isolated copy and
+// mutate one expectation; a proof that still passes would be tautological.
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-function-scope-fixture-mutation-"));
+try {
+  fs.cpSync(path.join(repositoryRoot, "control"), path.join(temp, "control"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "wave-03", "function-scope"), path.join(temp, "specialist-blocks", "wave-03", "function-scope"), {recursive: true});
+  const mutatedFixture = path.join(temp, "specialist-blocks", "wave-03", "function-scope", "fixtures", "authority_conflict.json");
+  const fixture = JSON.parse(fs.readFileSync(mutatedFixture, "utf8"));
+  fixture.expected.route = "NO_FUNCTION_SCOPE";
+  fs.writeFileSync(mutatedFixture, `${JSON.stringify(fixture, null, 2)}\n`);
+  const isolatedEvaluator = await import(`${pathToFileURL(path.join(temp, "control", "function-scope-package-evaluator.mjs")).href}?fixture-mutation=${Date.now()}`);
+  await assert.rejects(() => isolatedEvaluator.evaluateFunctionScopePackage(), (error) => error?.code === "FUNCTION_SCOPE_HOSTILE_RESULT_FAILED");
+} finally {
+  fs.rmSync(temp, {recursive: true, force: true});
+}
+console.log("PASS Function Scope boundary: 17 executable adversarial vectors, fixture-bound expectations, mutation proof, and zero side effects");

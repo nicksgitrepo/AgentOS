@@ -3,7 +3,8 @@
   "version": 1,
   "block_id": "specialist.security.function-scope",
   "class": "routing",
-  "expected": "ROUTE",
+  "fixture_id": "function-scope-routing",
+  "expected": {"disposition": "ROUTE", "route": "FUNCTION_SCOPE_ANALYSIS_HANDOFF", "error_code": "FUNCTION_SCOPE_ROUTE_READY"},
   "hostile": true,
   "note": "Synthetic hostile fixture for routing; provider, project, consumer, secret, and applicability facts remain external."
 }
