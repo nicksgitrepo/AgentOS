@@ -960,11 +960,11 @@
     },
     "autonomous_blocker_route_controller": {
       "path": "control/autonomous-blocker-routing.mjs",
-      "sha256": "56708d58fc084109e95115d96e3d4796652054fb8975ccf72ad4949c2a260d92"
+      "sha256": "bc1e4fbba2a5bf68b9ab36c6c0e3189f51a963d802bec63c955b665f920c350e"
     },
     "autonomous_blocker_route_verifier": {
       "path": "tests/verify-autonomous-blocker-routing.mjs",
-      "sha256": "70a93ec7580676464e86ca4df60b0a119c8f43a86c93e29559bbfd5228b1582c"
+      "sha256": "ecdaa87e63a4cdd474df5a0204f7bf8a27d7cfc4231e4e9540c13d9bdd801aac"
     },
     "bootstrap_answer_contract": {
       "path": "schemas/bootstrap-answer.v1.json",

@@ -43,6 +43,19 @@ assert.equal(remoteGap.lane_state, "WAITING_FOR_CAPABILITY");
 assert.deepEqual(remoteGap.remote, {required: true, available: false, optional: true, status: "LOCAL_CANDIDATE_READY", local_candidate_ready: true, push_deferred: true, route: "REMOTE_PUSH_DEFERRED"});
 assertAutonomousTurnCloseout({route: remoteGap});
 
+const remoteGapFromAvailabilityOnly = compileAutonomousBlockerRoute({
+  routeId: "ROUTE.REMOTE.AUTO_CLASSIFY",
+  laneId: "LANE.BUILDER.TWO",
+  facts: baseFacts,
+  reason: "The optional remote is missing but local candidate work is safe.",
+  evidenceCeiling: "No remote push readback exists.",
+  safeAlternatives: ["RUN_LOCAL_QA", "START_NEXT_LANE"].sort(),
+  successor,
+  remote: {required: true, available: false, optional: true},
+});
+assert.equal(remoteGapFromAvailabilityOnly.blocker_class, "CAPABILITY_GAP");
+assert.equal(remoteGapFromAvailabilityOnly.remote.status, "LOCAL_CANDIDATE_READY");
+
 const evidenceGap = compileAutonomousBlockerRoute({
   routeId: "ROUTE.EVIDENCE.CEILING",
   laneId: "LANE.AUDIT.ONE",

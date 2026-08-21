@@ -128,6 +128,12 @@ function validateResources(resources) {
   return resources;
 }
 
+function validateRemoteInput(remote) {
+  exactKeys(remote, ["required", "available", "optional"], "remote capability input");
+  for (const key of ["required", "available", "optional"]) assert(typeof remote[key] === "boolean", `remote capability input ${key} must be boolean`);
+  return remote;
+}
+
 function validateSuccessor(successor, {required}) {
   if (successor === null) {
     assert(!required, "a non-terminal blocker route must start a same-turn successor");
@@ -198,6 +204,7 @@ export function compileAutonomousBlockerRoute({
   resources = {workers: 0, scheduler_jobs: 0, heavyweight_processes: 0, timers: 0},
 } = {}) {
   validateFacts(facts);
+  validateRemoteInput(remote);
   requireIdentifier(routeId, "autonomous blocker route ID");
   requireIdentifier(laneId, "autonomous blocker lane ID");
   const blockerClass = classifyAutonomousBlocker({
@@ -206,7 +213,7 @@ export function compileAutonomousBlockerRoute({
     irreversibleDestructiveAction: facts.irreversible_destructive_action,
     ownerOnlyMajorDecision: facts.owner_only_major_decision,
     governanceOrWorkflowFailure: facts.governance_or_workflow_failure,
-    optionalCapabilityMissing: facts.optional_capability_missing,
+    optionalCapabilityMissing: facts.optional_capability_missing || (remote.available === false && remote.optional === true),
     evidenceUnavailable: facts.evidence_unavailable,
     laneHasSafeSuccessor: facts.lane_has_safe_successor,
   });
