@@ -4,29 +4,40 @@
   "handoff_id": "specialist-handoff.aws-iam-policy.v1",
   "block_id": "specialist.platform.aws-iam-policy",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016",
-  "source_commit": "3c6cf8b420c7d4f54ba4c551266a4e27e3cdd913",
-  "source_tree": "a77308b8a879200cb2d0053fabc5c3284f1ba3a4",
+  "candidate_digest": "8b5d5d017390f896ff6d311a0ee6c5a8e5a02715eedfee65491b1fbb68f49dd0",
+  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
+  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
   "changed_paths": [
     "specialist-blocks/wave-02/aws-iam-policy/block.json",
     "specialist-blocks/wave-02/aws-iam-policy/evaluation.json",
-    "specialist-blocks/wave-02/aws-iam-policy/gates/manifest.json",
+    "specialist-blocks/wave-02/aws-iam-policy/gates/execution.json",
     "specialist-blocks/wave-02/aws-iam-policy/handoff.json",
     "specialist-blocks/wave-02/aws-iam-policy/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",
-    "atomic-scope-and-upstream-router",
-    "hostile-fixture-catalog",
-    "independent-reviewer-required",
-    "source-lock-digest"
+    "executable-gate-readback:gates/execution.json",
+    "real-public-entrypoint:control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "real-package-evaluator:control/aws-iam-policy-package-evaluator.mjs#evaluateAwsIamPolicyPackage",
+    "17-hostile-fixtures-with-typed-expected-readback",
+    "evaluation_file_sha256:cf1477dbade222808f83c5b02d3f0f57bd09a8e3c123b904c6a80a3ae1036d55",
+    "gate_semantic_inventory_sha256:5ce7b21f8fa078b846d3ffeed450b611b295c8ff30adfe00eaadc804764df8a4",
+    "model_route_sha256:0075aeec402d6fddb828dd5efdb3b8459f7d3fede6e762624aa450cc449c13ed",
+    "context_receipt_sha256:c89a122dc1a980f12d8411c02b87fd7366d59956d018470d08b46bfb545f2d88",
+    "upstream_router_file_sha256:1e7cbe3898ba80c6dbf10dd09a8c1b687c097134992c1da78a3c904066a23b8b",
+    "model_policy_snapshot_sha256:b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "memory_binding:TYPED_HANDOFF_ONLY_NO_MEMORY_WRITE",
+    "context_invalidation:BOUND_ARTIFACT_CHANGE_REQUIRES_NEW_RECEIPT",
+    "candidate_freeze_receipt:REQUIRED_BEFORE_INDEPENDENT_REVIEW",
+    "independent-reviewer-required"
   ],
   "residuals": [
-    "applicability and project context remain external",
+    "provider/account applicability and project context remain external",
     "candidate is not admitted or activated",
-    "independent utility/harm evaluation has not run",
-    "main AgentOS 3.0 integration owner must intake exact digest"
+    "Spawner admission is BLOCKED_EXACT pending separately controlled evaluator handoff",
+    "independent hostile review and utility/harm trial remain required",
+    "no provider access, credentials, deployment, publication, or Product write is permitted"
   ],
-  "next_action": "Route the immutable P1 candidate through the upstream router and independent evaluator; preserve activation OFF.",
+  "next_action": "Freeze the exact candidate commit/tree and custody receipt, then route this narrow package to a fresh independent GPT-5.6 Luna max hostile auditor; preserve activation OFF.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

@@ -6811,109 +6811,131 @@
           }
         ]
       },
+      "operational_entrypoints": {
+        "boundary": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+        "evaluator": "control/aws-iam-policy-package-evaluator.mjs#evaluateAwsIamPolicyPackage",
+        "gate_execution": "specialist-blocks/wave-02/aws-iam-policy/gates/execution.json",
+        "real_fixture_inputs": true,
+        "mutation_sensitivity_required": true,
+        "read_only": true
+      },
+      "context_invalidation": {
+        "status": "BOUND",
+        "memory_rule": "TYPED_HANDOFF_ONLY_NO_MEMORY_WRITE",
+        "rebuild_on_change": true,
+        "invalidate_on": [
+          "block semantic digest change",
+          "source lock or freshness change",
+          "standard block or source manifest change",
+          "upstream router bytes or result change",
+          "model-policy snapshot or route change",
+          "registry, gate, fixture, evaluation, or handoff change"
+        ],
+        "rebuild_rule": "Invalidate dependent context and handoff receipts, preserve the prior receipt, and require a fresh independent evaluation before reuse."
+      },
       "hostile_fixtures": {
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.AUTHORITY_CONFLICT",
+            "fixture_id": "aws-iam-policy-authority_conflict",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/authority_conflict.json",
-            "file_sha256": "0946a1e984073cae3405d3630828f747094269b05aa0fa4cf3929ff1c2106322",
-            "expected_outcome": "DENY"
+            "file_sha256": "261e93e03bbe6690ccedc12569f07b52d034f68e695dd26cb0cbda2494b09c36",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "aws-iam-policy-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "b58c225e40b4cb2891adf02d4a79c53b172696ddddcaf2485065600a66a3b26c",
+            "file_sha256": "096ae6daebec1c2d19ffab2e3b05158b31374dda52f38b6cb14097f8a6d13a2b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "aws-iam-policy-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "faebb593fb084d0d1da125624ea294b11a95716e4dc9ee639f3b7c578c1b820c",
+            "file_sha256": "324eb7eab1dbd7526feeb6e5b5f19632a11d37120212c6bcce5ca0670c505bdc",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.DATA_LIMIT",
+            "fixture_id": "aws-iam-policy-data_limit",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/data_limit.json",
-            "file_sha256": "05bd6997716e4e4325d74bdc15729c82f29b06a67e9e58217a3e884de1fa211d",
+            "file_sha256": "899b89ee062fbae1cf6f26a048d7177a26fdd21749ca08a1e013bb6be2e10634",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "aws-iam-policy-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "f55d25053e5a3250eb2ae75e344628ae43095dcb63bf59a4febe6189270de795",
-            "expected_outcome": "DENY"
+            "file_sha256": "e769c5bd0f73835fc151e72c1d925e7300f2c45f66e122ec118ee42775ff2ad2",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.FALSE_POSITIVE",
+            "fixture_id": "aws-iam-policy-false_positive",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/false_positive.json",
-            "file_sha256": "5e0d3d10b3a6a3bd31888abe81d67474ff27627ba6b18fdb19f16cff6c867d93",
+            "file_sha256": "4da2f0498f234d3313f74d369fe96b66fb2b85b8e42a3cf72c732249f4ade397",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.HANDOFF",
+            "fixture_id": "aws-iam-policy-handoff",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/handoff.json",
-            "file_sha256": "58cffcdacce065be9418317f9fbd78adce6483d192cce70db960238f285ee6e6",
+            "file_sha256": "bdb148761577ef7fb192f02aae8d569f7f7514d07babba53e5be3b065eaff856",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.MISSING_CONTEXT",
+            "fixture_id": "aws-iam-policy-missing_context",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/missing_context.json",
-            "file_sha256": "af7fe6eb1a5e5caf537ee5ff6c55be44851f98e1be9b3dc6d6f6828e27d887af",
+            "file_sha256": "dcf52b1a36bb3ee0a7739e9a295edf3cadef257a241243f67f417469f8bb2a62",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.NARROWNESS",
+            "fixture_id": "aws-iam-policy-narrowness",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/narrowness.json",
-            "file_sha256": "9264ba4689069b63cc2b6ce5e2ff9c60d9496e3298ee1aa270304d7259ed851e",
+            "file_sha256": "4a30420788e35aee741c0d3578f0b922e9221024c0b627ded2a9b64a76aab8f2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.ROUTER_SELF_ACCEPT",
+            "fixture_id": "aws-iam-policy-router_self_accept",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/router_self_accept.json",
-            "file_sha256": "69abe00ddf5ec1bc41ca40632a9c32bdec459c5dc5ebf2d52dd5a2c25067faaa",
+            "file_sha256": "da3d3a0e0aa6df49f08c66d687d254a25d67d1a6b8200cd161984b3dc02744dc",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.ROUTING",
+            "fixture_id": "aws-iam-policy-routing",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/routing.json",
-            "file_sha256": "56e782cfe3d6ad180b5972b457bdc2c97db3a1c763b91b0c505f271f0abdd89b",
+            "file_sha256": "3e5158b35791cb1838d0577dbdcdf6ad9a8d9a1d09dae69d57e353dc93d954d0",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "aws-iam-policy-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/silent_scope_expansion.json",
-            "file_sha256": "5b83176641a2a438a42b1d7b4017336760fd35bd57033a0702490dffda982a7f",
+            "file_sha256": "8eab744ceac77526dedb766ad7f20959ddd181e8bcd4177f5eb3b6581b22e92f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.STALE_SOURCE",
+            "fixture_id": "aws-iam-policy-stale_source",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/stale_source.json",
-            "file_sha256": "5d0aa44e7a447072b5ad8d81457dbaa95585e960568902375a6f0f0b4b3a7682",
+            "file_sha256": "65a68185c415566c0ea102aa8756751c90519e26ff4ed8ba266f95682eb309d9",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.TOOL_LIMIT",
+            "fixture_id": "aws-iam-policy-tool_limit",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/tool_limit.json",
-            "file_sha256": "840727dc05ffdcde96b5e37aff7a27107bcadac16f35b50ccc81d84f01adf68f",
+            "file_sha256": "59c48bc1d10aba6beff94dbdb376caf041a65bf25086e4ecfe5f97d8175c9110",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.UMBRELLA_AUTHORITY",
+            "fixture_id": "aws-iam-policy-umbrella_authority",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/umbrella_authority.json",
-            "file_sha256": "d5e6ef6b26548d2b878f81c67b16f727e4466f5dd0f9dc5cac56ec105c7d8c7c",
+            "file_sha256": "fbca083785ff45eccebcbc94e610960a75984bc5cb4f769aff95c79f5acbf638",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.UNRELATED_SCOPE",
+            "fixture_id": "aws-iam-policy-unrelated_scope",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/unrelated_scope.json",
-            "file_sha256": "18215091d940d8578c1ba005bab29c339eb2a67a8a91a42d965b3055de7554e3",
+            "file_sha256": "ddc99e077276964ec563cc801370c3c950f6972ce859a8d4515798d5fbbd854f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.aws-iam-policy.UNSAFE_ACTION",
+            "fixture_id": "aws-iam-policy-unsafe_action",
             "path": "specialist-blocks/wave-02/aws-iam-policy/fixtures/unsafe_action.json",
-            "file_sha256": "d57cf20bc9eacf0c17c94208abef1bd7876ee65a32cdcec6ab4bae4d9add89fd",
+            "file_sha256": "b6dcd400c8ea083461637af751fe6a2e56444156e9c72ed35dfcfb4c3d9d421b",
             "expected_outcome": "DENY"
           }
         ]
@@ -40424,5 +40446,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "5d24ea2b8ac7348ad8b236e1b35b982e472e2331ca2c3b9569c0135d242ce020"
 }

@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "platform",
   "title": "AWS IAM Policy Elements",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -59,6 +60,7 @@
   "required_knowledge": [
     "action/resource/condition semantics",
     "provider version and account evidence",
+    "source.atomic-specialization-law",
     "specialist.standard.aws-iam-current"
   ],
   "routing": {
@@ -187,8 +189,10 @@
       "typed handoff receipt"
     ],
     "tools": [
+      "executable boundary evaluator",
       "local deterministic validator",
-      "source-lock reader"
+      "source-lock reader",
+      "typed context receipt compiler"
     ],
     "data": [
       "no protected consumer data",
@@ -223,8 +227,8 @@
     ]
   },
   "lifecycle_rules": {
-    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
-    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
+    "candidate_entry": "Block, source lock, twelve gates, executable gate readback, hostile fixtures, evaluation dossier, typed handoff, model route, and context receipt have matching digests.",
+    "evaluation_entry": "Independent evaluator executes the public boundary with every declared fixture, reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, memory, and handoff cases, and proves mutation sensitivity.",
     "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
     "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
     "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
@@ -253,6 +257,40 @@
       "NOT_APPLICABLE"
     ]
   },
+  "authority_binding": {
+    "binding_module": "control/aws-iam-policy-authority-binding.mjs",
+    "resolver": "resolveAwsIamPolicyCanonicalAuthority",
+    "evidence_assertion": "assertAwsIamPolicyCanonicalEvidence",
+    "custody_ref": "opaque:AWS_IAM_POLICY.CUSTODY",
+    "upstream_router": "control/provider-edge-router-boundary-gate.mjs#evaluateProviderEdgeRouterBoundary",
+    "independent_admission": true
+  },
+  "context_binding": {
+    "provider_identity": "AWS",
+    "provider_version": "CURRENT",
+    "policy_identity": "IAM_POLICY_ELEMENTS",
+    "scope": "NARROW",
+    "receipt": "content-addressed source, standard, model, router, and custody facts",
+    "invalidate_on": [
+      "block digest change",
+      "source lock change or freshness expiry",
+      "standard block or source manifest change",
+      "upstream router bytes or result change",
+      "model-policy snapshot or route change",
+      "registry, gates, fixtures, evaluation, or handoff change"
+    ]
+  },
+  "memory_binding": {
+    "policy": "TYPED_HANDOFF_ONLY_NO_MEMORY_WRITE",
+    "read_scope": "current candidate, source lock, typed context, and independent receipts",
+    "write_scope": "none",
+    "invalidation": "discard dependent context and require a new receipt after any bound artifact change"
+  },
+  "invalidation": {
+    "status": "BOUND",
+    "registry_entry": "AGENT.PLATFORM_AWS_IAM_POLICY",
+    "rebuild_rule": "Invalidate dependent contexts, handoffs, model routes, gate readbacks, and acceptance proposals; preserve the old receipt and rebuild from exact current bytes before reuse."
+  },
   "schema_path": "schemas/specialist-block.v1.json",
   "dependencies": [
     "specialist.foundation.authority-jurisdiction-gate",
@@ -268,7 +306,11 @@
   "evaluation": {
     "dossier_path": "evaluation.json",
     "receipt_id": "specialist-eval.aws-iam-policy.v1",
-    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "disposition": "EXECUTABLE_PASS_REVIEW_REQUIRED",
+    "fixture_policy": "EXACT_DECLARED",
+    "harness": "deterministic-executable-atomic-p1-harness.v1",
+    "boundary_entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "evaluator_entrypoint": "control/aws-iam-policy-package-evaluator.mjs#evaluateAwsIamPolicyPackage",
     "independent_reviewer_required": true,
     "fixture_classes": [
       "authority_conflict",
@@ -300,5 +342,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016"
+  "block_sha256": "8b5d5d017390f896ff6d311a0ee6c5a8e5a02715eedfee65491b1fbb68f49dd0"
 }

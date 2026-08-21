@@ -1,9 +1,32 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "aws-iam-policy-authority_conflict",
   "block_id": "specialist.platform.aws-iam-policy",
   "class": "authority_conflict",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "input": {
+      "schema": "agentos.aws_iam_policy_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_AWS_IAM_POLICY",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "authority_conflict": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "ESCALATE",
+      "route": "CONTROL_PLANE_ESCALATION",
+      "error_code": "AWS_IAM_POLICY_AUTHORITY_CONFLICT"
+    }
+  },
+  "expected": {
+    "disposition": "ESCALATE",
+    "route": "CONTROL_PLANE_ESCALATION",
+    "error_code": "AWS_IAM_POLICY_AUTHORITY_CONFLICT"
+  },
+  "note": "Executable hostile fixture for authority_conflict; provider, account, project, consumer, and applicability facts remain external."
 }

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/aws-iam-policy-boundary-input.v1.json",
+  "title": "Project-agnostic AWS IAM Policy Elements boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.aws_iam_policy_boundary_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"enum": ["ANALYZE_AWS_IAM_POLICY", "ROUTE_AWS_IAM_POLICY", "NOT_APPLICABLE", "UNRELATED_REQUEST", "SPAWN", "ADMIT", "ACTIVATE", "ARCHIVE", "DESPAWN", "DEPLOY", "PUBLISH", "WRITE_PROJECT", "WRITE_MEMORY", "ACCEPT", "SELF_REVIEW", "MUTATE_POLICY", "ISSUE_CREDENTIAL"]},
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority_status", "custody_status", "custody_owner", "custody_ref", "provider_identity", "provider_version", "policy_identity", "policy_scope", "policy_status", "source_status", "source_identity", "source_version", "source_effective_date", "source_retrieved_date", "candidate_status", "candidate_digest", "signal", "signal_status", "context_status", "context_complete", "requested_action", "requested_tools", "required_block_identities", "model_policy_status", "model_route_status", "authority_scope", "scope", "standard_id", "standard_version", "standard_block_sha256", "standard_source_manifest_sha256", "model_snapshot_sha256", "model_task_class", "model_capability_floor", "model_required_capabilities", "model_route_sha256", "context_receipt_sha256", "upstream_router_result_sha256", "project_data_present", "secret_data_present", "policy_mutation_requested", "credential_issue_requested", "adversarial_flags"],
+      "properties": {
+        "authority_status": {"type":"string"}, "custody_status": {"type":"string"}, "custody_owner": {"type":"string", "pattern":"^[A-Za-z][A-Za-z0-9._:-]{1,160}$"}, "custody_ref": {"type":"string", "pattern":"^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"},
+        "provider_identity": {"const":"AWS"}, "provider_version": {"const":"CURRENT"}, "policy_identity": {"const":"IAM_POLICY_ELEMENTS"}, "policy_scope": {"const":"IAM_POLICY_ELEMENTS"}, "policy_status": {"type":"string"},
+        "source_status": {"type":"string"}, "source_identity": {"type":"string"}, "source_version": {"type":"string"}, "source_effective_date": {"type":"string", "pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}, "source_retrieved_date": {"type":"string", "pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "candidate_status": {"type":"string"}, "candidate_digest": {"type":"string", "pattern":"^[0-9a-f]{64}$"}, "signal": {"type":"string"}, "signal_status": {"type":"string"}, "context_status": {"type":"string"}, "context_complete": {"type":"boolean"}, "requested_action": {"type":"string"},
+        "requested_tools": {"type":"array", "minItems":1, "maxItems":3, "items":{"enum":["READ_CANDIDATE","READ_SOURCE_LOCK","READ_CONTEXT"]}}, "required_block_identities": {"type":"array", "minItems":7, "maxItems":7, "items":{"type":"string"}},
+        "model_policy_status": {"type":"string"}, "model_route_status": {"type":"string"}, "authority_scope": {"const":"AWS_IAM_POLICY"}, "scope": {"type":"string"}, "standard_id": {"const":"source.aws-iam-policy-elements"}, "standard_version": {"const":"current"},
+        "standard_block_sha256": {"type":"string", "pattern":"^[0-9a-f]{64}$"}, "standard_source_manifest_sha256": {"type":"string", "pattern":"^[0-9a-f]{64}$"}, "model_snapshot_sha256": {"type":"string", "pattern":"^[0-9a-f]{64}$"}, "model_task_class": {"const":"NARROW_CODING"}, "model_capability_floor": {"const":49}, "model_required_capabilities": {"type":"array", "minItems":2, "items":{"enum":["CODE","TOOLS"]}}, "model_route_sha256": {"type":"string", "pattern":"^[0-9a-f]{64}$"}, "context_receipt_sha256": {"type":"string", "pattern":"^[0-9a-f]{64}$"}, "upstream_router_result_sha256": {"type":"string", "pattern":"^[0-9a-f]{64}$"},
+        "project_data_present": {"type":"boolean"}, "secret_data_present": {"type":"boolean"}, "policy_mutation_requested": {"type":"boolean"}, "credential_issue_requested": {"type":"boolean"},
+        "adversarial_flags": {"type":"object", "additionalProperties":false, "required":["authority_conflict","scope_expanded","protected_data","stale_source","unsupported_tool","duplicate_authority","self_acceptance","unrelated_scope","missing_context","unsafe_action","broad_claim","cross_provider","false_positive"], "properties": {"authority_conflict":{"type":"boolean"},"scope_expanded":{"type":"boolean"},"protected_data":{"type":"boolean"},"stale_source":{"type":"boolean"},"unsupported_tool":{"type":"boolean"},"duplicate_authority":{"type":"boolean"},"self_acceptance":{"type":"boolean"},"unrelated_scope":{"type":"boolean"},"missing_context":{"type":"boolean"},"unsafe_action":{"type":"boolean"},"broad_claim":{"type":"boolean"},"cross_provider":{"type":"boolean"},"false_positive":{"type":"boolean"}}}
+      }
+    }
+  }
+}

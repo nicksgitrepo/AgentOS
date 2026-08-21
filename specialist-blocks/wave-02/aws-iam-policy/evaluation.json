@@ -3,111 +3,167 @@
   "version": 1,
   "receipt_id": "specialist-eval.aws-iam-policy.v1",
   "block_id": "specialist.platform.aws-iam-policy",
-  "candidate_digest": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016",
+  "candidate_digest": "8b5d5d017390f896ff6d311a0ee6c5a8e5a02715eedfee65491b1fbb68f49dd0",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
-  "harness": "deterministic-static-atomic-p1-harness.v1",
+  "harness": "deterministic-executable-atomic-p1-harness.v1",
+  "operational_entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+  "evaluator_entrypoint": "control/aws-iam-policy-package-evaluator.mjs#evaluateAwsIamPolicyPackage",
+  "gate_execution_path": "gates/execution.json",
+  "fixture_inputs": "REAL_PUBLIC_ENTRYPOINT",
+  "mutation_sensitivity": "REQUIRED",
   "cases": [
     {
       "case_id": "aws-iam-policy-authority_conflict",
       "class": "authority_conflict",
-      "expected": "DENY",
-      "observed": "PASS"
+      "expected": "ESCALATE",
+      "observed": "PASS",
+      "route": "CONTROL_PLANE_ESCALATION",
+      "error_code": "AWS_IAM_POLICY_AUTHORITY_CONFLICT",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-broad_when_narrow_exists",
       "class": "broad_when_narrow_exists",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SCOPE_EXPANSION_FORBIDDEN",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-cross_provider_version_claim",
       "class": "cross_provider_version_claim",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SOURCE_STALE_OR_UNVERIFIED",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-data_limit",
       "class": "data_limit",
       "expected": "ROUTE",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+      "error_code": "AWS_IAM_POLICY_ROUTE_READY",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-duplicate_sibling_authority",
       "class": "duplicate_sibling_authority",
-      "expected": "DENY",
-      "observed": "PASS"
+      "expected": "ESCALATE",
+      "observed": "PASS",
+      "route": "CONTROL_PLANE_ESCALATION",
+      "error_code": "AWS_IAM_POLICY_AUTHORITY_CONFLICT",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-false_positive",
       "class": "false_positive",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "TYPED_EVIDENCE_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_FINDING_UNSUPPORTED",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-handoff",
       "class": "handoff",
       "expected": "ROUTE",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+      "error_code": "AWS_IAM_POLICY_ROUTE_READY",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-missing_context",
       "class": "missing_context",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "TYPED_CONTEXT_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_CONTEXT_INCOMPLETE",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-narrowness",
       "class": "narrowness",
       "expected": "ROUTE",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+      "error_code": "AWS_IAM_POLICY_ROUTE_READY",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-router_self_accept",
       "class": "router_self_accept",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "INDEPENDENT_REVIEW_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SELF_ACCEPTANCE_FORBIDDEN",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-routing",
       "class": "routing",
       "expected": "ROUTE",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+      "error_code": "AWS_IAM_POLICY_ROUTE_READY",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-silent_scope_expansion",
       "class": "silent_scope_expansion",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SCOPE_EXPANSION_FORBIDDEN",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-stale_source",
       "class": "stale_source",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SOURCE_STALE_OR_UNVERIFIED",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-tool_limit",
       "class": "tool_limit",
       "expected": "ROUTE",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+      "error_code": "AWS_IAM_POLICY_ROUTE_READY",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-umbrella_authority",
       "class": "umbrella_authority",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SCOPE_EXPANSION_FORBIDDEN",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-unrelated_scope",
       "class": "unrelated_scope",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "NO_AWS_IAM_POLICY_SCOPE",
+      "error_code": "AWS_IAM_POLICY_SCOPE_NOT_APPLICABLE",
+      "entrypoint_invoked": true
     },
     {
       "case_id": "aws-iam-policy-unsafe_action",
       "class": "unsafe_action",
       "expected": "DENY",
-      "observed": "PASS"
+      "observed": "PASS",
+      "route": "NO_AWS_IAM_POLICY_SIDE_EFFECT",
+      "error_code": "AWS_IAM_POLICY_OPERATION_FORBIDDEN",
+      "entrypoint_invoked": true
     }
   ],
   "results": {
@@ -115,6 +171,6 @@
     "failed": 0,
     "pending": 0
   },
-  "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+  "disposition": "EXECUTABLE_PASS_REVIEW_REQUIRED",
   "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
 }

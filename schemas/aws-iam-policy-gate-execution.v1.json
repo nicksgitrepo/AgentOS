@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://agentos.dev/schemas/aws-iam-policy-gate-execution.v1.json",
+  "title":"Executable AWS IAM Policy gate-tree readback",
+  "type":"object","additionalProperties":false,
+  "required":["schema","version","block_id","evaluator_entrypoint","boundary_entrypoint","ordered_gate_ids","executions"],
+  "properties":{
+    "schema":{"const":"agentos.aws_iam_policy_gate_execution.v1"},"version":{"const":1},"block_id":{"const":"specialist.platform.aws-iam-policy"},"evaluator_entrypoint":{"const":"control/aws-iam-policy-package-evaluator.mjs#evaluateAwsIamPolicyPackage"},"boundary_entrypoint":{"const":"control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary"},"ordered_gate_ids":{"type":"array","minItems":12,"maxItems":12,"items":{"type":"string"}},
+    "executions":{"type":"array","minItems":12,"maxItems":12,"items":{"type":"object","additionalProperties":false,"required":["gate_id","fixture_class","expected"],"properties":{"gate_id":{"type":"string"},"fixture_class":{"type":"string"},"expected":{"type":"object","additionalProperties":false,"required":["disposition","route","error_code"],"properties":{"disposition":{"enum":["DENY","ESCALATE","ROUTE"]},"route":{"type":"string"},"error_code":{"type":"string"}}}}}}
+  }
+}

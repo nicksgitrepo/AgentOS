@@ -15,8 +15,21 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.aws-iam-policy-elements",
+      "title": "IAM JSON Policy Elements Reference",
+      "publisher": "Amazon Web Services",
+      "url": "https://docs.aws.amazon.com/us_en/IAM/latest/UserGuide/reference_policies_elements.html",
+      "version": "current",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "aws-iam-policy-elements-current-2026-08-11",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_DESCRIPTIVE",
+      "scope": "AWS IAM policy element semantics at retrieval."
     }
   ],
   "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "99ac6d729074331e20b242f4ec9c498f1b4eefc0907847d0d7899b937fad6a14"
+  "manifest_sha256": "303f68604c5145980e189b26c3bf876638dffa0d904c51ba05c914ffdf7309e5"
 }

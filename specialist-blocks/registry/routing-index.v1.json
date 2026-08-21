@@ -1128,6 +1128,7 @@
     },
     {
       "route_id": "route.platform.aws-iam-policy",
+      "family": "platform",
       "role_kind": "ATOMIC_SPECIALIST",
       "signals": [
         "AWS policy",
@@ -3943,5 +3944,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "ab314cac69397aa0a54edaff905987d4a12e56c225349dd5d89e34f0c8632e42"
+  "routing_sha256": "91b6ed89395c923c02645ccab23e75cc451043e811c3900c572497fab411f0d4"
 }
