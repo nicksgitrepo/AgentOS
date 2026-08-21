@@ -38,6 +38,8 @@ const fixtureTamper = structuredClone(normal); fixtureTamper.evidence.fixture_co
 expectCode(fixtureTamper, "INDUSTRIAL_3D_CONTEXT_RECEIPT_INVALID");
 const registryTamper = structuredClone(normal); registryTamper.evidence.registry_contract_sha256 = `${"f".repeat(63)}0`;
 expectCode(registryTamper, "INDUSTRIAL_3D_REGISTRY_CONTEXT_INVALID");
+const registryRawTamper = structuredClone(normal); registryRawTamper.evidence.agent_roster_file_sha256 = `${"a".repeat(63)}b`;
+expectCode(registryRawTamper, "INDUSTRIAL_3D_REGISTRY_CONTEXT_INVALID");
 const registryStateTamper = structuredClone(normal); registryStateTamper.evidence.registry_agent_state = "ACCEPTED_QUALIFIED";
 expectCode(registryStateTamper, "INDUSTRIAL_3D_REGISTRY_STATE_INVALID");
 const upstreamModelTamper = structuredClone(normal); upstreamModelTamper.evidence.upstream_router_model_snapshot_sha256 = `${"1".repeat(63)}2`;
@@ -67,7 +69,12 @@ assert.equal(operational.context_receipt_sha256, authority.context_receipt_sha25
 assert.equal(operational.memory_readback_sha256, authority.memory_readback_sha256);
 assert.equal(operational.fixture_contract_sha256, authority.fixture_contract_sha256);
 assert.equal(operational.registry_contract_sha256, authority.registry.registry_contract_sha256);
+assert.equal(operational.agent_roster_file_sha256, authority.registry.registry_raw_file_sha256.agent_roster);
+assert.equal(operational.specialist_roster_file_sha256, authority.registry.registry_raw_file_sha256.specialist_roster);
+assert.equal(operational.atomic_inventory_file_sha256, authority.registry.registry_raw_file_sha256.atomic_inventory);
+assert.equal(operational.routing_index_file_sha256, authority.registry.registry_raw_file_sha256.routing_index);
 assert.equal(operational.registry_agent_state, "CANDIDATE_READY_FOR_QUALIFICATION");
 assert.equal(operational.registry_activation, "OFF");
 assert.equal(operational.upstream_router_model_binding_status, "RECONCILED_NOT_ACTIVE");
+assert.equal(operational.registry_provenance_sensitivity.mutation_detected, true);
 console.log(`PASS Industrial 3D operational package: ${operational.fixture_results.length} hostile vectors, ${operational.gate_execution.length} gates, mutation sensitivity intact`);

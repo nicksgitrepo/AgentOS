@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.industrial-3d.v1",
   "block_id": "specialist.graphics.industrial-3d",
-  "candidate_digest": "bc157bb4b923189e47e154814c8fe829d9276fa565f5c532bc690b915df0fb2f",
+  "candidate_digest": "dcde4f015881cef8154215eabc63853dec4225dd93316adebd582d9cf2e7c01a",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-p5-domain-ai-3d-reg-finance-harness.v1",
   "cases": [
