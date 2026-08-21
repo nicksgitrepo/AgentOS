@@ -29414,7 +29414,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-07/repair/handoff.json",
-        "handoff_file_sha256": "5b5fc7e2647ce246cbc3917827b6ebbb392695b8085331707f50a61583064018",
+        "handoff_file_sha256": "eb2ead248a1944ceebe95abb19237b06c96d11739fa0031efd21f6109b0c9e60",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.repair.v1"
       },
@@ -40548,5 +40548,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6db07cb7b11b6f3c1f0b0b21d8992567602e3121465a3955dc2c660396529a4c"
+  "roster_sha256": "068ac426d5dbbfa719e132912ccde4053542cc8bbc5b17b6fc2a3a02f4b09238"
 }

@@ -3809,7 +3809,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "ab41c3820f828faba3af0ffeefa0ca92eb88e4f162502f733d6999cae83dd135"
+      "sha256": "fe9aad7aef4ad3bf67757912a175b251cd65a92103a4d8f4ce553ef35d29f35f"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
