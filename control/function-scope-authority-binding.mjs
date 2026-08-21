@@ -153,9 +153,13 @@ export function resolveFunctionScopeCanonicalAuthority() {
   const acceptanceLedger = acceptanceArtifact.value;
   assert(acceptanceLedger.schema === "agentos.reusable_agent_acceptance_ledger.v1" && acceptanceLedger.status === "READ_ONLY_INDEPENDENT_EVALUATION_INDEX" && acceptanceLedger.project_agnostic === true && acceptanceLedger.ledger_sha256 === canonicalDigest(body(acceptanceLedger, "ledger_sha256")), "Function Scope acceptance ledger identity is invalid", "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_INVALID");
   const acceptance = acceptanceLedger.entries?.filter((candidate) => candidate.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE");
-  assert(acceptance?.length === 1, "Function Scope acceptance ledger row is missing or duplicated", "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_ROW_INVALID");
-  const acceptanceEntry = acceptance[0];
-  assert(acceptanceEntry.package_path === FUNCTION_SCOPE_PACKAGE_PATH && /^[0-9a-f]{40}$/u.test(acceptanceEntry.candidate_commit) && /^[0-9a-f]{40}$/u.test(acceptanceEntry.candidate_tree) && acceptanceEntry.independent_status === "PASS" && acceptanceEntry.receipt_ref === `INDEPENDENT_EVALUATOR_HANDOFF/${acceptanceEntry.candidate_commit}` && ((acceptanceEntry.readback_scope === "READBACK_SUMMARY_ONLY" && acceptanceEntry.receipt_sha256 === null) || (acceptanceEntry.readback_scope === "EXACT_RECEIPT_RETAINED" && /^[0-9a-f]{64}$/u.test(acceptanceEntry.receipt_sha256))), "Function Scope acceptance receipt is not a canonical independent readback", "FUNCTION_SCOPE_ACCEPTANCE_RECEIPT_INVALID");
+  const acceptanceEntry = acceptance?.length === 1 ? acceptance[0] : null;
+  if (entry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION") {
+    assert(acceptance?.length === 0, "Function Scope candidate has a stale or duplicated acceptance row", "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_ROW_INVALID");
+  } else {
+    assert(acceptance?.length === 1, "Function Scope acceptance ledger row is missing or duplicated", "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_ROW_INVALID");
+    assert(acceptanceEntry.package_path === FUNCTION_SCOPE_PACKAGE_PATH && /^[0-9a-f]{40}$/u.test(acceptanceEntry.candidate_commit) && /^[0-9a-f]{40}$/u.test(acceptanceEntry.candidate_tree) && acceptanceEntry.independent_status === "PASS" && acceptanceEntry.receipt_ref === `INDEPENDENT_EVALUATOR_HANDOFF/${acceptanceEntry.candidate_commit}` && ((acceptanceEntry.readback_scope === "READBACK_SUMMARY_ONLY" && acceptanceEntry.receipt_sha256 === null) || (acceptanceEntry.readback_scope === "EXACT_RECEIPT_RETAINED" && /^[0-9a-f]{64}$/u.test(acceptanceEntry.receipt_sha256))), "Function Scope acceptance receipt is not a canonical independent readback", "FUNCTION_SCOPE_ACCEPTANCE_RECEIPT_INVALID");
+  }
 
   const sourceArtifact = readJson(path.join(PACKAGE, "sources.lock"), "Function Scope source lock");
   assert(sourceArtifact.file_sha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.source_lock, "Function Scope source lock file is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID");
@@ -231,7 +235,7 @@ export function resolveFunctionScopeCanonicalAuthority() {
     standard_block_sha256: standard.block_sha256, standard_source_manifest_sha256: standardSources.manifest_sha256,
     gate_manifest_sha256: manifest.manifest_sha256, gate_manifest_file_sha256: manifestArtifact.file_sha256, gate_semantic_inventory_sha256: gateSemanticInventorySha256,
     gates: Object.freeze(gates), fixtures: Object.freeze(fixtures), model: Object.freeze(modelRoute), model_route_sha256: modelRouteSha256,
-    acceptance_ledger_file_sha256: acceptanceArtifact.file_sha256, acceptance_candidate_commit: acceptanceEntry.candidate_commit, acceptance_candidate_tree: acceptanceEntry.candidate_tree, acceptance_receipt_ref: acceptanceEntry.receipt_ref,
+    acceptance_ledger_file_sha256: acceptanceArtifact.file_sha256, acceptance_candidate_commit: acceptanceEntry?.candidate_commit ?? null, acceptance_candidate_tree: acceptanceEntry?.candidate_tree ?? null, acceptance_receipt_ref: acceptanceEntry?.receipt_ref ?? null,
     router_file_sha256: routerFileSha256, router_result_sha256: routerResult.result_sha256, context_sha256: contextSha256, custody_ref: FUNCTION_SCOPE_CUSTODY_REF,
   });
 }

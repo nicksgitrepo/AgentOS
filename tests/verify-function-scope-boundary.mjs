@@ -141,8 +141,19 @@ for (const mutation of ["receipt_ref", "row_removed"]) {
     fs.mkdirSync(path.join(acceptanceTemp, "fixtures"), {recursive: true});
     fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(acceptanceTemp, "fixtures", "model-policy-snapshot.initial.v1.json"));
     fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(acceptanceTemp, "fixtures", "model-policy-evidence"), {recursive: true});
+    const rosterPath = path.join(acceptanceTemp, "specialist-blocks", "registry", "agent-roster.v1.json");
+    const roster = JSON.parse(fs.readFileSync(rosterPath, "utf8"));
+    const rosterEntry = roster.entries.find((entry) => entry.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE");
+    rosterEntry.build_state = "ACCEPTED_QUALIFIED"; rosterEntry.qa_state = "COMPLETE_QA_PASS"; rosterEntry.independent_evaluation_state = "INDEPENDENT_PASS_READBACK";
+    roster.roster_sha256 = canonicalDigest({...roster, roster_sha256: null});
+    fs.writeFileSync(rosterPath, `${JSON.stringify(roster, null, 2)}\n`);
+    const rosterSha = createHash("sha256").update(fs.readFileSync(rosterPath)).digest("hex");
+    const bindingPath = path.join(acceptanceTemp, "control", "function-scope-authority-binding.mjs");
+    fs.writeFileSync(bindingPath, fs.readFileSync(bindingPath, "utf8").replace(/FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "[0-9a-f]{64}"/u, `FUNCTION_SCOPE_ROSTER_FILE_SHA256 = "${rosterSha}"`));
     const acceptancePath = path.join(acceptanceTemp, "specialist-blocks", "registry", "accepted-agent-receipts.v1.json");
     const acceptanceLedger = JSON.parse(fs.readFileSync(acceptancePath, "utf8"));
+    acceptanceLedger.entries.push({stable_agent_id: "AGENT.SECURITY_FUNCTION_SCOPE", package_path: "specialist-blocks/wave-03/function-scope", candidate_commit: "4e1ac9d4ef9aa9646ce7d0cd5c046e1a8600c13e", candidate_tree: "87777e1974888e4e520f4206ed61a87e75e0e266", independent_status: "PASS", receipt_ref: "INDEPENDENT_EVALUATOR_HANDOFF/4e1ac9d4ef9aa9646ce7d0cd5c046e1a8600c13e", receipt_sha256: null, readback_scope: "READBACK_SUMMARY_ONLY"});
+    acceptanceLedger.entries.sort((a, b) => a.stable_agent_id.localeCompare(b.stable_agent_id));
     if (mutation === "receipt_ref") {
       acceptanceLedger.entries.find((entry) => entry.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE").receipt_ref = "INDEPENDENT_EVALUATOR_HANDOFF/0000000000000000000000000000000000000000";
     } else {
@@ -150,7 +161,7 @@ for (const mutation of ["receipt_ref", "row_removed"]) {
     }
     acceptanceLedger.ledger_sha256 = canonicalDigest({...acceptanceLedger, ledger_sha256: null});
     fs.writeFileSync(acceptancePath, `${JSON.stringify(acceptanceLedger, null, 2)}\n`);
-    const isolatedAuthority = await import(`${pathToFileURL(path.join(acceptanceTemp, "control", "function-scope-authority-binding.mjs")).href}?acceptance-${mutation}=${Date.now()}`);
+    const isolatedAuthority = await import(`${pathToFileURL(bindingPath).href}?acceptance-${mutation}=${Date.now()}`);
     assert.throws(() => isolatedAuthority.resolveFunctionScopeCanonicalAuthority(), (error) => mutation === "receipt_ref" ? error?.code === "FUNCTION_SCOPE_ACCEPTANCE_RECEIPT_INVALID" : error?.code === "FUNCTION_SCOPE_ACCEPTANCE_LEDGER_ROW_INVALID");
   } finally {
     fs.rmSync(acceptanceTemp, {recursive: true, force: true});
