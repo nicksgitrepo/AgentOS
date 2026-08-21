@@ -9,11 +9,16 @@ import {
   recordAuditRound,
   renderAuditFindingMarkdown,
   requestEscalationClone,
+  validateAuditGroup,
 } from "../control/collaborative-audit-workflow.mjs";
 
 const auditors = Array.from({length: 6}, (_, index) => ({
   auditor_id: `AUDITOR.${index + 1}`,
   standard_role_id: `STANDARD.${index + 1}`,
+  task_id: `TASK.AUDITOR.ROUND.${index + 1}`,
+  round_ref: `opaque:round:WAVE.1.${index + 1}`,
+  round_sha256: `${String(index + 1).repeat(64)}`.slice(0, 64),
+  auditor_worktree_ref: `opaque:worktree:WAVE-1-AUDITOR-${index + 1}`,
   read_only: true,
   may_repair: false,
 }));
@@ -41,5 +46,8 @@ blocked(() => recordAuditRound({}, {results: [], auditorGroupIds: [], spawnerLif
 blocked(() => requestEscalationClone({}, {spawnerLifecycleAuthority: request.spawnerLifecycleAuthority}));
 blocked(() => closeAcceptedWave({}, {spawnerLifecycleAuthority: request.spawnerLifecycleAuthority}));
 blocked(() => compileCollaborativeAuditWave({...request, authorityRoot: "/tmp/alternate"}));
+assert.throws(() => validateAuditGroup(auditors.map(({task_id, ...auditor}) => auditor)), /task identity is missing/u);
+assert.throws(() => validateAuditGroup(auditors.map(({auditor_worktree_ref, ...auditor}) => auditor)), /worktree custody is missing/u);
+assert.throws(() => validateAuditGroup(auditors.map((auditor, index) => index === 1 ? {...auditor, round_sha256: auditors[0].round_sha256} : auditor)), /duplicate|digest/u);
 
 console.log("PASS collaborative audit blueprint remains fail-closed until governed temporary-role admission, custody, and lifecycle receipts exist");

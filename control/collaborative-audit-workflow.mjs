@@ -5,6 +5,7 @@
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {resolveCanonicalGlobalGovernanceProjection} from "./global-governance-bootstrap.mjs";
 import {selectEcoModelRoute} from "./eco-model-policy.mjs";
+import {assessAuditorRound} from "./auditor-round-custody.mjs";
 
 export const COLLABORATIVE_AUDIT_SCHEMA = "agentos.collaborative_audit_workflow.v1";
 export const AUDIT_FINDING_SCHEMA = "agentos.standard_audit_finding.v1";
@@ -16,6 +17,10 @@ export const WAVE_STATES = Object.freeze(["SIX_AUDITORS_ACTIVE", "BULK_REPAIR_AC
 
 const ID = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const ISSUE = /^AGENTOS-(?:CVE|ISSUE)-\d{4}-\d{4,}$/u;
+const AUDITOR_TASK = /^TASK\.AUDITOR\.[A-Z0-9._:-]{2,160}$/u;
+const ROUND_REF = /^opaque:round:[A-Z0-9._:/-]{1,180}$/u;
+const WORKTREE_REF = /^opaque:worktree:[A-Z0-9._:/-]{1,180}$/u;
+const SHA256 = /^[0-9a-f]{64}$/u;
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function id(value, label) { assert(typeof value === "string" && ID.test(value), `${label} is invalid`); }
 function sha(value, label) { assert(typeof value === "string" && /^[0-9a-f]{64}$/u.test(value), `${label} must be a SHA-256`); }
@@ -62,11 +67,12 @@ export function compileStandardAuditFinding({issueId, title, severity, weaknessI
 
 export function validateAuditGroup(auditors) {
   assert(Array.isArray(auditors) && auditors.length === AUDIT_GROUP_SIZE, "Collaborative audit requires exactly six auditors");
-  const ids = new Set(), standards = new Set();
+  const ids = new Set(), standards = new Set(), tasks = new Set(), rounds = new Set(), roundDigests = new Set(), worktrees = new Set();
   for (const auditor of auditors) {
-    assert(auditor && typeof auditor === "object", "Audit group entry is invalid"); id(auditor.auditor_id, "auditor ID"); id(auditor.standard_role_id, "auditor standard role");
+    assert(auditor && typeof auditor === "object", "Audit group entry is invalid"); id(auditor.auditor_id, "auditor ID"); id(auditor.standard_role_id, "auditor standard role"); assert(typeof auditor.task_id === "string" && AUDITOR_TASK.test(auditor.task_id), "Auditor task identity is missing or invalid"); assert(typeof auditor.round_ref === "string" && ROUND_REF.test(auditor.round_ref), "Auditor round reference is missing or invalid"); assert(typeof auditor.round_sha256 === "string" && SHA256.test(auditor.round_sha256), "Auditor round digest is missing or invalid"); assert(typeof auditor.auditor_worktree_ref === "string" && WORKTREE_REF.test(auditor.auditor_worktree_ref), "Auditor worktree custody is missing or invalid");
     assert(auditor.read_only === true && auditor.may_repair === false, "Auditors must be read-only and cannot repair their candidate");
-    assert(!ids.has(auditor.auditor_id) && !standards.has(auditor.standard_role_id), "Audit group contains duplicate identities or standards"); ids.add(auditor.auditor_id); standards.add(auditor.standard_role_id);
+    assert(!ids.has(auditor.auditor_id) && !standards.has(auditor.standard_role_id) && !tasks.has(auditor.task_id) && !rounds.has(auditor.round_ref) && !roundDigests.has(auditor.round_sha256) && !worktrees.has(auditor.auditor_worktree_ref), "Audit group contains duplicate identities, rounds, digests, or custody");
+    ids.add(auditor.auditor_id); standards.add(auditor.standard_role_id); tasks.add(auditor.task_id); rounds.add(auditor.round_ref); roundDigests.add(auditor.round_sha256); worktrees.add(auditor.auditor_worktree_ref);
   }
   return auditors;
 }
@@ -88,7 +94,7 @@ export function aggregateSixAuditReports(wave, reports, {spawnerLifecycleAuthori
   assert(Array.isArray(reports) && reports.length === 6, "Orchestrator must receive six audit reports");
   const expected = new Set(wave.auditors.map((item) => item.auditor_id)), seen = new Set(), issueIds = new Set(), issues = [];
   for (const report of reports) {
-    id(report.auditor_id, "audit report author"); assert(expected.has(report.auditor_id) && !seen.has(report.auditor_id), "Audit report author is missing, duplicated, or outside the six-agent group"); seen.add(report.auditor_id);
+    id(report.auditor_id, "audit report author"); assert(expected.has(report.auditor_id) && !seen.has(report.auditor_id), "Audit report author is missing, duplicated, or outside the six-agent group"); seen.add(report.auditor_id); const auditor = wave.auditors.find((item) => item.auditor_id === report.auditor_id); assert(report.auditor_round && report.auditor_round.auditor_task_id === auditor.task_id && report.auditor_round.round_sha256 === auditor.round_sha256, "Audit report is missing the exact auditor round binding", "COLLABORATIVE_AUDIT_ROUND_BINDING_REQUIRED"); const roundResult = assessAuditorRound(report.auditor_round); assert(roundResult.ready_for_spawner_review === true, "Audit report round is not a current typed PASS/NOT_APPLICABLE result", "COLLABORATIVE_AUDIT_ROUND_NOT_PASS");
     const auditorIndex = wave.auditors.findIndex((item) => item.auditor_id === report.auditor_id);
     assert(report.handoff_accepted === true && report.report_path === wave.individual_report_paths[auditorIndex], "Audit report handoff or path differs");
     assert(Array.isArray(report.findings), "Audit report findings are invalid");
@@ -127,7 +133,7 @@ export function recordAuditRound(wave, {results, auditorGroupIds, spawnerLifecyc
   assert(Array.isArray(results) && results.length === pending.length && new Set(results.map((item) => item.issue_id)).size === results.length, "Audit round must cover every pending issue exactly once");
   assert(JSON.stringify(results.map((item) => item.issue_id).sort(compareUtf8)) === JSON.stringify(pending.map((item) => item.issue_id).sort(compareUtf8)), "Audit round inventory differs from the combined report");
   for (const result of results) {
-    const issue = pending.find((item) => item.issue_id === result.issue_id); assert(typeof result.passed === "boolean", "Issue audit result is required"); issue.audit_attempt += 1;
+    const issue = pending.find((item) => item.issue_id === result.issue_id); assert(typeof result.passed === "boolean", "Issue audit result is required"); assert(result.auditor_round && assessAuditorRound(result.auditor_round).ready_for_spawner_review === true, "Issue re-audit lacks a current typed auditor round", "COLLABORATIVE_AUDIT_REAUDIT_ROUND_REQUIRED"); issue.audit_attempt += 1;
     if (result.passed) issue.state = "CORRECTED";
     else if (issue.state === "PENDING_ESCALATION_AUDIT") issue.state = "ESCALATION_REQUIRED";
     else if (issue.audit_attempt >= MAX_BUILDER_AUDIT_ATTEMPTS) issue.state = "ESCALATION_REQUIRED";

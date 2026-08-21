@@ -1428,15 +1428,15 @@
     },
     "collaborative_audit_workflow_contract": {
       "path": "schemas/collaborative-audit-workflow.v1.json",
-      "sha256": "db4ea769e4454cb526606b95f980f90db23f81ef401702bcd65f15fffa5eb669"
+      "sha256": "e5b36a252accb2e38721df2dc1535c32e39839f35409875a59b57ac7689d8939"
     },
     "collaborative_audit_workflow_controller": {
       "path": "control/collaborative-audit-workflow.mjs",
-      "sha256": "300305485f80191b5a1d61eadf969a71fd7950ef8072d49679b82789abbfe405"
+      "sha256": "f26a3201e0ed07515831a3328d772af9843207b2a7fb4c5db8c6ab6a8190a619"
     },
     "collaborative_audit_workflow_verifier": {
       "path": "tests/verify-collaborative-audit-workflow.mjs",
-      "sha256": "6655da01791b07e45a4e84d079c17d3093982acd8a4d41b7430ef9bb482636f2"
+      "sha256": "b84bc47314a6536633d878c57fb0a53d06775160ee535d2646433381eee45d2e"
     },
     "content_addressing_controller": {
       "path": "control/content-addressing.mjs",
