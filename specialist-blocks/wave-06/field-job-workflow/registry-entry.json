@@ -72,7 +72,7 @@
   ],
   "handoff": {
     "path": "specialist-blocks/wave-06/field-job-workflow/handoff.json",
-    "file_sha256": "c25b8a1065905cd3695be7add6ae301822bb525e4939d2b1baae2b498e719ea2",
+    "file_sha256": "9f364f466d3b57b2a4ade36a2864f52c3de761d1dba5eb95059105c3cd48cecd",
     "independent_review_required": true
   },
   "evaluation": {
@@ -84,5 +84,5 @@
   "custody_ref": "opaque:FIELD_JOB_WORKFLOW.CUSTODY",
   "rollback_rule": "Revert the candidate commit on the isolated lane branch; never mutate or reuse the source checkout.",
   "independent_review_required": true,
-  "registry_sha256": "42ad09b19d7011b967c2916d17964614fcdee4198288ecd13ef65cce144d0b46"
+  "registry_sha256": "5d6a7425f8f62119d0843693f4f05034873fd7d947cb64e3fc3f62bd5e428dc5"
 }
