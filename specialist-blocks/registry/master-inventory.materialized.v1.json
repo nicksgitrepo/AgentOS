@@ -28644,7 +28644,7 @@
       "aliases": [],
       "family": "assurance-enterprise",
       "subfamily": "atomic",
-      "purpose": "Analyze only Test Architecture under its version lock.",
+      "purpose": "Analyze one test-architecture concern and its evidence contract without accepting product completeness or replacing test-type specialists.",
       "triggers": [
         "upstream router selects QA.TEST_ARCHITECT"
       ],
@@ -28662,18 +28662,20 @@
       ],
       "freshness_policy": "Stale, superseded, or applicability-unknown source denies the dependent action.",
       "priority_score": "P1",
-      "gate_status": "PLANNED",
-      "gate_path": null,
+      "gate_status": "BOUND",
+      "gate_path": "specialist-blocks/wave-04/test-architect/gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.test-architect.v1",
-      "lifecycle": "PLANNED",
+      "lifecycle": "CANDIDATE",
       "role_kind": "ATOMIC_SPECIALIST",
       "version": "1.0.0",
       "required_upstream_router": "specialist.assurance-enterprise.router",
       "block_id": "specialist.assurance-enterprise.test-architect",
-      "block_ids": []
+      "block_ids": [
+        "specialist.assurance-enterprise.test-architect"
+      ]
     },
     {
       "canonical_id": "REG.FMCSA_APPLICABILITY",
@@ -30747,5 +30749,5 @@
     "ATOMIC_SPECIALIST": 92,
     "COMPILED_AGENT_PACKAGE": 0
   },
-  "inventory_sha256": "f7b9b24c4a762edaa6f15cbba3788d14b7bd75f96e124ef57f649e18c6f4186b"
+  "inventory_sha256": "af0903661e320fb640669fed2e83112a2bba217f6ae2b45e28b48993be2ee7a9"
 }

@@ -11,11 +11,15 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Test Architecture: does the exact 10-proof-acceptance condition pass without expanding this ATOMIC_SPECIALIST scope?",
+  "question": "Test Architecture: does the exact 10-proof-acceptance condition pass with bound authority, context, memory, and evidence without expanding this ATOMIC_SPECIALIST scope?",
   "evidence": [
     "block_sha256",
+    "context_receipt_sha256",
     "gate.10-proof-acceptance.answer",
     "gate.10-proof-acceptance.evidence",
+    "invalidation_sha256",
+    "memory_binding_sha256",
+    "model_route_sha256",
     "source_lock_identity",
     "specialist.standard.nist-ssdf_hash",
     "upstream_router_identity"
@@ -34,5 +38,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "f65e36fb43690fbf9351e01f5990094074a2620fb95584eaa9d9840a91605dfa"
+  "gate_sha256": "8c49fc531f5daf91bb91867a1ea1985e511e4221e16d29a1704f7b06efac8a82"
 }

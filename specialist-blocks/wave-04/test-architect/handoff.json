@@ -4,30 +4,41 @@
   "handoff_id": "specialist-handoff.test-architect.v1",
   "block_id": "specialist.assurance-enterprise.test-architect",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "ac3dbbcf7a94a9891bd148d20f3bdec2e91f498e61b46565ec661809f608c42d",
-  "source_commit": "a6407f4c991d1768596f43f2f29d5a91d8044c0c",
-  "source_tree": "2c392cf5d4f4a0fdb942c8d37fd09d3d836ef2f2",
+  "candidate_digest": "dfdf402fa6fc5133e83becfc1364616f2a6da08e21ce98e2d7878b3abd0f3793",
+  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
+  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
   "changed_paths": [
     "specialist-blocks/wave-04/test-architect/block.json",
+    "specialist-blocks/wave-04/test-architect/context-binding.json",
     "specialist-blocks/wave-04/test-architect/evaluation.json",
+    "specialist-blocks/wave-04/test-architect/fixtures/*.json",
+    "specialist-blocks/wave-04/test-architect/gates/execution.json",
     "specialist-blocks/wave-04/test-architect/gates/manifest.json",
     "specialist-blocks/wave-04/test-architect/handoff.json",
+    "specialist-blocks/wave-04/test-architect/invalidation.json",
     "specialist-blocks/wave-04/test-architect/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",
+    "atomic-scope-and-upstream-router",
+    "context_binding_sha256:272cc64c3db4d8955d2004c6238d1b4926f9f07d183334853cb568e4f7994fa4",
+    "context_receipt_sha256:7d815c0a84c26f5b1e17ca1645dcd5117408dc98a6394fc67b6456789ff8c6c1",
+    "evaluation_file_sha256:adb4278d2591b8932448e2d1496d5489e58bc6f415b7bd0c6ab3d7c88947dfac",
+    "gate_semantic_inventory_sha256:2a91879b83b4e2ac31561394f3827b9c99964cb6a480cec132a33ae82e71cb4f",
     "hostile-fixture-catalog",
     "independent-reviewer-required",
-    "p3-scope-and-authority",
-    "source-lock-digest",
-    "upstream-router-closure"
+    "invalidation_sha256:d2e45cb10bf5c68eda588dac2a770ba972e4c9919b1f18d27a3ce67983bd4ec9",
+    "memory-readback-bound",
+    "model_route_sha256:ce584f80374b22699a7112946a1d46526a182112bb733dd64afd3c9bab2b0f40",
+    "upstream_router_file_sha256:280e5954262a19d3457bb64bc48d36a088a2657dd0fc3c9d1621276e81a3bf0c"
   ],
   "residuals": [
     "applicability and project context remain external",
     "candidate is not admitted or activated",
+    "external Luna/max hostile review has not been provisioned",
     "independent utility/harm evaluation has not run",
     "main AgentOS 3.0 integration owner must intake exact digest"
   ],
-  "next_action": "Route the immutable P3 atomic candidate through independent evaluation; preserve activation OFF.",
+  "next_action": "Route the immutable P3 atomic candidate through an independent Luna/max hostile review and utility/harm evaluation; preserve activation OFF. If evaluator provisioning is unavailable, emit BLOCKED_EXACT with the exact provider/readback gap.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

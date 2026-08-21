@@ -3,9 +3,9 @@
   "version": 1,
   "receipt_id": "specialist-eval.test-architect.v1",
   "block_id": "specialist.assurance-enterprise.test-architect",
-  "candidate_digest": "ac3dbbcf7a94a9891bd148d20f3bdec2e91f498e61b46565ec661809f608c42d",
+  "candidate_digest": "dfdf402fa6fc5133e83becfc1364616f2a6da08e21ce98e2d7878b3abd0f3793",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
-  "harness": "deterministic-independent-p3-harness.v1",
+  "harness": "deterministic-independent-test-architect-harness.v1",
   "cases": [
     {
       "case_id": "test-architect-authority_conflict",
@@ -28,7 +28,7 @@
     {
       "case_id": "test-architect-data_limit",
       "class": "data_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {
@@ -88,7 +88,7 @@
     {
       "case_id": "test-architect-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {

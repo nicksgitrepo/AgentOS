@@ -3821,7 +3821,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "f7e0a26ac639bc47be15b400c0a3edbf528658b805b0e39999b9d76a845191fa"
+      "sha256": "98aa86f50a8adda4bbca5ab10a93dc2326793faaeea610c11d1e0293da902b78"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4317,7 +4317,7 @@
     },
     "specialist_roster_registry": {
       "path": "specialist-blocks/registry/roster.v1.json",
-      "sha256": "67bf31be4ec809ea9eac66ee0306471da2cea71efcf184f0e1596f71154d68f6"
+      "sha256": "59a93ca626a2ade6e681a23941cb91f838be220bd892e5e97bd40855acc29c4b"
     },
     "specialist_routing_index": {
       "path": "specialist-blocks/registry/routing-index.v1.json",
@@ -4573,7 +4573,7 @@
     },
     "function_scope_authority_binding": {
       "path": "control/function-scope-authority-binding.mjs",
-      "sha256": "1b281d1677bb5670b8d4b5221dcdfdd075801282b4f28875728d69bede9fe143"
+      "sha256": "8699c5b353924e5bff9d29f6e67f6db693368b7446cf62354348acf03ab3c9e4"
     },
     "function_scope_boundary_input_contract": {
       "path": "schemas/function-scope-boundary-input.v1.json",
@@ -4613,7 +4613,7 @@
     },
     "object_scope_authority_binding": {
       "path": "control/object-scope-authority-binding.mjs",
-      "sha256": "97a555043d06f3e4dd21a7c42037730efb49d9026ea5f0c9df69ddf7e2d2466a"
+      "sha256": "9d851c5377afbd018bab9efdf8f3b8d9e1bf007275e6914dce0fb5ed091a8cdb"
     },
     "object_scope_boundary_input_contract": {
       "path": "schemas/object-scope-boundary-input.v1.json",
@@ -4646,6 +4646,54 @@
     "object_scope_gate_execution_contract": {
       "path": "schemas/object-scope-gate-execution.v1.json",
       "sha256": "75c16d69059d6dba6d162ff1bef88ddbefdbf3dd6fa652e99bfd822ec9615f61"
+    },
+    "test_architect_boundary_gate": {
+      "path": "control/test-architect-boundary-gate.mjs",
+      "sha256": "27d7c5bdb5010a989ac740dad872507a584b144cb703c0adb51d4de722317ff4"
+    },
+    "test_architect_authority_binding": {
+      "path": "control/test-architect-authority-binding.mjs",
+      "sha256": "ecc7d1ce504cbc3e07510f543ef3d49ce018e7d54bc346842183795e3a76a31b"
+    },
+    "test_architect_boundary_input_contract": {
+      "path": "schemas/test-architect-boundary-input.v1.json",
+      "sha256": "c77f8489b00f652e83edc614df4d04ceff44a47ad9eaab0d89d3113788a768d0"
+    },
+    "test_architect_boundary_result_contract": {
+      "path": "schemas/test-architect-boundary-result.v1.json",
+      "sha256": "0cf2f0e7f0b6af5aa0e490f7bf0496d5d1274415466b251007786e096b95486a"
+    },
+    "test_architect_context_binding_contract": {
+      "path": "schemas/test-architect-context-binding.v1.json",
+      "sha256": "2499b7908d4570aae6f43d6ce60399b6f7be2c97221e7c8e092575f8fb47e86d"
+    },
+    "test_architect_invalidation_contract": {
+      "path": "schemas/test-architect-invalidation.v1.json",
+      "sha256": "dcc04d1ba1860befee33b5c33078e8cb56d032e969cf367a120c8c3f05749c0f"
+    },
+    "test_architect_gate_execution_contract": {
+      "path": "schemas/test-architect-gate-execution.v1.json",
+      "sha256": "ccc49253e88efa68bdaee40832e296b9a4340784a0ed4bc0c137089c4c80daa6"
+    },
+    "test_architect_package_operational_evaluation_contract": {
+      "path": "schemas/test-architect-package-operational-evaluation.v1.json",
+      "sha256": "1dc865bb45d17d5f8bfd0e72227b4f95d6deeae53bceb236bf5a832b973bee6b"
+    },
+    "test_architect_package_operational_evaluator": {
+      "path": "control/test-architect-package-evaluator.mjs",
+      "sha256": "12f01461ae74b3d778deb0f76046d46c0d93ff752cf1e3b952719a9e34e916f6"
+    },
+    "test_architect_boundary_verifier": {
+      "path": "tests/verify-test-architect-boundary.mjs",
+      "sha256": "5984c99397752632badb643234b35372f2a6e9502a46a124838582fb4ec3117f"
+    },
+    "test_architect_candidate_handoff": {
+      "path": "specialist-blocks/wave-04/test-architect/handoff.json",
+      "sha256": "969a6303b9bd5b5354735065314370728267093d41b1bb0468047f1578dc1217"
+    },
+    "test_architect_gate_execution_manifest": {
+      "path": "specialist-blocks/wave-04/test-architect/gates/execution.json",
+      "sha256": "b699aa6f475c585a768c7951b7ce13ee0fb7de592d08d252d506e1b85dbf4154"
     },
     "auth_cache_residue_boundary_gate": {
       "path": "control/auth-cache-residue-boundary-gate.mjs",

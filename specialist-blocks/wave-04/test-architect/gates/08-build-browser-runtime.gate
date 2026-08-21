@@ -11,11 +11,15 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Test Architecture: does the exact 08-build-browser-runtime condition pass without expanding this ATOMIC_SPECIALIST scope?",
+  "question": "Test Architecture: does the exact 08-build-browser-runtime condition pass with bound authority, context, memory, and evidence without expanding this ATOMIC_SPECIALIST scope?",
   "evidence": [
     "block_sha256",
+    "context_receipt_sha256",
     "gate.08-build-browser-runtime.answer",
     "gate.08-build-browser-runtime.evidence",
+    "invalidation_sha256",
+    "memory_binding_sha256",
+    "model_route_sha256",
     "source_lock_identity",
     "specialist.standard.nist-ssdf_hash",
     "upstream_router_identity"
@@ -34,5 +38,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "655d01c45305cb6e42096e755350c0e3bb8d057f8493d91d050c208df6f79bfc"
+  "gate_sha256": "034d1a11f338e1d4169d69708aebfdc0ceb60883e30fd945062750e87f7f8c8f"
 }

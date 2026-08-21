@@ -20,7 +20,6 @@
       "Product writing",
       "acceptance",
       "activation",
-      "product writing",
       "release acceptance",
       "self-admission",
       "silent scope expansion",
@@ -63,6 +62,7 @@
   "required_knowledge": [
     "atomic specialization law",
     "exact source lock",
+    "memory readback and invalidation contract",
     "specialist.standard.nist-ssdf",
     "typed context contract"
   ],
@@ -198,6 +198,7 @@
       "typed handoff receipt"
     ],
     "tools": [
+      "bound memory/context readback",
       "fixture evaluator",
       "local deterministic validator",
       "source-lock reader"
@@ -235,9 +236,9 @@
     ]
   },
   "lifecycle_rules": {
-    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
-    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
-    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
+    "candidate_entry": "Block, source lock, twelve executable gates, gate execution readback, context/memory binding, invalidation contract, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
+    "evaluation_entry": "Independent evaluator recomputes canonical bytes, executes every hostile vector, checks side-effect ceilings, runs mutation sensitivity, and requires external utility/harm review.",
+    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, model-route change, context or memory invalidation, or failed utility/harm review.",
     "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
     "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
   },
@@ -312,5 +313,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "ac3dbbcf7a94a9891bd148d20f3bdec2e91f498e61b46565ec661809f608c42d"
+  "block_sha256": "dfdf402fa6fc5133e83becfc1364616f2a6da08e21ce98e2d7878b3abd0f3793"
 }

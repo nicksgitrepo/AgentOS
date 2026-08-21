@@ -11,11 +11,15 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Test Architecture: does the exact 11-lifecycle-recovery-archive condition pass without expanding this ATOMIC_SPECIALIST scope?",
+  "question": "Test Architecture: does the exact 11-lifecycle-recovery-archive condition pass with bound authority, context, memory, and evidence without expanding this ATOMIC_SPECIALIST scope?",
   "evidence": [
     "block_sha256",
+    "context_receipt_sha256",
     "gate.11-lifecycle-recovery-archive.answer",
     "gate.11-lifecycle-recovery-archive.evidence",
+    "invalidation_sha256",
+    "memory_binding_sha256",
+    "model_route_sha256",
     "source_lock_identity",
     "specialist.standard.nist-ssdf_hash",
     "upstream_router_identity"
@@ -34,5 +38,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "e5fb9c6ca70c07bf3c6ea477bb9f1e74dd33facaa1b5669036c1068d8b9ce7a2"
+  "gate_sha256": "a84602ec9e25810b84a6b69c781ab5c0eabe884f3202dcff9fda8291fb5ccef3"
 }

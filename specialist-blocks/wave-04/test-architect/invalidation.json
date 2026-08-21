@@ -1,0 +1,100 @@
+{
+  "schema": "agentos.specialist_invalidation.v1",
+  "version": 1,
+  "block_id": "specialist.assurance-enterprise.test-architect",
+  "rules": [
+    {
+      "rule_id": "BLOCK_BYTES_CHANGED",
+      "trigger": "BLOCK_SEMANTIC_DIGEST_CHANGED",
+      "affected": [
+        "context",
+        "gates",
+        "fixtures",
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "CONTEXT_BINDING_CHANGED",
+      "trigger": "MEMORY_OR_TYPED_CONTEXT_BINDING_CHANGED",
+      "affected": [
+        "fixtures",
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "FIXTURE_BYTES_CHANGED",
+      "trigger": "HOSTILE_FIXTURE_BYTES_CHANGED",
+      "affected": [
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "GATE_BYTES_CHANGED",
+      "trigger": "GATE_OR_MANIFEST_BYTES_CHANGED",
+      "affected": [
+        "gate_execution",
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "MODEL_POLICY_CHANGED",
+      "trigger": "GLOBAL_MODEL_POLICY_OR_ROUTE_CHANGED",
+      "affected": [
+        "context",
+        "fixtures",
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "ROSTER_BYTES_CHANGED",
+      "trigger": "ROSTER_OR_ACCEPTANCE_INDEX_CHANGED",
+      "affected": [
+        "context",
+        "evaluation",
+        "handoff"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "SOURCE_LOCK_CHANGED",
+      "trigger": "SOURCE_OR_STANDARD_FRESHNESS_CHANGED",
+      "affected": [
+        "context",
+        "fixtures",
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    },
+    {
+      "rule_id": "UPSTREAM_ROUTER_CHANGED",
+      "trigger": "UPSTREAM_ROUTER_BYTES_OR_RESULT_CHANGED",
+      "affected": [
+        "context",
+        "fixtures",
+        "evaluation",
+        "handoff",
+        "roster"
+      ],
+      "action": "INVALIDATE_AND_REBUILD"
+    }
+  ],
+  "rebuild_action": "INVALIDATE_DEPENDENTS_REBUILD_AND_REQUALIFY",
+  "invalidation_sha256": "d2e45cb10bf5c68eda588dac2a770ba972e4c9919b1f18d27a3ce67983bd4ec9"
+}

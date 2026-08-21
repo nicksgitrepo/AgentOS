@@ -1141,20 +1141,23 @@
       ],
       "knowledge_context_inputs": [
         "atomic specialization law",
-        "exact source lock",
-        "specialist.standard.nist-ssdf",
-        "typed context contract",
         "authority",
         "candidate.identity",
+        "context-binding.json",
         "custody",
+        "exact source lock",
+        "invalidation.json",
+        "memory readback and invalidation contract",
         "request",
         "signals",
+        "source.atomic-specialization-law",
+        "source.google-sre-testing-reliability",
         "source_lock",
+        "specialist.standard.nist-ssdf",
         "test.evidence",
         "test.scope",
         "test.strategy",
-        "source.atomic-specialization-law",
-        "source.google-sre-testing-reliability"
+        "typed context contract"
       ],
       "deterministic_gates": {
         "status": "BOUND",
@@ -1163,62 +1166,62 @@
           {
             "gate_id": "00-intake",
             "path": "specialist-blocks/wave-04/test-architect/gates/00-intake.gate",
-            "file_sha256": "db3e32b1d35db418d12449b7b027e88533515419e2854d0c2039a45f051f9ec8"
+            "file_sha256": "abf322c0d4fa72712b69033083aee3c0fc7991387be9586a73730b1f59c2d439"
           },
           {
             "gate_id": "01-applicability",
             "path": "specialist-blocks/wave-04/test-architect/gates/01-applicability.gate",
-            "file_sha256": "120e3b119f7d6f07dc2e26bb0170aa2034e74d272ccf8c9701ec33dae2e0544c"
+            "file_sha256": "6e2877488d9ca981850c5863d0c97b1a753597e78ece1cde5a43012b255f0eb2"
           },
           {
             "gate_id": "02-authority-precedence",
             "path": "specialist-blocks/wave-04/test-architect/gates/02-authority-precedence.gate",
-            "file_sha256": "6db5de48d64e904b8962f43fc1380243b6b84f872209402fe09d4b79291107ef"
+            "file_sha256": "6af6a3d2522e5422bf17a951ea558a1ac0558ceed7899cbc6b0568a328c172de"
           },
           {
             "gate_id": "03-scope-nongoals",
             "path": "specialist-blocks/wave-04/test-architect/gates/03-scope-nongoals.gate",
-            "file_sha256": "74c8929c41be6ed496358c9b5517bf9347203d8d9186b5cb95fd9b75f7a05917"
+            "file_sha256": "f6c3b9c6222705310a0d8c798b88aa9225b30dfd247426bd0066713f1d3f14a5"
           },
           {
             "gate_id": "04-source-evidence-freshness",
             "path": "specialist-blocks/wave-04/test-architect/gates/04-source-evidence-freshness.gate",
-            "file_sha256": "c09b92ee0d02d0c539307eca559fad1510aee0eefecd0975d1f9166cafef8aa9"
+            "file_sha256": "3804f8c0c9eeebc6ba97081fa324f5cae6df9133e109b35f81669998a3414873"
           },
           {
             "gate_id": "05-context-completeness",
             "path": "specialist-blocks/wave-04/test-architect/gates/05-context-completeness.gate",
-            "file_sha256": "a042117cc6c22dfb2e0003959e0f9643928b62aca2a03e28b2e479084e9a1fca"
+            "file_sha256": "fd049d9a9a35cd4d11c5b6c7555148785cfdc401f9faebee8a8192eb2bdcaabf"
           },
           {
             "gate_id": "06-tool-resource-custody",
             "path": "specialist-blocks/wave-04/test-architect/gates/06-tool-resource-custody.gate",
-            "file_sha256": "5c3941be696d1a8b190b3fd0016cf754e578ce6b58af169b93134114cab5891e"
+            "file_sha256": "59f12c8b73c1b4987437c16ea64fdb5fa021fe4cb0a32244af8a355c4f68f420"
           },
           {
             "gate_id": "07-data-secret-privacy",
             "path": "specialist-blocks/wave-04/test-architect/gates/07-data-secret-privacy.gate",
-            "file_sha256": "24e37180e092e2ee6723f61b43dbe6a487a782aa42bc2d260540d91b92151807"
+            "file_sha256": "1630f2207c3d519f3bc45bf3881e518291fc0a38693cf07f32045ad6a3339882"
           },
           {
             "gate_id": "08-build-browser-runtime",
             "path": "specialist-blocks/wave-04/test-architect/gates/08-build-browser-runtime.gate",
-            "file_sha256": "540a3ecfa082302cafd047692314edce94a9ceb4650e2fad693dd03e33d27ecb"
+            "file_sha256": "fd4d006402525cc1d93a0a71e47a6f0b41ef06c1455d8c07634a1e86f81ffd6b"
           },
           {
             "gate_id": "09-output-handoff",
             "path": "specialist-blocks/wave-04/test-architect/gates/09-output-handoff.gate",
-            "file_sha256": "05c1af83df0c760c85a0784fa429e2aaa8f50770736b4d6c4ce683ae0d5476fa"
+            "file_sha256": "960c6ce97e358415b60566be459858ee6e82805db363db8be461d9a4f6762407"
           },
           {
             "gate_id": "10-proof-acceptance",
             "path": "specialist-blocks/wave-04/test-architect/gates/10-proof-acceptance.gate",
-            "file_sha256": "f5a5b691bc70fcbcc4512ede475ca5e25b157d2d110070923498b195ed83428e"
+            "file_sha256": "a1e7df98e1bd2dbb542fab21a3759583e647187862e88eaad3177f05255f2496"
           },
           {
             "gate_id": "11-lifecycle-recovery-archive",
             "path": "specialist-blocks/wave-04/test-architect/gates/11-lifecycle-recovery-archive.gate",
-            "file_sha256": "a4166673ec51679f9561299c1667fc8f33af3b264f74dfbc26c0b16d00fbf91d"
+            "file_sha256": "9335fa84851206fa270b6c1ef534ccbd77be262c649c12d25d2a5e511284b7d2"
           }
         ]
       },
@@ -1228,103 +1231,103 @@
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/authority_conflict.json",
-            "file_sha256": "bf10cb83f978c3ae86ae285e40bcd38cf90223016ae96ef7a16aaf69f56ebd34",
+            "file_sha256": "5f4a9b4b241d29bfbfd9ab27b0ea2829820f9f78447aa1f610a38a8555aa9fe7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "33b7e387006f4091d608d72244691a206872491a7911160e048a774a198b922f",
+            "file_sha256": "8a79a7429cf0c59f33d9305e92f945f3410e6af71eea956434e23f87e7e51696",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "aa9e498e176467b458ebfbca94d650732fbbc2c48b83cc944bc1ce825a326a10",
+            "file_sha256": "a7b407bd4369fe66d985bf8ad11bed6d272b75ec33285e4dde8856f5b0981c76",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.DATA_LIMIT",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/data_limit.json",
-            "file_sha256": "c49dc6075be1a79dcb0629b44332a9d1f9391bc4a77b7096ef2bba8581db3262",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "54a161ecde5bbc163fc419b63039a38eeffbc2ce129c6c705c37de194fb27863",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "c020cf95297d66d920c30b880087594d3197f635f1ff8ea41f9a81f357bf3d8c",
+            "file_sha256": "04de4623d8807b1ec47f00b7a8eca2e81a1cc728343d9e43230e87b4ffd9e6e6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/false_positive.json",
-            "file_sha256": "9e31c68faf5f4cff37eff9dd8c5c5a3d0a4884c8913e643865c760b5714fba17",
+            "file_sha256": "b0180d44da2be21d0ff447040744ea0c6945ac0300c0bbd5e1c85bf2a5c2ff21",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.HANDOFF",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/handoff.json",
-            "file_sha256": "ca02714b88e10bad3ac7f761573dc3be8972a7a677c36b6ead20418241fb5ed1",
+            "file_sha256": "a03395328fb034e9e126b03b0c7f981399a857a92cd6d54926465522f7e1a8d8",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/missing_context.json",
-            "file_sha256": "29785bc49b7177414baf9ed9810a1695b245e24f3b050410b377cece340d6470",
+            "file_sha256": "002e6feaf632a47380d0fe770ed5feb0654cfb894dd4a90d5ba1bdad45270bb4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.NARROWNESS",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/narrowness.json",
-            "file_sha256": "a5716b5ed45b28e7b60b841a29dd203479fb1fc65fb1f6449cc9880f20d85d9c",
+            "file_sha256": "8c090f2cf01c2925f046c889bf67459df951e061a465b209fbd043ba0d8cd25a",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/router_self_accept.json",
-            "file_sha256": "d70bfb327279880ff2a5ddeaa814c1aa3234f6ea8b1d3b18c1158bc39267713d",
+            "file_sha256": "35fcdf98a1bb20e8dad7484d68238155a711441d35cb8d81ba1f8f18363452d6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.ROUTING",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/routing.json",
-            "file_sha256": "74d489f88b0a375b5d08e6ec4dd92ded3605fbd5a03a4527ae8b6bf20c6d5a9c",
+            "file_sha256": "07ee380163d94398c293a502e2f233850ee497bf3c82818d205f842f35e288e2",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/silent_scope_expansion.json",
-            "file_sha256": "0b7b3409755fa09dfcd80bb4fb21b285edea9501fa2da548cf0a2cedc0b72034",
+            "file_sha256": "20424e56fe28d0a68e7ec6dd0ba214e9f4b002a084f4b18300cd6f64e8eaec04",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.STALE_SOURCE",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/stale_source.json",
-            "file_sha256": "c0e1c5122d0be908224f863d042f04b34f2f65baa289bc18b8a6c26ed0246618",
+            "file_sha256": "46ca9cb4e90656fc027353b3278a423237875300bd23965ab179f2776cd33e0d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.TOOL_LIMIT",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/tool_limit.json",
-            "file_sha256": "23ede9e33f841722c0404ab216bfabcdbcbbd205360f3e27333299a757e2177e",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "260045c2c9b50e80e5d5587e002f4c615366eebf1e10e08d92dfbe6ba86e46a3",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/umbrella_authority.json",
-            "file_sha256": "6318d09d7f03e3eec23fdd2f69e7665e9aed7809a0ae8915dfeb0d8cf12a82ab",
+            "file_sha256": "b4ce4cb1f42f5027c3c1c98a3cbdcbb65f2069d6e7c8abad55b3cc858a7edd77",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/unrelated_scope.json",
-            "file_sha256": "c7d57723f688b57acb041f2d880533b4b50909a40b3e69a30dfe58d32e8af57d",
+            "file_sha256": "f553eeaae292863040b5791ec9702cba3cfd8fcc0fcc001060adddc4d807abb7",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.assurance-enterprise.test-architect.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-04/test-architect/fixtures/unsafe_action.json",
-            "file_sha256": "6bb8ed0203633e059527276ef53b6abc78c18195bcc74b32639060e1b6145d20",
+            "file_sha256": "eec7738259be508bb9024fc8c13e9052f5da2dfd4f1984991479c1427d9353ae",
             "expected_outcome": "DENY"
           }
         ]
@@ -1334,10 +1337,13 @@
           "source_lock",
           "freshness_policy",
           "claim_rule",
-          "unknown_rule"
+          "unknown_rule",
+          "context_receipt_sha256",
+          "memory_binding_sha256",
+          "invalidation_sha256"
         ],
         "handoff_path": "specialist-blocks/wave-04/test-architect/handoff.json",
-        "handoff_file_sha256": "bbc65122c3ee01f5a7c43a068bb2704a9e4dfb0248147c07e2061a20f449a6e4",
+        "handoff_file_sha256": "969a6303b9bd5b5354735065314370728267093d41b1bb0468047f1578dc1217",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.test-architect.v1"
       },
@@ -1352,10 +1358,10 @@
         "archive_rule": "Archive or supersede only through Spawner after scope closure, evidence preservation, zero references, and durable readback."
       },
       "model_route": {
-        "task_class": "NARROW_CODING",
-        "minimum_capability": 49,
+        "task_class": "DETERMINISTIC_QA",
+        "minimum_capability": 45,
         "required_capabilities": [
-          "CODE",
+          "TEXT",
           "TOOLS"
         ],
         "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT"
@@ -1393,13 +1399,15 @@
       "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-04/test-architect/evaluation.json"
+          "specialist-blocks/wave-04/test-architect/context-binding.json",
+          "specialist-blocks/wave-04/test-architect/evaluation.json",
+          "specialist-blocks/wave-04/test-architect/invalidation.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
-          "source lock or authoritative evidence changes",
-          "gate or hostile fixture bytes change",
-          "global model-policy snapshot or permanent-role registry changes"
+          "source lock, standard, or authoritative evidence changes",
+          "gate, gate execution, or hostile fixture bytes change",
+          "global model-policy snapshot, memory/context binding, upstream router, or permanent-role registry changes"
         ],
         "rebuild_rule": "Invalidate dependent compiled contexts and seeds, preserve history, resolve current bytes, re-run deterministic gates, then obtain a new independent receipt before reuse."
       }
@@ -40424,5 +40432,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "eb724a01357e38336da7b964edc17ff65dd51393f85caca0a82b291311b666f3"
 }

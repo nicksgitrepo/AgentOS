@@ -2,8 +2,110 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.assurance-enterprise.test-architect",
+  "fixture_id": "specialist.assurance-enterprise.test-architect.UMBRELLA_AUTHORITY",
   "class": "umbrella_authority",
-  "expected": "DENY",
+  "expected": {
+    "disposition": "DENY",
+    "route": "NARROW_SCOPE_REQUIRED",
+    "error_code": "TEST_ARCHITECTURE_SCOPE_EXPANSION_FORBIDDEN"
+  },
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/test-architect-boundary-gate.mjs#evaluateTestArchitectBoundary",
+    "input": {
+      "schema": "agentos.test_architect_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_TEST_ARCHITECTURE",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.ASSURANCE_ENTERPRISE_TEST_ARCHITECT",
+        "custody_ref": "opaque:TEST_ARCHITECT.CUSTODY",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "dfdf402fa6fc5133e83becfc1364616f2a6da08e21ce98e2d7878b3abd0f3793",
+        "signal": "QA.TEST_ARCHITECT",
+        "signal_status": "BOUND",
+        "context_status": "TEST_ARCHITECT_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ANALYZE",
+        "requested_tools": [
+          "READ_CANDIDATE",
+          "READ_SOURCE_LOCK",
+          "READ_CONTEXT"
+        ],
+        "required_block_identities": [
+          "specialist.assurance-enterprise.router",
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.standard.nist-ssdf"
+        ],
+        "model_policy_status": "PREPARED_INACTIVE",
+        "model_route_status": "BOUND",
+        "authority_scope": "TEST_ARCHITECTURE",
+        "scope": "NARROW",
+        "test_architecture_status": "BOUND",
+        "test_scope_status": "BOUND",
+        "test_strategy_status": "BOUND",
+        "test_evidence_status": "BOUND",
+        "standard_id": "source.nist-sp-800-218",
+        "standard_version": "1.1",
+        "standard_block_sha256": "8475acafc2aab24903deae55734967f5a8098919276fc023b7d50b3257c35bbb",
+        "standard_source_manifest_sha256": "b35cde6aef0781b771035ed41490b885f1f060ea6df96b5f532207e6bffc56fa",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "model_task_class": "DETERMINISTIC_QA",
+        "model_capability_floor": 45,
+        "model_required_capabilities": [
+          "TEXT",
+          "TOOLS"
+        ],
+        "model_route_sha256": "ce584f80374b22699a7112946a1d46526a182112bb733dd64afd3c9bab2b0f40",
+        "context_receipt_sha256": "7d815c0a84c26f5b1e17ca1645dcd5117408dc98a6394fc67b6456789ff8c6c1",
+        "memory_binding_sha256": "272cc64c3db4d8955d2004c6238d1b4926f9f07d183334853cb568e4f7994fa4",
+        "invalidation_sha256": "d2e45cb10bf5c68eda588dac2a770ba972e4c9919b1f18d27a3ce67983bd4ec9",
+        "upstream_router_result_sha256": "4315d21b3d2fec7b4747b786656fc7f45dc648f5198e9ec6aaf86cca7c38c0b1",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": true,
+          "cross_provider": false,
+          "false_positive": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "TEST_ARCHITECTURE_SCOPE_EXPANSION_FORBIDDEN"
+    },
+    "assertions": [
+      "caller expected disposition and route must match the independently executed boundary",
+      "all external side effects remain zero",
+      "acceptance, test execution, test-plan mutation, and memory writes remain forbidden"
+    ]
+  },
+  "operational_entrypoint": "control/test-architect-boundary-gate.mjs#evaluateTestArchitectBoundary",
+  "setup": "SEALED_CANONICAL_TEST_AUTHORITY; NO_PRODUCTION_STORE_PROVISION",
+  "required_assertions": [
+    "NO_SIDE_EFFECTS",
+    "NO_TEST_EXECUTION",
+    "NO_MEMORY_WRITE"
+  ]
 }

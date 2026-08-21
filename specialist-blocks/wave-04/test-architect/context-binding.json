@@ -1,0 +1,24 @@
+{
+  "schema": "agentos.specialist_context_binding.v1",
+  "version": 1,
+  "block_id": "specialist.assurance-enterprise.test-architect",
+  "context_schema": "schemas/specialist-context.v1.json",
+  "required_context": [
+    "authority",
+    "candidate.identity",
+    "custody",
+    "request",
+    "signals",
+    "source_lock",
+    "test.evidence",
+    "test.scope",
+    "test.strategy"
+  ],
+  "memory_authority": "GLOBAL_GOVERNANCE_MEMORY",
+  "memory_mode": "READ_ONLY_BOUND_PROJECTION",
+  "memory_write": "DENY",
+  "source_lock_path": "specialist-blocks/wave-04/test-architect/sources.lock",
+  "model_policy_path": "fixtures/model-policy-snapshot.initial.v1.json",
+  "upstream_router_block_id": "specialist.assurance-enterprise.router",
+  "binding_sha256": "272cc64c3db4d8955d2004c6238d1b4926f9f07d183334853cb568e4f7994fa4"
+}
