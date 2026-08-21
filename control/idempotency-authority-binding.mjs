@@ -35,7 +35,7 @@ export const IDEMPOTENCY_STANDARD_SOURCE_MANIFEST_SHA256 = "505595765deaa25206fd
 /* These are filled with the final candidate bytes before the branch is
  * committed.  Keeping the pins in code makes any later substitution fail
  * closed instead of silently becoming the new authority. */
-export const IDEMPOTENCY_ROSTER_FILE_SHA256 = "42bc1a8e9d99ff9fab39287bfe2ae5c15fde3813829cc670e0f1f8cbfd84b0a1";
+export const IDEMPOTENCY_ROSTER_FILE_SHA256 = "f7e0a26ac639bc47be15b400c0a3edbf528658b805b0e39999b9d76a845191fa";
 export const IDEMPOTENCY_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   block: "ba562077520d62a0ce6a949926a8a8b02aaa54038aa064bcd1e87191991cc939",
   source_lock: "27604b72651005c4dd53c4d92d45ed3bc2084b06f56d901b619499030c60549f",
