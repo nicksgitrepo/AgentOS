@@ -1,9 +1,32 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "aws-iam-policy-broad_when_narrow_exists",
   "block_id": "specialist.platform.aws-iam-policy",
   "class": "broad_when_narrow_exists",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "input": {
+      "schema": "agentos.aws_iam_policy_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_AWS_IAM_POLICY",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "broad_claim": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SCOPE_EXPANSION_FORBIDDEN"
+    }
+  },
+  "expected": {
+    "disposition": "DENY",
+    "route": "NARROW_SCOPE_REQUIRED",
+    "error_code": "AWS_IAM_POLICY_SCOPE_EXPANSION_FORBIDDEN"
+  },
+  "note": "Executable hostile fixture for broad_when_narrow_exists; provider, account, project, consumer, and applicability facts remain external."
 }

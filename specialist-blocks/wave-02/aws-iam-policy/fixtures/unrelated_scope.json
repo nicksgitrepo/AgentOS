@@ -1,9 +1,28 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "aws-iam-policy-unrelated_scope",
   "block_id": "specialist.platform.aws-iam-policy",
   "class": "unrelated_scope",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "input": {
+      "schema": "agentos.aws_iam_policy_boundary_input.v1",
+      "version": 1,
+      "request_kind": "UNRELATED_REQUEST",
+      "evidence_overrides": {}
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NO_AWS_IAM_POLICY_SCOPE",
+      "error_code": "AWS_IAM_POLICY_SCOPE_NOT_APPLICABLE"
+    }
+  },
+  "expected": {
+    "disposition": "DENY",
+    "route": "NO_AWS_IAM_POLICY_SCOPE",
+    "error_code": "AWS_IAM_POLICY_SCOPE_NOT_APPLICABLE"
+  },
+  "note": "Executable hostile fixture for unrelated_scope; provider, account, project, consumer, and applicability facts remain external."
 }

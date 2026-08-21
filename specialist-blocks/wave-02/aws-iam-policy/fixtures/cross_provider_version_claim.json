@@ -1,9 +1,32 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "aws-iam-policy-cross_provider_version_claim",
   "block_id": "specialist.platform.aws-iam-policy",
   "class": "cross_provider_version_claim",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "input": {
+      "schema": "agentos.aws_iam_policy_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_AWS_IAM_POLICY",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "cross_provider": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_SOURCE_STALE_OR_UNVERIFIED"
+    }
+  },
+  "expected": {
+    "disposition": "DENY",
+    "route": "SOURCE_REFRESH_REQUIRED",
+    "error_code": "AWS_IAM_POLICY_SOURCE_STALE_OR_UNVERIFIED"
+  },
+  "note": "Executable hostile fixture for cross_provider_version_claim; provider, account, project, consumer, and applicability facts remain external."
 }

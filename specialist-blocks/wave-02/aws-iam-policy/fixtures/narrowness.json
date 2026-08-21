@@ -1,9 +1,28 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "aws-iam-policy-narrowness",
   "block_id": "specialist.platform.aws-iam-policy",
   "class": "narrowness",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "input": {
+      "schema": "agentos.aws_iam_policy_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_AWS_IAM_POLICY",
+      "evidence_overrides": {}
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+      "error_code": "AWS_IAM_POLICY_ROUTE_READY"
+    }
+  },
+  "expected": {
+    "disposition": "ROUTE",
+    "route": "AWS_IAM_POLICY_ANALYSIS_HANDOFF",
+    "error_code": "AWS_IAM_POLICY_ROUTE_READY"
+  },
+  "note": "Executable hostile fixture for narrowness; provider, account, project, consumer, and applicability facts remain external."
 }

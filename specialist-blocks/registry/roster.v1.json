@@ -2851,7 +2851,7 @@
     },
     {
       "block_id": "specialist.platform.aws-iam-policy",
-      "candidate_digest": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016",
+      "candidate_digest": "8b5d5d017390f896ff6d311a0ee6c5a8e5a02715eedfee65491b1fbb68f49dd0",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: AWS IAM Policy Elements; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -2885,10 +2885,12 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "platform",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.aws-iam-policy-elements"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -5087,7 +5089,8 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.owasp-asvs-5-0-0"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -10202,5 +10205,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "d5c0a4f6c654a6faeee88b04d80c24e8c1bf943d6c26f2f78dce3659bc971a2f"
+  "roster_sha256": "69eb94059e350135eb039a219c7ce03fa56b2dfad72f34153bd6e5519fee737e"
 }

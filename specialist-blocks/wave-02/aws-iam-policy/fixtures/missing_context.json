@@ -1,9 +1,32 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "aws-iam-policy-missing_context",
   "block_id": "specialist.platform.aws-iam-policy",
   "class": "missing_context",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+    "input": {
+      "schema": "agentos.aws_iam_policy_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_AWS_IAM_POLICY",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "missing_context": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "TYPED_CONTEXT_REQUIRED",
+      "error_code": "AWS_IAM_POLICY_CONTEXT_INCOMPLETE"
+    }
+  },
+  "expected": {
+    "disposition": "DENY",
+    "route": "TYPED_CONTEXT_REQUIRED",
+    "error_code": "AWS_IAM_POLICY_CONTEXT_INCOMPLETE"
+  },
+  "note": "Executable hostile fixture for missing_context; provider, account, project, consumer, and applicability facts remain external."
 }
