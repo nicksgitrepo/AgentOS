@@ -4485,7 +4485,7 @@
     },
     "typed_spawner_admission_verifier": {
       "path": "tests/verify-typed-spawner-admission.mjs",
-      "sha256": "d937e54f4763c0d0e2a180012daa6fc48d9ea8338573bd07a9ceaff20f4302b7"
+      "sha256": "fa920b8592fab614580c29fa79bb0f53e147a565e7226a44637959e25591f245"
     },
     "typed_successor_readback_article": {
       "path": "docs/typed-successor-readback.md",
