@@ -4,9 +4,9 @@
   "handoff_id": "specialist-handoff.cloudflare-cache.v1",
   "block_id": "specialist.platform.cloudflare-cache",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6",
-  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
-  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
+  "candidate_digest": "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1",
+  "source_commit": "20457edbc1fe588cc065fcb6bdda497ff9acf47e",
+  "source_tree": "fc752c7cc8c55bbfbc8dd17561c75b3a15f0a11e",
   "changed_paths": [
     "specialist-blocks/wave-02/cloudflare-cache/block.json",
     "specialist-blocks/wave-02/cloudflare-cache/sources.lock",
@@ -45,17 +45,18 @@
     "specialist-blocks/wave-02/cloudflare-cache/fixtures/unsafe_action.json"
   ],
   "proof": [
-    "block_semantic_sha256:386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6",
-    "source_lock_manifest_sha256:ee21e1ca306bd9d79e006cacb29102f4e30f69d390e7ba8e8d0831f970a0f905",
-    "source_manifest_sha256:ee21e1ca306bd9d79e006cacb29102f4e30f69d390e7ba8e8d0831f970a0f905",
-    "source_lock_file_sha256:11afefe45431fb128b0f38439d152bddd05513a96368aa09bac53afa124669c6",
+    "block_semantic_sha256:7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1",
+    "source_lock_manifest_sha256:4654a23f4432cfc8428aa5a0dbfc589ecffe7292135c2fa89d5aaf4bffd6bcf0",
+    "source_manifest_sha256:4654a23f4432cfc8428aa5a0dbfc589ecffe7292135c2fa89d5aaf4bffd6bcf0",
+    "source_content_sha256:7942c7cb3cab769003b9117b056cfd5d11802aa6e68ae2a2ca12c18f3e09f8e5",
+    "source_lock_file_sha256:a525620abe848c564732983d38271edc2f0fd8139ad88bc586a14be690cd039b",
     "gate_execution_file_sha256:9b05322de737ae408b6427dfc55f5425ce944ece487ec0d862ffb8a35735fa06",
     "gate_semantic_inventory_sha256:770937cb539b6e0f53951fd6741a97873c27d62518f7c8db8b5e42e7f20772c4",
-    "fixture_inventory_sha256:f26c41c9f1c1ef0e69163c6c4bd7700430fb020f67d1faf3c6fb4f1330681c6c",
-    "evaluation_file_sha256:61711b0159e409d36ea5bef90f272efba35f441162bff21e8a6fd9735ffb5b08",
+    "fixture_inventory_sha256:d07d99396e5ebcee533f03ba883e85bb08c085208756f7e7790e1a48918e348f",
+    "evaluation_file_sha256:d6abe63c58539f354bd705212d69e5c027c614facf9a6923470b00c03a604704",
     "model_snapshot_sha256:b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
     "model_route_sha256:97a653ec06f36e1dea28aed122b143e57b1ee49d63c299a98d64721c9aa77caf",
-    "context_receipt_sha256:b1eb88f2da898c8787eb14ed20bfa382c32ac37372e6d74ea275a0f34708b9bb",
+    "context_receipt_sha256:30a920b3ccdd2e799048f1ab427cf3c4f052f5b6f9f7b4eadeff2d8e33c6e498",
     "upstream_router_file_sha256:1e7cbe3898ba80c6dbf10dd09a8c1b687c097134992c1da78a3c904066a23b8b",
     "independent_reviewer_required:true",
     "upstream_router:control/provider-edge-router-boundary-gate.mjs#evaluateProviderEdgeRouterBoundary",
@@ -68,6 +69,6 @@
     "canonical Spawner evaluator signing is unavailable and remains BLOCKED_EXACT",
     "independent hostile auditor and unofficial synthetic trial remain required before owner intake"
   ],
-  "next_action": "Freeze this exact package, gates, fixtures, model-policy route, context receipt, and custody tree; obtain a fresh independent hostile audit, then route only the typed unofficial synthetic trial to the owner.",
+  "next_action": "Preserve the rollback candidate, send RECHECK_EARLIER_PACKAGES to Spawner with this exact successor receipt, then obtain a fresh independent hostile audit; no admission, activation, deployment, or publication.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

@@ -107,7 +107,7 @@ function validate(input) {
   assert(typeof input.request_kind === "string" && REQUESTS.has(input.request_kind), "Cloudflare Cache request kind is not recognized", "CLOUDFLARE_CACHE_REQUEST_INVALID");
   exact(input.evidence, new Set([
     "authority_status", "custody_status", "custody_owner", "custody_ref", "source_status", "source_identity", "source_version", "source_manifest_sha256",
-    "source_effective_date", "source_retrieved_date", "candidate_status", "candidate_digest", "signal", "signal_status",
+    "source_effective_date", "source_retrieved_date", "source_content_sha256", "candidate_status", "candidate_digest", "signal", "signal_status",
     "context_status", "context_complete", "requested_action", "requested_tools", "required_block_identities", "model_policy_status",
     "model_route_status", "authority_scope", "scope", "cache_rule_status", "cache_scope_status", "provider_identity", "provider_version",
     "standard_id", "standard_version", "standard_block_sha256", "standard_source_manifest_sha256", "model_snapshot_sha256",
@@ -121,11 +121,11 @@ function validate(input) {
     "authority_scope", "scope", "cache_rule_status", "cache_scope_status", "provider_identity", "provider_version", "standard_id", "standard_version",
     "model_task_class", "memory_binding",
   ]) string(e[key], `evidence.${key}`);
-  assert(e.source_effective_date === null || typeof e.source_effective_date === "string", "evidence.source_effective_date is invalid", "CLOUDFLARE_CACHE_SOURCE_DATE_INVALID");
+  assert(e.source_effective_date === null || (typeof e.source_effective_date === "string" && /^\d{4}-\d{2}-\d{2}$/u.test(e.source_effective_date)), "evidence.source_effective_date is invalid", "CLOUDFLARE_CACHE_SOURCE_DATE_INVALID");
   id(e.custody_owner, "evidence.custody_owner");
   assert(OPAQUE_REF.test(e.custody_ref), "evidence.custody_ref is not opaque", "CLOUDFLARE_CACHE_CUSTODY_REF_INVALID");
   digest(e.candidate_digest, "evidence.candidate_digest");
-  for (const key of ["source_manifest_sha256", "standard_block_sha256", "standard_source_manifest_sha256", "model_snapshot_sha256", "model_route_sha256", "context_receipt_sha256", "upstream_router_result_sha256"]) digest(e[key], `evidence.${key}`);
+  for (const key of ["source_manifest_sha256", "source_content_sha256", "standard_block_sha256", "standard_source_manifest_sha256", "model_snapshot_sha256", "model_route_sha256", "context_receipt_sha256", "upstream_router_result_sha256"]) digest(e[key], `evidence.${key}`);
   assert(Number.isSafeInteger(e.model_capability_floor) && e.model_capability_floor >= 0, "evidence.model_capability_floor is invalid", "CLOUDFLARE_CACHE_MODEL_ROUTE_INVALID");
   assert(Array.isArray(e.model_required_capabilities) && e.model_required_capabilities.length > 0 && e.model_required_capabilities.every((value) => typeof value === "string" && /^[A-Z][A-Z0-9_]{1,63}$/u.test(value)), "evidence.model_required_capabilities is invalid", "CLOUDFLARE_CACHE_MODEL_ROUTE_INVALID");
   assert(Array.isArray(e.requested_tools) && e.requested_tools.length > 0 && e.requested_tools.length <= 4 && e.requested_tools.every((tool) => typeof tool === "string" && /^[A-Z][A-Z0-9_]{1,63}$/u.test(tool)), "evidence.requested_tools is invalid", "CLOUDFLARE_CACHE_TOOL_SCOPE_INVALID");
@@ -148,6 +148,11 @@ export function evaluateCloudflareCacheBoundary(input) {
   if (f.missing_context || e.context_complete !== true) return result("DENY", "TYPED_CONTEXT_REQUIRED", "CLOUDFLARE_CACHE_CONTEXT_INCOMPLETE", input);
   if (f.protected_data || e.project_data_present || e.secret_data_present) return result("DENY", "PRIVACY_BOUNDARY_REQUIRED", "CLOUDFLARE_CACHE_PROTECTED_DATA_FORBIDDEN", input);
   if (f.self_acceptance) return result("DENY", "INDEPENDENT_REVIEW_REQUIRED", "CLOUDFLARE_CACHE_SELF_ACCEPTANCE_FORBIDDEN", input);
+  // Independent fail-closed tripwire: a later guard may be mutation-tested,
+  // but scope expansion must remain denied even when that guard is weakened.
+  if (e.adversarial_flags.scope_expanded === true || e.adversarial_flags.broad_claim === true || e.scope !== "NARROW") {
+    return result("DENY", "NARROW_SCOPE_REQUIRED", "CLOUDFLARE_CACHE_SCOPE_EXPANSION_FORBIDDEN", input);
+  }
   if (f.scope_expanded || f.broad_claim || e.scope !== "NARROW") return result("DENY", "NARROW_SCOPE_REQUIRED", "CLOUDFLARE_CACHE_SCOPE_EXPANSION_FORBIDDEN", input);
   if (f.cross_provider || f.stale_source || e.source_status !== "CURRENT_VERIFIED") return result("DENY", "SOURCE_REFRESH_REQUIRED", "CLOUDFLARE_CACHE_SOURCE_STALE_OR_UNVERIFIED", input);
   if (f.unsupported_tool || e.requested_tools.some((tool) => !TOOLS.has(tool))) return result("DENY", "READ_ONLY_TOOLS_REQUIRED", "CLOUDFLARE_CACHE_TOOL_SCOPE_FORBIDDEN", input);
