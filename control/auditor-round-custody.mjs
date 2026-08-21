@@ -67,6 +67,7 @@ function validateCandidate(candidate) {
   gitSha(candidate.commit_sha1, "candidate.commit_sha1"); gitSha(candidate.tree_sha1, "candidate.tree_sha1");
   sha(candidate.package_sha256, "candidate.package_sha256"); sha(candidate.gate_inventory_sha256, "candidate.gate_inventory_sha256"); sha(candidate.fixture_inventory_sha256, "candidate.fixture_inventory_sha256"); sha(candidate.context_sha256, "candidate.context_sha256");
   gitSha(candidate.rollback_commit_sha1, "candidate.rollback_commit_sha1"); gitSha(candidate.rollback_tree_sha1, "candidate.rollback_tree_sha1");
+  assert(candidate.commit_sha1 !== candidate.rollback_commit_sha1 && candidate.tree_sha1 !== candidate.rollback_tree_sha1, "candidate and rollback identities are identical", "AUDITOR_ROUND_ROLLBACK_INVALID");
   assert(candidate.status === "FROZEN_IMMUTABLE", "candidate is not frozen", "AUDITOR_ROUND_CANDIDATE_NOT_FROZEN");
 }
 
@@ -78,8 +79,12 @@ function validateModel(model) {
   try { snapshot = JSON.parse(fs.readFileSync(MODEL_POLICY_FILE, "utf8")); } catch { fail("Canonical model-policy snapshot is unavailable", "AUDITOR_ROUND_MODEL_POLICY_INVALID"); }
   assert(snapshot.snapshot_sha256 === canonicalDigest({...snapshot, snapshot_sha256: null}), "Canonical model-policy snapshot digest is invalid", "AUDITOR_ROUND_MODEL_POLICY_INVALID");
   assert(snapshot.snapshot_sha256 === model.snapshot_sha256, "Auditor model policy is not bound to the current canonical snapshot", "AUDITOR_ROUND_MODEL_POLICY_UNBOUND");
+  const now = Date.now(); const observed = Date.parse(snapshot.observed_at_utc); const expires = Date.parse(snapshot.expires_at_utc);
+  assert(["PREPARED_INACTIVE", "ACCEPTED_ACTIVE"].includes(snapshot.status) && Number.isFinite(observed) && Number.isFinite(expires) && observed <= now && now < expires, "Canonical model-policy snapshot is stale, future-dated, or inactive beyond its evidence window", "AUDITOR_ROUND_MODEL_POLICY_INVALID");
   const governed = snapshot.models?.find((entry) => entry.model_id === model.model_id);
   assert(governed && governed.host_available === true && governed.host_supported_reasoning_efforts?.includes(model.reasoning_effort.toLowerCase()), "Auditor model is unlisted, unavailable, or lacks the requested reasoning mode", "AUDITOR_ROUND_MODEL_POLICY_INVALID");
+  const expectedProjection = canonicalDigest({snapshot_sha256: snapshot.snapshot_sha256, role_class: "WORKING_AGENT", model_id: model.model_id, reasoning_effort: model.reasoning_effort.toLowerCase()});
+  assert(model.projection_sha256 === expectedProjection, "Auditor model projection is not derived from the canonical snapshot", "AUDITOR_ROUND_MODEL_PROJECTION_UNBOUND");
 }
 
 function validateCustody(custody, builderTask, auditorTask) {
@@ -89,7 +94,7 @@ function validateCustody(custody, builderTask, auditorTask) {
   sha(custody.builder_custody_receipt_sha256, "custody.builder_custody_receipt_sha256"); sha(custody.auditor_spawn_receipt_sha256, "custody.auditor_spawn_receipt_sha256"); sha(custody.candidate_snapshot_sha256, "custody.candidate_snapshot_sha256");
   bool(custody.read_only, "custody.read_only"); bool(custody.candidate_mutation_allowed, "custody.candidate_mutation_allowed"); bool(custody.merge_allowed, "custody.merge_allowed"); bool(custody.deploy_allowed, "custody.deploy_allowed");
   assert(custody.read_only === true && custody.candidate_mutation_allowed === false && custody.merge_allowed === false && custody.deploy_allowed === false, "auditor custody grants a forbidden action", "AUDITOR_ROUND_CUSTODY_WEAKENED");
-  assert(custody.auditor_task_readback_ref !== `opaque:task:${builderTask}`, "task readback points at the builder", "AUDITOR_ROUND_TASK_READBACK_INVALID");
+  assert(custody.auditor_task_readback_ref === `opaque:task:${auditorTask}`, "task readback is not bound to the auditor task", "AUDITOR_ROUND_TASK_READBACK_INVALID");
 }
 
 function validateFixture(fixture, index) {

@@ -5,32 +5,40 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {canonicalDigest, canonicalJson, compareUtf8} from "./content-addressing.mjs";
-import {assertSealedCanonicalAuthority, getSealedCanonicalAuthority, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
+import {assertSealedCanonicalAuthority, getSealedCanonicalAuthority, readSealedAuthorityBinding, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
 import {consumeProtectedSpawnerReviewProvisioning} from "./protected-spawner-review-provisioning.mjs";
 import {validateSpawnerGitAncestry} from "./spawner-git-ancestry.mjs";
 
 const stores = new WeakMap(); let installedStore = null; let installedGeneration = 0;
 const SHA = /^[0-9a-f]{64}$/u;
+const REVIEW_SCOPE = ["CANDIDATE_COMPONENT_ROOT", "GATE_BYTES", "HOSTILE_FIXTURE_EXECUTION"];
 function fail(message, code = "SPAWNER_EXTERNAL_REVIEW_INVALID") { const error = new Error(message); error.code = code; throw error; }
 function exact(value, keys, label) { if (!value || typeof value !== "object" || Array.isArray(value) || JSON.stringify(Object.keys(value).sort(compareUtf8)) !== JSON.stringify([...keys].sort(compareUtf8))) fail(`${label} fields mismatch`); }
 function read(root, relative) { const target = path.resolve(root, relative); if (!target.startsWith(`${root}${path.sep}`)) fail("external review path escaped store"); const stat = fs.lstatSync(target); if (!stat.isFile() || stat.isSymbolicLink()) fail("external review artifact is unsafe"); return JSON.parse(fs.readFileSync(target, "utf8")); }
 function body(value, digest, signature = null) { const copy = structuredClone(value); copy[digest] = null; if (signature) copy[signature] = null; return copy; }
 function verifySigned(record, digestField, signatureField, publicKey, label) { if (!SHA.test(record[digestField]) || record[digestField] !== canonicalDigest(body(record, digestField, signatureField))) fail(`${label} digest differs`); if (!crypto.verify(null, Buffer.from(record[digestField], "hex"), publicKey, Buffer.from(record[signatureField], "base64"))) fail(`${label} signature differs`); }
+function validateAdmission(admission, registry, reviewer) {
+  exact(admission, ["schema", "version", "issuer_id", "subject_id", "subject_role", "scope", "result", "authority_epoch", "issued_at_utc", "expires_at_utc", "receipt_sha256", "signature_base64"], "reviewer admission receipt");
+  if (admission.schema !== "agentos.external_reviewer_admission.v1" || admission.version !== 1 || admission.issuer_id !== registry.registry_issuer_id || admission.subject_id !== reviewer.reviewer_id || admission.subject_role !== reviewer.role || admission.result !== "ADMITTED" || admission.authority_epoch !== registry.authority_epoch) fail("reviewer admission receipt identity differs", "SPAWNER_EXTERNAL_REVIEW_ISSUER_INVALID");
+  if (!Array.isArray(admission.scope) || JSON.stringify(admission.scope) !== JSON.stringify(REVIEW_SCOPE)) fail("reviewer admission scope differs", "SPAWNER_EXTERNAL_REVIEW_ISSUER_INVALID");
+  const issued = Date.parse(admission.issued_at_utc), expires = Date.parse(admission.expires_at_utc), now = Date.now();
+  if (!Number.isFinite(issued) || !Number.isFinite(expires) || issued > now || now >= expires) fail("reviewer admission is stale or future-dated", "SPAWNER_EXTERNAL_REVIEW_ISSUER_INVALID");
+  verifySigned(admission, "receipt_sha256", "signature_base64", registry.registry_public_key_pem, "reviewer admission receipt");
+}
 
 export function installExternalSpawnerReviewStore({sealedAuthority, reviewProvisioning} = {}) {
   assertSealedCanonicalAuthority(sealedAuthority);
   const {realRoot} = consumeProtectedSpawnerReviewProvisioning(reviewProvisioning);
   const registry = read(realRoot, "reviewer-registry.v1.json");
+  const canonicalRegistry = readSealedAuthorityBinding(sealedAuthority, "spawner_external_reviewer_registry").value;
+  if (canonicalJson(registry) !== canonicalJson(canonicalRegistry)) fail("external reviewer registry differs from sealed canonical trust root", "SPAWNER_EXTERNAL_REVIEW_REGISTRY_SUBSTITUTION");
   exact(registry, ["schema", "version", "authority_epoch", "registry_issuer_id", "registry_public_key_pem", "authorized_predecessor_commit", "reviewers", "registry_sha256"], "external reviewer registry");
   if (registry.schema !== "agentos.external_spawner_reviewer_registry.v1" || registry.version !== 1 || registry.registry_sha256 !== canonicalDigest({...registry, registry_sha256: null})) fail("external reviewer registry identity/digest differs");
   if (!Array.isArray(registry.reviewers) || registry.reviewers.length === 0) fail("external reviewer registry is empty");
   for (const reviewer of registry.reviewers) {
     exact(reviewer, ["reviewer_id", "role", "status", "authority_epoch", "public_key_pem", "admission_receipt"], "external reviewer");
     if (reviewer.role !== "AGENT.INDEPENDENT_EVALUATOR" || reviewer.status !== "ADMITTED" || reviewer.authority_epoch !== registry.authority_epoch) fail("external reviewer is not separately admitted");
-    const admission = reviewer.admission_receipt;
-    exact(admission, ["schema", "version", "issuer_id", "subject_id", "subject_role", "scope", "result", "authority_epoch", "issued_at_utc", "expires_at_utc", "receipt_sha256", "signature_base64"], "reviewer admission receipt");
-    if (admission.issuer_id !== registry.registry_issuer_id || admission.subject_id !== reviewer.reviewer_id || admission.subject_role !== reviewer.role || admission.result !== "ADMITTED" || admission.authority_epoch !== registry.authority_epoch) fail("reviewer admission receipt identity differs");
-    verifySigned(admission, "receipt_sha256", "signature_base64", registry.registry_public_key_pem, "reviewer admission receipt");
+    validateAdmission(reviewer.admission_receipt, registry, reviewer);
   }
   const capability = Object.freeze(Object.create(null)); stores.set(capability, Object.freeze({root: realRoot, registry})); installedStore = capability; installedGeneration += 1; return capability;
 }

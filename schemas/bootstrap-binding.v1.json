@@ -1324,7 +1324,7 @@
     },
     "canonical_spawner_evaluator_handoff_controller": {
       "path": "control/canonical-spawner-evaluator-handoff.mjs",
-      "sha256": "6611689f7d5ebc6d42d9509bd37b67c6aeba097b79abac97a45e2fdac311949d"
+      "sha256": "b5961895def373c970bd8bf2c03f65cdf31e93e5acb070bfac10714562076015"
     },
     "canonical_spawner_exact_block_qa_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/exact-block-qa.gate",
@@ -1428,11 +1428,11 @@
     },
     "collaborative_audit_workflow_contract": {
       "path": "schemas/collaborative-audit-workflow.v1.json",
-      "sha256": "fc5e247401d1200e6a1da9c60bd53ae75c6cd256226c76db5edc479ab9d9ca00"
+      "sha256": "f54285fef10727728c61f7d7bb3d9c9b5325202ce720f48ef8af15fabd70373b"
     },
     "collaborative_audit_workflow_controller": {
       "path": "control/collaborative-audit-workflow.mjs",
-      "sha256": "570235e8747092ecef8d23e5d6f570f986c4cdcf53a39f7b0e27c6157e794713"
+      "sha256": "cac5772d12635fc20571cbe7f64715e75731891cadc9daeb4d9c537fd414a5d6"
     },
     "collaborative_audit_workflow_verifier": {
       "path": "tests/verify-collaborative-audit-workflow.mjs",
@@ -2183,19 +2183,19 @@
     },
     "auditor_round_custody_controller": {
       "path": "control/auditor-round-custody.mjs",
-      "sha256": "8450b040929fab5c99d018361be38436d8829be22fda18e5161d96661f0165e6"
+      "sha256": "28a87271b458d8f20d529b8462e64d32f508c3b5ac8642ff589b7732d61d3e98"
     },
     "auditor_round_custody_contract": {
       "path": "schemas/auditor-round-custody.v1.json",
-      "sha256": "8b15d992c1e2c9b98c45b72143807b2b274b8cb8bc40c417497300bc00e03960"
+      "sha256": "ce8dc0212417898aef4ba44f1a9c32cecd4c865822db42bc9a8188c8e21ee030"
     },
     "auditor_round_custody_verifier": {
       "path": "tests/verify-auditor-round-custody.mjs",
-      "sha256": "29fe29df5802c8099f4d62736dbad5a53b883f8568db5ac3b69b28a91de692f2"
+      "sha256": "5d699e0236b1a7b26f18f056c752e709d8ae280d33b3420986d6996e2f630f19"
     },
     "auditor_round_review_authority_controller": {
       "path": "control/auditor-round-review-authority.mjs",
-      "sha256": "5e0d4ed3fe1c4085a4469d95df6c2a2416b32cdcaaa29cd43e7e7f0ef107a577"
+      "sha256": "75c5d6460f9f0f6dbfb1b4cacb0c805ffd08aa606e4acb8a297077288a050c18"
     },
     "auditor_round_review_authority_contract": {
       "path": "schemas/auditor-round-independent-review.v1.json",
@@ -3329,7 +3329,7 @@
     },
     "protected_spawner_review_provisioning_controller": {
       "path": "control/protected-spawner-review-provisioning.mjs",
-      "sha256": "070642374cae0bbcb9b26a0e156ed6465725c5fe128e179e93590198c0e37208"
+      "sha256": "752d189c807aedbdbf4c93764182d549cfa04b285d445b32353efbcbea98e658"
     },
     "provider_edge_router_boundary_gate": {
       "path": "control/provider-edge-router-boundary-gate.mjs",
@@ -4085,11 +4085,11 @@
     },
     "spawner_bootstrap_preparation_controller": {
       "path": "control/spawner-bootstrap-preparation.mjs",
-      "sha256": "cb40bcc78a28000ddfa502e1a85d98d2a5a5639961c7e459e04dd4b8d7433eca"
+      "sha256": "7b8ef4433a67eb4645f243ae23906905848b38a69d1eb9d14b02c293ee4fc7a4"
     },
     "spawner_bootstrap_preparation_verifier": {
       "path": "tests/verify-spawner-bootstrap-preparation.mjs",
-      "sha256": "cc7632fc53413241300845c1b3b544f751fabcbe06e0628b98e38d7ab8ae0255"
+      "sha256": "7e34a6958ebe9a1c6e2e61b23dbd4f5bedd992c6bb2e34d072cd0e7fb995ca7a"
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
@@ -4225,11 +4225,11 @@
     },
     "spawner_external_review_controller": {
       "path": "control/spawner-external-review.mjs",
-      "sha256": "f36ae72292ce96e89f0b28f331d0007616f24f1fa27f09c735080705af9fd4af"
+      "sha256": "fe79b1008ff1a6004033b11964a8cb856e8d783b1bcf7718f441d0e01f319d83"
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",
-      "sha256": "49d3b94aabf96f7bd266d84b5d2cc9c3c3461174d497d57d27ea32432ab02c08"
+      "sha256": "4a307fb396a527dfe65efd3350b7de06d7c3eddff73cf298efb6327eb67d4044"
     },
     "spawner_external_reviewer_registry": {
       "path": "specialist-blocks/control-plane/agent-spawner/external-reviewer-registry.v1.json",

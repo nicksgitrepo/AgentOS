@@ -31,7 +31,7 @@ function makeRound(overrides = {}) {
   const round = {
     schema: AUDITOR_ROUND_SCHEMA, version: 1, round_id: "ROUND.ADVERSARIAL.1", round_kind: "ADVERSARIAL_AUDIT",
     builder_task_id: builderTask, auditor_task_id: auditorTask, builder_identity: "AGENT.BUILDER.1", auditor_identity: "AGENT.AUDITOR.1",
-    candidate, model_policy: {snapshot_sha256: "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27", projection_sha256: digest({snapshot_sha256: "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04", role_class: "WORKING_AGENT", model_id: "gpt-5.6-luna", reasoning_effort: "max"}), model_id: "gpt-5.6-luna", reasoning_effort: "max", availability: "CURRENT_HOST_AVAILABLE", status: "CURRENT_BOUND"},
+    candidate, model_policy: {snapshot_sha256: "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27", projection_sha256: digest({snapshot_sha256: "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27", role_class: "WORKING_AGENT", model_id: "gpt-5.6-luna", reasoning_effort: "max"}), model_id: "gpt-5.6-luna", reasoning_effort: "max", availability: "CURRENT_HOST_AVAILABLE", status: "CURRENT_BOUND"},
     custody: {builder_worktree_ref: "opaque:worktree:BUILDER.ROUND.1", auditor_worktree_ref: "opaque:worktree:AUDITOR.ROUND.1", builder_custody_receipt_sha256: digest("builder-custody"), auditor_spawn_receipt_sha256: digest("auditor-spawn"), auditor_task_readback_ref: taskRef(auditorTask), candidate_snapshot_sha256: digest(candidate), read_only: true, candidate_mutation_allowed: false, merge_allowed: false, deploy_allowed: false},
     execution, verdict: "PASS", issued_at_utc: new Date(Date.now() - 1000).toISOString(), expires_at_utc: new Date(Date.now() + 60 * 60 * 1000).toISOString(), round_sha256: null,
   };

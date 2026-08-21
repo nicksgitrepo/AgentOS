@@ -20,6 +20,7 @@ const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_ID = /^[0-9a-f]{40}$/u;
 const REF = /^opaque:(?:round|receipt|candidate):[A-Z0-9._:/-]{1,180}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{2,191}$/u;
+const REVIEW_SCOPE = ["CANDIDATE_COMPONENT_ROOT", "GATE_BYTES", "HOSTILE_FIXTURE_EXECUTION"];
 const stores = new WeakMap();
 
 function fail(message, code = "AUDITOR_ROUND_EXTERNAL_REVIEW_REQUIRED") { const error = new Error(message); error.code = code; throw error; }
@@ -30,6 +31,14 @@ function git(value, label) { assert(typeof value === "string" && GIT_ID.test(val
 function ref(value, label) { assert(typeof value === "string" && REF.test(value), `${label} is not an opaque reference`, "AUDITOR_ROUND_REVIEW_REF_INVALID"); }
 function id(value, label) { assert(typeof value === "string" && IDENTIFIER.test(value), `${label} is not an identity`, "AUDITOR_ROUND_REVIEW_ID_INVALID"); }
 function digestBody(value) { return canonicalDigest({...value, receipt_sha256: null, signature_base64: null}); }
+function assertCurrentAdmission(admission, registry, reviewer) {
+  const now = Date.now();
+  assert(admission.issuer_id === registry.registry_issuer_id && admission.subject_id === reviewer.reviewer_id && admission.subject_role === reviewer.role && admission.result === "ADMITTED" && admission.authority_epoch === registry.authority_epoch, "Independent evaluator admission is not bound to the canonical registry", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID");
+  const issued = Date.parse(admission.issued_at_utc), expires = Date.parse(admission.expires_at_utc);
+  assert(Number.isFinite(issued) && Number.isFinite(expires) && issued <= now && now < expires, "Independent evaluator admission is stale or future-dated", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID");
+  assert(Array.isArray(admission.scope) && JSON.stringify(admission.scope) === JSON.stringify(REVIEW_SCOPE), "Independent evaluator admission scope is not exact", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID");
+  verifySigned(admission, "receipt_sha256", "signature_base64", registry.registry_public_key_pem, "independent evaluator admission");
+}
 
 function readJson(file, label) {
   const stat = fs.lstatSync(file, {throwIfNoEntry: false});
@@ -68,8 +77,7 @@ function validateCanonicalRegistry(registry, canonicalRegistry) {
     assert(reviewer.role === "AGENT.INDEPENDENT_EVALUATOR" && reviewer.status === "ADMITTED" && reviewer.authority_epoch === registry.authority_epoch, "Independent evaluator is not currently admitted", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID");
     const admission = reviewer.admission_receipt;
     exact(admission, ["schema", "version", "issuer_id", "subject_id", "subject_role", "scope", "result", "authority_epoch", "issued_at_utc", "expires_at_utc", "receipt_sha256", "signature_base64"], "independent evaluator admission");
-    assert(admission.issuer_id === registry.registry_issuer_id && admission.subject_id === reviewer.reviewer_id && admission.subject_role === reviewer.role && admission.result === "ADMITTED" && admission.authority_epoch === registry.authority_epoch, "Independent evaluator admission is not bound to the canonical registry", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID");
-    verifySigned(admission, "receipt_sha256", "signature_base64", registry.registry_public_key_pem, "independent evaluator admission");
+    assertCurrentAdmission(admission, registry, reviewer);
   }
 }
 
@@ -103,13 +111,13 @@ function readReceipt(state, receiptSha256) {
   const receipt = readJson(file, "Independent round-review receipt");
   exact(receipt, ["schema", "version", "receipt_id", "issuer_id", "issuer_role", "result", "candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1", "candidate_ref", "round_ref", "round_sha256", "package_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "context_sha256", "execution_sha256", "evaluator_admission_sha256", "authority_epoch", "issued_at_utc", "expires_at_utc", "signature_status", "signature_base64", "receipt_sha256"], "independent round-review receipt");
   assert(receipt.schema === AUDITOR_ROUND_REVIEW_SCHEMA && receipt.version === 1, "Independent round-review receipt identity differs", "AUDITOR_ROUND_REVIEW_SCHEMA_MISMATCH");
-  id(receipt.issuer_id, "review issuer"); const reviewer = state.registry.reviewers.find((entry) => entry.reviewer_id === receipt.issuer_id); assert(reviewer && reviewer.role === receipt.issuer_role && reviewer.status === "ADMITTED" && reviewer.authority_epoch === state.registry.authority_epoch, "Review issuer is not a currently admitted canonical evaluator", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID"); assert(receipt.issuer_role === "AGENT.INDEPENDENT_EVALUATOR", "Review issuer is not a separately governed evaluator", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID"); assert(receipt.result === "PASS" || receipt.result === "NOT_APPLICABLE_WITH_EVIDENCE", "Independent review did not pass", "AUDITOR_ROUND_REVIEW_NOT_PASS");
+  id(receipt.issuer_id, "review issuer"); const reviewer = state.registry.reviewers.find((entry) => entry.reviewer_id === receipt.issuer_id); assert(reviewer && reviewer.role === receipt.issuer_role && reviewer.status === "ADMITTED" && reviewer.authority_epoch === state.registry.authority_epoch && receipt.authority_epoch === state.registry.authority_epoch, "Review issuer is not a currently admitted canonical evaluator", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID"); assert(receipt.issuer_role === "AGENT.INDEPENDENT_EVALUATOR", "Review issuer is not a separately governed evaluator", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID"); assert(receipt.result === "PASS" || receipt.result === "NOT_APPLICABLE_WITH_EVIDENCE", "Independent review did not pass", "AUDITOR_ROUND_REVIEW_NOT_PASS"); assert(receipt.evaluator_admission_sha256 === reviewer.admission_receipt.receipt_sha256, "Review receipt is not bound to the canonical evaluator admission", "AUDITOR_ROUND_REVIEW_ISSUER_INVALID"); assertCurrentAdmission(reviewer.admission_receipt, state.registry, reviewer);
   for (const [key, value] of Object.entries({candidate_ref: receipt.candidate_ref, round_ref: receipt.round_ref, receipt_id: receipt.receipt_id})) ref(value, key);
   for (const [key, value] of Object.entries({candidate_commit_sha1: receipt.candidate_commit_sha1, candidate_tree_sha1: receipt.candidate_tree_sha1, rollback_commit_sha1: receipt.rollback_commit_sha1, rollback_tree_sha1: receipt.rollback_tree_sha1})) git(value, key);
   for (const key of ["round_sha256", "package_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "context_sha256", "execution_sha256", "evaluator_admission_sha256"]) sha(receipt[key], key);
   assert(receipt.signature_status === "VERIFIED_BY_EXTERNAL_EVALUATOR", "Review receipt is not externally verified", "AUDITOR_ROUND_REVIEW_SIGNATURE_REQUIRED");
   const issued = Date.parse(receipt.issued_at_utc), expires = Date.parse(receipt.expires_at_utc), now = Date.now(); assert(Number.isFinite(issued) && Number.isFinite(expires) && issued <= now && now <= expires && expires - issued <= 24 * 60 * 60 * 1000, "Review receipt is stale, future-dated, or too long-lived", "AUDITOR_ROUND_REVIEW_STALE");
-  assert(receipt.receipt_sha256 === receiptSha256, "Review receipt filename does not match embedded digest", "AUDITOR_ROUND_REVIEW_RECEIPT_ALIAS");
+  assert(receipt.receipt_sha256 === receiptSha256, "Review receipt filename does not match embedded digest", "AUDITOR_ROUND_REVIEW_RECEIPT_ALIAS"); assert(receipt.candidate_commit_sha1 !== receipt.rollback_commit_sha1 && receipt.candidate_tree_sha1 !== receipt.rollback_tree_sha1, "Review candidate and rollback identities are identical", "AUDITOR_ROUND_REVIEW_GIT_BINDING");
   verifySigned(receipt, "receipt_sha256", "signature_base64", reviewer.public_key_pem, "Independent round-review receipt");
   assert(receipt.receipt_sha256 === digestBody(receipt), "Review receipt digest differs", "AUDITOR_ROUND_REVIEW_DIGEST_MISMATCH");
   try {
@@ -118,7 +126,10 @@ function readReceipt(state, receiptSha256) {
     assert(tree === receipt.candidate_tree_sha1, "Review candidate tree does not match Git readback", "AUDITOR_ROUND_REVIEW_GIT_BINDING");
     const rollbackTree = execFileSync("git", ["rev-parse", `${receipt.rollback_commit_sha1}^{tree}`], {cwd: state.repositoryRoot, encoding: "utf8"}).trim();
     assert(rollbackTree === receipt.rollback_tree_sha1, "Review rollback tree does not match Git readback", "AUDITOR_ROUND_REVIEW_GIT_BINDING");
-    execFileSync("git", ["merge-base", "--is-ancestor", receipt.rollback_commit_sha1, receipt.candidate_commit_sha1], {cwd: state.repositoryRoot, stdio: "ignore"});
+    const directParent = execFileSync("git", ["rev-parse", `${receipt.candidate_commit_sha1}^`], {cwd: state.repositoryRoot, encoding: "utf8"}).trim();
+    assert(directParent === receipt.rollback_commit_sha1, "Review rollback is not the exact candidate predecessor", "AUDITOR_ROUND_REVIEW_GIT_BINDING");
+    const currentHead = execFileSync("git", ["rev-parse", "HEAD"], {cwd: state.repositoryRoot, encoding: "utf8"}).trim();
+    assert(currentHead === receipt.candidate_commit_sha1, "Review candidate is not the current sealed repository head", "AUDITOR_ROUND_REVIEW_GIT_BINDING");
   } catch (error) { if (error?.code?.startsWith("AUDITOR_ROUND_REVIEW")) throw error; fail("Review candidate or rollback cannot be independently resolved from Git", "AUDITOR_ROUND_REVIEW_GIT_BINDING"); }
   return receipt;
 }
@@ -129,21 +140,41 @@ function consumeDurably(state, receiptSha256) {
   let lockFd;
   try { lockFd = fs.openSync(lockPath, "wx", 0o600); } catch (error) { if (error.code === "EEXIST") fail("Independent round-review consumption is concurrently locked", "AUDITOR_ROUND_REVIEW_CONCURRENT"); throw error; }
   try {
-    const raw = fs.existsSync(ledgerPath) ? fs.readFileSync(ledgerPath, "utf8") : "";
-    const prior = raw.split("\n").filter(Boolean).map((line) => JSON.parse(line));
+    const ledgerStat = fs.lstatSync(ledgerPath, {throwIfNoEntry: false});
+    assert(!ledgerStat || (ledgerStat.isFile() && !ledgerStat.isSymbolicLink()), "Independent round-review replay ledger is not a regular file", "AUDITOR_ROUND_REVIEW_REPLAY_LEDGER_INVALID");
+    const raw = ledgerStat ? fs.readFileSync(ledgerPath, "utf8") : "";
+    const prior = []; const seenReceipts = new Set();
+    for (const [index, line] of raw.split("\n").filter(Boolean).entries()) {
+      let entry;
+      try { entry = JSON.parse(line); } catch { fail(`Independent round-review replay ledger record ${index + 1} is malformed`, "AUDITOR_ROUND_REVIEW_REPLAY_LEDGER_INVALID"); }
+      assert(entry && typeof entry === "object" && !Array.isArray(entry) && JSON.stringify(Object.keys(entry).sort()) === JSON.stringify(["consumed_at_utc", "event_sha256", "prior_event_sha256", "receipt_sha256", "sequence"]), `Independent round-review replay ledger record ${index + 1} shape is invalid`, "AUDITOR_ROUND_REVIEW_REPLAY_LEDGER_INVALID");
+      assert(Number.isInteger(entry.sequence) && entry.sequence === index + 1 && SHA256.test(entry.receipt_sha256) && !seenReceipts.has(entry.receipt_sha256), `Independent round-review replay ledger record ${index + 1} sequence or receipt is invalid`, "AUDITOR_ROUND_REVIEW_REPLAY_LEDGER_INVALID"); seenReceipts.add(entry.receipt_sha256);
+      assert(entry.prior_event_sha256 === (prior.at(-1)?.event_sha256 ?? null) && SHA256.test(entry.event_sha256) && entry.event_sha256 === canonicalDigest({...entry, event_sha256: null}), `Independent round-review replay ledger record ${index + 1} chain is invalid`, "AUDITOR_ROUND_REVIEW_REPLAY_LEDGER_INVALID");
+      const consumed = Date.parse(entry.consumed_at_utc); assert(Number.isFinite(consumed) && consumed <= Date.now(), `Independent round-review replay ledger record ${index + 1} time is invalid`, "AUDITOR_ROUND_REVIEW_REPLAY_LEDGER_INVALID");
+      prior.push(entry);
+    }
     assert(!prior.some((entry) => entry.receipt_sha256 === receiptSha256), "Independent round-review receipt was already consumed", "AUDITOR_ROUND_REVIEW_REPLAY");
     const event = {sequence: prior.length + 1, receipt_sha256: receiptSha256, prior_event_sha256: prior.at(-1)?.event_sha256 ?? null, consumed_at_utc: new Date().toISOString(), event_sha256: null};
     event.event_sha256 = canonicalDigest({...event, event_sha256: null});
     fs.appendFileSync(ledgerPath, `${JSON.stringify(event)}\n`, {mode: 0o600});
     const fd = fs.openSync(ledgerPath, "r"); try { fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
+    const directoryFd = fs.openSync(state.realRoot, "r"); try { fs.fsyncSync(directoryFd); } finally { fs.closeSync(directoryFd); }
   } finally { fs.closeSync(lockFd); try { fs.unlinkSync(lockPath); } catch {} }
 }
 
-export function consumeAuditorRoundReview({authority, receiptSha256, expected = {}} = {}) {
-  const state = stateFor(authority); const receipt = readReceipt(state, receiptSha256);
+function validateExpectedReceipt(receipt, expected) {
   for (const key of ["candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1", "round_sha256", "package_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "context_sha256", "execution_sha256"]) {
     if (expected[key] !== undefined) assert(receipt[key] === expected[key], `Review receipt ${key} differs from the expected immutable binding`, "AUDITOR_ROUND_REVIEW_BINDING_MISMATCH");
   }
+  return receipt;
+}
+
+export function validateAuditorRoundReview({authority, receiptSha256, expected = {}} = {}) {
+  const state = stateFor(authority); return Object.freeze(validateExpectedReceipt(readReceipt(state, receiptSha256), expected));
+}
+
+export function consumeAuditorRoundReview({authority, receiptSha256, expected = {}} = {}) {
+  const state = stateFor(authority); const receipt = validateExpectedReceipt(readReceipt(state, receiptSha256), expected);
   consumeDurably(state, receipt.receipt_sha256);
   return Object.freeze(receipt);
 }

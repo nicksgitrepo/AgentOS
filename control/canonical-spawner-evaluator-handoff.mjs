@@ -34,6 +34,6 @@ export function resolveCanonicalSpawnerEvaluatorHandoff(options = {}) {
   const currentReview = safeJson(path.join(reviewRoot, "current-review.v1.json"), "Current review reference");
   if (currentReview.schema !== "agentos.current_external_spawner_review.v1" || currentReview.version !== 1 || !SHA.test(currentReview.receipt_sha256)) fail("Current external review reference differs");
   const evaluatorProvisioning = prepareProtectedEvaluatorProvisioning({sealedAuthority, clearanceStoreRoot: clearanceRoot, candidateRepositoryRoot: repositoryRoot});
-  const reviewProvisioning = prepareProtectedSpawnerReviewProvisioning({sealedAuthority, reviewStoreRoot: reviewRoot});
+  const reviewProvisioning = prepareProtectedSpawnerReviewProvisioning({sealedAuthority});
   return Object.freeze({evaluatorProvisioning, reviewProvisioning, clearance_receipt_sha256: currentClearance.receipt_sha256, review_receipt_sha256: currentReview.receipt_sha256, candidate_commit: commit});
 }

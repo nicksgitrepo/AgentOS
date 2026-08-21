@@ -5,8 +5,6 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {canonicalDigest, canonicalJson, compareUtf8} from "../../control/content-addressing.mjs";
 import {getSealedCanonicalAuthority} from "../../control/sealed-canonical-authority.mjs";
-import {prepareProtectedSpawnerReviewProvisioning} from "../../control/protected-spawner-review-provisioning.mjs";
-import {installExternalSpawnerReviewStore} from "../../control/spawner-external-review.mjs";
 import {resolveSpawnerGitAncestry} from "../../control/spawner-git-ancestry.mjs";
 
 function sign(value, digestField, signatureField, privateKey) {
@@ -29,6 +27,6 @@ export function provisionTestExternalSpawnerReview({candidate, install = true}) 
   const inventory = evaluation.results.map((entry) => ({fixture_id: entry.fixture_id, gate_id: entry.gate_id, result: entry.result, actual_outcome: entry.actual_outcome, error_code: entry.error_code})).sort((a, b) => compareUtf8(a.fixture_id, b.fixture_id));
   const receipt = {schema: "agentos.external_spawner_review_receipt.v1", version: 1, receipt_id: "REVIEW.EXTERNAL.SPAWNER.TEST", reviewer_id: admission.subject_id, reviewer_role: admission.subject_role, authority_epoch: 1, git_ancestry: gitAncestry, candidate_package_sha256: candidate.spawner_package.package_sha256, candidate_package_file_sha256: candidate.package_file_sha256, candidate_root_sha256: candidate.review_candidate_root_sha256, gate_manifest_sha256: candidate.manifest.manifest_sha256, fixture_manifest_sha256: candidate.fixture_manifest.manifest_sha256, hostile_evaluation_sha256: evaluation.evaluation_sha256, fixture_result_count: inventory.length, fixture_inventory_sha256: canonicalDigest(inventory), scope: admission.scope, custody: {read_only_candidate: true, builder_separated: true, governance_write_capability: false}, result: "PASS", issued_at_utc: issuedAtUtc, expires_at_utc: expiresAtUtc, nonce_sha256: canonicalDigest({nonce: crypto.randomBytes(32).toString("hex")}), receipt_sha256: null, signature_base64: null}; sign(receipt, "receipt_sha256", "signature_base64", reviewerKeys.privateKey);
   fs.writeFileSync(path.join(root, "reviewer-registry.v1.json"), `${canonicalJson(registry)}\n`); fs.writeFileSync(path.join(root, "current-review.v1.json"), `${canonicalJson({schema: "agentos.current_external_spawner_review.v1", version: 1, receipt_sha256: receipt.receipt_sha256})}\n`); fs.writeFileSync(path.join(root, "receipts", `${receipt.receipt_sha256}.json`), `${canonicalJson(receipt)}\n`);
-  if (install) { const reviewProvisioning = prepareProtectedSpawnerReviewProvisioning({sealedAuthority, reviewStoreRoot: root}); installExternalSpawnerReviewStore({sealedAuthority, reviewProvisioning}); }
+  if (install) throw new Error("Synthetic external reviewer roots are evidence fixtures only and cannot be installed as authority");
   return {root, receipt};
 }
