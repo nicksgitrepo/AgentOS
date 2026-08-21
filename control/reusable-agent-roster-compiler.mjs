@@ -119,7 +119,7 @@ function fixtureInventory(root, relativePath, block) {
     const manifest = readJson(root, manifestPath);
     return {status: "BOUND", fixtures: (manifest.entries ?? []).flatMap((entry) => {
       const fixturePath = path.join(relativePath, entry.path).split(path.sep).join("/");
-      return exists(root, fixturePath) ? [{fixture_id: entry.fixture_id, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: entry.expected_outcome ?? entry.expected ?? "DENY"}] : [];
+      return exists(root, fixturePath) ? [{fixture_id: entry.fixture_id, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: fixtureExpectedOutcome(entry.expected_outcome ?? entry.expected ?? "DENY", fixturePath)}] : [];
     })};
   }
   const fixtureDirectory = path.join(root, relativePath, "fixtures");
@@ -130,14 +130,19 @@ function fixtureInventory(root, relativePath, block) {
     // The executable vector is the authority for the expected disposition.
     // Keep legacy top-level fields as compatibility fallbacks, but never
     // replace a canonical nested readback with the generic DENY default.
-    const expectedOutcome = fixture.vector?.expected_readback?.disposition
+    const expectedValue = fixture.vector?.expected_readback?.disposition
       ?? fixture.expected_readback?.disposition
       ?? fixture.expected
       ?? fixture.expected_outcome
       ?? "DENY";
-    return {fixture_id: fixture.fixture_id ?? `${block.block_id}.${normalize(name.replace(/\.json$/u, ""))}`, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: expectedOutcome};
+    return {fixture_id: fixture.fixture_id ?? `${block.block_id}.${normalize(name.replace(/\.json$/u, ""))}`, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: fixtureExpectedOutcome(expectedValue, fixturePath)};
   });
   return {status: fixtures.length ? "BOUND" : "NO_DIRECT_FIXTURES", fixtures};
+}
+function fixtureExpectedOutcome(value, fixturePath) {
+  const outcome = value && typeof value === "object" && !Array.isArray(value) ? value.disposition : value;
+  if (typeof outcome !== "string" || outcome.length === 0) throw new Error(`fixture ${fixturePath} has no schema-compatible expected disposition`);
+  return outcome;
 }
 function modelRoute(block, role, tier) {
   let taskClass = role?.task_class;

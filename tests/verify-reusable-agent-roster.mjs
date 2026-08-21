@@ -25,7 +25,7 @@ for (const entry of roster.entries) {
   assert(entry.forbidden_actions.length > 0 && entry.stop_conditions.length > 0);
   assert(entry.deterministic_gates.status);
   for (const gate of entry.deterministic_gates.gates) { assert(safe(gate.path), `${entry.stable_agent_id} gate path missing`); assert.equal(sha(gate.path), gate.file_sha256); }
-  for (const fixture of entry.hostile_fixtures.fixtures) { assert(safe(fixture.path), `${entry.stable_agent_id} hostile fixture missing`); assert.equal(sha(fixture.path), fixture.file_sha256); }
+  for (const fixture of entry.hostile_fixtures.fixtures) { assert(safe(fixture.path), `${entry.stable_agent_id} hostile fixture missing`); assert.equal(sha(fixture.path), fixture.file_sha256); assert.equal(typeof fixture.expected_outcome, "string", `${entry.stable_agent_id} hostile fixture expected_outcome must be a string`); assert(fixture.expected_outcome.length > 0, `${entry.stable_agent_id} hostile fixture expected_outcome is empty`); }
   if (entry.package_path !== null && entry.build_state !== "PLANNED_MISSING_PACKAGE") assert(safe(`${entry.package_path}/block.json`), `${entry.stable_agent_id} package missing`);
   assert(entry.model_route.task_class && Number.isInteger(entry.model_route.minimum_capability));
 }
