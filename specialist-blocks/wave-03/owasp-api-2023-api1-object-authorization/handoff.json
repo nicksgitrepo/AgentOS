@@ -4,30 +4,42 @@
   "handoff_id": "specialist-handoff.owasp-api-2023-api1-object-authorization.v1",
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95",
-  "source_commit": "170bbf4ca705dce9de199172910c6c25e243e7fc",
-  "source_tree": "aebfe743b8b460dd1ffb5c90cfc3342f93d18597",
+  "candidate_digest": "c2018ddf850bc9daee60329b5ef4d8fb4a240ccabe959ef092b42245b34c2980",
+  "source_commit": "5779a07a431ffb7959f3af9a15d2b3453609de19",
+  "source_tree": "6c22866475277b414738b817b891d1db649f3495",
   "changed_paths": [
     "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/block.json",
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/evaluation.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/sources.lock",
     "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/gates/manifest.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/gates/execution.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/evaluation.json",
     "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/handoff.json",
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/sources.lock"
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/*.json"
   ],
   "proof": [
     "12-gate-pack-digests",
-    "atomic-scope-and-upstream-router",
-    "hostile-fixture-catalog",
-    "independent-reviewer-required",
+    "17-executable-hostile-fixtures",
+    "atomic-scope-and-owasp-api-top10-upstream-router",
     "reusable-standard-dependency-identities",
-    "source-lock-digest"
+    "source-lock-digest",
+    "mutation-sensitivity-proof",
+    "model-route-receipt",
+    "typed-memory-binding-receipt",
+    "unofficial_functionality_check:LOCAL_NODE_PACKAGE_QA_ONLY;_NO_OFFICIAL_FUNCTIONAL_ACCEPTANCE",
+    "evaluation_file_sha256:53674f9b4d73ff74e63f365899ef3b80c35ca168dc184d6e8944ca9f1be1a657",
+    "gate_execution_file_sha256:e0fae063e0e9a6d0cc10c01054abdca12d2732515f3e1fee03176dd44524dd54",
+    "gate_semantic_inventory_sha256:e707f1f82ed5c9cdf57c1378c33a0e25b7bb168b71ab7b7b1785cac7023e3ea6",
+    "model_route_sha256:9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
+    "context_receipt_sha256:cf50288f97438cb892206a2d6c9ee039f1a745844cd73454d242091f4a702066",
+    "upstream_router_file_sha256:df90e9ef7d680cf736feef8c49c1dd44d53d6409e10e9e2eb28d470d45e44327"
   ],
   "residuals": [
     "applicability and project context remain external",
     "candidate is not admitted or activated",
+    "unofficial functionality check is local package-only and does not establish official consumer or host functionality",
     "independent utility/harm evaluation has not run",
     "main AgentOS 3.0 integration owner must intake exact digest"
   ],
-  "next_action": "Route the immutable P2 security candidate through its upstream router and independent evaluator; preserve activation OFF.",
+  "next_action": "Route the immutable P2 security candidate through its OWASP API Top 10 upstream router and independent evaluator; preserve activation OFF and typed memory binding.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v1",
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
-  "candidate_digest": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95",
+  "candidate_digest": "c2018ddf850bc9daee60329b5ef4d8fb4a240ccabe959ef092b42245b34c2980",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [

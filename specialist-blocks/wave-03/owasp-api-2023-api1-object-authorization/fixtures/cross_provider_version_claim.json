@@ -3,7 +3,25 @@
   "version": 1,
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "class": "cross_provider_version_claim",
-  "expected": "DENY",
+  "fixture_id": "owasp-api1-object-authorization-cross_provider_version_claim",
   "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "SOURCE_REFRESH_REQUIRED",
+    "error_code": "OWASP_API_OBJECT_AUTHORIZATION_SOURCE_STALE_OR_UNVERIFIED"
+  },
+  "vector": {
+    "entrypoint": "control/owasp-api-object-authorization-boundary-gate.mjs#evaluateOwaspApiObjectAuthorizationBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OWASP_API_API1_OBJECT_AUTHORIZATION",
+      "evidence_overrides": {
+        "adversarial_flags": {}
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "OWASP_API_OBJECT_AUTHORIZATION_SOURCE_STALE_OR_UNVERIFIED"
+    }
+  }
 }

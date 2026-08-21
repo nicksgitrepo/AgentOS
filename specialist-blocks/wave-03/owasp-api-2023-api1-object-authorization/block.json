@@ -122,7 +122,7 @@
   },
   "output": {
     "contract_id": "specialist-output.owasp-api-2023-api1-object-authorization.v1",
-    "typed_schema": "schemas/specialist-output.v1.json",
+    "typed_schema": "schemas/owasp-api-object-authorization-boundary-result.v1.json",
     "required_fields": [
       "evidence",
       "findings",
@@ -132,12 +132,16 @@
       "unknowns"
     ],
     "evidence_obligations": [
+      "API1:2023 category identity and object-authorization boundary",
       "exact source lock identity",
       "gate trace",
+      "model-policy route receipt",
       "specialist.standard.owasp-api-top10-2023 hash",
       "specialist.standard.owasp-asvs hash",
       "typed context",
-      "unknown ledger"
+      "typed memory/binding receipt",
+      "unknown ledger",
+      "upstream OWASP API Top 10 router receipt"
     ],
     "handoff_fields": [
       "block_id",
@@ -233,11 +237,11 @@
     ]
   },
   "lifecycle_rules": {
-    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
-    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
-    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
-    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
-    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+      "candidate_entry": "Block, source lock, twelve executable gates, seventeen hostile vectors, execution manifest, evaluation dossier, and typed handoff have matching digests.",
+      "evaluation_entry": "Independent evaluator reruns category narrowness, upstream router binding, missing-context, stale-source, authority, custody, unsafe-action, memory-boundary, and handoff cases.",
+      "suspension": "Suspend on API Top 10 supersession, stale evidence, scope drift, sibling conflict, router/model drift, memory-binding drift, or failed utility/harm review.",
+      "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; preserve the exact source/tree and invalidate compiled contexts.",
+      "reactivation": "Create or validate a new revision, invalidate old bindings and memory receipts, and rerun independent evaluation; never silently reactivate an old digest."
   },
   "gate_path": "gates/00-intake.gate",
   "gate_pack": {
@@ -311,5 +315,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95"
+  "block_sha256": "c2018ddf850bc9daee60329b5ef4d8fb4a240ccabe959ef092b42245b34c2980"
 }

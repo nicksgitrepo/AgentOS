@@ -3,7 +3,25 @@
   "version": 1,
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "class": "silent_scope_expansion",
-  "expected": "DENY",
+  "fixture_id": "owasp-api1-object-authorization-silent_scope_expansion",
   "hostile": true,
-  "note": "Synthetic hostile fixture for silent_scope_expansion; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "NARROW_SCOPE_REQUIRED",
+    "error_code": "OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN"
+  },
+  "vector": {
+    "entrypoint": "control/owasp-api-object-authorization-boundary-gate.mjs#evaluateOwaspApiObjectAuthorizationBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OWASP_API_API1_OBJECT_AUTHORIZATION",
+      "evidence_overrides": {
+        "adversarial_flags": {}
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN"
+    }
+  }
 }
