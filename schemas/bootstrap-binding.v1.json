@@ -4223,13 +4223,17 @@
       "path": "schemas/spawner-external-review.v1.json",
       "sha256": "f96113d76ce37551157c9757575aaf6d3f3c0050880a6b94b08eb8f17162e09e"
     },
+    "spawner_external_review_consumption_head_contract": {
+      "path": "schemas/spawner-external-review-consumption-head.v1.json",
+      "sha256": "829b425016647460f1c0ce93b9c8f66fd683fa04ec0f7d458b16647e9a0e1038"
+    },
     "spawner_external_review_controller": {
       "path": "control/spawner-external-review.mjs",
-      "sha256": "fe79b1008ff1a6004033b11964a8cb856e8d783b1bcf7718f441d0e01f319d83"
+      "sha256": "fcf7677b9521997817d3a80f88d9d206eb6f331923ffccffcad2276c591d979d"
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",
-      "sha256": "4a307fb396a527dfe65efd3350b7de06d7c3eddff73cf298efb6327eb67d4044"
+      "sha256": "793b7eb360b0a770ef5ffbeeacc5cebd47d5e1824eb0f0405539c4d7642e8b14"
     },
     "spawner_external_reviewer_registry": {
       "path": "specialist-blocks/control-plane/agent-spawner/external-reviewer-registry.v1.json",

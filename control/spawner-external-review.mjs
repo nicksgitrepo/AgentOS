@@ -11,10 +11,38 @@ import {validateSpawnerGitAncestry} from "./spawner-git-ancestry.mjs";
 
 const stores = new WeakMap(); let installedStore = null; let installedGeneration = 0;
 const SHA = /^[0-9a-f]{64}$/u;
+const REVIEW_LEDGER_SCHEMA = "agentos.spawner_external_review_consumption_head.v1";
+const REVIEW_LEDGER_VERSION = 1;
 const REVIEW_SCOPE = ["CANDIDATE_COMPONENT_ROOT", "GATE_BYTES", "HOSTILE_FIXTURE_EXECUTION"];
 function fail(message, code = "SPAWNER_EXTERNAL_REVIEW_INVALID") { const error = new Error(message); error.code = code; throw error; }
 function exact(value, keys, label) { if (!value || typeof value !== "object" || Array.isArray(value) || JSON.stringify(Object.keys(value).sort(compareUtf8)) !== JSON.stringify([...keys].sort(compareUtf8))) fail(`${label} fields mismatch`); }
-function read(root, relative) { const target = path.resolve(root, relative); if (!target.startsWith(`${root}${path.sep}`)) fail("external review path escaped store"); const stat = fs.lstatSync(target); if (!stat.isFile() || stat.isSymbolicLink()) fail("external review artifact is unsafe"); return JSON.parse(fs.readFileSync(target, "utf8")); }
+function safePath(root, relative, {allowMissingLeaf = false} = {}) {
+  const realRoot = path.resolve(root);
+  const target = path.resolve(realRoot, relative);
+  if (target !== realRoot && !target.startsWith(`${realRoot}${path.sep}`)) fail("external review path escaped store", "SPAWNER_EXTERNAL_REVIEW_PATH_ESCAPE");
+  const rootStat = fs.lstatSync(realRoot, {throwIfNoEntry: false});
+  if (!rootStat?.isDirectory() || rootStat.isSymbolicLink()) fail("external review store root is unsafe", "SPAWNER_EXTERNAL_REVIEW_STORE_UNSAFE");
+  const segments = path.relative(realRoot, target).split(path.sep).filter(Boolean);
+  let cursor = realRoot;
+  for (const [index, segment] of segments.entries()) {
+    cursor = path.join(cursor, segment);
+    const stat = fs.lstatSync(cursor, {throwIfNoEntry: false});
+    const isLeaf = index === segments.length - 1;
+    if (!stat) {
+      if (isLeaf && allowMissingLeaf) return cursor;
+      fail("external review artifact is missing", "SPAWNER_EXTERNAL_REVIEW_STORE_UNAVAILABLE");
+    }
+    if (stat.isSymbolicLink()) fail("external review artifact path is aliased", "SPAWNER_EXTERNAL_REVIEW_PATH_ALIAS");
+    if (!isLeaf && !stat.isDirectory()) fail("external review artifact parent is not a directory", "SPAWNER_EXTERNAL_REVIEW_STORE_UNSAFE");
+  }
+  return target;
+}
+function read(root, relative) {
+  const target = safePath(root, relative);
+  const stat = fs.lstatSync(target);
+  if (!stat.isFile() || stat.isSymbolicLink()) fail("external review artifact is unsafe", "SPAWNER_EXTERNAL_REVIEW_ARTIFACT_UNSAFE");
+  try { return JSON.parse(fs.readFileSync(target, "utf8")); } catch { fail("external review artifact is not valid JSON", "SPAWNER_EXTERNAL_REVIEW_ARTIFACT_INVALID"); }
+}
 function body(value, digest, signature = null) { const copy = structuredClone(value); copy[digest] = null; if (signature) copy[signature] = null; return copy; }
 function verifySigned(record, digestField, signatureField, publicKey, label) { if (!SHA.test(record[digestField]) || record[digestField] !== canonicalDigest(body(record, digestField, signatureField))) fail(`${label} digest differs`); if (!crypto.verify(null, Buffer.from(record[digestField], "hex"), publicKey, Buffer.from(record[signatureField], "base64"))) fail(`${label} signature differs`); }
 function validateAdmission(admission, registry, reviewer) {
@@ -66,15 +94,83 @@ function verifyCandidateCommitBytes(candidate, ancestry) {
   }
 }
 
-function consume(root, receipt) {
-  const ledgerPath = path.join(root, "consumed-reviews.jsonl"), lockPath = `${ledgerPath}.lock`;
-  let lock; try { lock = fs.openSync(lockPath, "wx", 0o600); } catch (error) { if (error.code === "EEXIST") fail("external review consumption is concurrently locked", "SPAWNER_EXTERNAL_REVIEW_CONCURRENT"); throw error; }
+function ledgerBinding(registry) {
+  return canonicalDigest({schema: REVIEW_LEDGER_SCHEMA, version: REVIEW_LEDGER_VERSION, registry_sha256: registry.registry_sha256, ledger: "consumed-reviews.jsonl"});
+}
+function ledgerBindingFromSha(registrySha256) {
+  return canonicalDigest({schema: REVIEW_LEDGER_SCHEMA, version: REVIEW_LEDGER_VERSION, registry_sha256: registrySha256, ledger: "consumed-reviews.jsonl"});
+}
+export function validateExternalSpawnerReviewReplayText({registry_sha256: registrySha256, rawLedger = "", head = null} = {}) {
+  if (!SHA.test(registrySha256)) fail("external review replay registry binding is invalid", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  if (typeof rawLedger !== "string" || (rawLedger !== "" && !rawLedger.endsWith("\n"))) fail("external review replay ledger is not newline-terminated", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  const prior = [];
+  const seen = new Set();
+  const lines = rawLedger === "" ? [] : rawLedger.slice(0, -1).split("\n");
+  for (const [index, line] of lines.entries()) {
+    let entry;
+    try { entry = JSON.parse(line); } catch { fail(`external review replay ledger record ${index + 1} is malformed`, "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID"); }
+    exact(entry, ["sequence", "receipt_sha256", "prior_event_sha256", "consumed_at_utc", "event_sha256"], "external review replay ledger record");
+    if (!Number.isSafeInteger(entry.sequence) || entry.sequence !== index + 1 || !SHA.test(entry.receipt_sha256) || seen.has(entry.receipt_sha256)) fail(`external review replay ledger record ${index + 1} sequence or receipt is invalid`, "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+    if (entry.prior_event_sha256 !== (prior.at(-1)?.event_sha256 ?? null) || !SHA.test(entry.event_sha256) || entry.event_sha256 !== canonicalDigest({...entry, event_sha256: null})) fail(`external review replay ledger record ${index + 1} chain is invalid`, "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+    const consumedAt = Date.parse(entry.consumed_at_utc);
+    if (!Number.isFinite(consumedAt) || consumedAt > Date.now()) fail(`external review replay ledger record ${index + 1} time is invalid`, "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+    seen.add(entry.receipt_sha256); prior.push(entry);
+  }
+  if (head === null) {
+    if (prior.length > 0) fail("external review replay ledger is missing its durable head", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  } else {
+    exact(head, ["schema", "version", "registry_sha256", "root_binding_sha256", "sequence", "head_event_sha256", "ledger_sha256"], "external review replay head");
+    if (head.schema !== REVIEW_LEDGER_SCHEMA || head.version !== REVIEW_LEDGER_VERSION || head.registry_sha256 !== registrySha256 || head.root_binding_sha256 !== ledgerBindingFromSha(registrySha256) || head.sequence !== prior.length || head.head_event_sha256 !== prior.at(-1)?.event_sha256 || head.ledger_sha256 !== canonicalDigest(prior)) fail("external review replay head does not match its ledger", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  }
+  return Object.freeze({prior, seen, ledger_sha256: canonicalDigest(prior), head_event_sha256: prior.at(-1)?.event_sha256 ?? null});
+}
+function parseLedger(root, registry) {
+  const ledgerPath = safePath(root, "consumed-reviews.jsonl", {allowMissingLeaf: true});
+  const headPath = safePath(root, "consumed-reviews.head.v1.json", {allowMissingLeaf: true});
+  const ledgerStat = fs.lstatSync(ledgerPath, {throwIfNoEntry: false});
+  const headStat = fs.lstatSync(headPath, {throwIfNoEntry: false});
+  if (ledgerStat && (!ledgerStat.isFile() || ledgerStat.isSymbolicLink())) fail("external review replay ledger is not a regular file", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  if (headStat && (!headStat.isFile() || headStat.isSymbolicLink())) fail("external review replay head is not a regular file", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  if (!ledgerStat && headStat) fail("external review replay head exists without its ledger", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  if (ledgerStat && !headStat) fail("external review replay ledger is missing its durable head", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+  const raw = ledgerStat ? fs.readFileSync(ledgerPath, "utf8") : "";
+  let head = null;
+  if (headStat) {
+    try { head = JSON.parse(fs.readFileSync(headPath, "utf8")); } catch { fail("external review replay head is not valid JSON", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID"); }
+  }
+  const validated = validateExternalSpawnerReviewReplayText({registry_sha256: registry.registry_sha256, rawLedger: raw, head});
+  return {ledgerPath, headPath, prior: validated.prior, seen: validated.seen};
+}
+function writeReplayHead(headPath, registry, prior, root) {
+  const head = {schema: REVIEW_LEDGER_SCHEMA, version: REVIEW_LEDGER_VERSION, registry_sha256: registry.registry_sha256, root_binding_sha256: ledgerBinding(registry), sequence: prior.length, head_event_sha256: prior.at(-1)?.event_sha256 ?? null, ledger_sha256: canonicalDigest(prior)};
+  const temporary = `${headPath}.${process.pid}.${Date.now()}.tmp`;
+  const bytes = `${canonicalJson(head)}\n`;
   try {
-    const prior = fs.existsSync(ledgerPath) ? fs.readFileSync(ledgerPath, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse) : [];
-    if (prior.some((entry) => entry.receipt_sha256 === receipt.receipt_sha256)) fail("external review receipt was already consumed", "SPAWNER_EXTERNAL_REVIEW_REPLAY");
-    const event = {sequence: prior.length + 1, receipt_sha256: receipt.receipt_sha256, prior_event_sha256: prior.at(-1)?.event_sha256 ?? null, consumed_at_utc: new Date().toISOString(), event_sha256: null}; event.event_sha256 = canonicalDigest({...event, event_sha256: null});
-    fs.appendFileSync(ledgerPath, `${canonicalJson(event)}\n`, {mode: 0o600}); const descriptor = fs.openSync(ledgerPath, "r"); try { fs.fsyncSync(descriptor); } finally { fs.closeSync(descriptor); }
-  } finally { fs.closeSync(lock); if (fs.existsSync(lockPath)) fs.unlinkSync(lockPath); }
+    fs.writeFileSync(temporary, bytes, {flag: "wx", mode: 0o600});
+    const fd = fs.openSync(temporary, "r"); try { fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
+    const existing = fs.lstatSync(headPath, {throwIfNoEntry: false});
+    if (existing?.isSymbolicLink() || (existing && !existing.isFile())) fail("external review replay head is unsafe", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+    fs.renameSync(temporary, headPath);
+    const directoryFd = fs.openSync(root, "r"); try { fs.fsyncSync(directoryFd); } finally { fs.closeSync(directoryFd); }
+  } finally { try { fs.unlinkSync(temporary); } catch {} }
+}
+function consume(root, registry, receipt) {
+  const ledgerPath = safePath(root, "consumed-reviews.jsonl", {allowMissingLeaf: true});
+  const lockPath = safePath(root, "consumed-reviews.jsonl.lock", {allowMissingLeaf: true});
+  let lock;
+  try { lock = fs.openSync(lockPath, "wx", 0o600); } catch (error) { if (error.code === "EEXIST") fail("external review consumption is concurrently locked", "SPAWNER_EXTERNAL_REVIEW_CONCURRENT"); throw error; }
+  try {
+    const state = parseLedger(root, registry);
+    if (state.seen.has(receipt.receipt_sha256)) fail("external review receipt was already consumed", "SPAWNER_EXTERNAL_REVIEW_REPLAY");
+    const event = {sequence: state.prior.length + 1, receipt_sha256: receipt.receipt_sha256, prior_event_sha256: state.prior.at(-1)?.event_sha256 ?? null, consumed_at_utc: new Date().toISOString(), event_sha256: null};
+    event.event_sha256 = canonicalDigest({...event, event_sha256: null});
+    fs.appendFileSync(ledgerPath, `${canonicalJson(event)}\n`, {mode: 0o600});
+    const descriptor = fs.openSync(ledgerPath, "r"); try { fs.fsyncSync(descriptor); } finally { fs.closeSync(descriptor); }
+    const next = [...state.prior, event];
+    const readback = fs.readFileSync(ledgerPath, "utf8");
+    if (readback !== next.map((entry) => `${canonicalJson(entry)}\n`).join("")) fail("external review replay ledger readback differs", "SPAWNER_EXTERNAL_REVIEW_REPLAY_LEDGER_INVALID");
+    writeReplayHead(state.headPath, registry, next, root);
+  } finally { try { fs.closeSync(lock); } catch {} try { fs.unlinkSync(lockPath); } catch {} }
 }
 
 export function verifyAndConsumeCurrentExternalSpawnerReview({candidate, hostileEvaluation} = {}) {
@@ -85,6 +181,7 @@ export function verifyAndConsumeCurrentExternalSpawnerReview({candidate, hostile
   const receipt = read(store.root, `receipts/${current.receipt_sha256}.json`);
   exact(receipt, ["schema", "version", "receipt_id", "reviewer_id", "reviewer_role", "authority_epoch", "git_ancestry", "candidate_package_sha256", "candidate_package_file_sha256", "candidate_root_sha256", "gate_manifest_sha256", "fixture_manifest_sha256", "hostile_evaluation_sha256", "fixture_result_count", "fixture_inventory_sha256", "scope", "custody", "result", "issued_at_utc", "expires_at_utc", "nonce_sha256", "receipt_sha256", "signature_base64"], "external Spawner review receipt");
   const reviewer = store.registry.reviewers.find((entry) => entry.reviewer_id === receipt.reviewer_id);
+  if (receipt.receipt_sha256 !== current.receipt_sha256) fail("external review receipt filename does not match its embedded digest", "SPAWNER_EXTERNAL_REVIEW_RECEIPT_ALIAS");
   if (!reviewer || receipt.reviewer_role !== reviewer.role || receipt.authority_epoch !== store.registry.authority_epoch) fail("external review issuer is unknown, revoked, stale, or role-mismatched");
   if (receipt.git_ancestry?.authorized_predecessor_commit !== store.registry.authorized_predecessor_commit) fail("external review authorized predecessor differs from protected reviewer registry", "SPAWNER_AUTHORITY_CHAIN_MISMATCH");
   verifyCandidateCommitBytes(candidate, receipt.git_ancestry);
@@ -92,6 +189,6 @@ export function verifyAndConsumeCurrentExternalSpawnerReview({candidate, hostile
   if (receipt.candidate_package_sha256 !== candidate.spawner_package.package_sha256 || receipt.candidate_package_file_sha256 !== candidate.package_file_sha256 || receipt.candidate_root_sha256 !== candidate.review_candidate_root_sha256 || receipt.gate_manifest_sha256 !== candidate.manifest.manifest_sha256 || receipt.fixture_manifest_sha256 !== candidate.fixture_manifest.manifest_sha256 || receipt.hostile_evaluation_sha256 !== hostileEvaluation.evaluation_sha256 || receipt.fixture_result_count !== expectedInventory.length || receipt.fixture_inventory_sha256 !== canonicalDigest(expectedInventory)) fail("external review candidate or executed evidence binding differs");
   if (receipt.result !== "PASS" || receipt.reviewer_role !== "AGENT.INDEPENDENT_EVALUATOR" || JSON.stringify(receipt.scope) !== JSON.stringify(["CANDIDATE_COMPONENT_ROOT", "GATE_BYTES", "HOSTILE_FIXTURE_EXECUTION"]) || receipt.custody?.read_only_candidate !== true || receipt.custody?.builder_separated !== true || receipt.custody?.governance_write_capability !== false) fail("external review result, scope, or custody differs");
   const now = Date.now(); if (!(Date.parse(receipt.issued_at_utc) <= now && now < Date.parse(receipt.expires_at_utc))) fail("external review receipt is future-dated or stale");
-  verifySigned(receipt, "receipt_sha256", "signature_base64", reviewer.public_key_pem, "external review receipt"); consume(store.root, receipt);
+  verifySigned(receipt, "receipt_sha256", "signature_base64", reviewer.public_key_pem, "external review receipt"); consume(store.root, store.registry, receipt);
   return Object.freeze({receipt_sha256: receipt.receipt_sha256, reviewer_id: receipt.reviewer_id, candidate_root_sha256: receipt.candidate_root_sha256, hostile_evaluation_sha256: receipt.hostile_evaluation_sha256});
 }
