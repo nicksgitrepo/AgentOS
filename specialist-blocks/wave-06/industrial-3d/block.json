@@ -171,6 +171,10 @@
     "engineering_assertion": false,
     "memory_write": false
   },
+  "registry_provenance": {
+    "mode": "STATIC_SEMANTIC_ONLY",
+    "reason": "Keep derived registry bytes independent of package fixture and handoff receipt bytes so raw registry digests can be bound into canonical context without a recursive provenance cycle."
+  },
   "authority": {
     "allowed_authority": [
       "evidence-bounded analysis",
@@ -333,5 +337,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "bc157bb4b923189e47e154814c8fe829d9276fa565f5c532bc690b915df0fb2f"
+  "block_sha256": "dcde4f015881cef8154215eabc63853dec4225dd93316adebd582d9cf2e7c01a"
 }

@@ -17,7 +17,7 @@
         "source_status", "source_identity", "source_version", "source_retrieved_date", "source_manifest_sha256", "standard_identity", "standard_version", "standard_block_sha256", "standard_source_manifest_sha256",
         "candidate_status", "candidate_digest", "graphics_signal", "signal_status", "task_status", "context_status", "context_complete",
         "requested_action", "requested_tools", "required_block_identities", "model_policy_status", "model_route_status", "model_snapshot_sha256", "model_task_class", "model_capability_floor", "model_required_capabilities", "model_route_sha256", "authority_scope",
-        "upstream_router_file_sha256", "upstream_router_block_sha256", "upstream_router_fixture_sha256", "upstream_router_input_sha256", "upstream_router_expected_sha256", "upstream_router_result_sha256", "upstream_router_model_snapshot_sha256", "upstream_router_model_route_sha256", "upstream_router_model_policy_claim", "upstream_router_model_binding_status", "context_receipt_sha256", "memory_readback_sha256", "fixture_contract_sha256", "agent_roster_semantic_sha256", "specialist_roster_semantic_sha256", "atomic_inventory_semantic_sha256", "routing_index_semantic_sha256", "registry_contract_sha256", "registry_agent_state", "agent_roster_status", "specialist_roster_status", "atomic_inventory_status", "routing_index_status", "registry_activation", "project_data_present", "secret_data_present", "adversarial_flags"
+        "upstream_router_file_sha256", "upstream_router_block_sha256", "upstream_router_fixture_sha256", "upstream_router_input_sha256", "upstream_router_expected_sha256", "upstream_router_result_sha256", "upstream_router_model_snapshot_sha256", "upstream_router_model_route_sha256", "upstream_router_model_policy_claim", "upstream_router_model_binding_status", "context_receipt_sha256", "memory_readback_sha256", "fixture_contract_sha256", "agent_roster_file_sha256", "specialist_roster_file_sha256", "atomic_inventory_file_sha256", "routing_index_file_sha256", "agent_roster_semantic_sha256", "specialist_roster_semantic_sha256", "atomic_inventory_semantic_sha256", "routing_index_semantic_sha256", "registry_contract_sha256", "registry_agent_state", "agent_roster_status", "specialist_roster_status", "atomic_inventory_status", "routing_index_status", "registry_activation", "project_data_present", "secret_data_present", "adversarial_flags"
       ],
       "properties": {
         "authority_status": {"type": "string"},
@@ -71,6 +71,10 @@
         "upstream_router_model_binding_status": {"type": "string"},
         "context_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "agent_roster_semantic_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "agent_roster_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "specialist_roster_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "atomic_inventory_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "routing_index_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "specialist_roster_semantic_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "atomic_inventory_semantic_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "routing_index_semantic_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
