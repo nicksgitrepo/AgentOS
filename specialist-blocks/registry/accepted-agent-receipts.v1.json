@@ -431,6 +431,16 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     },
     {
+      "stable_agent_id": "AGENTOS.REPAIR",
+      "package_path": "specialist-blocks/wave-07/repair",
+      "candidate_commit": "0f6bd2ae7229485ba46f371d48cfc166d1da1cc0",
+      "candidate_tree": "527cbe71b34d7ae636dc285d9d4b1542b82e39e7",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/0f6bd2ae7229485ba46f371d48cfc166d1da1cc0",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    },
+    {
       "stable_agent_id": "AGENTOS.RUNTIME",
       "package_path": "specialist-blocks/wave-01/runtime-deployment-operator",
       "candidate_commit": "373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
@@ -461,5 +471,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "14c8607688c808e1e512fdf1927f74a0d64e6e638959a013b6a44ce49d9ef414"
+  "ledger_sha256": "06234c6166c888ed1507469a28545328b67f9d80191d144679841463e8333f93"
 }
