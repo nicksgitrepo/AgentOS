@@ -45,7 +45,7 @@ function id(value, label) { assert(typeof value === "string" && ID.test(value), 
 function task(value, label) { assert(typeof value === "string" && TASK.test(value), `${label} is not a task identity`, "AUDITOR_ROUND_TASK_INVALID"); }
 function ref(value, label) { assert(typeof value === "string" && REF.test(value), `${label} is not an opaque reference`, "AUDITOR_ROUND_REF_INVALID"); }
 function sha(value, label) { assert(typeof value === "string" && SHA256.test(value) && !/^([0-9a-f])\1{63}$/u.test(value), `${label} is not a content digest`, "AUDITOR_ROUND_DIGEST_INVALID"); }
-function gitSha(value, label) { assert(typeof value === "string" && GIT_SHA1.test(value), `${label} is not a Git identity`, "AUDITOR_ROUND_GIT_ID_INVALID"); }
+function gitSha(value, label) { assert(typeof value === "string" && GIT_SHA1.test(value) && !/^([0-9a-f])\1{39}$/u.test(value), `${label} is not a Git identity`, "AUDITOR_ROUND_GIT_ID_INVALID"); }
 function bounded(value, label, limit = 180) { assert(typeof value === "string" && value.length > 0 && value.length <= limit, `${label} is not bounded`, "AUDITOR_ROUND_FIELD_INVALID"); }
 function utc(value, label) { bounded(value, label, 40); const time = Date.parse(value); assert(Number.isFinite(time) && value === new Date(time).toISOString(), `${label} is not canonical UTC`, "AUDITOR_ROUND_TIME_INVALID"); return time; }
 function bool(value, label) { assert(typeof value === "boolean", `${label} must be boolean`, "AUDITOR_ROUND_BOOLEAN_INVALID"); }

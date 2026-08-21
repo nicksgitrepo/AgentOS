@@ -9,7 +9,7 @@ import {assessAuditorRound, validateAuditorRound, AUDITOR_ROUND_SCHEMA, AUDITOR_
 const root = path.resolve(new URL("..", import.meta.url).pathname);
 const digest = (value) => canonicalDigest(value);
 const sideEffects = () => ({candidate_writes: 0, builder_writes: 0, memory_writes: 0, project_writes: 0, credential_accesses: 0, merge_calls: 0, deploy_calls: 0, state_changes: 0});
-const sha1 = (char) => char.repeat(40);
+const sha1 = (char) => char.repeat(39) + (char === "a" ? "1" : char === "b" ? "2" : char === "c" ? "3" : "4");
 const taskRef = (task) => `opaque:task:${task}`;
 
 function makeRound(overrides = {}) {
