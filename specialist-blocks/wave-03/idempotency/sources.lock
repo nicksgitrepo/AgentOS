@@ -4,6 +4,19 @@
   "block_id": "specialist.security.idempotency",
   "sources": [
     {
+      "source_id": "source.agentos-idempotency",
+      "title": "AgentOS Idempotency Evidence Contract",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL",
+      "version": "1",
+      "effective_date": "2026-08-11",
+      "retrieved_date": "2026-08-21",
+      "immutable_identity": "agentos-idempotency-evidence-contract-v1",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Project-agnostic idempotency identity, duplicate detection, replay status, and bounded handoff evidence."
+    },
+    {
       "source_id": "source.atomic-specialization-law",
       "title": "Atomic Specialization Law",
       "publisher": "AgentOS Portable Kernel",
@@ -15,8 +28,21 @@
       "content_sha256": null,
       "authority_class": "AGENTOS_PORTABLE",
       "scope": "Router-only classification, smallest-sufficient atomic composition, and no silent scope expansion."
+    },
+    {
+      "source_id": "source.owasp-asvs-5-0-0",
+      "title": "Application Security Verification Standard",
+      "publisher": "OWASP Foundation",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "version": "5.0.0",
+      "effective_date": "2025-05-30",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "owasp-asvs-5.0.0-release-20250530",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Version-bound application security verification requirements used only as an immutable dependency."
     }
   ],
   "freshness_rule": "DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version/effective/publication status; refresh or escalate.",
-  "manifest_sha256": "653dc88da8d96f659441d77d97a40599b4367fa9e203c5fb7eb279c3a03d8fc6"
+  "manifest_sha256": "1e324757f09ed89eb4b327acff34dc2f1c6eb72a4a0ede81969a6cc8ccd8b066"
 }

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/idempotency-gate-execution.v1.json",
+  "title": "Idempotency deterministic gate execution manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "evaluator_entrypoint", "ordered_gate_ids", "executions"],
+  "properties": {
+    "schema": {"const": "agentos.idempotency_gate_execution.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.security.idempotency"},
+    "evaluator_entrypoint": {"const": "control/idempotency-package-evaluator.mjs#evaluateIdempotencyPackage"},
+    "ordered_gate_ids": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "string"}},
+    "executions": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate_id", "fixture_class", "expected"],
+        "properties": {
+          "gate_id": {"type": "string"},
+          "fixture_class": {"type": "string"},
+          "adversarial_flags": {"type": "object", "additionalProperties": {"type": "boolean"}},
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["disposition", "route", "error_code"],
+            "properties": {
+              "disposition": {"enum": ["DENY", "ROUTE"]},
+              "route": {"type": "string"},
+              "error_code": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

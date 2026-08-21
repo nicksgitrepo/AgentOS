@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/idempotency-boundary-result.v1.json",
+  "title": "Project-agnostic Idempotency specialist typed boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "analysis_allowed", "routing_allowed", "acceptance_allowed", "authorization_decision_allowed", "policy_mutation_allowed", "submission_mutation_allowed", "replay_mutation_allowed", "credential_issue_allowed", "memory_write_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.idempotency_boundary_result.v1"}, "version": {"const": 1},
+    "disposition": {"enum": ["DENY", "ROUTE"]}, "route": {"type": "string"},
+    "analysis_allowed": {"type": "boolean"}, "routing_allowed": {"type": "boolean"}, "acceptance_allowed": {"const": false},
+    "authorization_decision_allowed": {"const": false}, "policy_mutation_allowed": {"const": false}, "submission_mutation_allowed": {"const": false},
+    "replay_mutation_allowed": {"const": false}, "credential_issue_allowed": {"const": false}, "memory_write_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false, "required": ["idempotency_record_reads", "idempotency_store_reads", "source_reads", "concurrency_checks", "duplicate_decisions", "submission_writes", "replay_mutations", "memory_writes", "acceptance_calls", "credential_accesses", "state_changes"], "properties": {"idempotency_record_reads": {"const": 0}, "idempotency_store_reads": {"const": 0}, "source_reads": {"const": 0}, "concurrency_checks": {"const": 0}, "duplicate_decisions": {"const": 0}, "submission_writes": {"const": 0}, "replay_mutations": {"const": 0}, "memory_writes": {"const": 0}, "acceptance_calls": {"const": 0}, "credential_accesses": {"const": 0}, "state_changes": {"const": 0}}},
+    "error_code": {"type": "string"}, "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selected_specialist": {"const": "specialist.security.idempotency"}, "handoff": {"type": "object", "additionalProperties": false, "required": ["status", "next_action", "execution_instruction"], "properties": {"status": {"const": "WAITING_WITH_RECEIPT"}, "next_action": {"type": "string"}, "execution_instruction": {"const": false}}}
+  }
+}

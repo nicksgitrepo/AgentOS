@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.idempotency.v1",
   "block_id": "specialist.security.idempotency",
-  "candidate_digest": "1853c0f1cea9e03d21a1b5150e16aead9a60212edf801c8bcc33ff7d03dbcdcc",
+  "candidate_digest": "08e950578fbc97030b96ba5d46e487023e8bfd9e4d249f415cf8546f5885dc82",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [
