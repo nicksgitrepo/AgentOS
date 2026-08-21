@@ -25,11 +25,11 @@
         "source_status": "CURRENT_VERIFIED",
         "source_identity": "source.cloudflare-cache-rules",
         "source_version": "current",
-        "source_manifest_sha256": "ee21e1ca306bd9d79e006cacb29102f4e30f69d390e7ba8e8d0831f970a0f905",
-        "source_effective_date": null,
-        "source_retrieved_date": "2026-08-11",
+        "source_manifest_sha256": "4654a23f4432cfc8428aa5a0dbfc589ecffe7292135c2fa89d5aaf4bffd6bcf0",
+        "source_effective_date": "2026-08-14",
+        "source_retrieved_date": "2026-08-21",
         "candidate_status": "CURRENT_CANDIDATE",
-        "candidate_digest": "386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6",
+        "candidate_digest": "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1",
         "signal": "EDGE.CLOUDFLARE_CACHE",
         "signal_status": "BOUND",
         "context_status": "CLOUDFLARE_CACHE_CONTEXT",
@@ -69,7 +69,7 @@
           "TOOLS"
         ],
         "model_route_sha256": "97a653ec06f36e1dea28aed122b143e57b1ee49d63c299a98d64721c9aa77caf",
-        "context_receipt_sha256": "b1eb88f2da898c8787eb14ed20bfa382c32ac37372e6d74ea275a0f34708b9bb",
+        "context_receipt_sha256": "30a920b3ccdd2e799048f1ab427cf3c4f052f5b6f9f7b4eadeff2d8e33c6e498",
         "upstream_router_result_sha256": "e0bfa605625a80f6a6d60f38390cb7240b98899a34f3f8ef941a2e95613bff2a",
         "memory_binding": "TYPED_HANDOFF_ONLY",
         "project_data_present": false,
@@ -88,7 +88,8 @@
           "broad_claim": false,
           "cross_provider": false,
           "false_positive": true
-        }
+        },
+        "source_content_sha256": "7942c7cb3cab769003b9117b056cfd5d11802aa6e68ae2a2ca12c18f3e09f8e5"
       }
     },
     "expected_readback": {

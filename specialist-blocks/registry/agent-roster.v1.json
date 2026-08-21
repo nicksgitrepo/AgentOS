@@ -7128,107 +7128,107 @@
           {
             "fixture_id": "cloudflare-cache-authority_conflict",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/authority_conflict.json",
-            "file_sha256": "4d58aed60fb8f26d559c55dfa6c6a5fb45a7a19d05905332f3cb0cf92b849198",
+            "file_sha256": "e9752b61ecc9b29bf61dd43e253bda56006c072cf5e4a51029c423de223f1b13",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "ed3737d692f41dcacc657a0b7165eda2eb207de1b9445ac4b1c3af15250f846a",
+            "file_sha256": "91c76d62de80c0a993cf39d8739a6f81c4df7124a2dd664de33e1478bc6c486e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "c3b268d01b2e33c77fb2ec80415e40b91b8a8bcb39d0755663054643680575ac",
+            "file_sha256": "1ca0ce8ca9026015b4c83124a0dd45edd2c6c65ad5111d028917f3911e125905",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-data_limit",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/data_limit.json",
-            "file_sha256": "f2b9f35857ab225fe35c342c632aeeffee4f335a18aa2c7ab4893cfd74ee4506",
+            "file_sha256": "2c36134e11370f78561a9e031034d1195537b93289cb71c2ac8338039527fa9d",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "c694aa39ff11366ea0cdf85d6e3450ca01d3d58e6dd0f20523a505e72e3b94ff",
+            "file_sha256": "3cd4d9f398eed2a7f904debd2094c32afd0a8c2d32a3a0c9b7a25c11a6d758a4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-false_positive",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/false_positive.json",
-            "file_sha256": "350a94e642297c9de09ea7b79fe48cae1862089fe7248f07a403339fc7099f70",
+            "file_sha256": "6bd255a153cb9db839c8308d23efabf7207a2c27f6ae7ca2c7cc5bfe1dfdbcf3",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-handoff",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/handoff.json",
-            "file_sha256": "5934e3b2afd8e406662fffea30adf0cd5d9ba1e55f9edcb6ebe5852d5406ad03",
+            "file_sha256": "8aab0efe9c0e99da155c41776979c66b5769bb224f3045a7ace1783320414b13",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "cloudflare-cache-missing_context",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/missing_context.json",
-            "file_sha256": "8f3b7883b25156b19f53a94a313405482b312c20f07f531abf0fbd1ecb2c0b44",
+            "file_sha256": "46203e9295393b9a82de12d404ce565e6c3c414b5ffd9f35cba4e121f9576cbd",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-narrowness",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/narrowness.json",
-            "file_sha256": "bd7e85302bdc02418c9a03a867427452dd2c6f86e5aa1b8cff8c37cbaa349f2b",
+            "file_sha256": "a5e81e91f001d3ca1f5e28ded1eebf25f7981af516ab62c2ac8dfdb819519431",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "cloudflare-cache-router_self_accept",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/router_self_accept.json",
-            "file_sha256": "3db5dd0ce1c10d8650cad49156336e868d6e9fe00156d5fc40df5c39967a1292",
+            "file_sha256": "da93428294f31b60abe53643e22615417562d6a64f23e13e18280d3603a41fab",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-routing",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/routing.json",
-            "file_sha256": "d8a2dbb7ed8bcfcbd3be398f811c5680b19473caeb5f25838a8ac6af266936a6",
+            "file_sha256": "e5760c5819322e38e4d2ea3afc406c4b7354ac0597e8c2241e1ae65aae52829e",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "cloudflare-cache-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/silent_scope_expansion.json",
-            "file_sha256": "7f7ad47150c1f47ae0eed0cb5c0e4c13a418dd62650b9be03fb4fad4b4f98ada",
+            "file_sha256": "e59480290e205c871547bffc84fcde70ae527ad95a3d9a414439d440715a4bb2",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-stale_source",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/stale_source.json",
-            "file_sha256": "60255067a349f7b5c69c25bcbfa1f2eb114aea637b416fb61afd15c45f51ca7d",
+            "file_sha256": "409f2142745308140c1f342de1800af2a82eb58b54fd4e20e119945a0db0fb2f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-tool_limit",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/tool_limit.json",
-            "file_sha256": "dfc16e287a3e105b7ea50014820bbc522277600e742ddf45ae295357fae2d15e",
+            "file_sha256": "13d3780963f3ade77c31e873bd528c8cc67cdbd95b167c57d34accd20fc86661",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-umbrella_authority",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/umbrella_authority.json",
-            "file_sha256": "243474fa1dd8706f5ebd817c6a5af8e6f9412470ff22d9a7c966f2565f772ab2",
+            "file_sha256": "91a06f98314f03f1c9cbb546399b17f5d80be7b27991558435d414c8c6500ad6",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-unrelated_scope",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/unrelated_scope.json",
-            "file_sha256": "a4891dd77533279ea6e4d9f60cb55264c654251b78d762c337283ed7a07906b4",
+            "file_sha256": "b985a5d84a82188a0fc974b39b11f89efbb0f55d603e17eea09b80fff034a901",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "cloudflare-cache-unsafe_action",
             "path": "specialist-blocks/wave-02/cloudflare-cache/fixtures/unsafe_action.json",
-            "file_sha256": "fd52cb4cdba80627be2f75d3fe8a2440739c4ef2cf84b01484fe2dec1c619105",
+            "file_sha256": "a0b1c67edda8507f882ca555cf3407a19d86e5ec28b4d9c4ccfcbaee54506c19",
             "expected_outcome": "DENY"
           }
         ],
-        "inventory_sha256": "f26c41c9f1c1ef0e69163c6c4bd7700430fb020f67d1faf3c6fb4f1330681c6c"
+        "inventory_sha256": "69470f5bca412362f2996edc8b2b6ac252ee212979a4be848e3d66eacd96872d"
       },
       "required_evidence_handoff": {
         "evidence_fields": [
@@ -7238,16 +7238,16 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/cloudflare-cache/handoff.json",
-        "handoff_file_sha256": "1a863a13b029fc962b7d2ceaaac47bae4f6b836cdb133b6ce5f286eeb7aa59a5",
+        "handoff_file_sha256": "9f20849f3e14504da76896f87a608d814375350909034a08c7765e3e2a37f0a2",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.cloudflare-cache.v1",
-        "candidate_digest": "386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6",
+        "candidate_digest": "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1",
         "gate_execution_path": "specialist-blocks/wave-02/cloudflare-cache/gates/execution.json",
         "gate_execution_file_sha256": "9b05322de737ae408b6427dfc55f5425ce944ece487ec0d862ffb8a35735fa06",
-        "evaluation_file_sha256": "61711b0159e409d36ea5bef90f272efba35f441162bff21e8a6fd9735ffb5b08",
+        "evaluation_file_sha256": "d6abe63c58539f354bd705212d69e5c027c614facf9a6923470b00c03a604704",
         "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
         "model_route_sha256": "97a653ec06f36e1dea28aed122b143e57b1ee49d63c299a98d64721c9aa77caf",
-        "context_receipt_sha256": "b1eb88f2da898c8787eb14ed20bfa382c32ac37372e6d74ea275a0f34708b9bb",
+        "context_receipt_sha256": "30a920b3ccdd2e799048f1ab427cf3c4f052f5b6f9f7b4eadeff2d8e33c6e498",
         "memory_binding": "TYPED_HANDOFF_ONLY"
       },
       "lifecycle": {
@@ -7316,7 +7316,7 @@
         ],
         "rebuild_rule": "Invalidate dependent compiled contexts and seeds, preserve history, resolve current bytes, re-run deterministic gates, then obtain a new independent receipt before reuse."
       },
-      "candidate_digest": "386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6"
+      "candidate_digest": "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1"
     },
     {
       "stable_agent_id": "AGENT.PLATFORM_CLOUDFLARE_DNS",
@@ -40440,5 +40440,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "f4f88c80ba08c8b83f77aa48172ee1e1819b85625997d20f8424f4e99dfa8fb6"
+  "roster_sha256": "4b039d9075d79cf3321ba787c98e51f96baece8a53f95ad9cd83e894c35d438b"
 }

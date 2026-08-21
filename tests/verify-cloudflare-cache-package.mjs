@@ -18,6 +18,9 @@ assert.equal(evaluation.package_block_sha256, authority.block_sha256);
 assert.equal(evaluation.gate_execution.length, 12);
 assert.equal(evaluation.fixture_results.length, 17);
 assert.equal(evaluation.mutation_sensitivity.mutation_detected, true);
+assert.equal(evaluation.mutation_sensitivity.status, "INTACT");
+assert.equal(evaluation.mutation_sensitivity.observed_disposition, "DENY");
+assert.equal(evaluation.mutation_sensitivity.mutation_rejected_by_independent_tripwire, true);
 assert.equal(evaluation.independent_signature_required, true);
 for (const item of [...evaluation.gate_execution, ...evaluation.fixture_results]) {
   for (const value of Object.values(item.side_effects ?? item.external_side_effects)) assert.equal(value, 0);
@@ -42,6 +45,8 @@ const notApplicable = evaluateCloudflareCacheBoundary({...routeInput, request_ki
 assert.deepEqual({disposition: notApplicable.disposition, route: notApplicable.route, error_code: notApplicable.error_code}, {disposition: "DENY", route: "NO_CLOUDFLARE_CACHE_SCOPE", error_code: "CLOUDFLARE_CACHE_SCOPE_NOT_APPLICABLE"});
 const protectedInput = {...routeInput, evidence: {...routeInput.evidence, project_data_present: true}};
 assert.equal(evaluateCloudflareCacheBoundary(protectedInput).error_code, "CLOUDFLARE_CACHE_PROTECTED_DATA_FORBIDDEN");
+const mutatedScopeInput = {...routeInput, evidence: {...routeInput.evidence, adversarial_flags: {...routeInput.evidence.adversarial_flags, scope_expanded: true}}};
+assert.deepEqual({disposition: evaluateCloudflareCacheBoundary(mutatedScopeInput).disposition, error_code: evaluateCloudflareCacheBoundary(mutatedScopeInput).error_code}, {disposition: "DENY", error_code: "CLOUDFLARE_CACHE_SCOPE_EXPANSION_FORBIDDEN"});
 assert.throws(() => evaluateCloudflareCacheBoundary({...routeInput, evidence: {...routeInput.evidence, caller_pass: true}}), /unknown field/iu);
 
 console.log("PASS Cloudflare Cache Rules package: canonical authority, real 12-gate execution, 17 hostile vectors, model/context/source binding, zero side effects, and mutation proof");

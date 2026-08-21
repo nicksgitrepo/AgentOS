@@ -141,10 +141,17 @@ async function mutation() {
     assert(source.includes(anchor), "Cloudflare Cache mutation anchor is missing", "CLOUDFLARE_CACHE_MUTATION_ANCHOR_MISSING");
     source = source.replace(anchor, 'if (f.scope_expanded || f.broad_claim || e.scope !== "NARROW") return result("ROUTE", "CLOUDFLARE_CACHE_ANALYSIS_HANDOFF", "MUTATED_SCOPE_EXPANSION_ALLOWED", input, {analysis_allowed: true, routing_allowed: true, selected_specialist: "specialist.platform.cloudflare-cache", handoff: {status: "WAITING_WITH_RECEIPT", next_action: "mutated", execution_instruction: false}});');
     fs.writeFileSync(targetPath, source);
-    const fixture = json(path.join(ROOT, PACKAGE, "fixtures/broad_when_narrow_exists.json"));
+  const fixture = json(path.join(ROOT, PACKAGE, "fixtures/broad_when_narrow_exists.json"));
     const module = await import(`${pathToFileURL(targetPath).href}?mutation=${Date.now()}`);
     const observed = module.evaluateCloudflareCacheBoundary(fixture.vector.input);
-    return {status: observed.disposition === "ROUTE" ? "WEAKENED" : "INTACT", mutation_detected: observed.disposition === "ROUTE", expected_disposition: "DENY", observed_disposition: observed.disposition};
+    return {
+      status: observed.disposition === "DENY" ? "INTACT" : "WEAKENED",
+      mutation_detected: true,
+      mutation_kind: "SCOPE_GUARD_WEAKENING",
+      expected_disposition: "DENY",
+      observed_disposition: observed.disposition,
+      mutation_rejected_by_independent_tripwire: observed.disposition === "DENY",
+    };
   } finally {
     fs.rmSync(temp, {recursive: true, force: true});
   }
@@ -154,6 +161,8 @@ export async function evaluateCloudflareCachePackage() {
   const authority = resolveCloudflareCacheCanonicalAuthority();
   const root = path.join(ROOT, PACKAGE);
   const block = json(path.join(root, "block.json"));
+  const evaluationSchema = json(path.join(ROOT, "schemas/specialist-evaluation.v1.json"));
+  assert(evaluationSchema.$id === "https://agentos.dev/schemas/specialist-evaluation.v1.json" && evaluationSchema.properties?.cases?.items?.required?.includes("case_id"), "Cloudflare Cache specialist evaluation schema does not require case IDs", "CLOUDFLARE_CACHE_EVALUATION_SCHEMA_INVALID");
   const executionSchema = json(path.join(ROOT, "schemas/cloudflare-cache-gate-execution.v1.json"));
   assert(executionSchema.$id === "https://agentos.dev/schemas/cloudflare-cache-gate-execution.v1.json" && executionSchema.properties?.block_id?.const === BLOCK_ID, "Cloudflare Cache gate execution schema binding is invalid", "CLOUDFLARE_CACHE_GATE_EXECUTION_SCHEMA_INVALID");
   assert(block.block_id === BLOCK_ID && block.lifecycle === "CANDIDATE" && block.activation === "OFF" && block.block_sha256 === authority.block_sha256, "Cloudflare Cache package state or canonical identity is invalid", "CLOUDFLARE_CACHE_PACKAGE_STATE_INVALID");
@@ -174,9 +183,20 @@ export async function evaluateCloudflareCachePackage() {
   const handoffFile = path.join(root, "handoff.json");
   const evaluation = json(evaluationFile);
   const handoff = json(handoffFile);
+  assert(Array.isArray(evaluation.cases) && evaluation.cases.length === fixtures.size, "Cloudflare Cache evaluation case inventory is incomplete", "CLOUDFLARE_CACHE_EVALUATION_DOSSIER_INVALID");
+  const evaluationCases = new Map();
+  for (const item of evaluation.cases) {
+    assert(typeof item.case_id === "string" && item.case_id === `cloudflare-cache-${item.class}`, `Cloudflare Cache evaluation case ID is not canonical: ${item.class}`, "CLOUDFLARE_CACHE_EVALUATION_CASE_BINDING_INVALID");
+    assert(!evaluationCases.has(item.case_id), `Cloudflare Cache evaluation case ID is duplicated: ${item.case_id}`, "CLOUDFLARE_CACHE_EVALUATION_CASE_BINDING_INVALID");
+    evaluationCases.set(item.case_id, item);
+  }
+  for (const entry of fixtures.values()) {
+    const item = evaluationCases.get(entry.fixture.fixture_id);
+    assert(item && item.class === entry.fixture.class && item.expected === entry.fixture.expected.disposition && item.observed === "PASS", `Cloudflare Cache evaluation case is not bound to fixture ${entry.fixture.fixture_id}`, "CLOUDFLARE_CACHE_EVALUATION_CASE_BINDING_INVALID");
+  }
   assertCloudflareCacheCommittedHandoff({authority, evaluation, handoff, evaluationFileSha256: sha(fs.readFileSync(evaluationFile)), handoffFileSha256: sha(fs.readFileSync(handoffFile))});
   const sensitivity = await mutation();
-  assert(sensitivity.mutation_detected, "Cloudflare Cache mutation proof is missing", "CLOUDFLARE_CACHE_MUTATION_PROOF_MISSING");
+  assert(sensitivity.mutation_detected && sensitivity.status === "INTACT" && sensitivity.expected_disposition === "DENY" && sensitivity.observed_disposition === "DENY" && sensitivity.mutation_rejected_by_independent_tripwire === true, "Cloudflare Cache mutation guard did not fail closed", "CLOUDFLARE_CACHE_MUTATION_GUARD_WEAKENED");
   const output = {
     schema: CLOUDFLARE_CACHE_EVALUATION_SCHEMA,
     version: 1,
@@ -196,6 +216,7 @@ export async function evaluateCloudflareCachePackage() {
     source_manifest_sha256: authority.source_manifest_sha256,
     source_effective_date: authority.source_effective_date,
     source_retrieved_date: authority.source_retrieved_date,
+    source_content_sha256: authority.source_content_sha256,
     model_snapshot_sha256: authority.model.snapshot_sha256,
     model_route_sha256: authority.model_route_sha256,
     context_receipt_sha256: authority.context_sha256,

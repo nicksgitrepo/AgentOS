@@ -24,6 +24,9 @@ export const CLOUDFLARE_CACHE_STANDARD_BLOCK_ID = "specialist.standard.cloudflar
 export const CLOUDFLARE_CACHE_STANDARD_ID = "source.cloudflare-cache-rules";
 export const CLOUDFLARE_CACHE_SOURCE_ID = "source.cloudflare-cache-rules";
 export const CLOUDFLARE_CACHE_SOURCE_VERSION = "current";
+export const CLOUDFLARE_CACHE_SOURCE_EFFECTIVE_DATE = "2026-08-14";
+export const CLOUDFLARE_CACHE_SOURCE_RETRIEVED_DATE = "2026-08-21";
+export const CLOUDFLARE_CACHE_SOURCE_CONTENT_SHA256 = "7942c7cb3cab769003b9117b056cfd5d11802aa6e68ae2a2ca12c18f3e09f8e5";
 export const CLOUDFLARE_CACHE_CUSTODY_OWNER = CLOUDFLARE_CACHE_STABLE_AGENT_ID;
 export const CLOUDFLARE_CACHE_CUSTODY_REF = "opaque:CLOUDFLARE_CACHE.CUSTODY";
 export const CLOUDFLARE_CACHE_MODEL_TASK_CLASS = "NARROW_CODING";
@@ -40,14 +43,14 @@ export const CLOUDFLARE_CACHE_UPSTREAM_ROUTER_FILE_SHA256 = "1e7cbe3898ba80c6dbf
  * tolerated during local construction; a committed candidate must contain
  * real, non-placeholder digests in every slot. */
 export const CLOUDFLARE_CACHE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
-  block: "c7e9a4de344e5e175c8285d79f8ef9ffc14621c6651689873bed4c09ee20dd10",
-  block_semantic: "386617a5518625c226bd8b863163a2ab47fa7b33c14456aa13ca5f9d1ba6bab6",
-  source_lock: "11afefe45431fb128b0f38439d152bddd05513a96368aa09bac53afa124669c6",
+  block: "7f7b3e43907397a65bba7c87543f8dfa4ab03346ebc2789dad70155a0cb1f8c5",
+  block_semantic: "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1",
+  source_lock: "a525620abe848c564732983d38271edc2f0fd8139ad88bc586a14be690cd039b",
   gate_manifest: "d4c77fd720b8b5a1e593c9bb78b468811d1ee4fd8cfbbaad389dd914923894f9",
   gate_execution: "9b05322de737ae408b6427dfc55f5425ce944ece487ec0d862ffb8a35735fa06",
-  evaluation: "61711b0159e409d36ea5bef90f272efba35f441162bff21e8a6fd9735ffb5b08",
-  handoff: "1a863a13b029fc962b7d2ceaaac47bae4f6b836cdb133b6ce5f286eeb7aa59a5",
-  roster_file: "4149778d219e26e46ac4529af607136a7da5332cb0b0b2e9d708eb58b13b7219",
+  evaluation: "d6abe63c58539f354bd705212d69e5c027c614facf9a6923470b00c03a604704",
+  handoff: "9f20849f3e14504da76896f87a608d814375350909034a08c7765e3e2a37f0a2",
+  roster_file: "ec41aae8e8b69b2749ffee65b701f9b35e6d0cb75d980447e4319159f8823699",
 });
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -147,7 +150,7 @@ function freshDate(value, label, nowMs, maxAgeDays = 31) {
 
 function checkBlock(artifact, expectedId, label) {
   const block = artifact.value;
-  assert(block.block_id === expectedId && block.schema === "agentos.specialist_block.v1" && block.lifecycle === "CANDIDATE" && block.activation === "OFF", `${label} identity or inert lifecycle differs`, "CLOUDFLARE_CACHE_CANONICAL_BINDING_INVALID");
+  assert(block.block_id === expectedId && block.schema === "agentos.specialist_block.v1" && (expectedId !== CLOUDFLARE_CACHE_BLOCK_ID || block.family === "platform") && block.lifecycle === "CANDIDATE" && block.activation === "OFF", `${label} identity, taxonomy, or inert lifecycle differs`, "CLOUDFLARE_CACHE_CANONICAL_BINDING_INVALID");
   sha(block.block_sha256, `${label} digest`);
   assert(block.block_sha256 === canonicalDigest(body(block, "block_sha256")), `${label} digest does not match its bytes`, "CLOUDFLARE_CACHE_CANONICAL_DIGEST_INVALID");
   return block;
@@ -251,7 +254,8 @@ export function resolveCloudflareCacheCanonicalAuthority() {
   const cloudflare = source.sources?.find((candidate) => candidate.source_id === CLOUDFLARE_CACHE_SOURCE_ID);
   assert(source.sources?.length === 2 && atomic && cloudflare, "Cloudflare Cache source lock coverage is incomplete", "CLOUDFLARE_CACHE_SOURCE_LOCK_INVALID");
   assert(atomic.immutable_identity === "agentos-atomic-specialization-law-v1" && atomic.authority_class === "AGENTOS_PORTABLE" && atomic.version === "1", "Atomic specialization source is not canonical", "CLOUDFLARE_CACHE_SOURCE_IDENTITY_INVALID");
-  assert(cloudflare.title === "Cloudflare Cache Rules" && cloudflare.publisher === "Cloudflare" && cloudflare.url === "https://developers.cloudflare.com/cache/how-to/cache-rules/" && cloudflare.version === CLOUDFLARE_CACHE_SOURCE_VERSION && cloudflare.immutable_identity === "cloudflare-cache-rules-current-2026-08-11" && cloudflare.authority_class === "PRIMARY_DESCRIPTIVE" && cloudflare.effective_date === null, "Cloudflare Cache primary source identity is not canonical", "CLOUDFLARE_CACHE_SOURCE_IDENTITY_INVALID");
+  assert(cloudflare.title === "Cloudflare Cache Rules" && cloudflare.publisher === "Cloudflare" && cloudflare.url === "https://developers.cloudflare.com/cache/how-to/cache-rules/" && cloudflare.version === CLOUDFLARE_CACHE_SOURCE_VERSION && cloudflare.immutable_identity === `cloudflare-cache-rules-current-${CLOUDFLARE_CACHE_SOURCE_EFFECTIVE_DATE}` && cloudflare.authority_class === "PRIMARY_DESCRIPTIVE" && cloudflare.effective_date === CLOUDFLARE_CACHE_SOURCE_EFFECTIVE_DATE && cloudflare.retrieved_date === CLOUDFLARE_CACHE_SOURCE_RETRIEVED_DATE && cloudflare.content_sha256 === CLOUDFLARE_CACHE_SOURCE_CONTENT_SHA256, "Cloudflare Cache primary source identity is not canonical", "CLOUDFLARE_CACHE_SOURCE_IDENTITY_INVALID");
+  sha(cloudflare.content_sha256, "Cloudflare Cache primary source content");
   freshDate(atomic.retrieved_date, "Atomic source retrieved date", nowMs);
   freshDate(cloudflare.retrieved_date, "Cloudflare Cache source retrieved date", nowMs);
 
@@ -318,6 +322,9 @@ export function resolveCloudflareCacheCanonicalAuthority() {
     source_manifest_sha256: source.manifest_sha256,
     source_identity: CLOUDFLARE_CACHE_SOURCE_ID,
     source_version: CLOUDFLARE_CACHE_SOURCE_VERSION,
+    source_effective_date: cloudflare.effective_date,
+    source_retrieved_date: cloudflare.retrieved_date,
+    source_content_sha256: cloudflare.content_sha256,
     standard_block_sha256: standard.block_sha256,
     standard_source_manifest_sha256: standardSources.manifest_sha256,
     authority_scope: "CLOUDFLARE_CACHE_RULES",
@@ -335,7 +342,7 @@ export function resolveCloudflareCacheCanonicalAuthority() {
   });
   for (const fixture of fixtures) {
     const evidence = fixture.input.evidence;
-    assert(evidence.candidate_digest === block.block_sha256 && evidence.source_manifest_sha256 === source.manifest_sha256 && evidence.standard_block_sha256 === standard.block_sha256 && evidence.standard_source_manifest_sha256 === standardSources.manifest_sha256 && evidence.model_snapshot_sha256 === model.snapshot_sha256 && evidence.model_route_sha256 === modelRouteSha256 && evidence.context_receipt_sha256 === contextSha256 && evidence.upstream_router_result_sha256 === routerResult.result_sha256, `Cloudflare Cache fixture ${fixture.class} is not bound to current authority`, "CLOUDFLARE_CACHE_FIXTURE_CONTEXT_INVALID");
+    assert(evidence.candidate_digest === block.block_sha256 && evidence.source_manifest_sha256 === source.manifest_sha256 && evidence.source_effective_date === cloudflare.effective_date && evidence.source_retrieved_date === cloudflare.retrieved_date && evidence.source_content_sha256 === cloudflare.content_sha256 && evidence.standard_block_sha256 === standard.block_sha256 && evidence.standard_source_manifest_sha256 === standardSources.manifest_sha256 && evidence.model_snapshot_sha256 === model.snapshot_sha256 && evidence.model_route_sha256 === modelRouteSha256 && evidence.context_receipt_sha256 === contextSha256 && evidence.upstream_router_result_sha256 === routerResult.result_sha256, `Cloudflare Cache fixture ${fixture.class} is not bound to current authority`, "CLOUDFLARE_CACHE_FIXTURE_CONTEXT_INVALID");
   }
 
   return Object.freeze({
@@ -349,6 +356,7 @@ export function resolveCloudflareCacheCanonicalAuthority() {
     source_version: CLOUDFLARE_CACHE_SOURCE_VERSION,
     source_effective_date: cloudflare.effective_date,
     source_retrieved_date: cloudflare.retrieved_date,
+    source_content_sha256: cloudflare.content_sha256,
     standard_block_sha256: standard.block_sha256,
     standard_source_manifest_sha256: standardSources.manifest_sha256,
     gate_manifest_sha256: manifest.manifest_sha256,
@@ -374,7 +382,7 @@ export function assertCloudflareCacheCanonicalEvidence(evidence, authority = res
   assert(evidence.candidate_digest === authority.block_sha256 && evidence.candidate_status === "CURRENT_CANDIDATE", "Cloudflare Cache candidate is not the canonical inert candidate", "CLOUDFLARE_CACHE_CANDIDATE_BINDING_INVALID");
   assert(evidence.authority_status === "CURRENT" && evidence.custody_status === "BOUND" && evidence.custody_owner === authority.custody_owner && evidence.custody_ref === authority.custody_ref, "Cloudflare Cache authority custody is not canonical", "CLOUDFLARE_CACHE_CUSTODY_BINDING_INVALID");
   assert(evidence.authority_scope === "CLOUDFLARE_CACHE_RULES" && evidence.scope === "NARROW", "Cloudflare Cache authority scope is not canonical", "CLOUDFLARE_CACHE_AUTHORITY_SCOPE_INVALID");
-  assert(evidence.source_status === "CURRENT_VERIFIED" && evidence.source_manifest_sha256 === authority.source_manifest_sha256 && evidence.source_identity === authority.source_identity && evidence.source_version === authority.source_version && evidence.source_effective_date === authority.source_effective_date && evidence.source_retrieved_date === authority.source_retrieved_date, "Cloudflare Cache source evidence is not current and exact", "CLOUDFLARE_CACHE_SOURCE_IDENTITY_INVALID");
+  assert(evidence.source_status === "CURRENT_VERIFIED" && evidence.source_manifest_sha256 === authority.source_manifest_sha256 && evidence.source_identity === authority.source_identity && evidence.source_version === authority.source_version && evidence.source_effective_date === authority.source_effective_date && evidence.source_retrieved_date === authority.source_retrieved_date && evidence.source_content_sha256 === authority.source_content_sha256, "Cloudflare Cache source evidence is not current and exact", "CLOUDFLARE_CACHE_SOURCE_IDENTITY_INVALID");
   assert(evidence.standard_id === CLOUDFLARE_CACHE_SOURCE_ID && evidence.standard_version === CLOUDFLARE_CACHE_SOURCE_VERSION && evidence.standard_block_sha256 === authority.standard_block_sha256 && evidence.standard_source_manifest_sha256 === authority.standard_source_manifest_sha256, "Cloudflare Cache standard evidence is not canonical", "CLOUDFLARE_CACHE_STANDARD_BINDING_INVALID");
   assert(evidence.provider_identity === "CLOUDFLARE" && evidence.provider_version === "CURRENT" && evidence.signal === "EDGE.CLOUDFLARE_CACHE" && evidence.signal_status === "BOUND", "Cloudflare Cache provider signal is not canonical", "CLOUDFLARE_CACHE_PROVIDER_BINDING_INVALID");
   assert(evidence.cache_rule_status === "BOUND" && evidence.cache_scope_status === "BOUND", "Cloudflare Cache context scope is not bound", "CLOUDFLARE_CACHE_CONTEXT_BINDING_INVALID");
@@ -394,7 +402,7 @@ export function assertCloudflareCacheCommittedHandoff({authority = resolveCloudf
   assert(evaluation.candidate_digest === authority.block_sha256 && evaluation.model_requirement === "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE" && evaluation.results?.passed === FIXTURE_CLASSES.length && evaluation.results?.failed === 0 && evaluation.results?.pending === 0 && evaluation.disposition === "STATIC_PASS_REVIEW_REQUIRED", "Cloudflare Cache evaluation dossier is not current", "CLOUDFLARE_CACHE_EVALUATION_DOSSIER_INVALID");
   const expectedClasses = new Set(authority.fixtures.map((fixture) => fixture.class));
   assert(Array.isArray(evaluation.cases) && evaluation.cases.length === FIXTURE_CLASSES.length && new Set(evaluation.cases.map((item) => item.class)).size === FIXTURE_CLASSES.length, "Cloudflare Cache evaluation coverage is incomplete", "CLOUDFLARE_CACHE_EVALUATION_DOSSIER_INVALID");
-  for (const item of evaluation.cases) assert(expectedClasses.has(item.class) && item.observed === "PASS" && ["DENY", "ROUTE"].includes(item.expected), `Cloudflare Cache evaluation case ${item.class} is not a current PASS`, "CLOUDFLARE_CACHE_EVALUATION_DOSSIER_INVALID");
+  for (const item of evaluation.cases) assert(expectedClasses.has(item.class) && item.case_id === `cloudflare-cache-${item.class}` && item.observed === "PASS" && ["DENY", "ROUTE"].includes(item.expected), `Cloudflare Cache evaluation case ${item.class} is not a current PASS or exact fixture binding`, "CLOUDFLARE_CACHE_EVALUATION_DOSSIER_INVALID");
   exactKeys(handoff, ["schema", "version", "handoff_id", "block_id", "disposition", "candidate_digest", "source_commit", "source_tree", "changed_paths", "proof", "residuals", "next_action", "authority"], "Cloudflare Cache committed handoff");
   assert(handoff.schema === "agentos.specialist_handoff.v1" && handoff.version === 1 && handoff.handoff_id === "specialist-handoff.cloudflare-cache.v1" && handoff.block_id === CLOUDFLARE_CACHE_BLOCK_ID && handoff.disposition === "WAITING_WITH_RECEIPT" && handoff.candidate_digest === authority.block_sha256 && handoff.authority === "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION", "Cloudflare Cache handoff identity differs", "CLOUDFLARE_CACHE_HANDOFF_INVALID");
   for (const proof of [
