@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.idempotency",
-  "class": "data_limit",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.idempotency","class":"data_limit","fixture_id":"idempotency-data_limit","hostile":true,"expected":{"disposition":"ROUTE","route":"IDEMPOTENCY_ANALYSIS_HANDOFF","error_code":"IDEMPOTENCY_ANALYSIS_READY"},"vector":{"entrypoint":"control/idempotency-boundary-gate.mjs#evaluateIdempotencyBoundary","adversarial_flags":{}}}

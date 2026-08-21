@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.idempotency",
-  "class": "authority_conflict",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.idempotency","class":"authority_conflict","fixture_id":"idempotency-authority_conflict","hostile":true,"expected":{"disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"IDEMPOTENCY_AUTHORITY_CONFLICT"},"vector":{"entrypoint":"control/idempotency-boundary-gate.mjs#evaluateIdempotencyBoundary","adversarial_flags":{"authority_conflict":true}}}

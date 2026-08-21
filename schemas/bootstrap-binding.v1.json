@@ -618,6 +618,30 @@
       "path": "tests/verify-double-submission-boundary.mjs",
       "sha256": "146af657df1c9a0d5ed3004311a0c033537c340319f5c994722b33bdfa30edb9"
     },
+    "idempotency_boundary_gate": {
+      "path": "control/idempotency-boundary-gate.mjs",
+      "sha256": "0ea1bcd9eb36d847c35c01551fe6ab99ed4e79d45e6af98da87223dda70cabb2"
+    },
+    "idempotency_boundary_input_contract": {
+      "path": "schemas/idempotency-boundary-input.v1.json",
+      "sha256": "a9a38fc361c0c2d16178e5fe2de6664afaa9f6db512eb2d6792041c3be432264"
+    },
+    "idempotency_boundary_result_contract": {
+      "path": "schemas/idempotency-boundary-result.v1.json",
+      "sha256": "fd56b31b3a5a0142d3e9597836ee0c3b1117c7b2d6c7f43de75f8f63e4d4366d"
+    },
+    "idempotency_package_operational_evaluation_contract": {
+      "path": "schemas/idempotency-package-operational-evaluation.v1.json",
+      "sha256": "e9b3e9e765b79b39373ff970fedb85d46fc3bf6db33abad22395a7679a197f54"
+    },
+    "idempotency_package_operational_evaluator": {
+      "path": "control/idempotency-package-evaluator.mjs",
+      "sha256": "810c68dd0fc5c6f5e74ad5ec297363d157f62a964574e360e4dd819df7dfd4bb"
+    },
+    "idempotency_boundary_verifier": {
+      "path": "tests/verify-idempotency-boundary.mjs",
+      "sha256": "8053647c2927f878e7edba3913ea96f7edf8148cd0683128a698f653748c2df5"
+    },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
       "sha256": "8078bb5030cc7f3e792dd41c028d882ee3bfb968fb70ee2df2c16e20505977b1"
@@ -3809,7 +3833,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "cf81ea3c020a60501899faa19c10a1389a86b9f441a21dd8e2dc6b46295d689e"
+      "sha256": "ae17079145e65258f8a0c5e4d19b1e545370b7936eba964ca1aca46031739830"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",

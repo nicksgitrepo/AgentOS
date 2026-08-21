@@ -14587,105 +14587,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.idempotency.AUTHORITY_CONFLICT",
+            "fixture_id": "idempotency-authority_conflict",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/authority_conflict.json",
-            "file_sha256": "dc1bd09a923d220353a3fefddaa4fac56b6a249de34b8ce695de2a9909d5f40b",
+            "file_sha256": "ff1aad1e83ff5deef4a0c4c2a8ffb712179a48f4bba27f5dce7f2a7ae3326c84",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "idempotency-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "0d41d5e01dda539c827f5fc583c1baa086a32231433caf55b7fd4ce87f7a1e79",
+            "file_sha256": "5ec4740272711ded73196302331d99bdd6bea0ba38b96d5d1e5808e59bc83a2a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "idempotency-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "a993f788784d8f2b9290c0637c5c09aa64033979a7e6b7cf4bebaecc151d2f17",
+            "file_sha256": "1dbd29541dca06a496f0d9efa04878d76d93cdf287d588ad79962b991af3969d",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.DATA_LIMIT",
+            "fixture_id": "idempotency-data_limit",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/data_limit.json",
-            "file_sha256": "8c53bcb999f4840a1b0e786801063b0c6d7510f39e5f37016bf63803f3bae5d7",
+            "file_sha256": "1f2c6310e6e0824429004c89555d1be1cc220d3560680ca60adea5fe1ceb4fe2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.idempotency.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "idempotency-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "861bc5a231747163ef08f8a3447978d9ac1299d12331716acb7ed41bb828a9c7",
+            "file_sha256": "d1ac0d56c15b735cfc88fead392d25745dfa2ec7ba6b0e675f2ff89e10732694",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.FALSE_POSITIVE",
+            "fixture_id": "idempotency-false_positive",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/false_positive.json",
-            "file_sha256": "78dc1b7f24ba6922d4c36ae658e308e8679c80a1873b32c76d0c4a267a75cc67",
+            "file_sha256": "c908afe015a43138a7745278b3bd68f5b85738cec422cda08f85cdf4413278f1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.HANDOFF",
+            "fixture_id": "idempotency-handoff",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/handoff.json",
-            "file_sha256": "d3589c1dfecfe2432b823774131457aae5f3266770035c5eccb1f848518fab70",
+            "file_sha256": "66460cbd7ceeb163bb3a95ee7488ef2ad4567814fd0277265bfb3748605568cc",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.idempotency.MISSING_CONTEXT",
+            "fixture_id": "idempotency-missing_context",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/missing_context.json",
-            "file_sha256": "0c4057a17522bae315630ff95f1746c46c1f85055def3f8419ca368a07900574",
+            "file_sha256": "ac5c429e315a061f86f099b571d70155e1b60bfcaf6589dd03427462536b6cd4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.NARROWNESS",
+            "fixture_id": "idempotency-narrowness",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/narrowness.json",
-            "file_sha256": "8a31f77b88d19a59b2ca2673284ce65f8466d55857a35345892b09f7d662d1fb",
+            "file_sha256": "49790e6ee81258c9713300f9cffeb549250c26121c5c4e0562a69acfc6050080",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.idempotency.ROUTER_SELF_ACCEPT",
+            "fixture_id": "idempotency-router_self_accept",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/router_self_accept.json",
-            "file_sha256": "523757dac7494d3bc3615c21e6f72fdbee5239cfdb937a8294932a7915c93a61",
+            "file_sha256": "592cf165b085ab4f2a9e6eab5da9ef942662640d836eaca69f8ec3bae1765c3e",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.ROUTING",
+            "fixture_id": "idempotency-routing",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/routing.json",
-            "file_sha256": "148eea2e9402fb048e7fa96478587bf6e11c187c4b286eeb579b82925eb0d8e0",
+            "file_sha256": "4d897a50133806a9270b57219edb2ddb65917770f7bab131ec34e4e03c2436a2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.idempotency.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "idempotency-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/silent_scope_expansion.json",
-            "file_sha256": "b8fd67e1c3d22cd7df279b88c3940b3962809ba76d5b07c75ecfcdac56c187b1",
+            "file_sha256": "f186cbb31c2d99cdef2fb814d1e1f9b7878b1ee03e88033cb8b78d5494113d7d",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.STALE_SOURCE",
+            "fixture_id": "idempotency-stale_source",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/stale_source.json",
-            "file_sha256": "9c3ae0e7538a06cf4bea6a65fcb6909659c6fc71fda6e83cddd206a5e5834cec",
+            "file_sha256": "e141628836fa5e77dc4fa212cbfb04de44d9b2a96385a68d0e9967020dfb5af6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.TOOL_LIMIT",
+            "fixture_id": "idempotency-tool_limit",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/tool_limit.json",
-            "file_sha256": "b51fe5c732fb51ad343dff6e415fba67d3acde086e27b201646d9f59ee762aec",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "313cc169447160c7cc799758189b62910ae47451ea6b03c513c83b4dbfad746c",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.UMBRELLA_AUTHORITY",
+            "fixture_id": "idempotency-umbrella_authority",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/umbrella_authority.json",
-            "file_sha256": "324279e3d2f445134f1749804292f5b3afb0dc9d0ceb79370b71510de1362d1d",
+            "file_sha256": "51293c05d66bd9af7bfb726f830514a4cbae137aec32e81cafb14143d2905cb3",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.UNRELATED_SCOPE",
+            "fixture_id": "idempotency-unrelated_scope",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/unrelated_scope.json",
-            "file_sha256": "94eab0907c5c91a14daf935e5ab79838897ea44d0f3d8718e75a2c6420108e7a",
+            "file_sha256": "174efe3b22002dfd101756dc9d137f962741f99dace7cd7449f23d4107aca6a8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.idempotency.UNSAFE_ACTION",
+            "fixture_id": "idempotency-unsafe_action",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/unsafe_action.json",
-            "file_sha256": "274be1c9222b9229f979b8c9432c23f9f6df73d7c4519dcf2f6a645cb5b3b972",
+            "file_sha256": "8a5eea1de9ce5ef34bd2732a697a111eb4d69c2d250f5805b2f85159bc1bb992",
             "expected_outcome": "DENY"
           }
         ]
@@ -40548,5 +40548,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "747cedc28e6c5e30d66a1d4cdee508b00c4b5ce5314e9ff124311dedc9ea892b"
+  "roster_sha256": "23e2caf585d567a20cc3e61b17df02911e65c39780c7862c9ac870ffadc41bb1"
 }

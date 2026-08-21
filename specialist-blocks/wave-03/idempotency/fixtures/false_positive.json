@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.idempotency",
-  "class": "false_positive",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.idempotency","class":"false_positive","fixture_id":"idempotency-false_positive","hostile":true,"expected":{"disposition":"DENY","route":"TYPED_EVIDENCE_REQUIRED","error_code":"IDEMPOTENCY_FINDING_UNSUPPORTED"},"vector":{"entrypoint":"control/idempotency-boundary-gate.mjs#evaluateIdempotencyBoundary","adversarial_flags":{"false_positive":true}}}

@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.idempotency",
-  "class": "missing_context",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.idempotency","class":"missing_context","fixture_id":"idempotency-missing_context","hostile":true,"expected":{"disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"IDEMPOTENCY_CONTEXT_INCOMPLETE"},"vector":{"entrypoint":"control/idempotency-boundary-gate.mjs#evaluateIdempotencyBoundary","adversarial_flags":{"missing_context":true}}}

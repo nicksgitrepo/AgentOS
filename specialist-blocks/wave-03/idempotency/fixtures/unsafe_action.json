@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.security.idempotency",
-  "class": "unsafe_action",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.security.idempotency","class":"unsafe_action","fixture_id":"idempotency-unsafe_action","hostile":true,"expected":{"disposition":"DENY","route":"NO_IDEMPOTENCY_SIDE_EFFECT","error_code":"IDEMPOTENCY_OPERATION_FORBIDDEN"},"vector":{"entrypoint":"control/idempotency-boundary-gate.mjs#evaluateIdempotencyBoundary","adversarial_flags":{"unsafe_action":true}}}
