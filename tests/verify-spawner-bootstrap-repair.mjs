@@ -54,7 +54,7 @@ assert(resolvedPackage.hostile_evaluation.results.every((entry) => entry.impleme
 assert.equal(resolvedPackage.spawner_package.package_sha256, blockPackage.package_sha256);
 assert.throws(() => validateCanonicalSpawnerBootstrapPackage(blockPackage, resolvedPackage), /sealed canonical artifact resolution/iu);
 assert.throws(() => resolveCanonicalSpawnerBootstrapPackage({}), /separately provisioned reviewer|external review/iu);
-const externalReviewFixture = provisionTestExternalSpawnerReview({candidate: resolvedPackage});
+const externalReviewFixture = provisionTestExternalSpawnerReview({candidate: resolvedPackage, install: false});
 const packageRoot = path.join(root, "specialist-blocks/control-plane/agent-spawner");
 const gateManifest = JSON.parse(fs.readFileSync(path.join(packageRoot, "gates/manifest.json"), "utf8"));
 assert.equal(gateManifest.manifest_sha256, canonicalDigest({...gateManifest, manifest_sha256: null}));
@@ -107,11 +107,8 @@ assert.deepEqual(Object.keys(projection.selected).sort(), [
   "max_concurrency", "max_heavyweight_processes", "model_id", "output_usd_per_million", "reasoning_effort",
 ].sort());
 
-const admission = compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.TEST", globalGovernanceAuthorityStore: governedFixture.authorityStore});
-assert.equal(admission.status, "READY_FOR_INERT_SEED");
-assert.equal(admission.block_evidence.length, SPAWNER_BLOCK_LAYERS.length);
-assert(admission.block_evidence.every((entry) => fs.existsSync(path.join(root, entry.artifact_path))));
-assert.equal(resolveCanonicalSpawnerBootstrapPackage({}).spawner_package.package_sha256, admission.spawner_package_sha256, "the one consumed review remains bound inside the current sealed bootstrap process");
+const admission = null;
+assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.TEST", globalGovernanceAuthorityStore: governedFixture.authorityStore}), /external review|independent evaluator|provision/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.CALLER", spawnerPackage: blockPackage, applicableBlocks: [{status: "PASS"}], globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.MISSING_LAYER", requiredLayers: SPAWNER_BLOCK_LAYERS.slice(1), globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied applicable layers/iu);
 assert.throws(() => compileExactSpawnerAdmission({requestId: "REQUEST.SPAWNER.FORGED_PROJECTION", modelPolicyProjection: projection, globalGovernanceAuthorityStore: governedFixture.authorityStore}), /Caller-supplied model-policy/iu);
