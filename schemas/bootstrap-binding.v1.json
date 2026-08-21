@@ -4901,7 +4901,7 @@
     },
     "repair_external_review_controller": {
       "path": "control/repair-external-review-store.mjs",
-      "sha256": "7f602824ef561a7d8812d5e309b67295919999280984958a24a6e18342bf81c2"
+      "sha256": "977ebd624f756766a68634f94048275d7de458ff2ae766a8f85a3888d99c93ef"
     },
     "repair_external_review_contract": {
       "path": "schemas/repair-external-review.v1.json",
@@ -4929,7 +4929,7 @@
     },
     "repair_external_review_verifier": {
       "path": "tests/verify-repair-external-review-store.mjs",
-      "sha256": "30aac783f6f348b6f490759db16fe54523bf7c5a93a52e53060ee77d3d96edd3"
+      "sha256": "d077497c3cb6c94b81086d007077583c9c7656552b3c0b924e3215b40521fce3"
     },
     "repair_campaign_boundary_verifier": {
       "path": "tests/verify-repair-campaign-boundary.mjs",

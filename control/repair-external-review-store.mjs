@@ -71,6 +71,23 @@ function readJson(root, relative, label) {
   return Object.freeze({value, file_sha256: fileSha(fs.readFileSync(target)), target});
 }
 
+function readReviewByReceiptRef(root, receiptRef) {
+  const suffix = receiptRef.slice("ref:temporary-role-review/".length);
+  const direct = `review-${suffix}.v1.json`;
+  if (fs.existsSync(path.resolve(root, direct))) return readJson(root, direct, "Repair external review receipt");
+  const candidates = fs.readdirSync(root).filter((name) => /^review-[0-9a-f]{64}\.v1\.json$/u.test(name)).sort(compareUtf8);
+  const matches = [];
+  for (const name of candidates) {
+    const artifact = readJson(root, name, "Repair external review receipt");
+    if (artifact.value?.receipt_ref === receiptRef) matches.push(artifact);
+  }
+  assert(matches.length === 1, matches.length === 0 ? "Repair external review receipt is missing" : "Repair external review receipt reference is ambiguous", "REPAIR_EXTERNAL_REVIEW_PROVISIONING_REQUIRED");
+  const artifact = matches[0];
+  const fileName = path.basename(artifact.target);
+  assert(fileName === `review-${artifact.value.review_sha256}.v1.json`, "Repair external review filename is not bound to its digest", "REPAIR_EXTERNAL_REVIEW_SCHEMA_INVALID");
+  return artifact;
+}
+
 function externalRoot(sealedAuthority, candidateCommit) {
   const repositoryRoot = sealedAuthorityRepositoryRoot(sealedAuthority);
   const common = safeRoot(git(repositoryRoot, ["rev-parse", "--path-format=absolute", "--git-common-dir"]));
@@ -140,7 +157,7 @@ function validateFixtureResults(review, candidate) {
 
 function loadReview(root, registry, admission, candidate, operationalContext, receiptRef) {
   assert(REF.test(receiptRef), "Repair review receipt reference is invalid");
-  const artifact = readJson(root, `review-${receiptRef.slice("ref:temporary-role-review/".length)}.v1.json`, "Repair external review receipt");
+  const artifact = readReviewByReceiptRef(root, receiptRef);
   const review = artifact.value;
   exact(review, ["schema", "version", "receipt_ref", "evaluator_id", "evaluator_admission_sha256", "authority_epoch", "role_id", "role_class", "candidate_commit", "candidate_tree", "candidate_root_sha256", "package_block_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "fixture_results", "operational_context_sha256", "model_snapshot_sha256", "model_selection_sha256", "scope", "custody", "custody_receipt_sha256", "observed_at_utc", "expires_at_utc", "disposition", "review_sha256", "evaluator_signature_base64"], "Repair external review");
   assert(review.schema === REPAIR_EXTERNAL_REVIEW_SCHEMA && review.version === 1 && review.receipt_ref === receiptRef && review.disposition === "PASS", "Repair review disposition or identity differs");
