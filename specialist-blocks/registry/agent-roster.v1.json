@@ -39812,9 +39812,9 @@
       "rank": 46,
       "stable_agent_id": "AGENT.SECURITY_DOUBLE_SUBMISSION",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 47,
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "1ea0b48637fffa48b15b26510368860ac72c0abaf62349c678cd17dfddd4082d"
+  "roster_sha256": "66f2ecadf1fd6cabfc23ad60b44704bd5decd45d60d4e136fb7f70f890128b83"
 }
