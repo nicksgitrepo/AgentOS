@@ -2687,7 +2687,7 @@
     },
     {
       "block_id": "specialist.graphics.industrial-3d",
-      "candidate_digest": "be373a1b2f2aecc4a9681a3c9bda6a98c4950da484feea6f5e7aabbf8f48cf70",
+      "candidate_digest": "d5261db9ba66c146c8556a713e1412a87e43b440e777855e47389b10174a5f03",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Industrial 3D Asset Pipeline; unrelated domain, provider, standard, platform, or failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -5087,7 +5087,8 @@
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
-        "source.atomic-specialization-law"
+        "source.atomic-specialization-law",
+        "source.owasp-asvs-5-0-0"
       ],
       "dependencies": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -10202,5 +10203,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "d5c0a4f6c654a6faeee88b04d80c24e8c1bf943d6c26f2f78dce3659bc971a2f"
+  "roster_sha256": "2656c25b482b53e653eaa290555858210b050481afa734863aa73da519e1683d"
 }

@@ -6098,7 +6098,7 @@
         "write Product or consumer state"
       ],
       "stop_conditions": [
-        "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+        "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\",\"rollback\":\"Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint.\"}"
       ],
       "required_blocks": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -6198,105 +6198,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.graphics.industrial-3d.AUTHORITY_CONFLICT",
+            "fixture_id": "industrial-3d-authority_conflict",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/authority_conflict.json",
-            "file_sha256": "15c348c4a381c24d2e578e9a63506b2e19fcda6ea9cfb7617e699e5db1fe4808",
+            "file_sha256": "1a9f975c499da1f3349c193de5dd149e2b3660710a305f2d10bc6fc71e60b899",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "industrial-3d-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "2252e3024e41ec79d21e5f87426d5652de7009a9ce45382ffcb6b79cb8f5f1d5",
+            "file_sha256": "f964f54d451160133abc167cd70066997aca8af7ffa902fe47c1b96b13aa0268",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "industrial-3d-cross_provider_version_claim",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "b3351cf9b8f4f4378892fbe9dd24a1f039d5c564854846e59f980c58341d0032",
+            "file_sha256": "bf28253576f7a8c580311bc7566d9a5c5092667eb6599b45c05d34cf6b1cfceb",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.DATA_LIMIT",
+            "fixture_id": "industrial-3d-data_limit",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/data_limit.json",
-            "file_sha256": "264237f80c0b9efcc9b9bf6ad93d2c77c74b03734a602544592ca3669c6456d9",
+            "file_sha256": "55643dc226b6aa9e0f571c299b79b815bedf774a0915b887b1204f4767af5c8b",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "industrial-3d-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "b0d3e8edb83e4b26fba14959e45189839b541213d6d5fe4b2f72ef3430770c34",
+            "file_sha256": "401e96bb6533f7c49165c8ea985a5119e0a84d5e632842157ecf2cef2aeb3bdf",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.FALSE_POSITIVE",
+            "fixture_id": "industrial-3d-false_positive",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/false_positive.json",
-            "file_sha256": "0d3c8c3569ee8dcbd8616b6eb811314b3ff8f1766db0ed2f8d2c69b878386d03",
+            "file_sha256": "de9d0432705c0b7547d82a68929e5c557d4a1db76d69d83e75daa542d2786026",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.HANDOFF",
+            "fixture_id": "industrial-3d-handoff",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/handoff.json",
-            "file_sha256": "859d9facd122c867893f6f86679dec82a2a7c8439a0db0f269f2db5e05a05833",
+            "file_sha256": "0ab3c6b9feb3a6d327eff6c95bb658c53b854e4dbcdf296905c4bb0a86ac43e2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.MISSING_CONTEXT",
+            "fixture_id": "industrial-3d-missing_context",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/missing_context.json",
-            "file_sha256": "4bf7a8b622cfa85ab2608d50d7d9c787a91f9f64aebda187b5200a8e5dfe3534",
+            "file_sha256": "ea0dc1e2f45599feed2890576449a1c2b6ee9793cd6b88dcdba5d06fa70115e1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.NARROWNESS",
+            "fixture_id": "industrial-3d-narrowness",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/narrowness.json",
-            "file_sha256": "86dbfa9a9f39759d25e1442e9782eff45e19d7eadcc07f97576092ee74ba8da0",
+            "file_sha256": "5071eeb07ac5edfc411c02853b5cbfe3175964d72f65fedd5cfec3b63e596f02",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.ROUTER_SELF_ACCEPT",
+            "fixture_id": "industrial-3d-router_self_accept",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/router_self_accept.json",
-            "file_sha256": "9b2034da5809e954aec792775f14fb0d380b80fd2a8a4bafc591104c448df9f3",
+            "file_sha256": "fa34f3e480a2a28b3e7b5c4bd9f56e9de54e4452ede0af9a08caced8a8ee23c4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.ROUTING",
+            "fixture_id": "industrial-3d-routing",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/routing.json",
-            "file_sha256": "5d61cda8c38cd8a276694c149e233c8758a36d256420406eb659b2b8b2884282",
+            "file_sha256": "9f538889698b578fcd1bafb0b4eb00bdeaaaca68c2ed7de78eae56c31d33ffba",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "industrial-3d-silent_scope_expansion",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/silent_scope_expansion.json",
-            "file_sha256": "55b6ed841c060bd3af8f55428b31129966c479080e6f53501c8b34394c3de829",
+            "file_sha256": "4aa0184503e1962cc8f7979777519fbc32c13dd6fd3e2b3807440a4102f25354",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.STALE_SOURCE",
+            "fixture_id": "industrial-3d-stale_source",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/stale_source.json",
-            "file_sha256": "e62fb01f8462661fd782218feae9973b31949aa49e9cb0cb922c9a8f01d0e463",
+            "file_sha256": "7df5e62bdeee7547443ca53ddacc06b75539dce157c40aee71976b5ffc9d4ca5",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.TOOL_LIMIT",
+            "fixture_id": "industrial-3d-tool_limit",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/tool_limit.json",
-            "file_sha256": "395bd50ced7491f302a353014a8c8ac00b984ab222c0d14dc4ea884efe0f2243",
+            "file_sha256": "f5c78bc21d36797cfb549fe50213701c333148e57332d0fa8d017444e88f5a20",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.UMBRELLA_AUTHORITY",
+            "fixture_id": "industrial-3d-umbrella_authority",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/umbrella_authority.json",
-            "file_sha256": "ad56199246ce30f4f8b7e392331d9270f5d8b5f5d9c075c98cb0d601ffaa62c3",
+            "file_sha256": "de7273f41dac1139686a54c9764b473c186751eb91d178d72eeb2117b55b00e3",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.UNRELATED_SCOPE",
+            "fixture_id": "industrial-3d-unrelated_scope",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/unrelated_scope.json",
-            "file_sha256": "df1639463ef2e3da24b2035117d11d14a3a91e0d26b08b40e39c48ccfaca8ccf",
+            "file_sha256": "ea2ea03a4855cae8977aa2e3013c4b705914cc15e4000af1fc2808cc42f9a92f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.graphics.industrial-3d.UNSAFE_ACTION",
+            "fixture_id": "industrial-3d-unsafe_action",
             "path": "specialist-blocks/wave-06/industrial-3d/fixtures/unsafe_action.json",
-            "file_sha256": "7e1ba7a13a2afc3a8688206e75128225f2b698862ac758482cf684c86b8b1b17",
+            "file_sha256": "6aaacf9b2619172eeed73295e23886a3ab5704638f09096fedb8f179268ea7f7",
             "expected_outcome": "DENY"
           }
         ]
@@ -6306,17 +6306,18 @@
           "source_lock",
           "freshness_policy",
           "claim_rule",
-          "unknown_rule"
+          "unknown_rule",
+          "context_invalidation_policy"
         ],
         "handoff_path": "specialist-blocks/wave-06/industrial-3d/handoff.json",
-        "handoff_file_sha256": "4cbbb4c379987777c4f55ad609219321ee2ff826e85a679027af34b00c0759ad",
+        "handoff_file_sha256": "4f4ec8f5db02468b86257870cfc10519d6d301153232b34ab080768b3107ffde",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.industrial-3d.v1"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
         "build_rules": [
-          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\",\"rollback\":\"Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint.\"}"
         ],
         "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
         "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
@@ -40424,5 +40425,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "d110415808411a27ff5e48311c2833a61455938dbe2d87b4e0ae0450a3f1bdc1"
 }

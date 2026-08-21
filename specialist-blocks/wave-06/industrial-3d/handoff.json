@@ -4,31 +4,43 @@
   "handoff_id": "specialist-handoff.industrial-3d.v1",
   "block_id": "specialist.graphics.industrial-3d",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "be373a1b2f2aecc4a9681a3c9bda6a98c4950da484feea6f5e7aabbf8f48cf70",
-  "source_commit": "7ba72b318dd7ee48fa64f7ee8bbb6e412524496e",
-  "source_tree": "050a8eea7c8e63cf97a164519d925943bc9eeba5",
+  "candidate_digest": "d5261db9ba66c146c8556a713e1412a87e43b440e777855e47389b10174a5f03",
+  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
+  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
   "changed_paths": [
     "specialist-blocks/wave-06/industrial-3d/block.json",
     "specialist-blocks/wave-06/industrial-3d/evaluation.json",
+    "specialist-blocks/wave-06/industrial-3d/gates/execution.json",
     "specialist-blocks/wave-06/industrial-3d/gates/manifest.json",
     "specialist-blocks/wave-06/industrial-3d/handoff.json",
     "specialist-blocks/wave-06/industrial-3d/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",
-    "hostile-fixture-catalog",
+    "17-executable-hostile-fixture-vectors",
+    "context_receipt_sha256:5e05eec1053096f5faba15978efc7ddf89a5ea54713b03b647a292df67809661",
+    "evaluation_file_sha256:c7d2ac7b9d4f23e9ae4b66333505d2066b65f3d8a1049cf884db1e404bd9fc25",
+    "fixture_contract_sha256:7a1d6fcc483dd9bc215699539f36dcb2ec469622cec29960b07669d2fc16f770",
+    "gate_execution_file_sha256:02b66332cf09b0451d5ae46e40eeb1f5ea83b2290c9ccdf25ac5f18130bf17d4",
+    "gate_semantic_inventory_sha256:2f0b5c309e2082e31bb235cf21770befad45f4e13efdbb4c2a47fb032e469ac6",
     "independent-reviewer-required",
-    "p5-domain-ai-3d-reg-finance-scope-and-authority",
+    "memory_readback_sha256:19a52b0fb485416ecb0f92411eab058f73e1d0f5652b20108257089b08e44c09",
+    "model_route_sha256:1d05d03897c46dec6a402d6503b67a42955c9b16df43e51458b8df8b42ec364f",
+    "p5-domain-industrial-3d-scope-and-authority",
     "reusable-standard-dependency-identities",
-    "source-lock-digest",
-    "upstream-router-closure"
+    "source_manifest_sha256:6aec3a0f674507bc03f1d5ee9dd92127fb17d3f05386bf27986af5d24ac3bfe4",
+    "standard_block_sha256:e6bb9c2d75acebea411235022606952b316990f70a62fdb484106fe0b99a13a4",
+    "standard_source_manifest_sha256:d72e32ea536e396e9b44e442dde3d3d5d2a3a573b6fa42d405a95ac5c46ffe66",
+    "upstream_router_file_sha256:d3ec3b33b760f1c2ada8583f6170af28cf4b12698e958d64f02d65b83cb86854",
+    "upstream_router_result_sha256:718bd540df799251762f48111e0479051a3f785b9860ae1aa7b2a00ea2d8d7c7"
   ],
   "residuals": [
     "applicability and project context remain external",
     "candidate is not admitted or activated",
-    "independent utility/harm evaluation has not run",
-    "main AgentOS 3.0 integration owner must intake exact digest"
+    "independent utility/harm evaluation remains external",
+    "memory proposals remain explicitly dispositioned before archive",
+    "separately controlled evaluator/reviewer handoff remains required for formal Spawner admission"
   ],
-  "next_action": "Route the immutable P5 atomic specialist candidate through independent evaluation; preserve activation OFF.",
+  "next_action": "Route the frozen Industrial 3D atomic candidate through a fresh independent hostile evaluator; preserve activation OFF and exact context/memory invalidation receipts.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

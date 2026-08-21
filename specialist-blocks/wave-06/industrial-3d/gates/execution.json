@@ -1,0 +1,162 @@
+{
+  "schema": "agentos.industrial_3d_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.graphics.industrial-3d",
+  "evaluator_entrypoint": "control/industrial-3d-package-evaluator.mjs#evaluateIndustrial3dPackage",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {
+      "gate_id": "00-intake",
+      "fixture_class": "routing",
+      "adversarial_flags": {},
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "INDUSTRIAL_3D_ANALYSIS_HANDOFF",
+        "error_code": "INDUSTRIAL_3D_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "01-applicability",
+      "fixture_class": "narrowness",
+      "adversarial_flags": {},
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "INDUSTRIAL_3D_ANALYSIS_HANDOFF",
+        "error_code": "INDUSTRIAL_3D_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "02-authority-precedence",
+      "fixture_class": "authority_conflict",
+      "adversarial_flags": {
+        "authority_conflict": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "CONTROL_PLANE_ESCALATION",
+        "error_code": "INDUSTRIAL_3D_AUTHORITY_CONFLICT"
+      }
+    },
+    {
+      "gate_id": "03-scope-nongoals",
+      "fixture_class": "silent_scope_expansion",
+      "adversarial_flags": {
+        "scope_expanded": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SCOPE_REQUIRED",
+        "error_code": "INDUSTRIAL_3D_SCOPE_EXPANSION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "04-source-evidence-freshness",
+      "fixture_class": "stale_source",
+      "adversarial_flags": {
+        "stale_source": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "INDUSTRIAL_3D_SOURCE_STALE_OR_UNVERIFIED"
+      }
+    },
+    {
+      "gate_id": "05-context-completeness",
+      "fixture_class": "missing_context",
+      "adversarial_flags": {
+        "missing_context": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "TYPED_CONTEXT_REQUIRED",
+        "error_code": "INDUSTRIAL_3D_CONTEXT_INCOMPLETE"
+      }
+    },
+    {
+      "gate_id": "06-tool-resource-custody",
+      "fixture_class": "tool_limit",
+      "adversarial_flags": {
+        "unsupported_tool": true
+      },
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "TOOL_CUSTODY_REVIEW",
+        "error_code": "INDUSTRIAL_3D_TOOL_LIMIT"
+      }
+    },
+    {
+      "gate_id": "07-data-secret-privacy",
+      "fixture_class": "data_limit",
+      "adversarial_flags": {
+        "protected_data": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "PRIVACY_BOUNDARY_REQUIRED",
+        "error_code": "INDUSTRIAL_3D_PROTECTED_DATA_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "08-build-browser-runtime",
+      "fixture_class": "unsafe_action",
+      "adversarial_flags": {
+        "unsafe_action": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_INDUSTRIAL_3D_SIDE_EFFECT",
+        "error_code": "INDUSTRIAL_3D_OPERATION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "09-output-handoff",
+      "fixture_class": "handoff",
+      "adversarial_flags": {},
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "INDUSTRIAL_3D_ANALYSIS_HANDOFF",
+        "error_code": "INDUSTRIAL_3D_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "10-proof-acceptance",
+      "fixture_class": "router_self_accept",
+      "adversarial_flags": {
+        "self_acceptance": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "INDEPENDENT_REVIEW_REQUIRED",
+        "error_code": "INDUSTRIAL_3D_SELF_ACCEPTANCE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "11-lifecycle-recovery-archive",
+      "fixture_class": "routing",
+      "adversarial_flags": {
+        "memory_stale": true,
+        "context_invalidated": true
+      },
+      "expected": {
+        "disposition": "DENY",
+        "route": "CONTEXT_REFRESH_REQUIRED",
+        "error_code": "INDUSTRIAL_3D_CONTEXT_INVALIDATED"
+      }
+    }
+  ],
+  "execution_sha256": "86737d671aba252f6935e70822f47aff571af912b1f87a629ca84da9c3cd7300"
+}
