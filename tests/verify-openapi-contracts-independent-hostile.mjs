@@ -11,6 +11,7 @@ import {evaluateOpenApiContractsBoundary, OPENAPI_CONTRACTS_RESULT_SCHEMA} from 
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtureRoot = path.join(root, "specialist-blocks/wave-02/openapi-contracts/operational-fixtures");
+assert.equal(typeof require, "undefined", "independent hostile harness must remain ESM-safe");
 const files = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
 const expectedClasses = [
   "authority_conflict", "broad_when_narrow_exists", "cross_provider_version_claim", "data_limit", "duplicate_sibling_authority",
