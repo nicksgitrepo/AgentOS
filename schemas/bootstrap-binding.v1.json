@@ -4225,15 +4225,15 @@
     },
     "spawner_external_review_consumption_head_contract": {
       "path": "schemas/spawner-external-review-consumption-head.v1.json",
-      "sha256": "829b425016647460f1c0ce93b9c8f66fd683fa04ec0f7d458b16647e9a0e1038"
+      "sha256": "66f2a45e46c321144a230ffac872af20ead3f11c6dc8f4eb8fdc783a8e8e42db"
     },
     "spawner_external_review_controller": {
       "path": "control/spawner-external-review.mjs",
-      "sha256": "fcf7677b9521997817d3a80f88d9d206eb6f331923ffccffcad2276c591d979d"
+      "sha256": "6ec1c2ab630d6f7caafc2622ce6cc16986be73daaaf6ae6002776578e94428ee"
     },
     "spawner_external_review_verifier": {
       "path": "tests/verify-spawner-external-review.mjs",
-      "sha256": "793b7eb360b0a770ef5ffbeeacc5cebd47d5e1824eb0f0405539c4d7642e8b14"
+      "sha256": "8d9be73673ce183e9d1dfb481e0ce80fe0c3a4b8eb67115ec43461e0e74de381"
     },
     "spawner_external_reviewer_registry": {
       "path": "specialist-blocks/control-plane/agent-spawner/external-reviewer-registry.v1.json",

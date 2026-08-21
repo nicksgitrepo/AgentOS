@@ -3,12 +3,11 @@
   "$id": "agentos.spawner_external_review_consumption_head.v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "registry_sha256", "root_binding_sha256", "sequence", "head_event_sha256", "ledger_sha256"],
+  "required": ["schema", "version", "binding_sha256", "sequence", "head_event_sha256", "ledger_sha256"],
   "properties": {
-    "schema": {"const": "agentos.spawner_external_review_consumption_head.v1"},
+    "schema": {"enum": ["agentos.spawner_external_review_consumption_head.v1", "agentos.spawner_external_review_global_consumption.v1"]},
     "version": {"const": 1},
-    "registry_sha256": {"$ref": "#/$defs/sha"},
-    "root_binding_sha256": {"$ref": "#/$defs/sha"},
+    "binding_sha256": {"$ref": "#/$defs/sha"},
     "sequence": {"type": "integer", "minimum": 1},
     "head_event_sha256": {"$ref": "#/$defs/sha"},
     "ledger_sha256": {"$ref": "#/$defs/sha"}
