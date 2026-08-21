@@ -9,7 +9,7 @@
   "title": "AgentOS Repair",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
-  "block_sha256": "062ec59155c904b29adced72ed7ffe52bab3a6b457bcab2acabf80a0f9d1fea8",
+  "block_sha256": "86bb24a49537b26713369fa97afab0f1cb509bd607f71914ca57fa845877f2d5",
   "purpose": "Run one governed project campaign through import or audit/repair modes, prove every narrow auditor result, merge only into a campaign-owned integration branch, clean custody safely, and hand deployment readiness to Controller without deploying.",
   "scope": {
     "included": [
@@ -201,8 +201,8 @@
   "gate_path": "gates/00-intake.gate",
   "model_route": {
     "task_class": "BROAD_ARCHITECTURE",
-    "minimum_capability": 70,
-    "required_capabilities": ["ARCHITECTURE", "CODE", "LONG_CONTEXT", "SECURITY", "TOOLS"],
+    "minimum_capability": 55,
+    "required_capabilities": ["CODE", "LONG_CONTEXT", "TOOLS"],
     "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT",
     "fallback_rule": "Use a lower economical model only for bounded deterministic subchecks; escalate to the policy-selected higher capability route for broad repair, conflicts, migration, or final coherence."
   },

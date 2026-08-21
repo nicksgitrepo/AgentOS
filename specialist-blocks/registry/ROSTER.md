@@ -5,8 +5,9 @@
 `AGENTOS.REPAIR` is the next eligible package after the already accepted
 permanent roles. It is a project-agnostic campaign builder, not a permanent
 role and not a deployer. Its package remains candidate-only and inactive
-(`CANDIDATE` / `OFF`); one independent evaluator has now passed the frozen
-candidate, but sealed Spawner admission is still required before any spawn.
+(`CANDIDATE` / `OFF`); a model-route correction invalidated the prior
+readback, so this successor must receive a fresh independent review before
+sealed Spawner admission or any spawn.
 
 It exposes five isolated modes: `FULL_IMPORT`, `FULL_AUDIT_REPAIR`,
 `TARGETED_REPAIR`, `LEGACY_MIGRATION`, and `RELEASE_HARDENING`. Import keeps
@@ -52,9 +53,9 @@ Observability/Incident Router are now accepted from their exact independent
 receipts. The current queue item is the next eligible package recorded in the
 machine registry; its package, gates, hostile vectors, model route, and local
 proof are next for one-at-a-time qualification.
-`AGENTOS.REPAIR` is independently accepted from one exact evaluator readback
-and remains the current owner-intake handoff; it is deliberately kept at the
-head of the next eligible queue position after those permanent roles. All other entries remain queued or
+`AGENTOS.REPAIR` remains deliberately at the head of the next eligible queue
+position after those permanent roles, but its corrected model route is pending
+fresh independent evaluation. All other entries remain queued or
 blocked on predecessors as recorded in the machine registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.
 

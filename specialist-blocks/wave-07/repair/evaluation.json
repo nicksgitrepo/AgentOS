@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.repair.v1",
   "block_id": "specialist.control.repair",
-  "candidate_digest": "062ec59155c904b29adced72ed7ffe52bab3a6b457bcab2acabf80a0f9d1fea8",
+  "candidate_digest": "86bb24a49537b26713369fa97afab0f1cb509bd607f71914ca57fa845877f2d5",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "repair-campaign-boundary-and-inert-seed-harness.v1",
   "cases": [

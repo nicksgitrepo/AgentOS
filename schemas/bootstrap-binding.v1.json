@@ -3789,7 +3789,7 @@
     },
     "reusable_agent_acceptance_ledger_registry": {
       "path": "specialist-blocks/registry/accepted-agent-receipts.v1.json",
-      "sha256": "5e58556a453f37bd312ec34edc6edbaef19621ebb5d9eb81937afaed75641e95"
+      "sha256": "6943ab493f1d0277b2c24097c3bcc50e2dd6148a84312466b32d4ca2bd163b66"
     },
     "reusable_agent_acceptance_ledger_verifier": {
       "path": "tests/verify-reusable-agent-acceptance-ledger.mjs",
@@ -3805,11 +3805,11 @@
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
-      "sha256": "990ef72a0d07c109c514540a2d29b46863aa02da1351796ffc8316aaeb15f2ba"
+      "sha256": "35eac198f5e440fbb488bb8fcd516ce81da7cd6d1a48ce490fab4a3b025a416c"
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "062f56cddb2bad663dd4e42a76e2417217d87c0a147317e05c262750c82b73b2"
+      "sha256": "80db67dbf47eb752a05da0509b8b20d3e89a9c09f13333e7eb29b3ccce749ff0"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4305,7 +4305,7 @@
     },
     "specialist_roster_registry": {
       "path": "specialist-blocks/registry/roster.v1.json",
-      "sha256": "87583b2030005811af03e4330165d3b9cad3916dd6232e2d3d060e3bc39e8766"
+      "sha256": "c1cead2ad3771974da64b0d26cbe8a13f66567c8c1bd6938777cbbc80bcd1d7b"
     },
     "specialist_routing_index": {
       "path": "specialist-blocks/registry/routing-index.v1.json",
@@ -4741,11 +4741,11 @@
     },
     "repair_package_block": {
       "path": "specialist-blocks/wave-07/repair/block.json",
-      "sha256": "30212f67167db59f07572a1cba945b217f7dc79ccfbb7238ceabaa5556163ce4"
+      "sha256": "4ab242e41ac0ba2fa0669cdadda5dd719bb31a995120addb9afad5798600772d"
     },
     "repair_package_evaluation": {
       "path": "specialist-blocks/wave-07/repair/evaluation.json",
-      "sha256": "ed2c72f4d57c7272a24d124b5d9252f25a9a1a1e147354b762ac3b35edc4a2a6"
+      "sha256": "a2c7a86c01e8052b23cfcec98a7cb97c08288812f69a66a998e724d39e2e6450"
     },
     "repair_fixtures_cleanup_before_merge_leftover_json": {
       "path": "specialist-blocks/wave-07/repair/fixtures/cleanup_before_merge_leftover.json",
@@ -4877,11 +4877,11 @@
     },
     "repair_package_handoff": {
       "path": "specialist-blocks/wave-07/repair/handoff.json",
-      "sha256": "eb2ead248a1944ceebe95abb19237b06c96d11739fa0031efd21f6109b0c9e60"
+      "sha256": "e8ccf6811676c4fa3e739ec48c8523c8123c4b80bdb3af33deeb46e7e0237660"
     },
     "repair_package_seed": {
       "path": "specialist-blocks/wave-07/repair/seed.json",
-      "sha256": "1a1fee997450e3f230c8e0064f155e2a3e7bac41e24871fd748f3011de49e0f0"
+      "sha256": "ccd5a6eedd4e40c7ba239735af7f58defe9094a9f978be49397e7020ff8302b5"
     },
     "repair_package_sources": {
       "path": "specialist-blocks/wave-07/repair/sources.lock",

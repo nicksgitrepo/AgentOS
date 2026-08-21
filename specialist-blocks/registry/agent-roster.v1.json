@@ -29414,7 +29414,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-07/repair/handoff.json",
-        "handoff_file_sha256": "eb2ead248a1944ceebe95abb19237b06c96d11739fa0031efd21f6109b0c9e60",
+        "handoff_file_sha256": "e8ccf6811676c4fa3e739ec48c8523c8123c4b80bdb3af33deeb46e7e0237660",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.repair.v1"
       },
@@ -29458,9 +29458,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers control-plane-repair; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-07/repair/evaluation.json"
@@ -39831,9 +39831,9 @@
       "rank": 8,
       "stable_agent_id": "AGENTOS.REPAIR",
       "tier": "PLATFORM_AGENTS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 82.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 9,
@@ -40151,9 +40151,9 @@
       "rank": 48,
       "stable_agent_id": "AGENT.SECURITY_FUNCTION_SCOPE",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 49,
@@ -40548,5 +40548,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "9a58e7419c63a181184f4cd72c2eb47cd73c20e2f0ec060153747596abbd7ac8"
+  "roster_sha256": "f221f64564b7284550d0339c8bdb3f2c41bd929c3818908e609f056641f14f99"
 }

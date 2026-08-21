@@ -1008,7 +1008,7 @@
     },
     {
       "block_id": "specialist.control.repair",
-      "candidate_digest": "062ec59155c904b29adced72ed7ffe52bab3a6b457bcab2acabf80a0f9d1fea8",
+      "candidate_digest": "86bb24a49537b26713369fa97afab0f1cb509bd607f71914ca57fa845877f2d5",
       "role_kind": "CONTROL_PLANE",
       "atomic_scope_statement": "AGENTOS.REPAIR owns one campaign worktree and candidate repair evidence; Spawner owns auditor lifecycle and governance, Controller regulates workflow and receives deployment-readiness handoff, and Runtime governs any later deployment decision.",
       "permitted_decisions": [
@@ -10199,5 +10199,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "9b4d7883446095b8c3507456b94ac20a045787ceb5f8f64aa330cc4b05f28097"
+  "roster_sha256": "a1eaf8419f17f97ed5629cfaefe14feb666b79142a92fc7229df7035d82e23a8"
 }
