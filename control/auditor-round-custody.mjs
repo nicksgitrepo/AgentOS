@@ -11,6 +11,9 @@
  * admit or consume the resulting receipt.
  */
 
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "./content-addressing.mjs";
 
 export const AUDITOR_ROUND_SCHEMA = "agentos.auditor_round_custody.v1";
@@ -25,6 +28,7 @@ const GIT_SHA1 = /^[0-9a-f]{40}$/u;
 const VERDICTS = new Set(["PASS", "NOT_APPLICABLE_WITH_EVIDENCE", "FAIL", "UNKNOWN", "BLOCKED_EXACT"]);
 const OBSERVED = new Set(["PASS", "ROUTE", "DENY", "FAIL", "NOT_APPLICABLE", "BLOCKED", "UNKNOWN"]);
 const SIDE_EFFECT_KEYS = ["candidate_writes", "builder_writes", "memory_writes", "project_writes", "credential_accesses", "merge_calls", "deploy_calls", "state_changes"];
+const MODEL_POLICY_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../fixtures/model-policy-snapshot.initial.v1.json");
 
 function fail(message, code = "AUDITOR_ROUND_INVALID") {
   const error = new Error(message);
@@ -70,6 +74,12 @@ function validateModel(model) {
   exact(model, ["snapshot_sha256", "projection_sha256", "model_id", "reasoning_effort", "availability", "status"], "round.model_policy");
   sha(model.snapshot_sha256, "model_policy.snapshot_sha256"); sha(model.projection_sha256, "model_policy.projection_sha256"); bounded(model.model_id, "model_policy.model_id", 120); bounded(model.reasoning_effort, "model_policy.reasoning_effort", 40);
   assert(model.availability === "CURRENT_HOST_AVAILABLE" && model.status === "CURRENT_BOUND", "model policy is unavailable or stale", "AUDITOR_ROUND_MODEL_POLICY_INVALID");
+  let snapshot;
+  try { snapshot = JSON.parse(fs.readFileSync(MODEL_POLICY_FILE, "utf8")); } catch { fail("Canonical model-policy snapshot is unavailable", "AUDITOR_ROUND_MODEL_POLICY_INVALID"); }
+  assert(snapshot.snapshot_sha256 === canonicalDigest({...snapshot, snapshot_sha256: null}), "Canonical model-policy snapshot digest is invalid", "AUDITOR_ROUND_MODEL_POLICY_INVALID");
+  assert(snapshot.snapshot_sha256 === model.snapshot_sha256, "Auditor model policy is not bound to the current canonical snapshot", "AUDITOR_ROUND_MODEL_POLICY_UNBOUND");
+  const governed = snapshot.models?.find((entry) => entry.model_id === model.model_id);
+  assert(governed && governed.host_available === true && governed.host_supported_reasoning_efforts?.includes(model.reasoning_effort.toLowerCase()), "Auditor model is unlisted, unavailable, or lacks the requested reasoning mode", "AUDITOR_ROUND_MODEL_POLICY_INVALID");
 }
 
 function validateCustody(custody, builderTask, auditorTask) {

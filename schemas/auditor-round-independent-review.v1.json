@@ -4,7 +4,7 @@
   "title": "Sealed independent evaluator receipt for an auditor round",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "receipt_id", "issuer_id", "issuer_role", "result", "candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1", "candidate_ref", "round_ref", "round_sha256", "package_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "context_sha256", "execution_sha256", "evaluator_admission_sha256", "authority_epoch", "issued_at_utc", "expires_at_utc", "signature_status", "receipt_sha256"],
+  "required": ["schema", "version", "receipt_id", "issuer_id", "issuer_role", "result", "candidate_commit_sha1", "candidate_tree_sha1", "rollback_commit_sha1", "rollback_tree_sha1", "candidate_ref", "round_ref", "round_sha256", "package_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "context_sha256", "execution_sha256", "evaluator_admission_sha256", "authority_epoch", "issued_at_utc", "expires_at_utc", "signature_status", "signature_base64", "receipt_sha256"],
   "properties": {
     "schema": {"const": "agentos.auditor_round_independent_review.v1"},
     "version": {"const": 1},
@@ -29,6 +29,7 @@
     "issued_at_utc": {"type": "string", "format": "date-time"},
     "expires_at_utc": {"type": "string", "format": "date-time"},
     "signature_status": {"const": "VERIFIED_BY_EXTERNAL_EVALUATOR"},
+    "signature_base64": {"type": "string", "minLength": 32, "pattern": "^[A-Za-z0-9+/]+={0,2}$"},
     "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   }
 }
