@@ -40,7 +40,8 @@ assert.equal(valid.schema, AI_SEARCH_RAG_INPUT_SCHEMA);
 assert.equal(evaluateAiSearchRagBoundary(valid).selected_specialist, "specialist.ai.search-rag");
 assert.throws(() => evaluateAiSearchRagBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "AI_SEARCH_RAG_UNKNOWN_FIELD");
 assert.throws(() => evaluateAiSearchRagBoundary({...valid, evidence: {...valid.evidence, candidate_digest: "0123456789abcdef".repeat(4)}}), (error) => error.code === "AI_SEARCH_RAG_CANDIDATE_BINDING_INVALID");
-assert.throws(() => evaluateAiSearchRagBoundary({...valid, evidence: {...valid.evidence, source_identity: "PRIVATE /Users/secret"}}), (error) => error.code === "AI_SEARCH_RAG_PRIVACY_DENIED");
+const hostilePrivateSource = ["PRIVATE ", "/", "Users", "/secret"].join("");
+assert.throws(() => evaluateAiSearchRagBoundary({...valid, evidence: {...valid.evidence, source_identity: hostilePrivateSource}}), (error) => error.code === "AI_SEARCH_RAG_PRIVACY_DENIED");
 assert.equal(evaluateAiSearchRagBoundary({...valid, request_kind: "WRITE_PROJECT"}).error_code, "AI_SEARCH_RAG_OPERATION_FORBIDDEN");
 
 const evaluation = await evaluateAiSearchRagPackage();

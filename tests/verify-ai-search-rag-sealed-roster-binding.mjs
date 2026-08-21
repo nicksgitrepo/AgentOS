@@ -15,6 +15,14 @@ const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const binding = JSON.parse(fs.readFileSync(bindingPath, "utf8"));
 const actualRosterSha = sha(fs.readFileSync(rosterPath));
 assert.equal(binding.normative.reusable_agent_roster_registry.sha256, actualRosterSha, "sealed binding must address the exact roster bytes");
+for (const [relative, exportName] of [
+  ["control/function-scope-authority-binding.mjs", "FUNCTION_SCOPE_ROSTER_FILE_SHA256"],
+  ["control/object-scope-authority-binding.mjs", "OBJECT_SCOPE_ROSTER_FILE_SHA256"],
+  ["control/idempotency-authority-binding.mjs", "IDEMPOTENCY_ROSTER_FILE_SHA256"],
+]) {
+  const source = fs.readFileSync(path.join(root, relative), "utf8");
+  assert(source.includes(`${exportName} = \"${actualRosterSha}\"`), `${relative} must pin the current roster bytes`);
+}
 
 const cleanEnv = {PATH: process.env.PATH ?? ""};
 const current = spawnSync(process.execPath, [loaderPath, "identity"], {encoding: "utf8", env: cleanEnv});

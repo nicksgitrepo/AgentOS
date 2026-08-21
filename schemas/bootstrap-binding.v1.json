@@ -712,7 +712,7 @@
     },
     "ai_search_rag_sealed_roster_binding_verifier": {
       "path": "tests/verify-ai-search-rag-sealed-roster-binding.mjs",
-      "sha256": "89a798dd7f4367a84f024ea77efd0c0a0aeff1ca8ab4e7ea0ef699885912a415"
+      "sha256": "7cfbb83f50209c2b35a0cc191121693775a9dfeb47201ddedb91df5667d48baa"
     },
     "ai_search_router_boundary_gate": {
       "path": "control/ai-search-router-boundary-gate.mjs",
@@ -4577,7 +4577,7 @@
     },
     "function_scope_authority_binding": {
       "path": "control/function-scope-authority-binding.mjs",
-      "sha256": "1b281d1677bb5670b8d4b5221dcdfdd075801282b4f28875728d69bede9fe143"
+      "sha256": "26c3f42a9a7da3c32b5d0b1cb5c2ce4849e49a6bb309300270616a2ed208e728"
     },
     "function_scope_boundary_input_contract": {
       "path": "schemas/function-scope-boundary-input.v1.json",
@@ -4617,7 +4617,7 @@
     },
     "object_scope_authority_binding": {
       "path": "control/object-scope-authority-binding.mjs",
-      "sha256": "97a555043d06f3e4dd21a7c42037730efb49d9026ea5f0c9df69ddf7e2d2466a"
+      "sha256": "10c01107b6accabe783e91b8c256f773e52707e5b22548fa310c817db5f0fe9a"
     },
     "object_scope_boundary_input_contract": {
       "path": "schemas/object-scope-boundary-input.v1.json",
