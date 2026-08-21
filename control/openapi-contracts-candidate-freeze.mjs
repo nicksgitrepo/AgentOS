@@ -14,6 +14,7 @@ export const OPENAPI_CONTRACTS_CANDIDATE_BINDING_SCHEMA = "agentos.openapi_contr
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = "specialist-blocks/wave-02/openapi-contracts";
 const SHA256 = /^[0-9a-f]{64}$/u;
+const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const GATE_IDS = Object.freeze([
   "00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness",
   "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime",
@@ -27,18 +28,21 @@ function json(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }
 function fileSha(file) { return sha(fs.readFileSync(file)); }
 function git(root, args) { try { return execFileSync("git", args, {cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"]}).trim(); } catch (error) { fail(`git readback failed: ${args.join(" ")}: ${error.stderr?.trim() || error.message}`, "OPENAPI_CONTRACTS_GIT_READBACK_FAILED"); } }
 function requireSha(value, label) { assert(typeof value === "string" && SHA256.test(value), `${label} is not a SHA-256`, "OPENAPI_CONTRACTS_CANDIDATE_DIGEST_INVALID"); }
+function requireGitObject(value, label) { assert(typeof value === "string" && GIT_OBJECT.test(value), `${label} is not a Git object ID`, "OPENAPI_CONTRACTS_CANDIDATE_GIT_OBJECT_INVALID"); }
 
 function packageInventory(root) {
   const packageRoot = path.join(root, PACKAGE);
   const files = ["block.json", "sources.lock", "gates/manifest.json", "gates/execution.json", "evaluation.json", "handoff.json", "model-policy-route.json", "context-binding.json"];
   for (const name of fs.readdirSync(path.join(packageRoot, "gates")).filter((name) => name.endsWith(".gate"))) files.push(`gates/${name}`);
   for (const name of fs.readdirSync(path.join(packageRoot, "fixtures")).filter((name) => name.endsWith(".json"))) files.push(`fixtures/${name}`);
+  for (const name of fs.readdirSync(path.join(packageRoot, "operational-fixtures")).filter((name) => name.endsWith(".json"))) files.push(`operational-fixtures/${name}`);
+  files.push("registry-entry.json");
   return files.sort(compareUtf8).map((relative_path) => ({relative_path: `${PACKAGE}/${relative_path}`, sha256: fileSha(path.join(packageRoot, relative_path))}));
 }
 
 function gitObject(root, expression, label) {
   const value = git(root, ["rev-parse", "--verify", expression]);
-  requireSha(value, label);
+  requireGitObject(value, label);
   return value;
 }
 
@@ -182,4 +186,3 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(im
   if (output) fs.writeFileSync(path.resolve(process.cwd(), output), `${JSON.stringify(binding, null, 2)}\n`, {flag: "wx"});
   process.stdout.write(`${JSON.stringify(binding, null, 2)}\n`);
 }
-
