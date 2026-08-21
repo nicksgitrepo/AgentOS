@@ -2,8 +2,106 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.graphics.industrial-3d",
+  "fixture_id": "industrial-3d-tool_limit",
   "class": "tool_limit",
-  "expected": "ROUTE",
+  "expected": {
+    "disposition": "ROUTE",
+    "route": "TOOL_CUSTODY_REVIEW",
+    "error_code": "INDUSTRIAL_3D_TOOL_LIMIT"
+  },
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Executable hostile Industrial 3D vector for tool_limit; synthetic evidence only, no project, consumer, secret, engineering, or acceptance authority.",
+  "vector": {
+    "entrypoint": "control/industrial-3d-boundary-gate.mjs#evaluateIndustrial3dBoundary",
+    "input": {
+      "schema": "agentos.industrial_3d_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_INDUSTRIAL_3D",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_ref": "opaque:GRAPHICS.INDUSTRIAL_3D.CUSTODY",
+        "asset_domain": "INDUSTRIAL_3D",
+        "asset_identity": "TYPED_ASSET",
+        "asset_stage": "INTERCHANGE",
+        "asset_format": "GLTF",
+        "asset_version": "2.0.1",
+        "asset_ref": "ref:ASSET/INDUSTRIAL/1",
+        "concern": "INTERCHANGE",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.BLENDER_GLTF_2_0_MANUAL",
+        "source_version": "3.3",
+        "source_retrieved_date": "2026-08-11",
+        "source_manifest_sha256": "6aec3a0f674507bc03f1d5ee9dd92127fb17d3f05386bf27986af5d24ac3bfe4",
+        "standard_identity": "specialist.standard.gltf-2-0-1",
+        "standard_version": "2.0.1",
+        "standard_block_sha256": "e6bb9c2d75acebea411235022606952b316990f70a62fdb484106fe0b99a13a4",
+        "standard_source_manifest_sha256": "d72e32ea536e396e9b44e442dde3d3d5d2a3a573b6fa42d405a95ac5c46ffe66",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "d5261db9ba66c146c8556a713e1412a87e43b440e777855e47389b10174a5f03",
+        "graphics_signal": "GRAPHICS.INDUSTRIAL_3D",
+        "signal_status": "BOUND",
+        "task_status": "INDUSTRIAL_3D_ANALYSIS",
+        "context_status": "INDUSTRIAL_3D_CONTEXT",
+        "context_complete": true,
+        "requested_action": "ANALYZE",
+        "requested_tools": [
+          "READ_ASSET_EVIDENCE",
+          "READ_SOURCE_LOCK",
+          "READ_STANDARD_BLOCK",
+          "READ_CONTEXT"
+        ],
+        "required_block_identities": [
+          "specialist.foundation.authority-jurisdiction-gate",
+          "specialist.foundation.evidence-freshness-gate",
+          "specialist.foundation.role-intake-classifier",
+          "specialist.foundation.scope-non-goal-gate",
+          "specialist.foundation.tool-custody-gate",
+          "specialist.graphics.industrial-3d-router",
+          "specialist.standard.gltf-2-0-1"
+        ],
+        "model_policy_status": "PREPARED_INACTIVE",
+        "model_route_status": "BOUND",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "model_task_class": "NARROW_CODING",
+        "model_capability_floor": 49,
+        "model_required_capabilities": [
+          "CODE",
+          "TOOLS"
+        ],
+        "model_route_sha256": "1d05d03897c46dec6a402d6503b67a42955c9b16df43e51458b8df8b42ec364f",
+        "authority_scope": "INDUSTRIAL_3D_ATOMIC",
+        "upstream_router_result_sha256": "718bd540df799251762f48111e0479051a3f785b9860ae1aa7b2a00ea2d8d7c7",
+        "context_receipt_sha256": "5e05eec1053096f5faba15978efc7ddf89a5ea54713b03b647a292df67809661",
+        "memory_readback_sha256": "19a52b0fb485416ecb0f92411eab058f73e1d0f5652b20108257089b08e44c09",
+        "fixture_contract_sha256": "7a1d6fcc483dd9bc215699539f36dcb2ec469622cec29960b07669d2fc16f770",
+        "project_data_present": false,
+        "secret_data_present": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": true,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": false,
+          "memory_stale": false,
+          "context_invalidated": false,
+          "model_policy_drift": false,
+          "source_superseded": false,
+          "lifecycle_invalid": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "TOOL_CUSTODY_REVIEW",
+      "error_code": "INDUSTRIAL_3D_TOOL_LIMIT"
+    }
+  }
 }

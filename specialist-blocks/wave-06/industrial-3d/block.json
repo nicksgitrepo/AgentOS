@@ -161,6 +161,16 @@
       "status"
     ]
   },
+  "operational_contract": {
+    "input_schema": "schemas/industrial-3d-boundary-input.v1.json",
+    "result_schema": "schemas/industrial-3d-boundary-result.v1.json",
+    "entrypoint": "control/industrial-3d-boundary-gate.mjs#evaluateIndustrial3dBoundary",
+    "evaluator": "control/industrial-3d-package-evaluator.mjs#evaluateIndustrial3dPackage",
+    "read_only": true,
+    "asset_mutation": false,
+    "engineering_assertion": false,
+    "memory_write": false
+  },
   "authority": {
     "allowed_authority": [
       "evidence-bounded analysis",
@@ -193,7 +203,8 @@
     "source_lock": "sources.lock",
     "freshness_policy": "Check publisher, identifier, version, publication/effective/supersession status, retrieved date, immutable identity, and digest when obtainable; stale or unverifiable evidence denies the dependent action.",
     "claim_rule": "Claims are limited to the exact source-backed P5 concern and selected reusable standards; no cross-domain, cross-version, legal, financial, engineering, safety, or provider claim is permitted.",
-    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion."
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion.",
+    "context_invalidation_policy": "Invalidate context and memory readback on any block, source, standard, gate, hostile fixture, model-policy, upstream-router, custody, lifecycle, or receipt digest change; require a fresh typed readback before dependent analysis."
   },
   "controls": {
     "read": [
@@ -248,7 +259,8 @@
     "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
     "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
     "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
-    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.",
+    "rollback": "Retain the predecessor immutable candidate and restore only by exact candidate commit/tree receipt; never roll back by mutable path, registry projection, or memory hint."
   },
   "gate_path": "gates/00-intake.gate",
   "gate_pack": {
@@ -321,5 +333,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "be373a1b2f2aecc4a9681a3c9bda6a98c4950da484feea6f5e7aabbf8f48cf70"
+  "block_sha256": "d5261db9ba66c146c8556a713e1412a87e43b440e777855e47389b10174a5f03"
 }
