@@ -2,8 +2,92 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.finance.job-cost-accounting",
+  "fixture_id": "specialist.finance.job-cost-accounting.TOOL_LIMIT",
   "class": "tool_limit",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic executable hostile fixture for tool_limit; all context is typed, synthetic, and read-only.",
+  "vector": {
+    "entrypoint": "control/job-cost-accounting-boundary-gate.mjs#evaluateJobCostAccountingBoundary",
+    "input": {
+      "schema": "agentos.job_cost_accounting_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_JOB_COST",
+      "evidence": {
+        "authority_status": "PREPARED_INACTIVE",
+        "accounting_domain": "JOB_COST",
+        "cost_object": "TYPED_COST_OBJECT",
+        "accounting_entity": "TYPED_ENTITY",
+        "accounting_objective": "INTERNAL_CONTROL_CLASSIFICATION",
+        "accounting_period": "TYPED_PERIOD",
+        "accounting_policy": "TYPED_POLICY_REF",
+        "source_status": "CURRENT_VERIFIED",
+        "source_identity": "SOURCE.GAO_GREEN_BOOK_2025",
+        "source_version": "2025",
+        "source_effective_date": "NOT_PUBLISHED",
+        "source_retrieved_date": "2026-08-11",
+        "source_lock_sha256": "a64e21122df002f5e27067395d1eec092d5870f1098c6f02bf967125244008ff",
+        "standard_block_sha256": "0eaee4ae68a191a1bf6731cd1640d77ece1a4948337302c0edb18b4ca8ef46d8",
+        "standard_source_manifest_sha256": "20909096b069fa9ad1a16fa1d0838673d5edd26229cf13fc5edeea7f122ecf82",
+        "candidate_status": "CURRENT_CANDIDATE",
+        "candidate_digest": "6c91c1f4aa2034f2a54df232cbfb0a6caf8bd8d4f357fd8591d7090cc1be577f",
+        "job_cost_signal": "FIN.JOB_COST_ACCOUNTING",
+        "signal_status": "BOUND",
+        "task_status": "JOB_COST_ACCOUNTING_ANALYSIS",
+        "context_status": "JOB_COST_ACCOUNTING_CONTEXT",
+        "context_complete": true,
+        "context_receipt_sha256": "b76870e16fb7046eddd7550e8577ab7b24d9435ad263c534970fa67aa58533ee",
+        "requested_action": "ANALYZE",
+        "requested_tools": [
+          "READ_CANDIDATE",
+          "READ_SOURCE_LOCK",
+          "READ_GAO_STANDARD",
+          "READ_CONTEXT",
+          "READ_ACCOUNTING_ROUTER_RECEIPT",
+          "READ_CUSTODY"
+        ],
+        "required_block_identities": [
+          "SPECIALIST.FOUNDATION.AUTHORITY_JURISDICTION_GATE",
+          "SPECIALIST.FOUNDATION.EVIDENCE_FRESHNESS_GATE",
+          "SPECIALIST.FOUNDATION.ROLE_INTAKE_CLASSIFIER",
+          "SPECIALIST.FOUNDATION.SCOPE_NON_GOAL_GATE",
+          "SPECIALIST.FOUNDATION.TOOL_CUSTODY_GATE"
+        ],
+        "model_policy_status": "PREPARED_INACTIVE",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "model_file_sha256": "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d",
+        "context_registry_sha256": "f7e0a26ac639bc47be15b400c0a3edbf528658b805b0e39999b9d76a845191fa",
+        "model_route_status": "BOUND",
+        "authority_scope": "JOB_COST_ACCOUNTING",
+        "upstream_router_status": "BOUND",
+        "upstream_router_result_sha256": "cb919b8b5322929af238066b30a95998bb90709a8079bb8f82b5c586e2261ad5",
+        "custody_ref": "opaque:CUSTODY:FINANCE-JOB-COST-ACCOUNTING-20260821-01",
+        "rollback_ref": "opaque:ROLLBACK:AC1733095DB2FBAE8B3E2748D7000BE7054FD2E0",
+        "new_findings": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "protected_data": false,
+          "stale_source": false,
+          "unsupported_tool": true,
+          "duplicate_authority": false,
+          "self_acceptance": false,
+          "unrelated_scope": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "broad_claim": false,
+          "cross_provider": false,
+          "false_positive": false,
+          "data_limit": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "PROFESSIONAL_ACCOUNTING_REVIEW",
+      "error_code": "JOB_COST_ACCOUNTING_TOOL_LIMIT_REVIEW_REQUIRED"
+    }
+  }
 }
