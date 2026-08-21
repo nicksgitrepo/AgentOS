@@ -351,6 +351,16 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     },
     {
+      "stable_agent_id": "AGENT.SECURITY_IDEMPOTENCY",
+      "package_path": "specialist-blocks/wave-03/idempotency",
+      "candidate_commit": "908d7846e290eda8031a1f56b505ca6f52e2a2e6",
+      "candidate_tree": "1c66db99abc83a1b92bc526ba3e12d2f5f9e4b51",
+      "independent_status": "PASS",
+      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/908d7846e290eda8031a1f56b505ca6f52e2a2e6",
+      "receipt_sha256": null,
+      "readback_scope": "READBACK_SUMMARY_ONLY"
+    },
+    {
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
       "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
@@ -481,5 +491,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "24cbb02f0a47acafbb2c39b3c6ce94f3ed9d460ac07aecd02b2cd174bc83136d"
+  "ledger_sha256": "859d1631975b1e7b594592a19bfc3a6593ff4d83ba814af72456375ab49c9385"
 }
