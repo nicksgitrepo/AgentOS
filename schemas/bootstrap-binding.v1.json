@@ -954,6 +954,18 @@
       "path": "tests/verify-autonomous-dispatch-liveness-gate.mjs",
       "sha256": "23d796d3b6106de41b66014fb614c115cfb2ef90ef3a9a756512e007a92eaf5e"
     },
+    "autonomous_blocker_route_contract": {
+      "path": "schemas/autonomous-blocker-route.v1.json",
+      "sha256": "3475315c1d52f78a41219c49df3974bad27b3a8b666527ae1d5aa20d252823ed"
+    },
+    "autonomous_blocker_route_controller": {
+      "path": "control/autonomous-blocker-routing.mjs",
+      "sha256": "cf4c255c55003292a81d47953168672f93cb283dd03a6fb1aed487338be73633"
+    },
+    "autonomous_blocker_route_verifier": {
+      "path": "tests/verify-autonomous-blocker-routing.mjs",
+      "sha256": "72cc9f6329130d34bef7fde1f56c5def00e51aed1d4f09484e084753e3e34e30"
+    },
     "bootstrap_answer_contract": {
       "path": "schemas/bootstrap-answer.v1.json",
       "sha256": "7fb9e9438a118e6ad3138bd0d22baf4a48860c2022cffcc350bcdec4446933e9"
@@ -3321,7 +3333,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "c0fad8b74cea1dbde360cc2874c3808c63001b73647bcf180376e61ed7f14028"
+      "sha256": "56eeeb60957b780af9e3f948db6a415a3489e6d7f68c0196a2a8ae2128285330"
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",

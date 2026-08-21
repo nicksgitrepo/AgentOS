@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/autonomous-blocker-route.v1.json",
+  "title": "AgentOS Autonomous Blocker Route",
+  "description": "A capability gap or evidence ceiling waits only its lane and immediately dispatches safe work. Only a true blocker stops globally.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "route_id", "lane_id", "blocker_class", "global_state", "lane_state", "dependency_id", "reason", "evidence_ceiling", "safe_alternatives", "successor", "remote", "resources", "owner_decision_required", "route_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.autonomous_blocker_route.v1"},
+    "version": {"const": 1},
+    "route_id": {"$ref": "#/$defs/identifier"},
+    "lane_id": {"$ref": "#/$defs/identifier"},
+    "blocker_class": {"enum": ["CAPABILITY_GAP", "EVIDENCE_CEILING", "NONE", "REPAIRABLE_FAILURE", "TRUE_BLOCKER"]},
+    "global_state": {"enum": ["RUNNING", "STOPPED"]},
+    "lane_state": {"enum": ["READY", "REPAIRING", "UNPROVEN", "WAITING_FOR_CAPABILITY", "BLOCKED_GLOBAL"]},
+    "dependency_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/identifier"}]},
+    "reason": {"type": "string", "minLength": 8},
+    "evidence_ceiling": {"type": "string", "minLength": 8},
+    "safe_alternatives": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/identifier"}},
+    "successor": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/successor"}]},
+    "remote": {"$ref": "#/$defs/remote"},
+    "resources": {"$ref": "#/$defs/resources"},
+    "owner_decision_required": {"type": "boolean"},
+    "route_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {"if": {"properties": {"blocker_class": {"const": "TRUE_BLOCKER"}}}, "then": {"properties": {"global_state": {"const": "STOPPED"}, "lane_state": {"const": "BLOCKED_GLOBAL"}, "owner_decision_required": {"const": true}, "successor": {"const": null}}}},
+    {"if": {"properties": {"blocker_class": {"const": "CAPABILITY_GAP"}}}, "then": {"properties": {"global_state": {"const": "RUNNING"}, "lane_state": {"const": "WAITING_FOR_CAPABILITY"}, "owner_decision_required": {"const": false}}}},
+    {"if": {"properties": {"blocker_class": {"const": "EVIDENCE_CEILING"}}}, "then": {"properties": {"global_state": {"const": "RUNNING"}, "lane_state": {"const": "UNPROVEN"}, "owner_decision_required": {"const": false}}}},
+    {"if": {"properties": {"blocker_class": {"const": "REPAIRABLE_FAILURE"}}}, "then": {"properties": {"global_state": {"const": "RUNNING"}, "lane_state": {"const": "REPAIRING"}, "owner_decision_required": {"const": false}}}}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "successor": {"type": "object", "additionalProperties": false, "required": ["action", "handler", "reference", "started_same_turn"], "properties": {"action": {"$ref": "#/$defs/identifier"}, "handler": {"$ref": "#/$defs/identifier"}, "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"}, "started_same_turn": {"const": true}}},
+    "remote": {"type": "object", "additionalProperties": false, "required": ["required", "available", "optional", "local_candidate_ready", "push_deferred", "route"], "properties": {"required": {"type": "boolean"}, "available": {"type": "boolean"}, "optional": {"type": "boolean"}, "local_candidate_ready": {"type": "boolean"}, "push_deferred": {"type": "boolean"}, "route": {"enum": ["NOT_APPLICABLE", "REMOTE_AVAILABLE", "REMOTE_PUSH_DEFERRED"]}}},
+    "resources": {"type": "object", "additionalProperties": false, "required": ["workers", "scheduler_jobs", "heavyweight_processes", "timers"], "properties": {"workers": {"type": "integer", "minimum": 0}, "scheduler_jobs": {"type": "integer", "minimum": 0}, "heavyweight_processes": {"type": "integer", "minimum": 0}, "timers": {"type": "integer", "minimum": 0}}}
+  }
+}

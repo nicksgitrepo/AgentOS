@@ -18,6 +18,7 @@ export {compileControllerImportPlanningContext, validateControllerImportPlanning
 export {compileControllerImportRoutineCloseout, validateControllerImportRoutineCloseout} from "./controller-import-closeout.mjs";
 export {compilePyramidImportOutput, validatePyramidImportOutput, compileGitRepointPlan, validateGitRepointPlan} from "./project-import.mjs";
 export {compileControllerEscalation, validateControllerEscalation} from "./controller-escalation-continuation.mjs";
+export {classifyAutonomousBlocker, compileAutonomousBlockerRoute, validateAutonomousBlockerRoute, assertAutonomousTurnCloseout, AUTONOMOUS_BLOCKER_CLASSES, AUTONOMOUS_BLOCKER_ROUTING_SCHEMA, AUTONOMOUS_BLOCKER_ROUTING_VERSION} from "./autonomous-blocker-routing.mjs";
 export {compileControllerOwnerEventWake, validateControllerOwnerEventWake, resumeControllerFromOwnerEvent, runControllerOwnerEventContinuation} from "./controller-owner-event-wake.mjs";
 export {evaluateStopWorkflowGate, validateStopWorkflowDecision, compileStopWorkflowNoStopAnswers, compileRoutineDevelopmentStopDecision, STOP_WORKFLOW_QUESTIONS, STOP_WORKFLOW_OUTCOMES, STOP_WORKFLOW_NEXT_ACTIONS} from "./stop-workflow-gate.mjs";
 export {compileCandidateScopeGate, validateCandidateScopeGate, CANDIDATE_SCOPE_MODES, CANDIDATE_SCOPE_GATE_HOSTILE_FIXTURES} from "./candidate-scope-gate.mjs";
@@ -113,6 +114,7 @@ export * as controllerWorkflow from "./controller-workflow-regulator.mjs";
 export * as controllerImportPlanner from "./controller-import-planner.mjs";
 export * as controllerImportCloseout from "./controller-import-closeout.mjs";
 export * as controllerEscalation from "./controller-escalation-continuation.mjs";
+export * as autonomousBlockerRouting from "./autonomous-blocker-routing.mjs";
 export * as controllerOwnerEventWake from "./controller-owner-event-wake.mjs";
 export * as agentSpawnerLifecycle from "./agent-spawner-lifecycle.mjs";
 export * as turnContinuation from "./turn-continuation-gate.mjs";
