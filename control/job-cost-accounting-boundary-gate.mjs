@@ -12,6 +12,14 @@ import {scanPersistedRecord} from "./persisted-record-privacy.mjs";
 export const JOB_COST_ACCOUNTING_INPUT_SCHEMA = "agentos.job_cost_accounting_boundary_input.v1";
 export const JOB_COST_ACCOUNTING_RESULT_SCHEMA = "agentos.job_cost_accounting_boundary_result.v1";
 export const JOB_COST_ACCOUNTING_BLOCK_ID = "specialist.finance.job-cost-accounting";
+export const JOB_COST_ACCOUNTING_BLOCK_SHA256 = "6c91c1f4aa2034f2a54df232cbfb0a6caf8bd8d4f357fd8591d7090cc1be577f";
+export const JOB_COST_ACCOUNTING_SOURCE_LOCK_SHA256 = "a64e21122df002f5e27067395d1eec092d5870f1098c6f02bf967125244008ff";
+export const JOB_COST_ACCOUNTING_STANDARD_BLOCK_SHA256 = "0eaee4ae68a191a1bf6731cd1640d77ece1a4948337302c0edb18b4ca8ef46d8";
+export const JOB_COST_ACCOUNTING_STANDARD_SOURCE_MANIFEST_SHA256 = "20909096b069fa9ad1a16fa1d0838673d5edd26229cf13fc5edeea7f122ecf82";
+export const JOB_COST_ACCOUNTING_MODEL_SNAPSHOT_SHA256 = "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27";
+export const JOB_COST_ACCOUNTING_MODEL_FILE_SHA256 = "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d";
+export const JOB_COST_ACCOUNTING_CONTEXT_REGISTRY_SHA256 = "f7e0a26ac639bc47be15b400c0a3edbf528658b805b0e39999b9d76a845191fa";
+export const JOB_COST_ACCOUNTING_UPSTREAM_ROUTER_RESULT_SHA256 = "cb919b8b5322929af238066b30a95998bb90709a8079bb8f82b5c586e2261ad5";
 export const JOB_COST_ACCOUNTING_REQUIRED_BLOCKS = Object.freeze([
   "SPECIALIST.FOUNDATION.AUTHORITY_JURISDICTION_GATE",
   "SPECIALIST.FOUNDATION.EVIDENCE_FRESHNESS_GATE",
@@ -157,6 +165,12 @@ function validate(input) {
   assert(e.accounting_domain === "JOB_COST", "accounting domain is not typed", "JOB_COST_ACCOUNTING_DOMAIN_INVALID");
   assert(e.job_cost_signal === "FIN.JOB_COST_ACCOUNTING", "job-cost signal is not typed", "JOB_COST_ACCOUNTING_SIGNAL_INVALID");
   assert(e.authority_scope === "JOB_COST_ACCOUNTING", "authority scope is not narrow", "JOB_COST_ACCOUNTING_SCOPE_INVALID");
+  assert(e.candidate_digest === JOB_COST_ACCOUNTING_BLOCK_SHA256, "candidate digest is not the canonical Job-Cost block", "JOB_COST_ACCOUNTING_CANDIDATE_PROVENANCE_INVALID");
+  assert(e.source_lock_sha256 === JOB_COST_ACCOUNTING_SOURCE_LOCK_SHA256 && e.standard_block_sha256 === JOB_COST_ACCOUNTING_STANDARD_BLOCK_SHA256 && e.standard_source_manifest_sha256 === JOB_COST_ACCOUNTING_STANDARD_SOURCE_MANIFEST_SHA256, "source or standard provenance is not canonical", "JOB_COST_ACCOUNTING_SOURCE_PROVENANCE_INVALID");
+  assert(e.source_effective_date === "NOT_PUBLISHED" && e.source_retrieved_date === "2026-08-11", "source freshness evidence is not canonical", "JOB_COST_ACCOUNTING_SOURCE_FRESHNESS_INVALID");
+  assert(e.model_policy_status === "PREPARED_INACTIVE" && e.model_snapshot_sha256 === JOB_COST_ACCOUNTING_MODEL_SNAPSHOT_SHA256 && e.model_file_sha256 === JOB_COST_ACCOUNTING_MODEL_FILE_SHA256 && e.context_registry_sha256 === JOB_COST_ACCOUNTING_CONTEXT_REGISTRY_SHA256, "model or context registry provenance is not canonical", "JOB_COST_ACCOUNTING_MODEL_PROVENANCE_INVALID");
+  assert(e.context_receipt_sha256 === JOB_COST_ACCOUNTING_CONTEXT_RECEIPT_SHA256 && e.upstream_router_status === "BOUND" && e.upstream_router_result_sha256 === JOB_COST_ACCOUNTING_UPSTREAM_ROUTER_RESULT_SHA256, "typed context or upstream router receipt is not canonical", "JOB_COST_ACCOUNTING_CONTEXT_PROVENANCE_INVALID");
+  assert(e.custody_ref === JOB_COST_ACCOUNTING_CUSTODY_REF && e.rollback_ref === JOB_COST_ACCOUNTING_ROLLBACK_REF, "custody or rollback is not canonical", "JOB_COST_ACCOUNTING_CUSTODY_PROVENANCE_INVALID");
   assert(Array.isArray(e.required_block_identities) && e.required_block_identities.length === JOB_COST_ACCOUNTING_REQUIRED_BLOCKS.length, "required block identities are incomplete", "JOB_COST_ACCOUNTING_BLOCK_BINDING_INVALID");
   e.required_block_identities.forEach((value, index) => {
     id(value, "required_block_identities[]");
@@ -187,7 +201,7 @@ export function evaluateJobCostAccountingBoundary(input) {
   if (f.unsafe_action) return result("DENY", "NO_JOB_COST_SIDE_EFFECT", "JOB_COST_ACCOUNTING_OPERATION_FORBIDDEN", input);
   if (f.data_limit) return result("ROUTE", "PROFESSIONAL_ACCOUNTING_REVIEW", "JOB_COST_ACCOUNTING_DATA_LIMIT_REVIEW_REQUIRED", input, {routing_allowed: true, selected_owner: "AGENTOS.ORCHESTRATOR"});
   if (f.unsupported_tool) return result("ROUTE", "PROFESSIONAL_ACCOUNTING_REVIEW", "JOB_COST_ACCOUNTING_TOOL_LIMIT_REVIEW_REQUIRED", input, {routing_allowed: true, selected_owner: "AGENTOS.ORCHESTRATOR"});
-  if (!["CURRENT", "PREPARED_INACTIVE"].includes(e.authority_status) || e.source_status !== "CURRENT_VERIFIED" || e.candidate_status !== "CURRENT_CANDIDATE" || e.context_status !== "JOB_COST_ACCOUNTING_CONTEXT" || !["CURRENT", "PREPARED_INACTIVE"].includes(e.model_policy_status) || e.model_route_status !== "BOUND" || e.upstream_router_status !== "BOUND" || e.context_complete !== true) return result("DENY", "TYPED_CONTEXT_REQUIRED", "JOB_COST_ACCOUNTING_CONTEXT_BINDING_INVALID", input);
+  if (e.authority_status !== "PREPARED_INACTIVE" || e.source_status !== "CURRENT_VERIFIED" || e.candidate_status !== "CURRENT_CANDIDATE" || e.context_status !== "JOB_COST_ACCOUNTING_CONTEXT" || e.model_route_status !== "BOUND" || e.context_complete !== true) return result("DENY", "TYPED_CONTEXT_REQUIRED", "JOB_COST_ACCOUNTING_CONTEXT_BINDING_INVALID", input);
   if (e.source_identity !== "SOURCE.GAO_GREEN_BOOK_2025" || e.source_version !== "2025" || e.job_cost_signal !== "FIN.JOB_COST_ACCOUNTING" || e.signal_status !== "BOUND" || e.task_status !== "JOB_COST_ACCOUNTING_ANALYSIS") return result("DENY", "TYPED_CONTEXT_REQUIRED", "JOB_COST_ACCOUNTING_SIGNAL_INVALID", input);
   if (!['ANALYZE', 'ASSEMBLE', 'ROUTE'].includes(e.requested_action)) return result("DENY", "TYPED_CONTEXT_REQUIRED", "JOB_COST_ACCOUNTING_ACTION_INVALID", input);
   return result("ROUTE", "JOB_COST_ACCOUNTING_ATOMIC_HANDOFF", "JOB_COST_ACCOUNTING_ROUTE_READY", input, {
