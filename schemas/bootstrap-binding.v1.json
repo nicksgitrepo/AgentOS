@@ -2813,7 +2813,7 @@
     },
     "permanent_role_external_review_consumer_fixture": {
       "path": "tests/fixtures/permanent-role-external-review-consumer.mjs",
-      "sha256": "d0618dc866c75e712d087c53793557ab88eac61efbb43385d6563b64b5a5c063"
+      "sha256": "eb3132cfe05e01c00f849c7dbe200a8a9a38adaf7d242ca894956f1e5b34db37"
     },
     "permanent_role_external_review_contract": {
       "path": "schemas/permanent-role-external-review.v1.json",
@@ -2825,7 +2825,7 @@
     },
     "permanent_role_external_review_verifier": {
       "path": "tests/verify-permanent-role-external-review-store.mjs",
-      "sha256": "837b673f31b03e7de1367de940f2d84514afc823600f90dd35c0a03ea9a0ffd5"
+      "sha256": "04092f75de956cf41b0d03aae27d68f1db102cece7a23615f75bd4552c24bde9"
     },
     "permanent_role_governed_admission_contract": {
       "path": "schemas/permanent-role-governed-admission.v1.json",
