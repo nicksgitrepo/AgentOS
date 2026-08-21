@@ -109,7 +109,7 @@ function evaluatePackage(packageDir) {
   const evaluation = readJson(path.join(packageDir, "evaluation.json"));
   if (evaluation.schema !== EVALUATION_SCHEMA || evaluation.block_id !== block.block_id || evaluation.candidate_digest !== block.block_sha256) fail(`${block.block_id} evaluation is not bound to the candidate`);
   const declaredClasses = Array.isArray(block.evaluation?.fixture_classes) ? block.evaluation.fixture_classes : [];
-  const expectedClasses = [...new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES, ...declaredClasses])].sort();
+  const expectedClasses = (block.evaluation?.fixture_policy === "EXACT_DECLARED" ? declaredClasses : [...new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES, ...declaredClasses])]).slice().sort();
   const observedClasses = [...new Set((evaluation.cases ?? []).map((item) => item.class))].sort();
   if (JSON.stringify(observedClasses) !== JSON.stringify(expectedClasses)) fail(`${block.block_id} evaluation fixture classes are incomplete`);
   if (evaluation.independence_rule !== "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION") fail(`${block.block_id} evaluation does not require independent review`);
@@ -133,7 +133,7 @@ function evaluatePackage(packageDir) {
 
 function packageDirectories(libraryRoot) {
   const directories = [];
-  for (const rootName of ["foundation", "standards", "wave-01", "wave-02", "wave-03", "wave-04", "wave-05", "wave-06"]) {
+  for (const rootName of ["foundation", "standards", "wave-01", "wave-02", "wave-03", "wave-04", "wave-05", "wave-06", "wave-07"]) {
     const root = path.join(libraryRoot, rootName);
     if (!fs.existsSync(root)) continue;
     for (const entry of fs.readdirSync(root, {withFileTypes: true}).filter((item) => item.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {

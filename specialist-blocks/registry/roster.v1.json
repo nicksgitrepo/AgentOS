@@ -64,7 +64,30 @@
       "evaluator_receipt": "specialist-eval.search-rag.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.ai.search-router",
@@ -123,7 +146,30 @@
       "evaluator_receipt": "specialist-eval.search-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.assurance-enterprise.router",
@@ -176,7 +222,30 @@
       "evaluator_receipt": "specialist-eval.assurance-enterprise-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.assurance-enterprise.test-architect",
@@ -236,7 +305,30 @@
       "evaluator_receipt": "specialist-eval.test-architect.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.bootstrap-project-initializer",
@@ -290,7 +382,30 @@
       "evaluator_receipt": "specialist-eval.bootstrap-project-initializer.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.central-integrator",
@@ -351,7 +466,30 @@
       "evaluator_receipt": "specialist-eval.central-integrator.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.independent-auditor",
@@ -412,7 +550,30 @@
       "evaluator_receipt": "specialist-eval.independent-auditor.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.memory",
@@ -477,7 +638,30 @@
       "evaluator_receipt": "specialist-eval.memory.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.orchestrator",
@@ -539,7 +723,30 @@
       "evaluator_receipt": "specialist-eval.orchestrator.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.product-owner",
@@ -601,7 +808,30 @@
       "evaluator_receipt": "specialist-eval.product-owner.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.project-controller",
@@ -664,7 +894,30 @@
       "evaluator_receipt": "specialist-eval.project-controller.v2",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.release-manager",
@@ -728,7 +981,117 @@
       "evaluator_receipt": "specialist-eval.release-manager.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
+    },
+    {
+      "block_id": "specialist.control.repair",
+      "candidate_digest": "062ec59155c904b29adced72ed7ffe52bab3a6b457bcab2acabf80a0f9d1fea8",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "AGENTOS.REPAIR owns one campaign worktree and candidate repair evidence; Spawner owns auditor lifecycle and governance, Controller regulates workflow and receives deployment-readiness handoff, and Runtime governs any later deployment decision.",
+      "permitted_decisions": [
+        "bind one project and one mode",
+        "derive and disposition the applicable roster",
+        "emit NOT_READY, BLOCKED_EXACT, or READY_FOR_DEPLOYMENT_REVIEW",
+        "freeze immutable candidates",
+        "merge a passed candidate into the campaign-owned cumulative branch",
+        "repair accepted findings in the campaign worktree",
+        "request narrow auditors from Spawner"
+      ],
+      "forbidden_decisions": [
+        "accept an auditor's suggested patch without independent validation",
+        "audit and repair in the same worktree as an auditor",
+        "deploy, publish, promote, release, repoint a remote, or mutate protected main",
+        "spawn, despawn, archive, or change the model of an auditor",
+        "start a later auditor before merge and cleanup proof",
+        "use live data, credentials, secrets, or destructive migration",
+        "waive an unresolved finding, stale pass, missing evidence, or failed gate",
+        "write global governance or project memory directly"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_SELF_ACCEPTANCE;_ONE_CAMPAIGN_WORKTREE_REPAIR_AND_CAMPAIGN_BRANCH_MERGE_ONLY;_NO_PROTECTED_BRANCH;_NO_DEPLOYMENT;_NO_AUDITOR_LIFECYCLE",
+      "required_upstream_router": null,
+      "sibling_conflicts": [
+        "FULL_IMPORT and FULL_AUDIT_REPAIR are mutually exclusive per campaign",
+        "Repair and auditor never share a write surface",
+        "serial and batch merges cannot target protected branches"
+      ],
+      "composition_rules": [
+        "BLOCKED_EXACT is terminal for the affected finding and prevents deployment readiness",
+        "PASS_1_SERIAL precedes PASS_2_PLAN",
+        "PASS_2 batches contain no more than six isolated lanes",
+        "UNKNOWN, stale, unresolved, or incomplete evidence blocks readiness",
+        "every merge re-runs all earlier mandatory gates",
+        "governance or context changes invalidate affected results and seeds"
+      ],
+      "escalation_target": "AGENTOS.SPAWNER",
+      "split_required_when": [
+        "a platform or higher-tier coherence review is required",
+        "finding ownership or required capability differs",
+        "import and audit intent differ",
+        "mode, project, environment, data boundary, or migration authority differs"
+      ],
+      "priority": "P0",
+      "family": "repair-campaign-control",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-exit-governance",
+        "source.agentos-model-policy",
+        "source.agentos-repair-lifecycle"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.repair.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.resource-scheduler",
@@ -792,7 +1155,30 @@
       "evaluator_receipt": "specialist-eval.resource-scheduler.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.runtime-deployment-operator",
@@ -853,7 +1239,30 @@
       "evaluator_receipt": "specialist-eval.runtime-deployment-operator.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.control.worktree-custody",
@@ -912,7 +1321,30 @@
       "evaluator_receipt": "specialist-eval.worktree-custody.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.data.migration-rollback",
@@ -974,7 +1406,30 @@
       "evaluator_receipt": "specialist-eval.migration-rollback.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.data.postgresql-rls",
@@ -1032,7 +1487,30 @@
       "evaluator_receipt": "specialist-eval.postgresql-rls.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.data.router",
@@ -1085,7 +1563,30 @@
       "evaluator_receipt": "specialist-eval.data-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.delivery-operations.observability-incident",
@@ -1145,7 +1646,30 @@
       "evaluator_receipt": "specialist-eval.observability-incident.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.delivery-operations.observability-router",
@@ -1202,7 +1726,30 @@
       "evaluator_receipt": "specialist-eval.observability-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.domain.field-job-workflow",
@@ -1262,7 +1809,30 @@
       "evaluator_receipt": "specialist-eval.field-job-workflow.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.domain.well-workflow",
@@ -1321,7 +1891,30 @@
       "evaluator_receipt": "specialist-eval.well-workflow.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.domain.workflow-router",
@@ -1380,7 +1973,30 @@
       "evaluator_receipt": "specialist-eval.workflow-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.finance.accounting-router",
@@ -1439,7 +2055,30 @@
       "evaluator_receipt": "specialist-eval.accounting-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.finance.job-cost-accounting",
@@ -1500,7 +2139,30 @@
       "evaluator_receipt": "specialist-eval.job-cost-accounting.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.authority-jurisdiction-gate",
@@ -1551,7 +2213,30 @@
       "evaluator_receipt": "specialist-eval.authority-jurisdiction-gate.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.evaluation-admission-gate",
@@ -1603,7 +2288,30 @@
       "evaluator_receipt": "specialist-eval.evaluation-admission-gate.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.evidence-freshness-gate",
@@ -1655,7 +2363,30 @@
       "evaluator_receipt": "specialist-eval.evidence-freshness-gate.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.registry-alias-deduplicator",
@@ -1707,7 +2438,30 @@
       "evaluator_receipt": "specialist-eval.registry-alias-deduplicator.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.role-intake-classifier",
@@ -1758,7 +2512,30 @@
       "evaluator_receipt": "specialist-eval.role-intake-classifier.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.scope-non-goal-gate",
@@ -1809,7 +2586,30 @@
       "evaluator_receipt": "specialist-eval.scope-non-goal-gate.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.foundation.tool-custody-gate",
@@ -1860,7 +2660,30 @@
       "evaluator_receipt": "specialist-eval.tool-custody-gate.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.graphics.industrial-3d",
@@ -1920,7 +2743,30 @@
       "evaluator_receipt": "specialist-eval.industrial-3d.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.graphics.industrial-3d-router",
@@ -1978,7 +2824,30 @@
       "evaluator_receipt": "specialist-eval.industrial-3d-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.platform.aws-iam-policy",
@@ -2036,7 +2905,30 @@
       "evaluator_receipt": "specialist-eval.aws-iam-policy.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.platform.cloudflare-cache",
@@ -2094,7 +2986,30 @@
       "evaluator_receipt": "specialist-eval.cloudflare-cache.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.platform.cloudflare-dns",
@@ -2152,7 +3067,30 @@
       "evaluator_receipt": "specialist-eval.cloudflare-dns.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.platform.provider-edge-router",
@@ -2205,7 +3143,30 @@
       "evaluator_receipt": "specialist-eval.provider-edge-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.privacy.data-lifecycle-router",
@@ -2260,7 +3221,30 @@
       "evaluator_receipt": "specialist-eval.data-lifecycle-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.accessibility-wcag",
@@ -2320,7 +3304,30 @@
       "evaluator_receipt": "specialist-eval.accessibility-wcag.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.android-kotlin",
@@ -2380,7 +3387,30 @@
       "evaluator_receipt": "specialist-eval.android-kotlin.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.desktop-offline-realtime-router",
@@ -2439,7 +3469,30 @@
       "evaluator_receipt": "specialist-eval.desktop-offline-realtime-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.ios-swiftui",
@@ -2498,7 +3551,30 @@
       "evaluator_receipt": "specialist-eval.ios-swiftui.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.openapi-contracts",
@@ -2556,7 +3632,30 @@
       "evaluator_receipt": "specialist-eval.openapi-contracts.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.product-interaction",
@@ -2615,7 +3714,30 @@
       "evaluator_receipt": "specialist-eval.product-interaction.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.responsive-web",
@@ -2674,7 +3796,30 @@
       "evaluator_receipt": "specialist-eval.responsive-web.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.product-client.router",
@@ -2727,7 +3872,30 @@
       "evaluator_receipt": "specialist-eval.product-client-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.regulatory.applicability-router",
@@ -2785,7 +3953,30 @@
       "evaluator_receipt": "specialist-eval.regulatory-applicability-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.regulatory.fmcsa-applicability",
@@ -2845,7 +4036,30 @@
       "evaluator_receipt": "specialist-eval.fmcsa-applicability.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.abac",
@@ -2904,7 +4118,30 @@
       "evaluator_receipt": "specialist-eval.abac.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.access-control-router",
@@ -2960,7 +4197,30 @@
       "evaluator_receipt": "specialist-eval.access-control-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.cache-residue",
@@ -3019,7 +4279,30 @@
       "evaluator_receipt": "specialist-eval.cache-residue.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.concurrent-authorization",
@@ -3078,7 +4361,30 @@
       "evaluator_receipt": "specialist-eval.concurrent-authorization.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.cve-applicability",
@@ -3138,7 +4444,30 @@
       "evaluator_receipt": "specialist-eval.cve-applicability.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.cve-inventory",
@@ -3198,7 +4527,30 @@
       "evaluator_receipt": "specialist-eval.cve-inventory.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.deadlock",
@@ -3257,7 +4609,30 @@
       "evaluator_receipt": "specialist-eval.deadlock.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.dependency-vulnerability",
@@ -3317,7 +4692,30 @@
       "evaluator_receipt": "specialist-eval.dependency-vulnerability.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.double-submission",
@@ -3376,7 +4774,30 @@
       "evaluator_receipt": "specialist-eval.double-submission.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.function-scope",
@@ -3435,7 +4856,30 @@
       "evaluator_receipt": "specialist-eval.function-scope.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.idempotency",
@@ -3494,7 +4938,30 @@
       "evaluator_receipt": "specialist-eval.idempotency.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.oauth-identity",
@@ -3552,7 +5019,30 @@
       "evaluator_receipt": "specialist-eval.oauth-identity.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.object-scope",
@@ -3611,7 +5101,30 @@
       "evaluator_receipt": "specialist-eval.object-scope.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.oidc-core",
@@ -3669,7 +5182,30 @@
       "evaluator_receipt": "specialist-eval.oidc-core.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
@@ -3729,7 +5265,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api1-object-authorization.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api10-unsafe-api-consumption",
@@ -3789,7 +5348,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api10-unsafe-api-consumption.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api2-broken-authentication",
@@ -3849,7 +5431,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api2-broken-authentication.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api3-property-authorization",
@@ -3909,7 +5514,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api3-property-authorization.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api4-resource-consumption",
@@ -3969,7 +5597,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api4-resource-consumption.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api5-function-authorization",
@@ -4029,7 +5680,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api5-function-authorization.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api6-sensitive-business-flows",
@@ -4089,7 +5763,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api6-sensitive-business-flows.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api7-ssrf",
@@ -4149,7 +5846,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api7-ssrf.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api8-misconfiguration",
@@ -4209,7 +5929,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api8-misconfiguration.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-2023-api9-inventory",
@@ -4269,7 +6012,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api9-inventory.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-api-top10-router",
@@ -4325,7 +6091,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-top10-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-asvs-router",
@@ -4381,7 +6170,30 @@
       "evaluator_receipt": "specialist-eval.owasp-asvs-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a01-broken-access-control",
@@ -4441,7 +6253,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a01-broken-access-control.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a02-security-misconfiguration",
@@ -4501,7 +6336,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a02-security-misconfiguration.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a03-software-supply-chain-failures",
@@ -4561,7 +6419,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a03-software-supply-chain-failures.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a04-cryptographic-failures",
@@ -4621,7 +6502,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a04-cryptographic-failures.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a05-injection",
@@ -4681,7 +6585,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a05-injection.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a06-insecure-design",
@@ -4741,7 +6668,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a06-insecure-design.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a07-authentication-failures",
@@ -4801,7 +6751,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a07-authentication-failures.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a08-software-data-integrity-failures",
@@ -4861,7 +6834,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a08-software-data-integrity-failures.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a09-security-logging-alerting-failures",
@@ -4921,7 +6917,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a09-security-logging-alerting-failures.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-2025-a10-mishandling-exceptional-conditions",
@@ -4981,7 +7000,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a10-mishandling-exceptional-conditions.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.owasp-web-top10-router",
@@ -5037,7 +7079,30 @@
       "evaluator_receipt": "specialist-eval.owasp-web-top10-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.patch-remediation",
@@ -5097,7 +7162,30 @@
       "evaluator_receipt": "specialist-eval.patch-remediation.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.race-condition",
@@ -5156,7 +7244,30 @@
       "evaluator_receipt": "specialist-eval.race-condition.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.rbac",
@@ -5215,7 +7326,30 @@
       "evaluator_receipt": "specialist-eval.rbac.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.rebac",
@@ -5274,7 +7408,30 @@
       "evaluator_receipt": "specialist-eval.rebac.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.replay",
@@ -5333,7 +7490,30 @@
       "evaluator_receipt": "specialist-eval.replay.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.revocation",
@@ -5392,7 +7572,30 @@
       "evaluator_receipt": "specialist-eval.revocation.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.router",
@@ -5445,7 +7648,30 @@
       "evaluator_receipt": "specialist-eval.security-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.sbom",
@@ -5505,7 +7731,30 @@
       "evaluator_receipt": "specialist-eval.sbom.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.supply-chain-provenance",
@@ -5565,7 +7814,30 @@
       "evaluator_receipt": "specialist-eval.supply-chain-provenance.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.supply-chain-router",
@@ -5621,7 +7893,30 @@
       "evaluator_receipt": "specialist-eval.supply-chain-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.tenant-isolation",
@@ -5680,7 +7975,30 @@
       "evaluator_receipt": "specialist-eval.tenant-isolation.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.security.toctou",
@@ -5739,7 +8057,30 @@
       "evaluator_receipt": "specialist-eval.toctou.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.software-language-runtime.react-components",
@@ -5797,7 +8138,30 @@
       "evaluator_receipt": "specialist-eval.react-components.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.software-language-runtime.router",
@@ -5850,7 +8214,30 @@
       "evaluator_receipt": "specialist-eval.software-language-runtime-router.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.software-language-runtime.rust-backend",
@@ -5908,7 +8295,30 @@
       "evaluator_receipt": "specialist-eval.rust-backend.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.software-language-runtime.typescript-language",
@@ -5966,7 +8376,30 @@
       "evaluator_receipt": "specialist-eval.typescript-language.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.aws-iam-current",
@@ -6021,7 +8454,30 @@
       "evaluator_receipt": "specialist-eval.aws-iam-current.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.cloudflare-cache-current",
@@ -6076,7 +8532,30 @@
       "evaluator_receipt": "specialist-eval.cloudflare-cache-current.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.cloudflare-dns-current",
@@ -6131,7 +8610,30 @@
       "evaluator_receipt": "specialist-eval.cloudflare-dns-current.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.conventional-commits-1-0-0",
@@ -6186,7 +8688,30 @@
       "evaluator_receipt": "specialist-eval.conventional-commits-1-0-0.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.fmcsa-part-390-2025",
@@ -6241,7 +8766,30 @@
       "evaluator_receipt": "specialist-eval.fmcsa-part-390-2025.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.gao-green-book-2025",
@@ -6296,7 +8844,30 @@
       "evaluator_receipt": "specialist-eval.gao-green-book-2025.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.gltf-2-0-1",
@@ -6351,7 +8922,30 @@
       "evaluator_receipt": "specialist-eval.gltf-2-0-1.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.nist-ai-rmf-1-0",
@@ -6406,7 +9000,30 @@
       "evaluator_receipt": "specialist-eval.nist-ai-rmf-1-0.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.nist-genai-profile-1-0",
@@ -6461,7 +9078,30 @@
       "evaluator_receipt": "specialist-eval.nist-genai-profile-1-0.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.nist-ssdf",
@@ -6516,7 +9156,30 @@
       "evaluator_receipt": "specialist-eval.nist-ssdf.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.oauth-rfc-9700",
@@ -6571,7 +9234,30 @@
       "evaluator_receipt": "specialist-eval.oauth-rfc-9700.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.oidc-core-1-0",
@@ -6626,7 +9312,30 @@
       "evaluator_receipt": "specialist-eval.oidc-core-1-0.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.openapi-3-1-1",
@@ -6681,7 +9390,30 @@
       "evaluator_receipt": "specialist-eval.openapi-3-1-1.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.owasp-api-top10-2023",
@@ -6736,7 +9468,30 @@
       "evaluator_receipt": "specialist-eval.owasp-api-top10-2023.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.owasp-asvs",
@@ -6791,7 +9546,30 @@
       "evaluator_receipt": "specialist-eval.owasp-asvs.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.owasp-top10-2025",
@@ -6846,7 +9624,30 @@
       "evaluator_receipt": "specialist-eval.owasp-top10-2025.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.postgresql-17-rls",
@@ -6901,7 +9702,30 @@
       "evaluator_receipt": "specialist-eval.postgresql-17-rls.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.react-19-2",
@@ -6956,7 +9780,30 @@
       "evaluator_receipt": "specialist-eval.react-19-2.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.rust-reference",
@@ -7011,7 +9858,30 @@
       "evaluator_receipt": "specialist-eval.rust-reference.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.semantic-versioning-2-0-0",
@@ -7066,7 +9936,30 @@
       "evaluator_receipt": "specialist-eval.semantic-versioning-2-0-0.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.slsa",
@@ -7121,7 +10014,30 @@
       "evaluator_receipt": "specialist-eval.slsa.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.typescript-5-9",
@@ -7176,7 +10092,30 @@
       "evaluator_receipt": "specialist-eval.typescript-5-9.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     },
     {
       "block_id": "specialist.standard.wcag-2-2",
@@ -7231,11 +10170,34 @@
       "evaluator_receipt": "specialist-eval.wcag-2-2.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
-      "activation": "OFF"
+      "activation": "OFF",
+      "exit_governance_review": {
+        "schema": "agentos.exit_governance_review.v1",
+        "required_before": [
+          "CAPABILITY_REVOCATION",
+          "ARCHIVE"
+        ],
+        "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+        "proposal_layers": [
+          "GLOBAL",
+          "PROJECT",
+          "ROLE",
+          "TECHNOLOGY_OR_STANDARD",
+          "ENVIRONMENT",
+          "TASK"
+        ],
+        "spawner_disposition": [
+          "ACCEPT",
+          "REJECT_WITH_REASON",
+          "DEFER_WITH_EXACT_EVIDENCE_GAP"
+        ],
+        "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+        "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+      }
     }
   ],
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "4be9be5730a51de5e807b6a73efa3061b16db8a7555edce95e8e810e5054c861"
+  "roster_sha256": "9b4d7883446095b8c3507456b94ac20a045787ceb5f8f64aa330cc4b05f28097"
 }

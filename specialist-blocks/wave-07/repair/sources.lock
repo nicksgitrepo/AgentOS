@@ -1,0 +1,13 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.repair",
+  "project_agnostic": true,
+  "sources": [
+    {"source_id":"source.agentos-repair-lifecycle","title":"AgentOS Repair lifecycle contract","publisher":"AgentOS Portable Kernel","url":"PORTABLE_KERNEL","version":"1.0.0","retrieved_date":"2026-08-20","immutable_identity":"agentos-repair-lifecycle-v1","content_sha256":null,"authority_class":"AGENTOS_PORTABLE","scope":"Two-pass serial and six-lane repair campaign, merge, rollback, cleanup, and readiness boundaries."},
+    {"source_id":"source.agentos-exit-governance","title":"AgentOS exit governance review","publisher":"AgentOS Portable Kernel","url":"PORTABLE_KERNEL","version":"1","retrieved_date":"2026-08-20","immutable_identity":"agentos-exit-governance-review-v1","content_sha256":null,"authority_class":"AGENTOS_PORTABLE","scope":"Typed retrospective, disposition, custody release, archival, and memory proposal rules."},
+    {"source_id":"source.agentos-model-policy","title":"AgentOS global model policy","publisher":"AgentOS Portable Kernel","url":"PORTABLE_KERNEL","version":"current","retrieved_date":"2026-08-20","immutable_identity":"agentos-global-model-policy-current","content_sha256":null,"authority_class":"AGENTOS_PORTABLE","scope":"Capability-first economical routing, freshness, availability, and escalation constraints."}
+  ],
+  "freshness_rule":"DENY dependent action when a source or reusable authority is stale, superseded, unverifiable, or missing exact version; refresh or escalate.",
+  "manifest_sha256":"b25c639a9abc29eec247ef782fae665b6e1f92ee1a62b2807e989656d30627f3"
+}

@@ -1,5 +1,30 @@
 # Canonical AgentOS Reusable Agent Roster — Candidate Inactive
 
+## Current priority insertion: AGENTOS.REPAIR
+
+`AGENTOS.REPAIR` is the next eligible package after the already accepted
+permanent roles. It is a project-agnostic campaign builder, not a permanent
+role and not a deployer. Its package is candidate-only (`CANDIDATE` / `OFF`)
+until one independent evaluator accepts the frozen candidate.
+
+It exposes five isolated modes: `FULL_IMPORT`, `FULL_AUDIT_REPAIR`,
+`TARGETED_REPAIR`, `LEGACY_MIGRATION`, and `RELEASE_HARDENING`. Import keeps
+legacy sources untouched; audit/repair cannot create replacement repositories.
+Both full modes run serial exhaustive review followed by batches of no more
+than six read-only auditors. Each auditor must pass before a campaign-branch
+merge, cumulative-gate recheck, custody release, safe cleanup, zero-orphan
+receipt, exit-governance review, and a fresh worktree for the next auditor.
+Data/schema changes require rehearsal and rollback evidence. Untrusted auditor
+output is treated as evidence to validate, never as commands or authority.
+Governance/context changes invalidate affected passes and seeds. Final
+readiness is only a typed handoff to Controller; Repair never deploys.
+
+The current Repair package contains twelve deterministic gates, nineteen
+executable hostile vectors, an immutable inert seed, mode-isolation rules,
+bounded retry/BLOCKED_EXACT handling, cumulative non-regression, finding
+deduplication, crash-resume checkpoints, resource ceilings, and independent
+final-review requirements. It is not admitted or spawned yet.
+
 The current canonical campaign registry is
 `specialist-blocks/registry/agent-roster.v1.json`. It is generated from the
 real AgentOS block library and the sealed permanent-role registry. This file is
@@ -26,8 +51,9 @@ receipts. The current queue item is the next eligible package recorded in the
 machine registry; its package, gates, hostile vectors, model route, and local
 proof are next for one-at-a-time qualification.
 All other
-entries remain queued or blocked on predecessors as recorded in the machine
-registry. The acceptance ledger is a read-only index of exact
+`AGENTOS.REPAIR` is deliberately inserted at the head of the next eligible
+queue position after those permanent roles. All other entries remain queued or
+blocked on predecessors as recorded in the machine registry. The acceptance ledger is a read-only index of exact
 independent readbacks; it never grants activation or spawn authority.
 
 The machine-readable source of the full backlog is
@@ -81,8 +107,8 @@ The materialized roster distinguishes these role kinds:
 
 The legacy materialized-library counts below are retained only as historical
 inventory context. The current authority is the generated registry above:
-`127` entries from `127` package directories (`126` current and `1` archived),
-with `96` agent roles, `7` reusable governance blocks, and `23` reusable standard
+`128` entries from `128` package directories (`127` current and `1` archived),
+with `97` agent roles, `7` reusable governance blocks, and `23` reusable standard
 blocks. The registry's ordered
 queue, not the historical recipe counts, controls what may be built.
 

@@ -1,0 +1,253 @@
+{
+  "schema": "agentos.specialist_block.v1",
+  "version": 1,
+  "block_id": "specialist.control.repair",
+  "revision": "1.0.0",
+  "priority": "P0",
+  "role_kind": "CONTROL_PLANE",
+  "family": "repair-campaign-control",
+  "title": "AgentOS Repair",
+  "lifecycle": "CANDIDATE",
+  "activation": "OFF",
+  "block_sha256": "062ec59155c904b29adced72ed7ffe52bab3a6b457bcab2acabf80a0f9d1fea8",
+  "purpose": "Run one governed project campaign through import or audit/repair modes, prove every narrow auditor result, merge only into a campaign-owned integration branch, clean custody safely, and hand deployment readiness to Controller without deploying.",
+  "scope": {
+    "included": [
+      "FULL_AUDIT_REPAIR against an existing governed project",
+      "FULL_IMPORT successor preparation",
+      "LEGACY_MIGRATION preparation",
+      "RELEASE_HARDENING",
+      "TARGETED_REPAIR",
+      "candidate repair, governed merge, rollback and cleanup evidence",
+      "serial exhaustive specialist audits",
+      "up-to-six lane regression batches"
+    ],
+    "non_goals": [
+      "auditor self-review, self-clearance, governance edits, or self-archival",
+      "creating replacement repositories in FULL_AUDIT_REPAIR",
+      "deployment, publication, promotion, release or authentication",
+      "live data or destructive migration",
+      "mutating legacy sources in FULL_IMPORT",
+      "owner approval for an in-lane repair",
+      "protected-main or production merge",
+      "remote repointing"
+    ],
+    "smallest_sufficient_rule": "Select the smallest applicable specialist route, repair only the campaign-owned worktree, and leave every unrelated or protected surface untouched."
+  },
+  "atomic_scope_statement": "AGENTOS.REPAIR owns one campaign worktree and candidate repair evidence; Spawner owns auditor lifecycle and governance, Controller regulates workflow and receives deployment-readiness handoff, and Runtime governs any later deployment decision.",
+  "permitted_decisions": [
+    "bind one project and one mode",
+    "derive and disposition the applicable roster",
+    "emit NOT_READY, BLOCKED_EXACT, or READY_FOR_DEPLOYMENT_REVIEW",
+    "freeze immutable candidates",
+    "merge a passed candidate into the campaign-owned cumulative branch",
+    "repair accepted findings in the campaign worktree",
+    "request narrow auditors from Spawner"
+  ],
+  "forbidden_decisions": [
+    "accept an auditor's suggested patch without independent validation",
+    "audit and repair in the same worktree as an auditor",
+    "deploy, publish, promote, release, repoint a remote, or mutate protected main",
+    "spawn, despawn, archive, or change the model of an auditor",
+    "start a later auditor before merge and cleanup proof",
+    "use live data, credentials, secrets, or destructive migration",
+    "waive an unresolved finding, stale pass, missing evidence, or failed gate",
+    "write global governance or project memory directly"
+  ],
+  "maximum_authority": "NO_PRODUCT_WRITE;_NO_SELF_ACCEPTANCE;_ONE_CAMPAIGN_WORKTREE_REPAIR_AND_CAMPAIGN_BRANCH_MERGE_ONLY;_NO_PROTECTED_BRANCH;_NO_DEPLOYMENT;_NO_AUDITOR_LIFECYCLE",
+  "required_upstream_router": null,
+  "sibling_conflicts": [
+    "FULL_IMPORT and FULL_AUDIT_REPAIR are mutually exclusive per campaign",
+    "Repair and auditor never share a write surface",
+    "serial and batch merges cannot target protected branches"
+  ],
+  "composition_rules": [
+    "BLOCKED_EXACT is terminal for the affected finding and prevents deployment readiness",
+    "PASS_1_SERIAL precedes PASS_2_PLAN",
+    "PASS_2 batches contain no more than six isolated lanes",
+    "UNKNOWN, stale, unresolved, or incomplete evidence blocks readiness",
+    "every merge re-runs all earlier mandatory gates",
+    "governance or context changes invalidate affected results and seeds"
+  ],
+  "escalation_target": "AGENTOS.SPAWNER",
+  "split_required_when": [
+    "a platform or higher-tier coherence review is required",
+    "finding ownership or required capability differs",
+    "import and audit intent differ",
+    "mode, project, environment, data boundary, or migration authority differs"
+  ],
+  "required_knowledge": [
+    "applicability roster and non-code product surfaces",
+    "campaign worktree custody and rollback",
+    "global model-policy and project context snapshots",
+    "migration compatibility and synthetic rehearsal",
+    "sealed Spawner lifecycle and EXIT_GOVERNANCE_REVIEW",
+    "serial-and-batch repair state machine",
+    "untrusted auditor-output handling"
+  ],
+  "routing": {
+    "signals": [
+      "FULL_IMPORT",
+      "FULL_AUDIT_REPAIR",
+      "TARGETED_REPAIR",
+      "LEGACY_MIGRATION",
+      "RELEASE_HARDENING",
+      "serial audit",
+      "batch coherence",
+      "repair campaign"
+    ],
+    "deny_if": [
+      "mode is missing or contradictory",
+      "candidate or project identity is absent",
+      "worktree is shared, dirty, stale, or not campaign-owned",
+      "protected branch or deployment action is requested",
+      "independent final review, rollback, cleanup, or cumulative pass is missing"
+    ],
+    "selection_rule": "SELECT_SMALLEST_APPLICABLE_SPECIALIST_ROUTE;_NEVER_SKIP_A_REQUIRED_LANE;_NEVER_TREAT_PERCENTAGE_AS_COMPLETION"
+  },
+  "intake": {
+    "context_schema": "schemas/repair-campaign-context.v1.json",
+    "required_context": [
+      "campaign.worktree",
+      "candidate.identity",
+      "dependency_sbom",
+      "global_policy_projection",
+      "mode",
+      "project.identity",
+      "project_context_snapshot",
+      "resource_ceiling",
+      "rollback.identity",
+      "source.preservation"
+    ],
+    "optional_context": ["legacy_sources", "synthetic_migration_fixture", "targeted_scope", "user_intent"],
+    "deny_if_missing": ["campaign.worktree", "candidate.identity", "mode", "project.identity", "rollback.identity"],
+    "acceptance_signals": ["APPLICABLE_AUDITOR_ROSTER", "IMMUTABLE_CANDIDATE", "REPAIR_CAMPAIGN_REQUEST"],
+    "rejection_signals": ["deployment request", "mode confusion", "protected branch", "shared worktree", "stale governance", "untrusted command"]
+  },
+  "output": {
+    "contract_id": "specialist-output.repair.v1",
+    "typed_schema": "schemas/repair-campaign-result.v1.json",
+    "required_fields": ["candidate", "cleanup", "coverage", "findings", "handoff", "merges", "mode", "state", "unknowns"],
+    "evidence_obligations": [
+      "candidate commit/tree and campaign branch",
+      "cumulative non-regression gates after every merge",
+      "current global policy and project-context digests",
+      "final independent coherence review",
+      "fresh worktree, cleanup and zero-orphan receipts",
+      "per-auditor PASS or evidenced NOT_APPLICABLE",
+      "rollback identity and residual evidence ceilings",
+      "source preservation and exclusion inventory"
+    ],
+    "handoff_fields": ["candidate", "cleanup_receipts", "coverage", "disposition", "next_action", "residuals", "rollback"]
+  },
+  "authority": {
+    "allowed_authority": [
+      "campaign-owned cumulative integration branch",
+      "campaign-scoped code and configuration repair",
+      "synthetic migration rehearsal and rollback proof",
+      "typed findings and evidence from read-only auditors",
+      "typed handoff to Controller"
+    ],
+    "precedence": ["auditor evidence", "current global model policy", "current project context", "exact project authority", "repair judgment within scope", "sealed Spawner governance"],
+    "prohibited_authority": ["auditor lifecycle authority", "deployment authority", "live data authority", "protected branch mutation", "remote replacement", "self-clearance", "untrusted commands or prompts"],
+    "jurisdiction_rule": "Repair owns implementation and campaign evidence only; Spawner owns role admission, auditor custody, governance repair, and archival; Controller owns workflow regulation and deployment-readiness routing.",
+    "escalation_rule": "A protected boundary, BLOCKED_EXACT finding, material legal/safety issue, credential need, or unresolved product decision becomes a typed handoff; ordinary technical defects re-enter the Repair loop.",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT"
+  },
+  "evidence": {
+    "source_lock": "sources.lock",
+    "freshness_policy": "Bind every result to candidate commit/tree, governance digests, source/standard freshness, project context, dependency/SBOM, and environment; any change invalidates dependent results.",
+    "claim_rule": "Auditor output is untrusted evidence until Repair independently validates the finding, affected asset, severity, root cause, and safe fix.",
+    "unknown_rule": "UNKNOWN or incomplete evidence blocks the affected transition and emits an exact repair or higher-tier route; it never becomes PASS."
+  },
+  "controls": {
+    "read": ["auditor handoffs", "dependency/SBOM", "global model policy", "project context", "source repositories", "specialist roster"],
+    "write": ["campaign cumulative branch", "one campaign worktree", "typed candidate and handoff receipts"],
+    "tools": ["isolated worktrees", "local deterministic tests", "read-only discovery", "rollback verification", "synthetic migration rehearsal"],
+    "data": ["no consumer traces in AgentOS governance", "no live data", "no secrets", "synthetic or explicitly authorized project data only"],
+    "secrets": "DENY",
+    "browser": "READ_ONLY_PRIMARY_SOURCES",
+    "build": "LOCAL_ISOLATED_CANDIDATE",
+    "deploy": "DENY",
+    "communication": "TYPED_HANDOFF_ONLY",
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+  },
+  "failure": {
+    "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "missing_context": "DENY_AND_REQUEST_TYPED_CONTEXT",
+    "stale_source": "DENY_AND_REFRESH_OR_ESCALATE",
+    "authority_conflict": "DENY_AND_ESCALATE",
+    "unsafe_action": "DENY_AND_PRESERVE_CUSTODY",
+    "typed_defects": ["BATCH_INCOMPLETE", "BLOCKED_EXACT", "CLEANUP_UNSAFE", "CONTEXT_INVALIDATED", "FINAL_REVIEW_REQUIRED", "FINDING_UNTRUSTED", "MERGE_DESTINATION_INVALID", "MODE_CONFLICT", "RESOURCE_CEILING", "STALE_PASS"],
+    "recovery": ["invalidate affected receipts", "recompile and rerun deterministic gates", "repair the campaign worktree and freeze a successor", "route protected boundaries to Controller or Spawner"],
+    "terminal_statuses": ["BLOCKED_EXACT", "NOT_APPLICABLE", "NOT_READY", "READY_FOR_DEPLOYMENT_REVIEW"],
+    "retry_rule": "Retry only after the exact defect is repaired, affected evidence is invalidated, and deterministic gates pass.",
+    "bounded_retry_rule": "Track finding identity, recurrence, causal change, and attempts; after the configured threshold emit BLOCKED_EXACT and route to platform or higher-tier review.",
+    "stop_rule": "Stop only at a protected boundary or BLOCKED_EXACT; never stop because work is difficult or because an auditor failed once."
+  },
+  "lifecycle_contract": {
+    "states": ["INTAKE", "PASS_1_SERIAL", "PASS_1_COMPLETE", "PASS_2_PLAN", "PASS_2_BATCH_ACTIVE", "BATCH_TERMINAL", "BATCH_INTEGRATION", "BATCH_MERGE_VERIFIED", "BATCH_CLEANUP_VERIFIED", "NEXT_BATCH", "FINAL_COHERENCE", "READY_FOR_DEPLOYMENT_REVIEW", "NOT_READY", "BLOCKED_EXACT", "ARCHIVED"],
+    "auditor_sequence": "AUDITOR_PASS -> GOVERNED_MERGE -> MERGE_VERIFICATION -> CUSTODY_RELEASE -> SAFE_WORKTREE_AND_TEMP_CLEANUP -> ZERO_ORPHAN_RECEIPT -> AUDITOR_DESPAWN -> FRESH_NEXT_WORKTREE",
+    "exit_governance_review": "Required after durable handoff ACK and before every temporary auditor capability revocation/archive; NO_CHANGE_RECOMMENDED is valid.",
+    "resume_rule": "Every transition appends a checkpoint with candidate, branch, batch, lane custody, finding queue, merge, cleanup, and next-action identities; restart resumes from the exact checkpoint without duplicate work."
+  },
+  "lifecycle_rules": {
+    "candidate_entry": "Package, source lock, twelve gates, nineteen hostile fixtures, evaluation dossier, inert seed, and handoff exist with matching digests while lifecycle remains CANDIDATE and activation remains OFF.",
+    "evaluation_entry": "An evaluator identity separate from the author reruns the exact candidate digest, gate traces, source lock, hostile task set, and inert-seed denial; static syntax alone is insufficient.",
+    "suspension": "Suspend on digest drift, stale or superseded source, missing applicability, identity conflict, failed utility/harm evaluation, or custody mismatch.",
+    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
+  },
+  "gate_path": "gates/00-intake.gate",
+  "model_route": {
+    "task_class": "BROAD_ARCHITECTURE",
+    "minimum_capability": 70,
+    "required_capabilities": ["ARCHITECTURE", "CODE", "LONG_CONTEXT", "SECURITY", "TOOLS"],
+    "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT",
+    "fallback_rule": "Use a lower economical model only for bounded deterministic subchecks; escalate to the policy-selected higher capability route for broad repair, conflicts, migration, or final coherence."
+  },
+  "memory_projection": {
+    "global": "READ_ONLY_ACCEPTED_MODEL_POLICY_AND_AGENTOS_GOVERNANCE",
+    "project": "CAMPAIGN_SCOPED_CONTEXT_AND_APPEND_ONLY_RECEIPTS",
+    "writers": ["AGENTOS.SPAWNER", "GOVERNED_MEMORY_ADAPTER"],
+    "invalidation": "Governance, policy, context, dependency, or candidate changes invalidate affected compiled contexts, seeds, passes, and receipts."
+  },
+  "exit_governance_review": {
+    "schema": "agentos.exit_governance_review.v1",
+    "required_before": ["CAPABILITY_REVOCATION", "ARCHIVE"],
+    "agent_response": "NO_CHANGE_RECOMMENDED_OR_TYPED_PROPOSALS",
+    "proposal_layers": ["GLOBAL", "PROJECT", "ROLE", "TECHNOLOGY_OR_STANDARD", "ENVIRONMENT", "TASK"],
+    "spawner_disposition": ["ACCEPT", "REJECT_WITH_REASON", "DEFER_WITH_EXACT_EVIDENCE_GAP"],
+    "accepted_change_route": "SPAWNER_DEFECT_REPAIR_QA_HOSTILE_REGRESSION_INDEPENDENT_EVALUATION",
+    "memory_rule": "MEMORY_PROPOSALS_ARE_EXPLICITLY_DISPOSITIONED_BEFORE_ARCHIVE"
+  },
+  "dependencies": [],
+  "conflicts": [],
+  "aliases": [],
+  "schema_path": "schemas/specialist-block.v1.json",
+  "gate_pack": {
+    "manifest_path": "gates/manifest.json",
+    "ordered_gate_ids": ["00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff", "10-proof-acceptance", "11-lifecycle-recovery-archive"],
+    "outcomes": ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]
+  },
+  "evaluation": {
+    "dossier_path": "evaluation.json",
+    "receipt_id": "specialist-eval.repair.v1",
+    "disposition": "UTILITY_HARM_PENDING",
+    "independent_reviewer_required": true,
+    "fixture_policy": "EXACT_DECLARED",
+    "fixture_classes": ["cleanup_before_merge_leftover", "data_schema_unsafe", "deploy_publish", "dirty_shared_delete", "final_ready", "governance_change_stale_pass", "import_missing_preservation", "incomplete_final_coverage", "merge_failure_cleanup", "missing_rollback", "mode_audit_successor", "mode_import_mutation", "more_than_six_lanes", "parallel_shared_worktree", "serial_next_before_merge", "stale_batch_base", "stale_pass_governance", "stale_worktree_reuse", "untrusted_auditor"],
+    "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  },
+  "reuse": {
+    "content_addressed": true,
+    "reuse_key": "block-lock.agentos-repair",
+    "standard_identity": null,
+    "compatibility_map_path": null,
+    "supersession_path": null,
+    "applicability_overlay": "EXTERNAL_TYPED_COMPANION_ONLY",
+    "edition_rule": "Any material change to mode semantics, authority, evidence, lifecycle, gates, fixtures, or model route creates a new immutable revision.",
+    "freshness_rule": "A stale source, policy, context, or dependency closes the dependent campaign action and requires a fresh receipt."
+  },
+  "source_manifest_sha256": "b25c639a9abc29eec247ef782fae665b6e1f92ee1a62b2807e989656d30627f3"
+}

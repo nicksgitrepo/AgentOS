@@ -2259,7 +2259,7 @@
     },
     "independent_specialist_evaluator_controller": {
       "path": "control/specialist-independent-evaluator.mjs",
-      "sha256": "4edb2387f8db56d65d41985db2f4f390c3fa22f5bd412798b014aef413b43a16"
+      "sha256": "bf6ab1848398be3438fa66c39c66117bf108ac5d01e591aa8e90d50247d8e70f"
     },
     "independent_specialist_evaluator_regression_recheck_verifier": {
       "path": "tests/verify-independent-evaluator-regression-recheck.mjs",
@@ -2267,7 +2267,7 @@
     },
     "independent_specialist_evaluator_verifier": {
       "path": "tests/verify-specialist-independent-evaluator.mjs",
-      "sha256": "5399d368d3d3cd0c9aaf9f066f47057b256ff38ce44421890c2d3f252d2a469d"
+      "sha256": "073262fee78f8cc8cfb0a413ee4d65c45ebd4e1b8e66e15697879f413f806d5d"
     },
     "industrial_3d_router_boundary_gate": {
       "path": "control/industrial-3d-router-boundary-gate.mjs",
@@ -3797,7 +3797,7 @@
     },
     "reusable_agent_roster_compiler": {
       "path": "control/reusable-agent-roster-compiler.mjs",
-      "sha256": "03417fe4866ad4d5b0e0564cbac378f4ec12812e814c10dc8f505119803995d2"
+      "sha256": "266567b36d998d5d0d7aa147d145bdd008cc4d62e8ffaa76eeafe8f9c4007574"
     },
     "reusable_agent_roster_contract": {
       "path": "schemas/reusable-agent-roster.v1.json",
@@ -3805,11 +3805,11 @@
     },
     "reusable_agent_roster_document": {
       "path": "specialist-blocks/registry/ROSTER.md",
-      "sha256": "6eb4df1fe2adf120249d286b324fc8bda43af025624bef642efcfbec991597b9"
+      "sha256": "58a4ec9c61e9e6569155f6db35bfc70193a2fbcb428d66da6be48b37bfcd5d47"
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "34884dafeebf1a6b572c7f660fca6ba94dee3aa36427a42e951f750e5c323c70"
+      "sha256": "ab41c3820f828faba3af0ffeefa0ca92eb88e4f162502f733d6999cae83dd135"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -4289,11 +4289,11 @@
     },
     "specialist_block_library_verifier": {
       "path": "tests/verify-specialist-block-library.mjs",
-      "sha256": "6ac5ec60a4fd4e6b1b6a06cb0fadd7e6c18d6bfcfa1b97c89c845680f5cb2520"
+      "sha256": "7943b1def7cc61e13955376bdc80375a25c1d85a78639d411ac5a5790fb0b521"
     },
     "specialist_block_compiler_controller": {
       "path": "control/specialist-block-compiler.mjs",
-      "sha256": "26592727de920a784d59a3c562f86f88390ff38a8ae722b970060bad5e1c93be"
+      "sha256": "4463137a2e2684b32dd64d1fb890a1402fe11f149ee4d52fbf81eaeff3e588f6"
     },
     "specialist_roster_contract": {
       "path": "schemas/specialist-roster.v1.json",
@@ -4305,11 +4305,11 @@
     },
     "specialist_roster_registry": {
       "path": "specialist-blocks/registry/roster.v1.json",
-      "sha256": "4c2c28fc1cdea3a7c1c4751acb42331f931f4332c328ba4da4e4c0216957d5d8"
+      "sha256": "87583b2030005811af03e4330165d3b9cad3916dd6232e2d3d060e3bc39e8766"
     },
     "specialist_routing_index": {
       "path": "specialist-blocks/registry/routing-index.v1.json",
-      "sha256": "4b054806600899237392c3d8edb19f2d6b0b682cd2d20e21d2f5573707c55449"
+      "sha256": "4c8455e02632f9a65f4dc7cd6fd75ae1fa080b0c830d685fd3d5d9b55c27f413"
     },
     "standard_audit_finding_contract": {
       "path": "schemas/standard-audit-finding.v1.json",
@@ -4710,6 +4710,190 @@
     "worktree_custody_package_operational_evaluator": {
       "path": "control/worktree-custody-package-evaluator.mjs",
       "sha256": "baad8ffd2f4b10595c1a93c6cb018433f4331262fbc1234f8bb6c59cab27e48c"
+    },
+    "repair_campaign_boundary_gate_controller": {
+      "path": "control/repair-campaign-boundary-gate.mjs",
+      "sha256": "035e392f2e7f94f0806e6f4b7304da54f59387e60bcd8be700e2ca13313712b5"
+    },
+    "repair_campaign_fixture_baseline_controller": {
+      "path": "control/repair-campaign-fixture-baseline.mjs",
+      "sha256": "55fe14f564d063a5a7356e8e9f9ff9a5b19a36ae941bf6713f74104c368edda2"
+    },
+    "repair_campaign_package_evaluator_controller": {
+      "path": "control/repair-campaign-package-evaluator.mjs",
+      "sha256": "eede0b5a1106ed735a4f3c85c69490dc899afe0a684588cb5d00d8834c9d6d32"
+    },
+    "repair_campaign_context_contract": {
+      "path": "schemas/repair-campaign-context.v1.json",
+      "sha256": "207a073200d03b9b245f5dd0d3c4f6d5e3f8130ed9a21d218a68aca6c7f3c831"
+    },
+    "repair_campaign_input_contract": {
+      "path": "schemas/repair-campaign-input.v1.json",
+      "sha256": "818e1e49cb07f7578ce31fb46359cfd35aa363855a758d3b1c2bd7af5f9124ce"
+    },
+    "repair_campaign_result_contract": {
+      "path": "schemas/repair-campaign-result.v1.json",
+      "sha256": "93a326d0acca49bf27c38901125c30cb5ac82bdddbbf1ecf333e9151de2db1cf"
+    },
+    "repair_inert_seed_contract": {
+      "path": "schemas/repair-inert-seed.v1.json",
+      "sha256": "ac8cf51534e2c7b1bae8cacfa1fb54d54c8f3879f61a9fb4cde3dcc21d531447"
+    },
+    "repair_package_block": {
+      "path": "specialist-blocks/wave-07/repair/block.json",
+      "sha256": "30212f67167db59f07572a1cba945b217f7dc79ccfbb7238ceabaa5556163ce4"
+    },
+    "repair_package_evaluation": {
+      "path": "specialist-blocks/wave-07/repair/evaluation.json",
+      "sha256": "ed2c72f4d57c7272a24d124b5d9252f25a9a1a1e147354b762ac3b35edc4a2a6"
+    },
+    "repair_fixtures_cleanup_before_merge_leftover_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/cleanup_before_merge_leftover.json",
+      "sha256": "5384b6df0ed541585b05b8f79d0a09e2ba45b120f56cbd85ede49d52abebd310"
+    },
+    "repair_fixtures_data_schema_unsafe_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/data_schema_unsafe.json",
+      "sha256": "1eed8a0187ed7da0ac8975a0bb0ac36642908b37216ea947443dc32dff706552"
+    },
+    "repair_fixtures_deploy_publish_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/deploy_publish.json",
+      "sha256": "7d3e8a438df1cc45adb6e1fda96bd9f2da6fef24980a287897d9f8eb77afd9f9"
+    },
+    "repair_fixtures_dirty_shared_delete_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/dirty_shared_delete.json",
+      "sha256": "bc3c68eb7c8a482a6b040a370c27e3a073be180deb8fa4c684ad70f3cb59f2d6"
+    },
+    "repair_fixtures_final_ready_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/final_ready.json",
+      "sha256": "a579f294a04d8f50870b41640768b45482061328f66fa54edcb81a3d2269bd61"
+    },
+    "repair_fixtures_governance_change_stale_pass_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/governance_change_stale_pass.json",
+      "sha256": "4e269421ea7e8a010aca3d0f5b34db204e8b0835921e7886a4c4729329efaa85"
+    },
+    "repair_fixtures_import_missing_preservation_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/import_missing_preservation.json",
+      "sha256": "a1316b5fc6b7c00efc07dcae077290d7bdd7c3cacd605bce74518dd0abe52a88"
+    },
+    "repair_fixtures_incomplete_final_coverage_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/incomplete_final_coverage.json",
+      "sha256": "cfd22e2864c63a76bec2e72e1f5479e6aed1fc2c2fb95dcfabd9d22bde16697a"
+    },
+    "repair_fixtures_merge_failure_cleanup_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/merge_failure_cleanup.json",
+      "sha256": "470f68d6dc41504c123039a37b800b2c1c49377b950391ba08e830ac81a6836f"
+    },
+    "repair_fixtures_missing_rollback_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/missing_rollback.json",
+      "sha256": "ad2d718a31f8b6d40c395ba43463076503e3033acbb2784d8085299bfc80ed5b"
+    },
+    "repair_fixtures_mode_audit_successor_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/mode_audit_successor.json",
+      "sha256": "fe5fcf34d2803ef8bd9fed67ca8c4a19efcef2b5075bf259b1eb7f7b134124b1"
+    },
+    "repair_fixtures_mode_import_mutation_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/mode_import_mutation.json",
+      "sha256": "de7ffaddc313e40acab3956e07fa6895d50704184aa695bc8c1f44bbca1ba4dd"
+    },
+    "repair_fixtures_more_than_six_lanes_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/more_than_six_lanes.json",
+      "sha256": "2740fed7c58dd0e297aabf49c920d16c8fd2e955cc9d5ddcd68fd35ac3c6ce92"
+    },
+    "repair_fixtures_parallel_shared_worktree_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/parallel_shared_worktree.json",
+      "sha256": "0f599dc9dca65dc05c580564e69bc38040ee1c69067c9a8b279fa84f311ac087"
+    },
+    "repair_fixtures_serial_next_before_merge_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/serial_next_before_merge.json",
+      "sha256": "d1dc9e7cc8b9d387974373ffb84762bc87584844a09f92992e3c69570ababdda"
+    },
+    "repair_fixtures_stale_batch_base_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/stale_batch_base.json",
+      "sha256": "393662e021ac8e25b2ba1fd776995402285b9c8a7f48e803830c8c69edbe720d"
+    },
+    "repair_fixtures_stale_pass_governance_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/stale_pass_governance.json",
+      "sha256": "de1ce1323d6f15e35ba52daed6d42d5d05f64e13d463f1ace9da65a4b13f55b8"
+    },
+    "repair_fixtures_stale_worktree_reuse_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/stale_worktree_reuse.json",
+      "sha256": "ed7d5e297fe0243d7599452b9bbc017738c0cb40c2fd61a52f90e1c9790c2db1"
+    },
+    "repair_fixtures_untrusted_auditor_json": {
+      "path": "specialist-blocks/wave-07/repair/fixtures/untrusted_auditor.json",
+      "sha256": "289114d72d8c9f129e26f918019927a06a579f831812180d3b63776bdff4df19"
+    },
+    "repair_gates_00_intake_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/00-intake.gate",
+      "sha256": "10194d885f904b7a77c61900485611197b70b6b97b89937f632ca60b8a77325d"
+    },
+    "repair_gates_01_applicability_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/01-applicability.gate",
+      "sha256": "4994313e31d6ae6806f57e5c2c4a9eb66109bc130d20ad3506a452854f78012e"
+    },
+    "repair_gates_02_authority_precedence_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/02-authority-precedence.gate",
+      "sha256": "e21381ddea743698e7b6f9e8b3d8f52d0c6dfca8e137610ae8b35a8fc7d5e7a3"
+    },
+    "repair_gates_03_scope_nongoals_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/03-scope-nongoals.gate",
+      "sha256": "106452d2de7e34730a2d5136a01fd71c01a6238ec5b00a1971b0ff641f84a487"
+    },
+    "repair_gates_04_source_evidence_freshness_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/04-source-evidence-freshness.gate",
+      "sha256": "41d24cf5901ff144ba0bef17e30e1979f0130ea2e82cf0478a458175ce4287f1"
+    },
+    "repair_gates_05_context_completeness_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/05-context-completeness.gate",
+      "sha256": "6854ae925378d305f0a7aaac22d1c240531d7bc41b2b19f044e75e2f8b604562"
+    },
+    "repair_gates_06_tool_resource_custody_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/06-tool-resource-custody.gate",
+      "sha256": "9a39a36fdd6c8664b29c5d58f6f7ca1856225cabf540b9604f02412fbdeda903"
+    },
+    "repair_gates_07_data_secret_privacy_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/07-data-secret-privacy.gate",
+      "sha256": "7d0b27025a97e6bb4b874ba9587b07ae517e0a5c3479def38906da1c20fae56c"
+    },
+    "repair_gates_08_build_browser_runtime_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/08-build-browser-runtime.gate",
+      "sha256": "e6fad47ae5a679e4e87f322851818dedf7fc6fa058cd069a954d2bfb23d5a47c"
+    },
+    "repair_gates_09_output_handoff_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/09-output-handoff.gate",
+      "sha256": "bbe4e869456b92944427adf18b71695399af1afdbe0c4691b6a52ee3536e59b6"
+    },
+    "repair_gates_10_proof_acceptance_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/10-proof-acceptance.gate",
+      "sha256": "84f4cb0e4fe662ec2269ca6ba0aabe6289fa33337f62f7aee77643254870cecd"
+    },
+    "repair_gates_11_lifecycle_recovery_archive_gate": {
+      "path": "specialist-blocks/wave-07/repair/gates/11-lifecycle-recovery-archive.gate",
+      "sha256": "9cdc27cd57089e8800c46532d495a26a629a1297d5e5cf27265bf1a07375ab69"
+    },
+    "repair_gate_manifest": {
+      "path": "specialist-blocks/wave-07/repair/gates/manifest.json",
+      "sha256": "e30659a620727d8ae5f902d9ecc2c06ea5db5cd11feefd0d5aab2869cd7fa40f"
+    },
+    "repair_package_handoff": {
+      "path": "specialist-blocks/wave-07/repair/handoff.json",
+      "sha256": "eb2ead248a1944ceebe95abb19237b06c96d11739fa0031efd21f6109b0c9e60"
+    },
+    "repair_package_seed": {
+      "path": "specialist-blocks/wave-07/repair/seed.json",
+      "sha256": "1a1fee997450e3f230c8e0064f155e2a3e7bac41e24871fd748f3011de49e0f0"
+    },
+    "repair_package_sources": {
+      "path": "specialist-blocks/wave-07/repair/sources.lock",
+      "sha256": "8648dc496a9a7cb63353cf928277bb182c5f6babd467309ebba8fdea4c668ef5"
+    },
+    "repair_campaign_boundary_verifier": {
+      "path": "tests/verify-repair-campaign-boundary.mjs",
+      "sha256": "101bba539108fbc34ecfb43816685231583dcb67ce7a61cc1003c3f0bb460add"
+    },
+    "repair_inert_seed_verifier": {
+      "path": "tests/verify-repair-inert-seed.mjs",
+      "sha256": "78fe91dccad453670d172b4bad1fa70b8259051b5f2bdcc4c7ac9ef38797b483"
     }
   },
   "portable_context": {

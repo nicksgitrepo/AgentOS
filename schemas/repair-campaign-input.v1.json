@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/repair-campaign-input.v1.json",
+  "title": "AgentOS Repair boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request_kind", "mode", "evidence"],
+  "properties": {
+    "schema": {"const": "agentos.repair_campaign_input.v1"},
+    "version": {"const": 1},
+    "request_kind": {"enum": ["START_CAMPAIGN", "AUDITOR_PASS", "GOVERNED_MERGE", "BATCH_INTEGRATE", "FINAL_COHERENCE", "READY_FOR_DEPLOYMENT_REVIEW", "NOT_APPLICABLE", "REPAIR", "DEPLOY", "PUBLISH", "PROMOTE", "REPOINT_REMOTE", "MUTATE_LEGACY"]},
+    "mode": {"enum": ["FULL_IMPORT", "FULL_AUDIT_REPAIR", "TARGETED_REPAIR", "LEGACY_MIGRATION", "RELEASE_HARDENING"]},
+    "evidence": {"type": "object", "additionalProperties": true}
+  }
+}

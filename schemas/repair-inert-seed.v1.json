@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/repair-inert-seed.v1.json",
+  "title": "AgentOS Repair inert seed",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "seed_id", "status", "activation", "immutable", "performs_work", "can_spawn", "can_write", "can_deploy", "admission", "package_block_id", "package_block_sha256", "model_route", "global_projection", "project_projection", "execution_rule", "seed_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.repair_inert_seed.v1"},
+    "version": {"const": 1},
+    "seed_id": {"type": "string", "pattern": "^SEED\\.AGENTOS_REPAIR\\.[A-Z]+$"},
+    "status": {"const": "VERIFIED_INERT"},
+    "activation": {"const": "OFF"},
+    "immutable": {"const": true},
+    "performs_work": {"const": false},
+    "can_spawn": {"const": false},
+    "can_write": {"const": false},
+    "can_deploy": {"const": false},
+    "admission": {"const": "NOT_ADMITTED"},
+    "package_block_id": {"const": "specialist.control.repair"},
+    "package_block_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "model_route": {"type": "object", "additionalProperties": false, "required": ["source", "task_class", "minimum_capability", "selected_model", "reasoning"], "properties": {"source": {"const": "GLOBAL_MODEL_POLICY_SNAPSHOT"}, "task_class": {"const": "BROAD_ARCHITECTURE"}, "minimum_capability": {"type": "integer", "minimum": 1}, "selected_model": {"type": ["string", "null"]}, "reasoning": {"type": ["string", "null"]}}},
+    "global_projection": {"const": "READ_ONLY_ACCEPTED_MODEL_POLICY_AND_AGENTOS_GOVERNANCE"},
+    "project_projection": {"const": "BOUND_ONLY_AT_GOVERNED_SPAWN"},
+    "execution_rule": {"type": "string", "minLength": 40},
+    "seed_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

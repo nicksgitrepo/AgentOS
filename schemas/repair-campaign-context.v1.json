@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/repair-campaign-context.v1.json",
+  "title": "AgentOS Repair campaign context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "project_identity", "mode", "candidate_identity", "campaign_worktree", "global_policy_projection", "project_context_snapshot", "dependency_sbom", "resource_ceiling", "rollback_identity"],
+  "properties": {
+    "schema": {"const": "agentos.repair_campaign_context.v1"},
+    "version": {"const": 1},
+    "project_identity": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{2,120}$"},
+    "mode": {"enum": ["FULL_IMPORT", "FULL_AUDIT_REPAIR", "TARGETED_REPAIR", "LEGACY_MIGRATION", "RELEASE_HARDENING"]},
+    "candidate_identity": {"$ref": "#/$defs/identity"},
+    "campaign_worktree": {"$ref": "#/$defs/identity"},
+    "global_policy_projection": {"$ref": "#/$defs/digest"},
+    "project_context_snapshot": {"$ref": "#/$defs/digest"},
+    "dependency_sbom": {"$ref": "#/$defs/digest"},
+    "resource_ceiling": {"type": "object", "additionalProperties": false, "required": ["max_lanes", "max_heavy_jobs", "disk_floor_mb", "memory_floor_mb"], "properties": {"max_lanes": {"const": 6}, "max_heavy_jobs": {"type": "integer", "minimum": 1, "maximum": 6}, "disk_floor_mb": {"type": "integer", "minimum": 1}, "memory_floor_mb": {"type": "integer", "minimum": 1}}},
+    "rollback_identity": {"$ref": "#/$defs/identity"},
+    "source_preservation": {"type": "object", "additionalProperties": false, "required": ["inventory_digest", "legacy_untouched", "exclusions_digest"], "properties": {"inventory_digest": {"$ref": "#/$defs/digest"}, "legacy_untouched": {"type": "boolean", "const": true}, "exclusions_digest": {"$ref": "#/$defs/digest"}}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^(?!([0-9a-f])\\1{63})[0-9a-f]{64}$"},
+    "identity": {"type": "object", "additionalProperties": false, "required": ["commit", "tree"], "properties": {"commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "branch": {"type": "string", "pattern": "^campaign/[A-Za-z0-9._/-]{1,120}$"}}}
+  }
+}

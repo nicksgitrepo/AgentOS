@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/repair-campaign-result.v1.json",
+  "title": "AgentOS Repair boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "acceptance_allowed", "deployment_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.repair_campaign_result.v1"},
+    "version": {"const": 1},
+    "disposition": {"enum": ["DENY", "ROUTE", "PASS", "BLOCKED_EXACT", "NOT_APPLICABLE"]},
+    "route": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,100}$"},
+    "acceptance_allowed": {"const": false},
+    "deployment_allowed": {"const": false},
+    "external_side_effects": {"type": "object", "additionalProperties": false},
+    "error_code": {"type": "string", "pattern": "^REPAIR_[A-Z0-9_]+$"},
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

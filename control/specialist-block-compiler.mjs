@@ -365,9 +365,10 @@ function validateEvaluation(evaluation, block) {
   assert(evaluation.block_id === block.block_id, `${block.block_id} evaluation block mismatch`);
   assert(evaluation.candidate_digest === block.block_sha256, `${block.block_id} evaluation digest mismatch`);
   assert(evaluation.model_requirement === "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE", `${block.block_id} evaluation model requirement mismatch`);
-  assert(Array.isArray(evaluation.cases) && evaluation.cases.length >= CORE_EVALUATION_CLASSES.length + ATOMIC_EVALUATION_CLASSES.length, `${block.block_id} evaluation case set is incomplete`);
+  const exactDeclaredFixtures = block.evaluation.fixture_policy === "EXACT_DECLARED";
+  assert(Array.isArray(evaluation.cases) && evaluation.cases.length >= (exactDeclaredFixtures ? block.evaluation.fixture_classes.length : CORE_EVALUATION_CLASSES.length + ATOMIC_EVALUATION_CLASSES.length), `${block.block_id} evaluation case set is incomplete`);
   const classes = new Set(evaluation.cases.map((item) => item.class));
-  for (const className of [...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES]) assert(classes.has(className), `${block.block_id} evaluation lacks ${className}`);
+  if (!exactDeclaredFixtures) for (const className of [...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES]) assert(classes.has(className), `${block.block_id} evaluation lacks ${className}`);
   for (const item of evaluation.cases) {
     assert(["ROUTE", "DENY", "ESCALATE"].includes(item.expected), `${block.block_id} evaluation expected outcome is invalid`);
     assert(["PASS", "FAIL", "PENDING"].includes(item.observed), `${block.block_id} evaluation observed outcome is invalid`);
@@ -530,7 +531,7 @@ export function materializeMasterInventory(raw, atomicOverlay) {
 }
 
 function packageDirectories(libraryRoot) {
-  const roots = ["foundation", "standards", "wave-01", "wave-02", "wave-03", "wave-04", "wave-05", "wave-06"];
+  const roots = ["foundation", "standards", "wave-01", "wave-02", "wave-03", "wave-04", "wave-05", "wave-06", "wave-07"];
   const packages = [];
   for (const root of roots) {
     const rootPath = path.join(libraryRoot, root);

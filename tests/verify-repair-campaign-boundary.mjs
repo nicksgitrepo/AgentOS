@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import {evaluateRepairBoundary, REPAIR_INPUT_SCHEMA, REPAIR_RESULT_SCHEMA} from "../control/repair-campaign-boundary-gate.mjs";
+import {makeRepairFixtureInput, REPAIR_FIXTURE_CLASSES} from "../control/repair-campaign-fixture-baseline.mjs";
+
+const root = path.resolve(new URL("..", import.meta.url).pathname); const fixtureRoot = path.join(root, "specialist-blocks/wave-07/repair/fixtures"); const files = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort(); assert.equal(files.length, 19); const ids = new Set();
+for (const file of files) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(fixtureRoot, file), "utf8")); assert.equal(fixture.vector.entrypoint, "control/repair-campaign-boundary-gate.mjs#evaluateRepairBoundary"); assert(REPAIR_FIXTURE_CLASSES.includes(fixture.class)); assert(!ids.has(fixture.fixture_id), "duplicate fixture " + fixture.fixture_id); ids.add(fixture.fixture_id);
+  const input = makeRepairFixtureInput(fixture.vector.input_overrides); assert.equal(input.schema, REPAIR_INPUT_SCHEMA); const actual = evaluateRepairBoundary(input); assert.equal(actual.schema, REPAIR_RESULT_SCHEMA, fixture.fixture_id); assert.equal(actual.disposition, fixture.vector.expected_readback.disposition, fixture.fixture_id); assert.equal(actual.route, fixture.vector.expected_readback.route, fixture.fixture_id); assert.equal(actual.error_code, fixture.vector.expected_readback.error_code, fixture.fixture_id); assert.equal(actual.acceptance_allowed, false, fixture.fixture_id); assert.equal(actual.deployment_allowed, false, fixture.fixture_id); assert.deepEqual(actual.external_side_effects, {worktree_writes: 0, protected_branch_writes: 0, deploy_calls: 0, publish_calls: 0, remote_repoints: 0, live_data_reads: 0, destructive_migrations: 0, auditor_spawn_calls: 0, auditor_despawn_calls: 0, memory_writes: 0, credential_accesses: 0, state_changes: 0}, fixture.fixture_id);
+}
+const valid = makeRepairFixtureInput({request_kind: "GOVERNED_MERGE"}); assert.equal(evaluateRepairBoundary(valid).route, "CUSTODY_RELEASE"); assert.throws(() => evaluateRepairBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "REPAIR_UNKNOWN_FIELD"); assert.equal(evaluateRepairBoundary(makeRepairFixtureInput({request_kind: "BATCH_INTEGRATE", active_lanes: 7})).error_code, "REPAIR_PARALLEL_CUSTODY_INVALID"); assert.equal(evaluateRepairBoundary(makeRepairFixtureInput({request_kind: "READY_FOR_DEPLOYMENT_REVIEW", final_review_independent: false})).error_code, "REPAIR_FINAL_REVIEW_OR_CLEANUP_REQUIRED");
+console.log("PASS Repair campaign boundary: 19 typed mode/lifecycle vectors, zero protected side effects, bounded retries, invalidation, cleanup and final-review gates");

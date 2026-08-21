@@ -26,6 +26,14 @@ const PERMANENT_ROLES = Object.freeze({
   "AGENTOS.ORCHESTRATOR": {display_name: "Orchestrator", package_path: "specialist-blocks/wave-01/orchestrator", family: "plan-coordination", task_class: "BROAD_ARCHITECTURE", reason: "Plan coordination and acceptance package is not present yet."},
 });
 
+// AGENTOS.REPAIR is a reusable campaign role, not a permanent identity.  It
+// is nevertheless a first-class platform entry so the queue cannot hide it
+// behind a generic wave-07/block alias.  The package remains candidate-only
+// until the sealed Spawner consumes an independent review.
+const CAMPAIGN_ROLES = Object.freeze({
+  "AGENTOS.REPAIR": {display_name: "Repair", package_path: "specialist-blocks/wave-07/repair", family: "control-plane-repair", task_class: "BROAD_ARCHITECTURE", tier: "PLATFORM_AGENTS", reason: "Owner-prioritized campaign builder; it follows accepted permanent governance and never deploys."},
+});
+
 const GATE_IDS = Object.freeze(["00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff", "10-proof-acceptance", "11-lifecycle-recovery-archive"]);
 const PRIORITY_SCORE = Object.freeze({P0: 98, P1: 86, P2: 74, P3: 62, P4: 50, P5: 36, P6: 24});
 const ACCEPTANCE_LEDGER_PATH = "specialist-blocks/registry/accepted-agent-receipts.v1.json";
@@ -68,9 +76,18 @@ function walkPackages(root, directory = "specialist-blocks") {
     return entry.name === "block.json" ? [path.dirname(relative).split(path.sep).join("/")] : [];
   });
 }
-function roleForPath(relativePath) { return Object.entries(PERMANENT_ROLES).find(([, role]) => role.package_path === relativePath)?.[0] ?? null; }
-function packageRole(relativePath, block) { const id = roleForPath(relativePath); return id ? {id, ...PERMANENT_ROLES[id]} : null; }
+function roleForPath(relativePath) {
+  const all = {...PERMANENT_ROLES, ...CAMPAIGN_ROLES};
+  return Object.entries(all).find(([, role]) => role.package_path === relativePath)?.[0] ?? null;
+}
+function packageRole(relativePath, block) {
+  const id = roleForPath(relativePath);
+  if (!id) return null;
+  const role = PERMANENT_ROLES[id] ?? CAMPAIGN_ROLES[id];
+  return {id, ...role};
+}
 function tierFor(relativePath, block, role) {
+  if (role?.tier) return role.tier;
   if (role) return "PERMANENT_AGENTOS_ROLES";
   if (block.lifecycle === "ARCHIVED") return "LEGACY_ARCHIVE";
   if (relativePath.includes("/wave-02/") || relativePath.includes("/wave-04/") || relativePath.includes("/wave-05/") || relativePath.endsWith("/wave-01/agent-bootstrap")) return "PLATFORM_AGENTS";
@@ -182,7 +199,14 @@ export function compileReusableAgentRoster({repositoryRoot = process.cwd(), writ
   });
   if (!aliases.some((alias) => alias.alias === "AGENTOS.INTENT_REGULATOR")) aliases.push({alias: "AGENTOS.INTENT_REGULATOR", canonical_id: "LEGACY.INTENT_REGULATOR", reason: "Historical decoder only; never a current roster identity or spawn target."});
   entries.sort((left, right) => left.stable_agent_id.localeCompare(right.stable_agent_id)); aliases.sort((left, right) => left.alias.localeCompare(right.alias) || left.canonical_id.localeCompare(right.canonical_id));
-  const permanentOrder = Object.keys(PERMANENT_ROLES); const agents = entries.filter((entry) => entry.entry_type === "AGENT_ROLE"); const orderedAgents = [...permanentOrder.map((id) => entries.find((entry) => entry.stable_agent_id === id)).filter(Boolean), ...agents.filter((entry) => !permanentOrder.includes(entry.stable_agent_id)).sort((left, right) => right.reuse_likelihood.total - left.reuse_likelihood.total || left.stable_agent_id.localeCompare(right.stable_agent_id))];
+  const permanentOrder = Object.keys(PERMANENT_ROLES);
+  const campaignOrder = Object.keys(CAMPAIGN_ROLES);
+  const agents = entries.filter((entry) => entry.entry_type === "AGENT_ROLE");
+  const orderedAgents = [
+    ...permanentOrder.map((id) => entries.find((entry) => entry.stable_agent_id === id)).filter(Boolean),
+    ...campaignOrder.map((id) => entries.find((entry) => entry.stable_agent_id === id)).filter(Boolean),
+    ...agents.filter((entry) => !permanentOrder.includes(entry.stable_agent_id) && !campaignOrder.includes(entry.stable_agent_id)).sort((left, right) => right.reuse_likelihood.total - left.reuse_likelihood.total || left.stable_agent_id.localeCompare(right.stable_agent_id)),
+  ];
   const acceptedIds = new Set(orderedAgents.filter((entry) => entry.build_state === "ACCEPTED_ADMITTED" || entry.build_state === "ACCEPTED_QUALIFIED").map((entry) => entry.stable_agent_id));
   const permanentReady = permanentOrder.every((id) => id === "AGENTOS.SPAWNER" || acceptedIds.has(id));
   const nextEligible = orderedAgents.find((entry) => {
@@ -191,6 +215,7 @@ export function compileReusableAgentRoster({repositoryRoot = process.cwd(), writ
       const index = permanentOrder.indexOf(entry.stable_agent_id);
       return index >= 0 && permanentOrder.slice(0, index).every((id) => id === "AGENTOS.SPAWNER" || acceptedIds.has(id));
     }
+    if (campaignOrder.includes(entry.stable_agent_id)) return permanentReady;
     return permanentReady;
   })?.stable_agent_id ?? null;
   const build_queue = orderedAgents.map((entry, index) => ({rank: index + 1, stable_agent_id: entry.stable_agent_id, tier: entry.tier, eligible: entry.stable_agent_id === nextEligible, priority_score: entry.reuse_likelihood.total, reason: entry.build_state === "ACCEPTED_ADMITTED" || entry.build_state === "ACCEPTED_QUALIFIED" ? "Already independently accepted; reuse its exact receipt until invalidated." : entry.stable_agent_id === nextEligible ? "Highest eligible unaccepted package after dependency-safe predecessors." : entry.build_state === "PLANNED_MISSING_PACKAGE" ? "Blocked until the canonical package is built and qualified." : entry.tier === "PERMANENT_AGENTOS_ROLES" ? "Waits for dependency-safe permanent-role predecessors." : "Queued after permanent roles and platform prerequisites."}));

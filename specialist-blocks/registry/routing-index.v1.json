@@ -392,6 +392,44 @@
       "priority": 3
     },
     {
+      "route_id": "route.control.repair",
+      "family": "repair-campaign-control",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "FULL_IMPORT",
+        "FULL_AUDIT_REPAIR",
+        "TARGETED_REPAIR",
+        "LEGACY_MIGRATION",
+        "RELEASE_HARDENING",
+        "serial audit",
+        "batch coherence",
+        "repair campaign"
+      ],
+      "required_context": [
+        "campaign.worktree",
+        "candidate.identity",
+        "dependency_sbom",
+        "global_policy_projection",
+        "mode",
+        "project.identity",
+        "project_context_snapshot",
+        "resource_ceiling",
+        "rollback.identity",
+        "source.preservation"
+      ],
+      "select": [
+        "specialist.control.repair"
+      ],
+      "deny_if": [
+        "mode is missing or contradictory",
+        "candidate or project identity is absent",
+        "worktree is shared, dirty, stale, or not campaign-owned",
+        "protected branch or deployment action is requested",
+        "independent final review, rollback, cleanup, or cumulative pass is missing"
+      ],
+      "priority": 0
+    },
+    {
       "route_id": "route.control.resource-scheduler",
       "family": "foundation",
       "role_kind": "CONTROL_PLANE",
@@ -3903,5 +3941,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "d8a5e25caafde720a78abb38b1a420e3b013aae62ff11dbd6569d046f5d81caf"
+  "routing_sha256": "e278caa0034fbf14387b228c4e06898b64fc6fcd6762bfb387708dd2c9552fc3"
 }

@@ -8,11 +8,11 @@
     "canonical_library_roster": "specialist-blocks/registry/roster.v1.json",
     "master_inventory": "specialist-blocks/registry/master-inventory.v1.json",
     "permanent_role_registry": "specialist-blocks/registry/permanent-role-registry.v1.json",
-    "package_count": 127,
-    "current_package_count": 126,
+    "package_count": 128,
+    "current_package_count": 127,
     "archived_package_count": 1,
     "entry_type_counts": {
-      "AGENT_ROLE": 96,
+      "AGENT_ROLE": 97,
       "REUSABLE_GOVERNANCE_BLOCK": 7,
       "REUSABLE_STANDARD_BLOCK": 23,
       "LEGACY_ARCHIVE": 1
@@ -90,7 +90,8 @@
         "AGENT.SOFTWARE_LANGUAGE_RUNTIME_REACT_COMPONENTS",
         "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER",
         "AGENT.SOFTWARE_LANGUAGE_RUNTIME_RUST_BACKEND",
-        "AGENT.SOFTWARE_LANGUAGE_RUNTIME_TYPESCRIPT_LANGUAGE"
+        "AGENT.SOFTWARE_LANGUAGE_RUNTIME_TYPESCRIPT_LANGUAGE",
+        "AGENTOS.REPAIR"
       ]
     },
     {
@@ -13818,13 +13819,13 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_INDEPENDENT_PASS",
-      "qa_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
       "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
-      "links": [
-        "specialist-blocks/wave-03/dependency-vulnerability/evaluation.json"
-      ],
+        "links": [
+          "specialist-blocks/wave-03/dependency-vulnerability/evaluation.json"
+        ],
         "invalidate_when": [
           "block semantic digest changes",
           "source lock or authoritative evidence changes",
@@ -13970,98 +13971,98 @@
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.BROAD_WHEN_NARROW_EXISTS",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/broad_when_narrow_exists.json",
+            "fixture_id": "specialist.security.double-submission.BROAD_WHEN_NARROW_EXISTS",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/broad_when_narrow_exists.json",
             "file_sha256": "9275da41a44785e01ed70ff755c3c742c86a80ab607d5428853468de82b1a508",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.CROSS_PROVIDER_VERSION_CLAIM",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/cross_provider_version_claim.json",
+            "fixture_id": "specialist.security.double-submission.CROSS_PROVIDER_VERSION_CLAIM",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/cross_provider_version_claim.json",
             "file_sha256": "8bfda8621defc4610ade15d849ffb6185f70db41f1d794a7fbbff7fa1e1f7bb0",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.DATA_LIMIT",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/data_limit.json",
+            "fixture_id": "specialist.security.double-submission.DATA_LIMIT",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/data_limit.json",
             "file_sha256": "639accf2f651c5ed2e53c3006ca6b4839e3cb1800c00a0bc2efa5f5c855d9776",
             "expected_outcome": "ROUTE"
           },
           {
-          "fixture_id": "specialist.security.double-submission.DUPLICATE_SIBLING_AUTHORITY",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/duplicate_sibling_authority.json",
+            "fixture_id": "specialist.security.double-submission.DUPLICATE_SIBLING_AUTHORITY",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/duplicate_sibling_authority.json",
             "file_sha256": "2f64277c6179794670f3d0286220d6f25096b94918dbf3d6221aa8d35c8a3fce",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.FALSE_POSITIVE",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/false_positive.json",
+            "fixture_id": "specialist.security.double-submission.FALSE_POSITIVE",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/false_positive.json",
             "file_sha256": "85dccb7c70d648bf2144116701370b6a2908a6484365f8bb4247ab37b743b3fc",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.HANDOFF",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/handoff.json",
+            "fixture_id": "specialist.security.double-submission.HANDOFF",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/handoff.json",
             "file_sha256": "5a6bf34fbf636f208ef739238f30418cd15d596d2761ebe04ffa6fdd630f71b7",
             "expected_outcome": "ROUTE"
           },
           {
-          "fixture_id": "specialist.security.double-submission.MISSING_CONTEXT",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/missing_context.json",
+            "fixture_id": "specialist.security.double-submission.MISSING_CONTEXT",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/missing_context.json",
             "file_sha256": "866e320c53a8669144e579a55cb30fc7c867f725ff9f08603f036f0771fa2e7a",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.NARROWNESS",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/narrowness.json",
+            "fixture_id": "specialist.security.double-submission.NARROWNESS",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/narrowness.json",
             "file_sha256": "c25895415ef61e4f8d9c43abe6cb22eaed9b957c4bd67f6d97b22d21edc71ded",
             "expected_outcome": "ROUTE"
           },
           {
-          "fixture_id": "specialist.security.double-submission.ROUTER_SELF_ACCEPT",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/router_self_accept.json",
+            "fixture_id": "specialist.security.double-submission.ROUTER_SELF_ACCEPT",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/router_self_accept.json",
             "file_sha256": "62e275f404051f1cf187547a30b05a73e006942a3c2e48cf6a98e8b03abc6530",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.ROUTING",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/routing.json",
+            "fixture_id": "specialist.security.double-submission.ROUTING",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/routing.json",
             "file_sha256": "436f2f27d7d1fb32e4149f434dbea1568367401b745ac11b525c52720d1a1e56",
             "expected_outcome": "ROUTE"
           },
           {
-          "fixture_id": "specialist.security.double-submission.SILENT_SCOPE_EXPANSION",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/silent_scope_expansion.json",
+            "fixture_id": "specialist.security.double-submission.SILENT_SCOPE_EXPANSION",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/silent_scope_expansion.json",
             "file_sha256": "566fe386df6a3edbc0587b9334995cec964e33d67a381e20a5dcc3706f87d854",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.STALE_SOURCE",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/stale_source.json",
+            "fixture_id": "specialist.security.double-submission.STALE_SOURCE",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/stale_source.json",
             "file_sha256": "ac08af63597bb889c925b3ec1b5dc4948f6dc79eabae9690dcd6c035a91dc283",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.TOOL_LIMIT",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/tool_limit.json",
+            "fixture_id": "specialist.security.double-submission.TOOL_LIMIT",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/tool_limit.json",
             "file_sha256": "d72f0d8716caacd79cee8fa061fe390f8c767160338fdffb30b4d2fd3f3a043a",
             "expected_outcome": "ROUTE"
           },
           {
-          "fixture_id": "specialist.security.double-submission.UMBRELLA_AUTHORITY",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/umbrella_authority.json",
+            "fixture_id": "specialist.security.double-submission.UMBRELLA_AUTHORITY",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/umbrella_authority.json",
             "file_sha256": "687720726cf0cdc05717fdd0557a5c069790841aeb72d39a143dee196ebd499b",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.UNRELATED_SCOPE",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/unrelated_scope.json",
+            "fixture_id": "specialist.security.double-submission.UNRELATED_SCOPE",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/unrelated_scope.json",
             "file_sha256": "ba38afd08d78472c20f8ebea92cb1c6c949e1d8340c70ebc8a8c19a0212ee1d0",
             "expected_outcome": "DENY"
           },
           {
-          "fixture_id": "specialist.security.double-submission.UNSAFE_ACTION",
-          "path": "specialist-blocks/wave-03/double-submission/fixtures/unsafe_action.json",
+            "fixture_id": "specialist.security.double-submission.UNSAFE_ACTION",
+            "path": "specialist-blocks/wave-03/double-submission/fixtures/unsafe_action.json",
             "file_sha256": "3cda48a9de8e33df43f4cfa127ceb9e5f9ad70ed8719e088050bcab4fbc1bf41",
             "expected_outcome": "DENY"
           }
@@ -14129,8 +14130,8 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_INDEPENDENT_PASS",
-      "qa_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "ACCEPTED_QUALIFIED",
+      "qa_state": "COMPLETE_QA_PASS",
       "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
       "supersession_invalidation": {
         "links": [
@@ -29152,6 +29153,328 @@
       }
     },
     {
+      "stable_agent_id": "AGENTOS.REPAIR",
+      "display_name": "Repair",
+      "entry_type": "AGENT_ROLE",
+      "tier": "PLATFORM_AGENTS",
+      "canonical_block_id": "specialist.control.repair",
+      "package_path": "specialist-blocks/wave-07/repair",
+      "family": "control-plane-repair",
+      "exact_narrow_purpose": "Run one governed project campaign through import or audit/repair modes, prove every narrow auditor result, merge only into a campaign-owned integration branch, clean custody safely, and hand deployment readiness to Controller without deploying.",
+      "applicability_triggers": [
+        "FULL_IMPORT",
+        "FULL_AUDIT_REPAIR",
+        "TARGETED_REPAIR",
+        "LEGACY_MIGRATION",
+        "RELEASE_HARDENING",
+        "serial audit",
+        "batch coherence",
+        "repair campaign",
+        "campaign.worktree",
+        "candidate.identity",
+        "dependency_sbom",
+        "global_policy_projection",
+        "mode",
+        "project.identity",
+        "project_context_snapshot",
+        "resource_ceiling",
+        "rollback.identity",
+        "source.preservation"
+      ],
+      "authority": [
+        "NO_PRODUCT_WRITE;_NO_SELF_ACCEPTANCE;_ONE_CAMPAIGN_WORKTREE_REPAIR_AND_CAMPAIGN_BRANCH_MERGE_ONLY;_NO_PROTECTED_BRANCH;_NO_DEPLOYMENT;_NO_AUDITOR_LIFECYCLE",
+        "{\"allowed_authority\":[\"campaign-owned cumulative integration branch\",\"campaign-scoped code and configuration repair\",\"synthetic migration rehearsal and rollback proof\",\"typed findings and evidence from read-only auditors\",\"typed handoff to Controller\"],\"precedence\":[\"auditor evidence\",\"current global model policy\",\"current project context\",\"exact project authority\",\"repair judgment within scope\",\"sealed Spawner governance\"],\"prohibited_authority\":[\"auditor lifecycle authority\",\"deployment authority\",\"live data authority\",\"protected branch mutation\",\"remote replacement\",\"self-clearance\",\"untrusted commands or prompts\"],\"jurisdiction_rule\":\"Repair owns implementation and campaign evidence only; Spawner owns role admission, auditor custody, governance repair, and archival; Controller owns workflow regulation and deployment-readiness routing.\",\"escalation_rule\":\"A protected boundary, BLOCKED_EXACT finding, material legal/safety issue, credential need, or unresolved product decision becomes a typed handoff; ordinary technical defects re-enter the Repair loop.\",\"acceptance_authority\":\"INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT\"}"
+      ],
+      "forbidden_actions": [
+        "accept an auditor's suggested patch without independent validation",
+        "audit and repair in the same worktree as an auditor",
+        "deploy, publish, promote, release, repoint a remote, or mutate protected main",
+        "spawn, despawn, archive, or change the model of an auditor",
+        "start a later auditor before merge and cleanup proof",
+        "use live data, credentials, secrets, or destructive migration",
+        "waive an unresolved finding, stale pass, missing evidence, or failed gate",
+        "write global governance or project memory directly"
+      ],
+      "stop_conditions": [
+        "{\"candidate_entry\":\"Package, source lock, twelve gates, nineteen hostile fixtures, evaluation dossier, inert seed, and handoff exist with matching digests while lifecycle remains CANDIDATE and activation remains OFF.\",\"evaluation_entry\":\"An evaluator identity separate from the author reruns the exact candidate digest, gate traces, source lock, hostile task set, and inert-seed denial; static syntax alone is insufficient.\",\"suspension\":\"Suspend on digest drift, stale or superseded source, missing applicability, identity conflict, failed utility/harm evaluation, or custody mismatch.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+      ],
+      "required_blocks": [],
+      "knowledge_context_inputs": [
+        "applicability roster and non-code product surfaces",
+        "campaign worktree custody and rollback",
+        "global model-policy and project context snapshots",
+        "migration compatibility and synthetic rehearsal",
+        "sealed Spawner lifecycle and EXIT_GOVERNANCE_REVIEW",
+        "serial-and-batch repair state machine",
+        "untrusted auditor-output handling",
+        "campaign.worktree",
+        "candidate.identity",
+        "dependency_sbom",
+        "global_policy_projection",
+        "mode",
+        "project.identity",
+        "project_context_snapshot",
+        "resource_ceiling",
+        "rollback.identity",
+        "source.preservation",
+        "source.agentos-repair-lifecycle",
+        "source.agentos-exit-governance",
+        "source.agentos-model-policy"
+      ],
+      "deterministic_gates": {
+        "status": "BOUND",
+        "manifest_path": "specialist-blocks/wave-07/repair/gates/manifest.json",
+        "gates": [
+          {
+            "gate_id": "00-intake",
+            "path": "specialist-blocks/wave-07/repair/gates/00-intake.gate",
+            "file_sha256": "10194d885f904b7a77c61900485611197b70b6b97b89937f632ca60b8a77325d"
+          },
+          {
+            "gate_id": "01-applicability",
+            "path": "specialist-blocks/wave-07/repair/gates/01-applicability.gate",
+            "file_sha256": "4994313e31d6ae6806f57e5c2c4a9eb66109bc130d20ad3506a452854f78012e"
+          },
+          {
+            "gate_id": "02-authority-precedence",
+            "path": "specialist-blocks/wave-07/repair/gates/02-authority-precedence.gate",
+            "file_sha256": "e21381ddea743698e7b6f9e8b3d8f52d0c6dfca8e137610ae8b35a8fc7d5e7a3"
+          },
+          {
+            "gate_id": "03-scope-nongoals",
+            "path": "specialist-blocks/wave-07/repair/gates/03-scope-nongoals.gate",
+            "file_sha256": "106452d2de7e34730a2d5136a01fd71c01a6238ec5b00a1971b0ff641f84a487"
+          },
+          {
+            "gate_id": "04-source-evidence-freshness",
+            "path": "specialist-blocks/wave-07/repair/gates/04-source-evidence-freshness.gate",
+            "file_sha256": "41d24cf5901ff144ba0bef17e30e1979f0130ea2e82cf0478a458175ce4287f1"
+          },
+          {
+            "gate_id": "05-context-completeness",
+            "path": "specialist-blocks/wave-07/repair/gates/05-context-completeness.gate",
+            "file_sha256": "6854ae925378d305f0a7aaac22d1c240531d7bc41b2b19f044e75e2f8b604562"
+          },
+          {
+            "gate_id": "06-tool-resource-custody",
+            "path": "specialist-blocks/wave-07/repair/gates/06-tool-resource-custody.gate",
+            "file_sha256": "9a39a36fdd6c8664b29c5d58f6f7ca1856225cabf540b9604f02412fbdeda903"
+          },
+          {
+            "gate_id": "07-data-secret-privacy",
+            "path": "specialist-blocks/wave-07/repair/gates/07-data-secret-privacy.gate",
+            "file_sha256": "7d0b27025a97e6bb4b874ba9587b07ae517e0a5c3479def38906da1c20fae56c"
+          },
+          {
+            "gate_id": "08-build-browser-runtime",
+            "path": "specialist-blocks/wave-07/repair/gates/08-build-browser-runtime.gate",
+            "file_sha256": "e6fad47ae5a679e4e87f322851818dedf7fc6fa058cd069a954d2bfb23d5a47c"
+          },
+          {
+            "gate_id": "09-output-handoff",
+            "path": "specialist-blocks/wave-07/repair/gates/09-output-handoff.gate",
+            "file_sha256": "bbe4e869456b92944427adf18b71695399af1afdbe0c4691b6a52ee3536e59b6"
+          },
+          {
+            "gate_id": "10-proof-acceptance",
+            "path": "specialist-blocks/wave-07/repair/gates/10-proof-acceptance.gate",
+            "file_sha256": "84f4cb0e4fe662ec2269ca6ba0aabe6289fa33337f62f7aee77643254870cecd"
+          },
+          {
+            "gate_id": "11-lifecycle-recovery-archive",
+            "path": "specialist-blocks/wave-07/repair/gates/11-lifecycle-recovery-archive.gate",
+            "file_sha256": "9cdc27cd57089e8800c46532d495a26a629a1297d5e5cf27265bf1a07375ab69"
+          }
+        ]
+      },
+      "hostile_fixtures": {
+        "status": "BOUND",
+        "fixtures": [
+          {
+            "fixture_id": "specialist.control.repair.CLEANUP_BEFORE_MERGE_LEFTOVER",
+            "path": "specialist-blocks/wave-07/repair/fixtures/cleanup_before_merge_leftover.json",
+            "file_sha256": "5384b6df0ed541585b05b8f79d0a09e2ba45b120f56cbd85ede49d52abebd310",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.DATA_SCHEMA_UNSAFE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/data_schema_unsafe.json",
+            "file_sha256": "1eed8a0187ed7da0ac8975a0bb0ac36642908b37216ea947443dc32dff706552",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.DEPLOY_PUBLISH",
+            "path": "specialist-blocks/wave-07/repair/fixtures/deploy_publish.json",
+            "file_sha256": "7d3e8a438df1cc45adb6e1fda96bd9f2da6fef24980a287897d9f8eb77afd9f9",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.DIRTY_SHARED_DELETE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/dirty_shared_delete.json",
+            "file_sha256": "bc3c68eb7c8a482a6b040a370c27e3a073be180deb8fa4c684ad70f3cb59f2d6",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.FINAL_READY",
+            "path": "specialist-blocks/wave-07/repair/fixtures/final_ready.json",
+            "file_sha256": "a579f294a04d8f50870b41640768b45482061328f66fa54edcb81a3d2269bd61",
+            "expected_outcome": "ROUTE"
+          },
+          {
+            "fixture_id": "specialist.control.repair.GOVERNANCE_CHANGE_STALE_PASS",
+            "path": "specialist-blocks/wave-07/repair/fixtures/governance_change_stale_pass.json",
+            "file_sha256": "4e269421ea7e8a010aca3d0f5b34db204e8b0835921e7886a4c4729329efaa85",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.IMPORT_MISSING_PRESERVATION",
+            "path": "specialist-blocks/wave-07/repair/fixtures/import_missing_preservation.json",
+            "file_sha256": "a1316b5fc6b7c00efc07dcae077290d7bdd7c3cacd605bce74518dd0abe52a88",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.INCOMPLETE_FINAL_COVERAGE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/incomplete_final_coverage.json",
+            "file_sha256": "cfd22e2864c63a76bec2e72e1f5479e6aed1fc2c2fb95dcfabd9d22bde16697a",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.MERGE_FAILURE_CLEANUP",
+            "path": "specialist-blocks/wave-07/repair/fixtures/merge_failure_cleanup.json",
+            "file_sha256": "470f68d6dc41504c123039a37b800b2c1c49377b950391ba08e830ac81a6836f",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.MISSING_ROLLBACK",
+            "path": "specialist-blocks/wave-07/repair/fixtures/missing_rollback.json",
+            "file_sha256": "ad2d718a31f8b6d40c395ba43463076503e3033acbb2784d8085299bfc80ed5b",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.MODE_AUDIT_SUCCESSOR",
+            "path": "specialist-blocks/wave-07/repair/fixtures/mode_audit_successor.json",
+            "file_sha256": "fe5fcf34d2803ef8bd9fed67ca8c4a19efcef2b5075bf259b1eb7f7b134124b1",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.MODE_IMPORT_MUTATION",
+            "path": "specialist-blocks/wave-07/repair/fixtures/mode_import_mutation.json",
+            "file_sha256": "de7ffaddc313e40acab3956e07fa6895d50704184aa695bc8c1f44bbca1ba4dd",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.MORE_THAN_SIX_LANES",
+            "path": "specialist-blocks/wave-07/repair/fixtures/more_than_six_lanes.json",
+            "file_sha256": "2740fed7c58dd0e297aabf49c920d16c8fd2e955cc9d5ddcd68fd35ac3c6ce92",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.PARALLEL_SHARED_WORKTREE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/parallel_shared_worktree.json",
+            "file_sha256": "0f599dc9dca65dc05c580564e69bc38040ee1c69067c9a8b279fa84f311ac087",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.SERIAL_NEXT_BEFORE_MERGE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/serial_next_before_merge.json",
+            "file_sha256": "d1dc9e7cc8b9d387974373ffb84762bc87584844a09f92992e3c69570ababdda",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.STALE_BATCH_BASE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/stale_batch_base.json",
+            "file_sha256": "393662e021ac8e25b2ba1fd776995402285b9c8a7f48e803830c8c69edbe720d",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.STALE_PASS_GOVERNANCE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/stale_pass_governance.json",
+            "file_sha256": "de1ce1323d6f15e35ba52daed6d42d5d05f64e13d463f1ace9da65a4b13f55b8",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.STALE_WORKTREE_REUSE",
+            "path": "specialist-blocks/wave-07/repair/fixtures/stale_worktree_reuse.json",
+            "file_sha256": "ed7d5e297fe0243d7599452b9bbc017738c0cb40c2fd61a52f90e1c9790c2db1",
+            "expected_outcome": "DENY"
+          },
+          {
+            "fixture_id": "specialist.control.repair.UNTRUSTED_AUDITOR",
+            "path": "specialist-blocks/wave-07/repair/fixtures/untrusted_auditor.json",
+            "file_sha256": "289114d72d8c9f129e26f918019927a06a579f831812180d3b63776bdff4df19",
+            "expected_outcome": "DENY"
+          }
+        ]
+      },
+      "required_evidence_handoff": {
+        "evidence_fields": [
+          "source_lock",
+          "freshness_policy",
+          "claim_rule",
+          "unknown_rule"
+        ],
+        "handoff_path": "specialist-blocks/wave-07/repair/handoff.json",
+        "handoff_file_sha256": "5b5fc7e2647ce246cbc3917827b6ebbb392695b8085331707f50a61583064018",
+        "independent_review_required": true,
+        "receipt_id": "specialist-eval.repair.v1"
+      },
+      "lifecycle": {
+        "kind": "SEED_TO_WORKER",
+        "build_rules": [
+          "{\"candidate_entry\":\"Package, source lock, twelve gates, nineteen hostile fixtures, evaluation dossier, inert seed, and handoff exist with matching digests while lifecycle remains CANDIDATE and activation remains OFF.\",\"evaluation_entry\":\"An evaluator identity separate from the author reruns the exact candidate digest, gate traces, source lock, hostile task set, and inert-seed denial; static syntax alone is insufficient.\",\"suspension\":\"Suspend on digest drift, stale or superseded source, missing applicability, identity conflict, failed utility/harm evaluation, or custody mismatch.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+        ],
+        "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
+        "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
+        "permanent_rule": "Not a permanent identity.",
+        "archive_rule": "Archive or supersede only through Spawner after scope closure, evidence preservation, zero references, and durable readback."
+      },
+      "model_route": {
+        "task_class": "BROAD_ARCHITECTURE",
+        "minimum_capability": 55,
+        "required_capabilities": [
+          "CODE",
+          "LONG_CONTEXT",
+          "TOOLS"
+        ],
+        "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT"
+      },
+      "dependency_predecessors": [],
+      "likely_consumers": [
+        "consumer project overlays",
+        "Orchestrator planning",
+        "independent audit lanes"
+      ],
+      "reuse_likelihood": {
+        "total": 82.25,
+        "expected_frequency": 86,
+        "dependency_centrality": 94,
+        "cross_project_reuse": 78,
+        "risk_reduction": 82,
+        "architecture_coverage": 72,
+        "finish_cost": 45,
+        "rationale": "P1 priority combines platform_agents centrality, cross-project reuse, risk reduction, and completion cost; Owner-prioritized campaign builder; it follows accepted permanent governance and never deploys.."
+      },
+      "risk": {
+        "criticality": "HIGH",
+        "reason": "PLATFORM_AGENTS entry covers control-plane-repair; impact is bounded by its narrow authority and independent admission requirement."
+      },
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "supersession_invalidation": {
+        "links": [
+          "specialist-blocks/wave-07/repair/evaluation.json"
+        ],
+        "invalidate_when": [
+          "block semantic digest changes",
+          "source lock or authoritative evidence changes",
+          "gate or hostile fixture bytes change",
+          "global model-policy snapshot or permanent-role registry changes"
+        ],
+        "rebuild_rule": "Invalidate dependent compiled contexts and seeds, preserve history, resolve current bytes, re-run deterministic gates, then obtain a new independent receipt before reuse."
+      }
+    },
+    {
       "stable_agent_id": "AGENTOS.RUNTIME",
       "display_name": "Runtime",
       "entry_type": "AGENT_ROLE",
@@ -39506,6 +39829,14 @@
     },
     {
       "rank": 8,
+      "stable_agent_id": "AGENTOS.REPAIR",
+      "tier": "PLATFORM_AGENTS",
+      "eligible": true,
+      "priority_score": 82.25,
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+    },
+    {
+      "rank": 9,
       "stable_agent_id": "AGENT.SECURITY_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39513,7 +39844,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 9,
+      "rank": 10,
       "stable_agent_id": "AGENT.DATA_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39521,7 +39852,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 10,
+      "rank": 11,
       "stable_agent_id": "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39529,7 +39860,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 11,
+      "rank": 12,
       "stable_agent_id": "AGENT.PLATFORM_PROVIDER_EDGE_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39537,7 +39868,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 12,
+      "rank": 13,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_DESKTOP_OFFLINE_REALTIME_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39545,7 +39876,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 13,
+      "rank": 14,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39553,7 +39884,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 14,
+      "rank": 15,
       "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39561,7 +39892,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 15,
+      "rank": 16,
       "stable_agent_id": "AGENT.CONTROL_BOOTSTRAP_PROJECT_INITIALIZER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39569,7 +39900,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 16,
+      "rank": 17,
       "stable_agent_id": "AGENT.CONTROL_CENTRAL_INTEGRATOR",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39577,7 +39908,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 17,
+      "rank": 18,
       "stable_agent_id": "AGENT.CONTROL_RELEASE_MANAGER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39585,7 +39916,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 18,
+      "rank": 19,
       "stable_agent_id": "AGENT.CONTROL_WORKTREE_CUSTODY",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39593,7 +39924,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 19,
+      "rank": 20,
       "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_ROUTER",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39601,7 +39932,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 20,
+      "rank": 21,
       "stable_agent_id": "AGENT.CONTROL_INDEPENDENT_AUDITOR",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39609,7 +39940,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 21,
+      "rank": 22,
       "stable_agent_id": "AGENT.AI_SEARCH_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39617,7 +39948,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 22,
+      "rank": 23,
       "stable_agent_id": "AGENT.DOMAIN_WORKFLOW_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39625,7 +39956,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 23,
+      "rank": 24,
       "stable_agent_id": "AGENT.FINANCE_ACCOUNTING_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39633,7 +39964,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 24,
+      "rank": 25,
       "stable_agent_id": "AGENT.GRAPHICS_INDUSTRIAL_3D_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39641,7 +39972,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 25,
+      "rank": 26,
       "stable_agent_id": "AGENT.PRIVACY_DATA_LIFECYCLE_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39649,7 +39980,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 26,
+      "rank": 27,
       "stable_agent_id": "AGENT.REGULATORY_APPLICABILITY_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39657,7 +39988,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 27,
+      "rank": 28,
       "stable_agent_id": "AGENT.SECURITY_ACCESS_CONTROL_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39665,7 +39996,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 28,
+      "rank": 29,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39673,7 +40004,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 29,
+      "rank": 30,
       "stable_agent_id": "AGENT.SECURITY_OWASP_ASVS_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39681,7 +40012,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 30,
+      "rank": 31,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_TOP10_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39689,7 +40020,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 31,
+      "rank": 32,
       "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_ROUTER",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39697,7 +40028,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 32,
+      "rank": 33,
       "stable_agent_id": "AGENT.DATA_MIGRATION_ROLLBACK",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39705,7 +40036,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 33,
+      "rank": 34,
       "stable_agent_id": "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_INCIDENT",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39713,7 +40044,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 34,
+      "rank": 35,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ACCESSIBILITY_WCAG",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39721,7 +40052,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 35,
+      "rank": 36,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_ANDROID_KOTLIN",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39729,7 +40060,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 36,
+      "rank": 37,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_IOS_SWIFTUI",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39737,7 +40068,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 37,
+      "rank": 38,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_PRODUCT_INTERACTION",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39745,7 +40076,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 38,
+      "rank": 39,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_RESPONSIVE_WEB",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -39753,7 +40084,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 39,
+      "rank": 40,
       "stable_agent_id": "AGENT.SECURITY_ABAC",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39761,7 +40092,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 40,
+      "rank": 41,
       "stable_agent_id": "AGENT.SECURITY_CACHE_RESIDUE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39769,7 +40100,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 41,
+      "rank": 42,
       "stable_agent_id": "AGENT.SECURITY_CONCURRENT_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39777,7 +40108,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 42,
+      "rank": 43,
       "stable_agent_id": "AGENT.SECURITY_CVE_APPLICABILITY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39785,7 +40116,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 43,
+      "rank": 44,
       "stable_agent_id": "AGENT.SECURITY_CVE_INVENTORY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39793,7 +40124,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 44,
+      "rank": 45,
       "stable_agent_id": "AGENT.SECURITY_DEADLOCK",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39801,7 +40132,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 45,
+      "rank": 46,
       "stable_agent_id": "AGENT.SECURITY_DEPENDENCY_VULNERABILITY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39809,7 +40140,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 46,
+      "rank": 47,
       "stable_agent_id": "AGENT.SECURITY_DOUBLE_SUBMISSION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39817,7 +40148,7 @@
       "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
-      "rank": 47,
+      "rank": 48,
       "stable_agent_id": "AGENT.SECURITY_FUNCTION_SCOPE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39825,7 +40156,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 48,
+      "rank": 49,
       "stable_agent_id": "AGENT.SECURITY_IDEMPOTENCY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39833,7 +40164,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 49,
+      "rank": 50,
       "stable_agent_id": "AGENT.SECURITY_OBJECT_SCOPE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39841,7 +40172,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 50,
+      "rank": 51,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API1_OBJECT_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39849,7 +40180,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 51,
+      "rank": 52,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API10_UNSAFE_API_CONSUMPTION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39857,7 +40188,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 52,
+      "rank": 53,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API2_BROKEN_AUTHENTICATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39865,7 +40196,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 53,
+      "rank": 54,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API3_PROPERTY_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39873,7 +40204,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 54,
+      "rank": 55,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API4_RESOURCE_CONSUMPTION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39881,7 +40212,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 55,
+      "rank": 56,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API5_FUNCTION_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39889,7 +40220,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 56,
+      "rank": 57,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API6_SENSITIVE_BUSINESS_FLOWS",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39897,7 +40228,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 57,
+      "rank": 58,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API7_SSRF",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39905,7 +40236,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 58,
+      "rank": 59,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API8_MISCONFIGURATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39913,7 +40244,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 59,
+      "rank": 60,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API9_INVENTORY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39921,7 +40252,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 60,
+      "rank": 61,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A01_BROKEN_ACCESS_CONTROL",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39929,7 +40260,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 61,
+      "rank": 62,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39937,7 +40268,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 62,
+      "rank": 63,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39945,7 +40276,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 63,
+      "rank": 64,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39953,7 +40284,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 64,
+      "rank": 65,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A05_INJECTION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39961,7 +40292,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 65,
+      "rank": 66,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A06_INSECURE_DESIGN",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39969,7 +40300,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 66,
+      "rank": 67,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39977,7 +40308,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 67,
+      "rank": 68,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39985,7 +40316,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 68,
+      "rank": 69,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -39993,7 +40324,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 69,
+      "rank": 70,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40001,7 +40332,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 70,
+      "rank": 71,
       "stable_agent_id": "AGENT.SECURITY_PATCH_REMEDIATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40009,7 +40340,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 71,
+      "rank": 72,
       "stable_agent_id": "AGENT.SECURITY_RACE_CONDITION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40017,7 +40348,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 72,
+      "rank": 73,
       "stable_agent_id": "AGENT.SECURITY_RBAC",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40025,7 +40356,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 73,
+      "rank": 74,
       "stable_agent_id": "AGENT.SECURITY_REBAC",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40033,7 +40364,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 74,
+      "rank": 75,
       "stable_agent_id": "AGENT.SECURITY_REPLAY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40041,7 +40372,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 75,
+      "rank": 76,
       "stable_agent_id": "AGENT.SECURITY_REVOCATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40049,7 +40380,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 76,
+      "rank": 77,
       "stable_agent_id": "AGENT.SECURITY_SBOM",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40057,7 +40388,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 77,
+      "rank": 78,
       "stable_agent_id": "AGENT.SECURITY_SUPPLY_CHAIN_PROVENANCE",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40065,7 +40396,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 78,
+      "rank": 79,
       "stable_agent_id": "AGENT.SECURITY_TENANT_ISOLATION",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40073,7 +40404,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 79,
+      "rank": 80,
       "stable_agent_id": "AGENT.SECURITY_TOCTOU",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40081,7 +40412,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 80,
+      "rank": 81,
       "stable_agent_id": "AGENT.ASSURANCE_ENTERPRISE_TEST_ARCHITECT",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40089,7 +40420,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 81,
+      "rank": 82,
       "stable_agent_id": "AGENT.DATA_POSTGRESQL_RLS",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40097,7 +40428,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 82,
+      "rank": 83,
       "stable_agent_id": "AGENT.PLATFORM_AWS_IAM_POLICY",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40105,7 +40436,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 83,
+      "rank": 84,
       "stable_agent_id": "AGENT.PLATFORM_CLOUDFLARE_CACHE",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40113,7 +40444,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 84,
+      "rank": 85,
       "stable_agent_id": "AGENT.PLATFORM_CLOUDFLARE_DNS",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40121,7 +40452,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 85,
+      "rank": 86,
       "stable_agent_id": "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40129,7 +40460,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 86,
+      "rank": 87,
       "stable_agent_id": "AGENT.SECURITY_OAUTH_IDENTITY",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40137,7 +40468,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 87,
+      "rank": 88,
       "stable_agent_id": "AGENT.SECURITY_OIDC_CORE",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40145,7 +40476,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 88,
+      "rank": 89,
       "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_REACT_COMPONENTS",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40153,7 +40484,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 89,
+      "rank": 90,
       "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_RUST_BACKEND",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40161,7 +40492,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 90,
+      "rank": 91,
       "stable_agent_id": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_TYPESCRIPT_LANGUAGE",
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
@@ -40169,7 +40500,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 91,
+      "rank": 92,
       "stable_agent_id": "AGENT.AI_SEARCH_RAG",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40177,7 +40508,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 92,
+      "rank": 93,
       "stable_agent_id": "AGENT.DOMAIN_FIELD_JOB_WORKFLOW",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40185,7 +40516,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 93,
+      "rank": 94,
       "stable_agent_id": "AGENT.DOMAIN_WELL_WORKFLOW",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40193,7 +40524,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 94,
+      "rank": 95,
       "stable_agent_id": "AGENT.FINANCE_JOB_COST_ACCOUNTING",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40201,7 +40532,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 95,
+      "rank": 96,
       "stable_agent_id": "AGENT.GRAPHICS_INDUSTRIAL_3D",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40209,7 +40540,7 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
-      "rank": 96,
+      "rank": 97,
       "stable_agent_id": "AGENT.REGULATORY_FMCSA_APPLICABILITY",
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
@@ -40217,5 +40548,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "66f2ecadf1fd6cabfc23ad60b44704bd5decd45d60d4e136fb7f70f890128b83"
+  "roster_sha256": "6db07cb7b11b6f3c1f0b0b21d8992567602e3121465a3955dc2c660396529a4c"
 }
