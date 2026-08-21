@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_external_review.v1",
+  "title": "Independent external review for AGENTOS.REPAIR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "receipt_ref", "evaluator_id", "evaluator_admission_sha256", "authority_epoch", "role_id", "role_class", "candidate_commit", "candidate_tree", "candidate_root_sha256", "package_block_sha256", "gate_inventory_sha256", "fixture_inventory_sha256", "fixture_results", "operational_context_sha256", "model_snapshot_sha256", "model_selection_sha256", "scope", "custody", "custody_receipt_sha256", "observed_at_utc", "expires_at_utc", "disposition", "review_sha256", "evaluator_signature_base64"],
+  "properties": {
+    "schema": {"const": "agentos.repair_external_review.v1"}, "version": {"const": 1}, "receipt_ref": {"type": "string", "pattern": "^ref:temporary-role-review/[0-9a-f]{64}$"},
+    "evaluator_id": {"type": "string", "pattern": "^AGENT\\.INDEPENDENT_EVALUATOR\\.[A-Z0-9._:-]{1,160}$"}, "evaluator_admission_sha256": {"$ref": "#/$defs/sha"}, "authority_epoch": {"type": "integer", "minimum": 1},
+    "role_id": {"const": "AGENTOS.REPAIR"}, "role_class": {"const": "REPAIR"}, "candidate_commit": {"$ref": "#/$defs/git"}, "candidate_tree": {"$ref": "#/$defs/git"}, "candidate_root_sha256": {"$ref": "#/$defs/sha"}, "package_block_sha256": {"$ref": "#/$defs/sha"}, "gate_inventory_sha256": {"$ref": "#/$defs/sha"}, "fixture_inventory_sha256": {"$ref": "#/$defs/sha"},
+    "fixture_results": {"type": "array", "minItems": 19, "maxItems": 19}, "operational_context_sha256": {"$ref": "#/$defs/sha"}, "model_snapshot_sha256": {"$ref": "#/$defs/sha"}, "model_selection_sha256": {"$ref": "#/$defs/sha"}, "scope": {"const": "REPAIR_PACKAGE_REVIEW"}, "custody": {"const": "SEPARATE_EXTERNAL_EVALUATOR"}, "custody_receipt_sha256": {"$ref": "#/$defs/sha"},
+    "observed_at_utc": {"type": "string", "format": "date-time"}, "expires_at_utc": {"type": "string", "format": "date-time"}, "disposition": {"const": "PASS"}, "review_sha256": {"$ref": "#/$defs/sha"}, "evaluator_signature_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$"}
+  },
+  "$defs": {"sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"}}
+}

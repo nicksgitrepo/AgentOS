@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_owner_intake_spawn.v1",
+  "title": "Project-less owner intake for admitted Repair",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "role_id", "role_class", "admission_receipt_sha256", "clearance_sha256", "candidate_commit", "candidate_tree", "owner_task_ref", "spawn_request_id", "task_identity_sha256", "event_sha256", "control_ledger", "project_authority", "mode", "project_context", "worktree_authority", "deployment_authority", "evaluator_state"],
+  "properties": {
+    "schema": {"const": "agentos.repair_owner_intake_spawn.v1"}, "version": {"const": 1}, "status": {"const": "SPAWN_REQUEST_RECORDED"}, "role_id": {"const": "AGENTOS.REPAIR"}, "role_class": {"const": "REPAIR"},
+    "admission_receipt_sha256": {"$ref": "#/$defs/sha"}, "clearance_sha256": {"$ref": "#/$defs/sha"}, "candidate_commit": {"$ref": "#/$defs/git"}, "candidate_tree": {"$ref": "#/$defs/git"}, "owner_task_ref": {"type": "string", "minLength": 8, "maxLength": 192}, "spawn_request_id": {"type": "string", "pattern": "^REQUEST\\.REPAIR\\.OWNER_INTAKE\\.[0-9a-f]{32}$"}, "task_identity_sha256": {"$ref": "#/$defs/sha"}, "event_sha256": {"$ref": "#/$defs/sha"}, "control_ledger": {"const": "EXTERNAL_AGENTOS_CONTROL_PLANE"}, "project_authority": {"const": "NONE_BEFORE_OWNER_INTAKE"}, "mode": {"const": "UNSELECTED"}, "project_context": {"const": "NONE"}, "worktree_authority": {"const": "NONE"}, "deployment_authority": {"const": "NONE"}, "evaluator_state": {"const": "CONSUMED_ONE_USE"}
+  },
+  "$defs": {"sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"}}
+}

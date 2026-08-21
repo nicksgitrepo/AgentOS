@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_governed_admission.v1",
+  "title": "Sealed AgentOS Repair temporary-role admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "role_id", "role_class", "candidate_root_sha256", "candidate_commit", "candidate_tree", "package_block_sha256", "package_gate_inventory_sha256", "package_fixture_inventory_sha256", "model_snapshot_sha256", "model_selection_sha256", "global_context_sha256", "owner_intake_ref", "request_id", "evaluator_id", "evaluator_admission_sha256", "review_sha256", "clearance_sha256", "consumption_event_sha256", "custody", "receipt_ref", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.repair_governed_admission.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["PREPARED_INACTIVE", "ADMITTED_ONE_USE"]},
+    "role_id": {"const": "AGENTOS.REPAIR"},
+    "role_class": {"const": "REPAIR"},
+    "candidate_root_sha256": {"$ref": "#/$defs/sha"},
+    "candidate_commit": {"$ref": "#/$defs/git"},
+    "candidate_tree": {"$ref": "#/$defs/git"},
+    "package_block_sha256": {"$ref": "#/$defs/sha"},
+    "package_gate_inventory_sha256": {"$ref": "#/$defs/sha"},
+    "package_fixture_inventory_sha256": {"$ref": "#/$defs/sha"},
+    "model_snapshot_sha256": {"$ref": "#/$defs/sha"},
+    "model_selection_sha256": {"$ref": "#/$defs/sha"},
+    "global_context_sha256": {"$ref": "#/$defs/sha"},
+    "owner_intake_ref": {"type": "string", "pattern": "^(?:opaque|ref):owner-intake/[A-Za-z0-9._:-]{1,191}$"},
+    "request_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{1,191}$"},
+    "evaluator_id": {"type": "string", "pattern": "^AGENT\\.INDEPENDENT_EVALUATOR\\.[A-Z0-9._:-]{1,160}$"},
+    "evaluator_admission_sha256": {"$ref": "#/$defs/sha"},
+    "review_sha256": {"$ref": "#/$defs/sha"},
+    "clearance_sha256": {"$ref": "#/$defs/sha"},
+    "consumption_event_sha256": {"$ref": "#/$defs/sha"},
+    "custody": {"const": "SEALED_SPAWNER_AND_SEPARATE_EXTERNAL_EVALUATOR"},
+    "receipt_ref": {"type": "string", "pattern": "^ref:temporary-role-review/[0-9a-f]{64}$"},
+    "receipt_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+  }
+}

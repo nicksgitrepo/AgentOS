@@ -21,7 +21,10 @@ function cleanLoaderEnvironment() {
 function invokeLoader(args) {
   assert(process.execArgv.every((arg) => !/(?:--loader|--import|--require|-r(?:$|=))/u.test(arg)), "Authority cannot be sealed under a preload/custom loader", "SEALED_AUTHORITY_RUNTIME_HOOK");
   assert(!process.env.NODE_OPTIONS, "Authority cannot be sealed when NODE_OPTIONS can preload or hook runtime code", "SEALED_AUTHORITY_RUNTIME_HOOK");
-  const raw = execFileSync(process.execPath, [LOADER_PATH, ...args], {encoding: "utf8", env: cleanLoaderEnvironment(), cwd: dirname(LOADER_PATH), stdio: ["ignore", "pipe", "pipe"]});
+  // The canonical roster is intentionally content-addressed and may be large.
+  // Keep the fresh-process boundary, but do not let a valid authority artifact
+  // fail merely because the child-process default output cap is too small.
+  const raw = execFileSync(process.execPath, [LOADER_PATH, ...args], {encoding: "utf8", maxBuffer: 64 * 1024 * 1024, env: cleanLoaderEnvironment(), cwd: dirname(LOADER_PATH), stdio: ["ignore", "pipe", "pipe"]});
   return JSON.parse(raw);
 }
 function loadBinding() {

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.repair_external_evaluator_registry.v1",
+  "title": "Externally provisioned evaluator registry for AGENTOS.REPAIR",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "registry_id", "canonical_trust_root_sha256", "authority_epoch", "evaluator_id", "evaluator_role", "scope", "public_key_pem", "valid_from_utc", "expires_at_utc", "revoked_at_utc", "admission_sha256", "registry_sha256", "root_signature_base64"],
+  "properties": {
+    "schema": {"const": "agentos.repair_external_evaluator_registry.v1"},
+    "version": {"const": 1},
+    "registry_id": {"type": "string", "pattern": "^[A-Z0-9._:-]{3,192}$"},
+    "canonical_trust_root_sha256": {"$ref": "#/$defs/sha"},
+    "authority_epoch": {"type": "integer", "minimum": 1},
+    "evaluator_id": {"type": "string", "pattern": "^AGENT\\.INDEPENDENT_EVALUATOR\\.[A-Z0-9._:-]{1,160}$"},
+    "evaluator_role": {"const": "AGENT.INDEPENDENT_EVALUATOR"},
+    "scope": {"const": "REPAIR_PACKAGE_REVIEW"},
+    "public_key_pem": {"type": "string", "pattern": "^-----BEGIN PUBLIC KEY-----[\\s\\S]+-----END PUBLIC KEY-----\\n?$"},
+    "valid_from_utc": {"type": "string", "format": "date-time"},
+    "expires_at_utc": {"type": "string", "format": "date-time"},
+    "revoked_at_utc": {"type": ["string", "null"], "format": "date-time"},
+    "admission_sha256": {"$ref": "#/$defs/sha"},
+    "registry_sha256": {"$ref": "#/$defs/sha"},
+    "root_signature_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$"}
+  },
+  "$defs": {"sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}
