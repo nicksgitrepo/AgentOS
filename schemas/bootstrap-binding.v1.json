@@ -1432,7 +1432,7 @@
     },
     "collaborative_audit_workflow_controller": {
       "path": "control/collaborative-audit-workflow.mjs",
-      "sha256": "f26a3201e0ed07515831a3328d772af9843207b2a7fb4c5db8c6ab6a8190a619"
+      "sha256": "de8156576252eef148fd39df5a4b71112c8109e1b351626e13820b406323b3eb"
     },
     "collaborative_audit_workflow_verifier": {
       "path": "tests/verify-collaborative-audit-workflow.mjs",
@@ -2183,15 +2183,27 @@
     },
     "auditor_round_custody_controller": {
       "path": "control/auditor-round-custody.mjs",
-      "sha256": "3773760b0ba2c9d0e64896afc095129cbbc79b5cbfcddcb4a0104435228732df"
+      "sha256": "cbb3436478e999420c53d90430f320d5558fd9658de83b4e2157083922edee51"
     },
     "auditor_round_custody_contract": {
       "path": "schemas/auditor-round-custody.v1.json",
-      "sha256": "282fcbff2dce1041e55bfd70481e5c33c1314582603bda0232c20fdbbe0426db"
+      "sha256": "8b15d992c1e2c9b98c45b72143807b2b274b8cb8bc40c417497300bc00e03960"
     },
     "auditor_round_custody_verifier": {
       "path": "tests/verify-auditor-round-custody.mjs",
-      "sha256": "ca25f3559fe524f9f2c9d21f77429725523eea279e27de364a2aad7f7710e265"
+      "sha256": "31a19434e0ccf581e9e32d26f68e92429758f99c798d99ec0424bea6090bc858"
+    },
+    "auditor_round_review_authority_controller": {
+      "path": "control/auditor-round-review-authority.mjs",
+      "sha256": "fed204545a2bfb55237e40e761cb0a2fcdc482ee35e4ca1bfbc6e13d7c28674b"
+    },
+    "auditor_round_review_authority_contract": {
+      "path": "schemas/auditor-round-independent-review.v1.json",
+      "sha256": "5873fce6e0eab9f1470357deb711ff77622be5db9a9c3fd314ea37245e3cf717"
+    },
+    "auditor_round_review_authority_verifier": {
+      "path": "tests/verify-auditor-round-review-authority.mjs",
+      "sha256": "a2520c90f7bea91f0a2e51f82b6f1ae3d985e0cfd5b8ab1b772511ddda60c353"
     },
     "independent_auditor_boundary_gate": {
       "path": "control/independent-auditor-boundary-gate.mjs",
@@ -2215,7 +2227,7 @@
     },
     "independent_auditor_package_operational_evaluator": {
       "path": "control/independent-auditor-package-evaluator.mjs",
-      "sha256": "822c0cedd039930c39e6d71b847ab3271e8f97a5bc8588acab3c85f489750060"
+      "sha256": "6d8c544bc402bfead5ecd415018aba566aad59da860bdf8cc163704d598f88b8"
     },
     "independent_clearance_applicability_contract": {
       "path": "schemas/independent-clearance-applicability.v1.json",

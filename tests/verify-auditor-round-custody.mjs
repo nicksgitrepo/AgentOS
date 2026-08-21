@@ -23,7 +23,8 @@ function makeRound(overrides = {}) {
   fixtureBase.result_sha256 = digest({...fixtureBase, result_sha256: null});
   const gate = {gate_id: "GATE.ADVERSARIAL.1", gate_sha256: digest("gate-bytes"), fixture_ids: [fixtureBase.fixture_id], entrypoint: "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", executed: true, observed_status: "DENY", negative_assertions: ["unsafe-route-denied"], execution_receipt_sha256: digest("gate-execution"), result_sha256: null};
   gate.result_sha256 = digest({...gate, result_sha256: null});
-  const execution = {status: "COMPLETE", entrypoints_real: true, metadata_only: false, timeout_or_silence: false, fixture_inventory_complete: true, gate_inventory_complete: true, fixtures: [fixtureBase], gates: [gate], side_effects: sideEffects(), execution_sha256: null};
+  const command = {command_sha256: digest("command"), cwd_ref: "opaque:worktree:AUDITOR.ROUND.1", entrypoint: "control/independent-auditor-boundary-gate.mjs#evaluateIndependentAuditorBoundary", status: "COMPLETE", target_write_attempts: 0, candidate_tree_before_sha1: candidate.tree_sha1, candidate_tree_after_sha1: candidate.tree_sha1, readback_sha256: null}; command.readback_sha256 = digest({...command, readback_sha256: null});
+  const execution = {status: "COMPLETE", entrypoints_real: true, metadata_only: false, timeout_or_silence: false, fixture_inventory_complete: true, gate_inventory_complete: true, fixtures: [fixtureBase], gates: [gate], side_effects: sideEffects(), auditor_cwd_ref: "opaque:worktree:AUDITOR.ROUND.1", candidate_custody_readback_sha256: digest("candidate-custody-readback"), write_attempts: 0, target_write_attempts: 0, command_receipts: [command], execution_sha256: null};
   execution.execution_sha256 = digest({...execution, execution_sha256: null});
   const builderTask = "TASK.BUILDER.ROUND.1";
   const auditorTask = "TASK.AUDITOR.ROUND.1";
@@ -42,6 +43,8 @@ const valid = makeRound();
 validateAuditorRound(valid);
 const assessed = assessAuditorRound(valid);
 assert.equal(assessed.schema, AUDITOR_ROUND_RESULT_SCHEMA);
+assert.equal(assessed.ready_for_spawner_review, false);
+assert.equal(assessed.error_code, "AUDITOR_ROUND_EXTERNAL_REVIEW_REQUIRED");
 assert.equal(assessed.disposition, "PASS");
 assert.equal(assessed.integration_allowed, false);
 assert.equal(assessed.independent_clearance, false);
