@@ -26,6 +26,13 @@ const ZERO_SIDE_EFFECTS = {
   candidate_reads: 0, source_reads: 0, protected_data_reads: 0, policy_mutations: 0,
   project_writes: 0, memory_writes: 0, credential_accesses: 0, state_changes: 0,
 };
+const GATE_IDS = [
+  "00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals",
+  "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody",
+  "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff",
+  "10-proof-acceptance", "11-lifecycle-recovery-archive",
+];
+const GATE_RULES = {ambiguity: "DENY", missing_evidence: "DENY", stale_source: "DENY", authority_conflict: "ESCALATE", unsafe_action: "DENY", unknown_scope: "DEPENDENT_ACTION_ONLY"};
 
 const authority = resolveAwsIamPolicyCanonicalAuthority();
 
@@ -78,8 +85,28 @@ function assertResult(actual, expected, label) {
   assert.equal(actual.result_sha256, canonicalDigest({...actual, result_sha256: null}), label);
 }
 
+function assertDirectGateReadback() {
+  const execution = JSON.parse(fs.readFileSync(path.join(ROOT, "specialist-blocks/wave-02/aws-iam-policy/gates/execution.json"), "utf8"));
+  assert.equal(execution.boundary_entrypoint, "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary");
+  assert.deepEqual(execution.ordered_gate_ids, GATE_IDS);
+  for (const [index, gateId] of GATE_IDS.entries()) {
+    const gate = JSON.parse(fs.readFileSync(path.join(ROOT, "specialist-blocks/wave-02/aws-iam-policy/gates", `${gateId}.gate`), "utf8"));
+    assert.equal(gate.gate_id, gateId);
+    assert.equal(gate.status, "EXECUTABLE");
+    assert.equal(gate.answer_type, "FOUR_VALUED");
+    assert.deepEqual(gate.allowed_outcomes, ["YES", "NO", "UNKNOWN", "NOT_APPLICABLE"]);
+    assert.deepEqual(gate.rules, GATE_RULES);
+    const next = index === GATE_IDS.length - 1 ? "OUTCOME:ROUTE" : GATE_IDS[index + 1];
+    assert.deepEqual(gate.next, {YES: next, NO: "OUTCOME:DENY", UNKNOWN: "OUTCOME:UNKNOWN_DEPENDENT_ONLY", NOT_APPLICABLE: next});
+    assert.equal(gate.gate_sha256, canonicalDigest({...gate, gate_sha256: null}));
+    const tampered = {...gate, next: {...gate.next, UNKNOWN: "OUTCOME:ROUTE"}};
+    assert.notEqual(gate.gate_sha256, canonicalDigest({...tampered, gate_sha256: null}), `${gateId} hostile next-branch mutation was not detectable`);
+  }
+}
+
 const files = fs.readdirSync(FIXTURE_ROOT).filter((name) => name.endsWith(".json")).sort();
 assert.equal(files.length, 17);
+assertDirectGateReadback();
 const fixtureIds = new Set();
 for (const file of files) {
   const fixture = JSON.parse(fs.readFileSync(path.join(FIXTURE_ROOT, file), "utf8"));
@@ -109,4 +136,4 @@ assert.equal(operational.status, "PASS");
 assert.equal(operational.fixture_results.length, 17);
 assert.equal(operational.gate_execution.length, 12);
 assert.equal(operational.mutation_sensitivity.status, "WEAKENED");
-console.log("PASS AWS IAM Policy boundary: 17 hostile fixtures plus direct forbidden, non-applicable, schema, digest, gate, and mutation checks; all side effects remain zero");
+console.log("PASS AWS IAM Policy boundary: 17 hostile fixtures, 12 direct four-valued gate readbacks, hostile substitutions, and mutation checks; all side effects remain zero");
