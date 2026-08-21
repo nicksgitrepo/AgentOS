@@ -11,13 +11,12 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Cloudflare Cache Rules: does the exact 06-tool-resource-custody condition pass without expanding this atomic specialist scope?",
+  "question": "Cloudflare Cache Rules: Are custody, memory binding, and requested tools read-only and bounded?",
   "evidence": [
-    "block_sha256",
-    "gate.06-tool-resource-custody.answer",
-    "gate.06-tool-resource-custody.evidence",
-    "source_lock_identity",
-    "upstream_router_identity"
+    "custody_ref",
+    "memory_binding",
+    "provider_account_data",
+    "requested_tools"
   ],
   "next": {
     "YES": "07-data-secret-privacy",
@@ -33,5 +32,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "049cd2f73a7afcb2c6cfc8e677d312aa193071b52ba1ffa806b759526133156a"
+  "gate_sha256": "657eb6f0da1518ce1ed2ad2033992266aaf5ef13276e00efa5dfc3ee3e9e811b"
 }

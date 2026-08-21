@@ -11,13 +11,13 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Cloudflare Cache Rules: does the exact 04-source-evidence-freshness condition pass without expanding this atomic specialist scope?",
+  "question": "Cloudflare Cache Rules: Are the Cloudflare and atomic sources current, identified, and freshness-bounded?",
   "evidence": [
-    "block_sha256",
-    "gate.04-source-evidence-freshness.answer",
-    "gate.04-source-evidence-freshness.evidence",
-    "source_lock_identity",
-    "upstream_router_identity"
+    "source_effective_date",
+    "source_identity",
+    "source_retrieved_date",
+    "source_status",
+    "source_version"
   ],
   "next": {
     "YES": "05-context-completeness",
@@ -33,5 +33,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "2094d42ab373bae24d3bbf76e0395fe7f59ae48117f6890b45074d9027bde5dd"
+  "gate_sha256": "25b0d6e0ef3fb92bf14ba0e05afa9267847d3797a59b06f7647e67212c17efce"
 }

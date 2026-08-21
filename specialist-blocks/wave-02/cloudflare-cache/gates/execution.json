@@ -1,0 +1,144 @@
+{
+  "schema": "agentos.cloudflare_cache_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.platform.cloudflare-cache",
+  "evaluator_entrypoint": "control/cloudflare-cache-package-evaluator.mjs#evaluateCloudflareCachePackage",
+  "boundary_entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {
+      "gate_id": "00-intake",
+      "fixture_class": "routing",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "CLOUDFLARE_CACHE_ANALYSIS_HANDOFF",
+        "error_code": "CLOUDFLARE_CACHE_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "01-applicability",
+      "fixture_class": "unrelated_scope",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_CLOUDFLARE_CACHE_SCOPE",
+        "error_code": "CLOUDFLARE_CACHE_SCOPE_NOT_APPLICABLE"
+      }
+    },
+    {
+      "gate_id": "02-authority-precedence",
+      "fixture_class": "authority_conflict",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "CONTROL_PLANE_ESCALATION",
+        "error_code": "CLOUDFLARE_CACHE_AUTHORITY_CONFLICT"
+      }
+    },
+    {
+      "gate_id": "03-scope-nongoals",
+      "fixture_class": "broad_when_narrow_exists",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SCOPE_REQUIRED",
+        "error_code": "CLOUDFLARE_CACHE_SCOPE_EXPANSION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "04-source-evidence-freshness",
+      "fixture_class": "stale_source",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "CLOUDFLARE_CACHE_SOURCE_STALE_OR_UNVERIFIED"
+      }
+    },
+    {
+      "gate_id": "05-context-completeness",
+      "fixture_class": "missing_context",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "TYPED_CONTEXT_REQUIRED",
+        "error_code": "CLOUDFLARE_CACHE_CONTEXT_INCOMPLETE"
+      }
+    },
+    {
+      "gate_id": "06-tool-resource-custody",
+      "fixture_class": "tool_limit",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "READ_ONLY_TOOLS_REQUIRED",
+        "error_code": "CLOUDFLARE_CACHE_TOOL_SCOPE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "07-data-secret-privacy",
+      "fixture_class": "data_limit",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "PRIVACY_BOUNDARY_REQUIRED",
+        "error_code": "CLOUDFLARE_CACHE_PROTECTED_DATA_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "08-build-browser-runtime",
+      "fixture_class": "unsafe_action",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_CLOUDFLARE_CACHE_SIDE_EFFECT",
+        "error_code": "CLOUDFLARE_CACHE_OPERATION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "09-output-handoff",
+      "fixture_class": "handoff",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "CLOUDFLARE_CACHE_ANALYSIS_HANDOFF",
+        "error_code": "CLOUDFLARE_CACHE_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "10-proof-acceptance",
+      "fixture_class": "router_self_accept",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "DENY",
+        "route": "INDEPENDENT_REVIEW_REQUIRED",
+        "error_code": "CLOUDFLARE_CACHE_SELF_ACCEPTANCE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "11-lifecycle-recovery-archive",
+      "fixture_class": "narrowness",
+      "entrypoint": "control/cloudflare-cache-boundary-gate.mjs#evaluateCloudflareCacheBoundary",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "CLOUDFLARE_CACHE_ANALYSIS_HANDOFF",
+        "error_code": "CLOUDFLARE_CACHE_ROUTE_READY"
+      }
+    }
+  ],
+  "execution_sha256": "68231984401b2dd5fb6b2961408a7d3f944c18dff24b386b01220d83ddc74c12"
+}

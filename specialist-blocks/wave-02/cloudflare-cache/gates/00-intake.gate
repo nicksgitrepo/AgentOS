@@ -11,11 +11,10 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Cloudflare Cache Rules: does the exact 00-intake condition pass without expanding this atomic specialist scope?",
+  "question": "Cloudflare Cache Rules: Is this an exact Cloudflare Cache Rules candidate with the named upstream router and no hidden sibling scope?",
   "evidence": [
-    "block_sha256",
-    "gate.00-intake.answer",
-    "gate.00-intake.evidence",
+    "candidate_digest",
+    "required_block_identities",
     "source_lock_identity",
     "upstream_router_identity"
   ],
@@ -33,5 +32,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "34539a8bdd382b28904c1628a9911e50454284697720a7694e3dba1e5f3a7f83"
+  "gate_sha256": "18c6ae5d61bd0d817d132a0562c9d672f09bdf5e634338d4345454f87fb7e7e6"
 }
