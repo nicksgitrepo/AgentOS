@@ -10,7 +10,7 @@ import {materializeTestGlobalGovernanceStore} from "../helpers/global-governance
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-external-review-consumer-"));
 try {
-  const governance = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: "2026-08-20T04:15:00.000Z"});
+  const governance = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: new Date().toISOString()});
   const authority = preparePermanentRoleAdmissionAuthority({globalGovernanceAuthorityStore: governance.authorityStore});
   const receipt = process.argv[3] === "TEST_ONLY"
     ? verifyTestOnlyProvisionedPermanentRoleReview({receiptRef: process.argv[2], role: resolveCanonicalPermanentRole("AGENTOS.PRODUCT_OWNER"), candidate: inspectCanonicalPermanentRoleCandidate({roleId: "AGENTOS.PRODUCT_OWNER"}), operationalContext: resolvePermanentRoleOperationalContext({authority, expectedRoleId: "AGENTOS.PRODUCT_OWNER"})})

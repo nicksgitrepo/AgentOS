@@ -39,7 +39,7 @@ import {auditHostileGateMutationAtUntrustedRoot} from "../control/spawner-hostil
 import {provisionTestExternalSpawnerReview} from "./helpers/spawner-external-review-fixture.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NOW = "2026-08-20T04:15:00.000Z";
+const NOW = new Date().toISOString();
 const SHA = (character) => character.repeat(64);
 const blockPackage = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/control-plane/agent-spawner/block.json"), "utf8"));
 const preparedPolicy = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));

@@ -27,7 +27,7 @@ function runConsumer(provisioningPath, receiptRef, environment = process.env, mo
   finally { fs.closeSync(descriptor); }
 }
 try {
-  const governance = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot, nowUtc: "2026-08-20T04:15:00.000Z"});
+  const governance = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot, nowUtc: new Date().toISOString()});
   const contexts = compileAllOperationalGlobalGovernanceContexts({authorityStore: governance.authorityStore});
   const candidate = inspectCanonicalPermanentRoleCandidate({roleId: "AGENTOS.PRODUCT_OWNER"});
   const rootKeys = generateKeyPairSync("ed25519"), evaluatorKeys = generateKeyPairSync("ed25519");

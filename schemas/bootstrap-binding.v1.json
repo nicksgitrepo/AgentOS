@@ -1336,7 +1336,7 @@
     },
     "canonical_spawner_registry": {
       "path": "specialist-blocks/registry/spawner-bootstrap.v1.json",
-      "sha256": "82549f655eeca722ef4fe53e133a10ead04859a97bfb5dc77e7c6ee0fd824f03"
+      "sha256": "d585cbd0e63273e54d82b2a763f924701bdd12be1cac9dea79c787ce6e468e57"
     },
     "canonical_spawner_seed_inertness_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/seed-inertness.gate",
@@ -1344,7 +1344,7 @@
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "204c760f626a8b8b210ca4c04a1f848222ece6eb64cf809807baa9c38e5b80ae"
+      "sha256": "2652c188ffb65cb6bf87a76b8b88616bdcbc1859aa934a8c91925f130120e653"
     },
     "canonical_spawner_turn_closeout_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
@@ -1484,7 +1484,7 @@
     },
     "controller_hostile_evaluator_controller": {
       "path": "control/controller-hostile-fixture-evaluator.mjs",
-      "sha256": "ea72671e72c1e3285f56b2c6c29c627a8be5a7f94ec615226ea2240afd241794"
+      "sha256": "5d08464820a4002732e9cc365487a7f349b393fc2dccdb2d7234210500eb5565"
     },
     "controller_import_planner": {
       "path": "control/controller-import-planner.mjs",
@@ -2496,7 +2496,7 @@
     },
     "memory_package_operational_evaluator": {
       "path": "control/memory-package-evaluator.mjs",
-      "sha256": "2f5e73350cbe561300243faa92c61b66e4bcce615ff0776976fcab8ca8390375"
+      "sha256": "1a51082b549b643374004a3ac32cb24c3f5058bdc556e94d6d16afa3e2278d0b"
     },
     "memory_package_operational_evaluator_verifier": {
       "path": "tests/verify-memory-package-evaluator.mjs",
@@ -2813,7 +2813,7 @@
     },
     "permanent_role_external_review_consumer_fixture": {
       "path": "tests/fixtures/permanent-role-external-review-consumer.mjs",
-      "sha256": "01b18f41029356c36b7984a66652a1ba0824a9aa4ac0952ae16e1e76a133868a"
+      "sha256": "d0618dc866c75e712d087c53793557ab88eac61efbb43385d6563b64b5a5c063"
     },
     "permanent_role_external_review_contract": {
       "path": "schemas/permanent-role-external-review.v1.json",
@@ -2825,7 +2825,7 @@
     },
     "permanent_role_external_review_verifier": {
       "path": "tests/verify-permanent-role-external-review-store.mjs",
-      "sha256": "a47ebf396d44dce980173344801ace3849d70e92fd47a3a1135028363a1f218d"
+      "sha256": "837b673f31b03e7de1367de940f2d84514afc823600f90dd35c0a03ea9a0ffd5"
     },
     "permanent_role_governed_admission_contract": {
       "path": "schemas/permanent-role-governed-admission.v1.json",
@@ -2837,7 +2837,7 @@
     },
     "permanent_role_governed_admission_verifier": {
       "path": "tests/verify-permanent-role-governed-admission.mjs",
-      "sha256": "f7932d42fb3086dd9c7a5472b0ad4acb88998b4da51f03076ecfc13130f5f92c"
+      "sha256": "6a5224eca0793edd93036d2d477a3e5b70a1e0e05f23b90a95e42cbbca6a2b8c"
     },
     "permanent_role_package_evaluator_controller": {
       "path": "control/permanent-role-package-evaluator.mjs",
@@ -4053,7 +4053,7 @@
     },
     "spawner_bootstrap_repair_verifier": {
       "path": "tests/verify-spawner-bootstrap-repair.mjs",
-      "sha256": "f2feffad0612f8ed4015821217ba9c1076f3602f9906e80aede57c0b96820660"
+      "sha256": "7e13c645c7469e1756eaf6fb00852fc6eac08d3318a8917710663ec0b37099b3"
     },
     "spawner_bound_specialist_blocks_control_plane_agent_spawner_fixtures_caller_asserted_qa_json": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/caller-asserted-qa.json",
@@ -4229,7 +4229,7 @@
     },
     "spawner_hostile_fixture_evaluator_controller": {
       "path": "control/spawner-hostile-fixture-evaluator.mjs",
-      "sha256": "353c1d82e6151b2b383ae2609acd962a7c6ab989e6f95bce4adc6fb0608c5a21"
+      "sha256": "649ffbe53a60e07018ba08b8188c77dba87718e661702b27461336c99a9de181"
     },
     "spawner_independent_evaluator_admission": {
       "path": "specialist-blocks/control-plane/agent-spawner/independent-evaluator-admission.v1.json",

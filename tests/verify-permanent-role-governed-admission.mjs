@@ -25,7 +25,7 @@ assert.throws(() => resolvePermanentRoleAdmission({authority: {}, receiptRef: "r
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-permanent-role-admission-"));
 try {
-  const governance = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: "2026-08-20T04:15:00.000Z"});
+  const governance = materializeTestGlobalGovernanceStore({authorityRoot: root, nowUtc: new Date().toISOString()});
   const contexts = compileAllOperationalGlobalGovernanceContexts({authorityStore: governance.authorityStore});
   const authority = preparePermanentRoleAdmissionAuthority({globalGovernanceAuthorityStore: governance.authorityStore});
   assert.throws(
