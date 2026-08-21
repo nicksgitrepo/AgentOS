@@ -210,6 +210,7 @@ export function resolveFunctionScopeCanonicalAuthority() {
 
 export function assertFunctionScopeCanonicalEvidence(evidence, authority = resolveFunctionScopeCanonicalAuthority()) {
   assert(evidence.candidate_digest === authority.block_sha256, "Function Scope candidate digest is not the canonical block", "FUNCTION_SCOPE_CANDIDATE_BINDING_INVALID");
+  assert(evidence.authority_scope === "FUNCTION_SCOPE", "Function Scope authority scope is not canonical", "FUNCTION_SCOPE_AUTHORITY_SCOPE_INVALID");
   assert(evidence.standard_block_sha256 === authority.standard_block_sha256 && evidence.standard_source_manifest_sha256 === authority.standard_source_manifest_sha256, "Function Scope standard evidence is not canonical", "FUNCTION_SCOPE_STANDARD_BINDING_INVALID");
   assert(evidence.source_identity === authority.source_identity && evidence.source_version === authority.source_version && evidence.source_effective_date === authority.source_effective_date && evidence.source_retrieved_date === authority.source_retrieved_date, "Function Scope source evidence is not canonical", "FUNCTION_SCOPE_SOURCE_IDENTITY_INVALID");
   assert(evidence.custody_ref === authority.custody_ref, "Function Scope custody reference is not canonical", "FUNCTION_SCOPE_CUSTODY_BINDING_INVALID");

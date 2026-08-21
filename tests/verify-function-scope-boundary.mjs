@@ -20,6 +20,8 @@ const denied = evaluateFunctionScopeBoundary(input);
 assert.equal(denied.schema, FUNCTION_SCOPE_RESULT_SCHEMA); assert.equal(denied.disposition, "DENY"); assert.equal(denied.error_code, "FUNCTION_SCOPE_OPERATION_FORBIDDEN");
 const missingTenantScope = structuredClone(input); missingTenantScope.request_kind = "ANALYZE_FUNCTION_SCOPE"; missingTenantScope.evidence.tenant_scope_status = "MISSING";
 assert.throws(() => evaluateFunctionScopeBoundary(missingTenantScope), (error) => error?.code === "FUNCTION_SCOPE_TENANT_SCOPE_REQUIRED");
+const wrongAuthorityScope = structuredClone(input); wrongAuthorityScope.request_kind = "ANALYZE_FUNCTION_SCOPE"; wrongAuthorityScope.evidence.authority_scope = "OTHER_SCOPE";
+assert.throws(() => evaluateFunctionScopeBoundary(wrongAuthorityScope), (error) => error?.code === "FUNCTION_SCOPE_AUTHORITY_SCOPE_INVALID");
 
 // The evaluator must use the fixture's committed expected route/error, not echo
 // whatever the implementation happened to return.  Run an isolated copy and
