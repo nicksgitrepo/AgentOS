@@ -7,6 +7,7 @@
 
 import {canonicalDigest} from "./content-addressing.mjs";
 import {scanPersistedRecord} from "./persisted-record-privacy.mjs";
+import {assertFunctionScopeCanonicalEvidence, resolveFunctionScopeCanonicalAuthority} from "./function-scope-authority-binding.mjs";
 
 export const FUNCTION_SCOPE_INPUT_SCHEMA = "agentos.function_scope_boundary_input.v1";
 export const FUNCTION_SCOPE_RESULT_SCHEMA = "agentos.function_scope_boundary_result.v1";
@@ -83,7 +84,8 @@ function validate(input) {
     "source_effective_date", "source_retrieved_date", "candidate_status", "candidate_digest", "signal", "signal_status",
     "context_status", "context_complete", "requested_action", "requested_tools", "required_block_identities", "model_policy_status",
     "model_route_status", "authority_scope", "scope", "tenant_scope_status", "standard_id", "standard_version", "standard_block_sha256",
-    "standard_source_manifest_sha256", "project_data_present", "secret_data_present", "adversarial_flags",
+    "standard_source_manifest_sha256", "model_snapshot_sha256", "model_task_class", "model_capability_floor", "model_required_capabilities",
+    "model_route_sha256", "context_receipt_sha256", "upstream_router_result_sha256", "project_data_present", "secret_data_present", "adversarial_flags",
   ]), "function-scope evidence");
   const e = input.evidence;
   for (const key of [
@@ -97,6 +99,13 @@ function validate(input) {
   assert(e.standard_id === "source.owasp-asvs-5-0-0" && e.standard_version === "5.0.0", "standard identity is not canonical", "FUNCTION_SCOPE_STANDARD_BINDING_INVALID");
   digest(e.standard_block_sha256, "evidence.standard_block_sha256");
   digest(e.standard_source_manifest_sha256, "evidence.standard_source_manifest_sha256");
+  digest(e.model_snapshot_sha256, "evidence.model_snapshot_sha256");
+  string(e.model_task_class, "evidence.model_task_class", 80);
+  assert(Number.isSafeInteger(e.model_capability_floor) && e.model_capability_floor >= 0, "evidence.model_capability_floor is invalid", "FUNCTION_SCOPE_MODEL_ROUTE_UNBOUND");
+  assert(Array.isArray(e.model_required_capabilities) && e.model_required_capabilities.length > 0 && e.model_required_capabilities.every((value) => typeof value === "string" && /^[A-Z][A-Z0-9_]{1,63}$/u.test(value)), "evidence.model_required_capabilities is invalid", "FUNCTION_SCOPE_MODEL_ROUTE_UNBOUND");
+  digest(e.model_route_sha256, "evidence.model_route_sha256");
+  digest(e.context_receipt_sha256, "evidence.context_receipt_sha256");
+  digest(e.upstream_router_result_sha256, "evidence.upstream_router_result_sha256");
   assert(e.tenant_scope_status === "BOUND", "tenant scope context is not bound", "FUNCTION_SCOPE_TENANT_SCOPE_REQUIRED");
   assert(Array.isArray(e.requested_tools) && e.requested_tools.length > 0 && e.requested_tools.length <= 3, "requested tools are invalid", "FUNCTION_SCOPE_TOOL_SCOPE_INVALID");
   e.requested_tools.forEach((tool) => { string(tool, "requested_tools[]", 60); assert(TOOLS.has(tool), "unsupported tool", "FUNCTION_SCOPE_TOOL_SCOPE_INVALID"); });
@@ -106,6 +115,7 @@ function validate(input) {
   exact(e.adversarial_flags, new Set(FLAGS), "function-scope adversarial flags");
   FLAGS.forEach((flag) => assert(typeof e.adversarial_flags[flag] === "boolean", `${flag} must be boolean`, "FUNCTION_SCOPE_BOOLEAN_INVALID"));
   assert(scanPersistedRecord(input).safe, "function-scope input contains protected data", "FUNCTION_SCOPE_PRIVACY_DENIED");
+  assertFunctionScopeCanonicalEvidence(e, resolveFunctionScopeCanonicalAuthority());
 }
 
 export function evaluateFunctionScopeBoundary(input) {
@@ -126,7 +136,7 @@ export function evaluateFunctionScopeBoundary(input) {
   if (e.authority_status !== "CURRENT" || e.custody_status !== "BOUND" || e.custody_owner !== "AGENT.SECURITY.FUNCTION_SCOPE") return result("DENY", "AUTHORITY_REFRESH_REQUIRED", "FUNCTION_SCOPE_AUTHORITY_UNVERIFIED", input);
   if (e.source_identity !== "SOURCE.ATOMIC_SPECIALIZATION_LAW" || e.source_version !== "1") return result("DENY", "SOURCE_REFRESH_REQUIRED", "FUNCTION_SCOPE_SOURCE_IDENTITY_INVALID", input);
   if (e.candidate_status !== "CURRENT_CANDIDATE" || e.signal !== "FUNCTION_SCOPE" || e.signal_status !== "BOUND" || e.context_status !== "FUNCTION_SCOPE_CONTEXT") return result("DENY", "TYPED_CONTEXT_REQUIRED", "FUNCTION_SCOPE_CONTEXT_BINDING_INVALID", input);
-  if (e.model_policy_status !== "CURRENT" || e.model_route_status !== "BOUND") return result("DENY", "MODEL_POLICY_REFRESH_REQUIRED", "FUNCTION_SCOPE_MODEL_ROUTE_UNBOUND", input);
+  if (e.model_route_status !== "BOUND") return result("DENY", "MODEL_POLICY_REFRESH_REQUIRED", "FUNCTION_SCOPE_MODEL_ROUTE_UNBOUND", input);
   if (!["ANALYZE", "ROUTE"].includes(e.requested_action)) return result("DENY", "TYPED_CONTEXT_REQUIRED", "FUNCTION_SCOPE_ACTION_INVALID", input);
   return result("ROUTE", "FUNCTION_SCOPE_ANALYSIS_HANDOFF", "FUNCTION_SCOPE_ROUTE_READY", input, {
     analysis_allowed: true,

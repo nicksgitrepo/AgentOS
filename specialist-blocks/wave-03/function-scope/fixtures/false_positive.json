@@ -6,5 +6,6 @@
   "fixture_id": "function-scope-false_positive",
   "expected": {"disposition": "DENY", "route": "TYPED_EVIDENCE_REQUIRED", "error_code": "FUNCTION_SCOPE_FINDING_UNSUPPORTED"},
   "hostile": true,
+  "vector": {"entrypoint": "control/function-scope-boundary-gate.mjs#evaluateFunctionScopeBoundary", "input": {"request_kind": "ANALYZE_FUNCTION_SCOPE", "evidence_overrides": {"adversarial_flags": {"false_positive": true}}}, "expected_readback": {"disposition": "DENY", "route": "TYPED_EVIDENCE_REQUIRED", "error_code": "FUNCTION_SCOPE_FINDING_UNSUPPORTED"}},
   "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
 }

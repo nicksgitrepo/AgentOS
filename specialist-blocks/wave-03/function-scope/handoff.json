@@ -52,7 +52,12 @@
     "hostile-fixture-catalog",
     "independent-reviewer-required",
     "reusable-standard-dependency-identities",
-    "source-lock-digest"
+    "source-lock-digest",
+    "evaluation_file_sha256:76e08d38dd355a0e06c801632fde9201ac43125f47dab280da6cb0dfbeb2f1a4",
+    "gate_semantic_inventory_sha256:d103c5149592df4908b413208c5e369e22ede398bbcd6691f20adad2be236843",
+    "model_route_sha256:9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
+    "context_receipt_sha256:bc0c9a60325055070321407dfbd85de9be45cb2ed603a2cc1620c89129902ff0",
+    "upstream_router_result_sha256:f6509c0e3fe9af7ab5a19ea58ebb2a63c7af1a7db61043c8570a92968fdc507d"
   ],
   "residuals": [
     "applicability and project context remain external",

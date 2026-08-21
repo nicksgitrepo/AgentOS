@@ -6,5 +6,6 @@
   "fixture_id": "function-scope-unrelated_scope",
   "expected": {"disposition": "DENY", "route": "NO_FUNCTION_SCOPE", "error_code": "FUNCTION_SCOPE_NOT_APPLICABLE"},
   "hostile": true,
+  "vector": {"entrypoint": "control/function-scope-boundary-gate.mjs#evaluateFunctionScopeBoundary", "input": {"request_kind": "UNRELATED_REQUEST", "evidence_overrides": {}}, "expected_readback": {"disposition": "DENY", "route": "NO_FUNCTION_SCOPE", "error_code": "FUNCTION_SCOPE_NOT_APPLICABLE"}},
   "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
 }
