@@ -4561,7 +4561,7 @@
     },
     "function_scope_authority_binding": {
       "path": "control/function-scope-authority-binding.mjs",
-      "sha256": "9d0f41c32e641af490dab1774636444fbe02987f4e8a29dda19d1697c0529970"
+      "sha256": "3a7396d8831ee33a1cb6003b33ea3af3820d9b9edb4ef423ede6f6cd17d3cd96"
     },
     "function_scope_boundary_input_contract": {
       "path": "schemas/function-scope-boundary-input.v1.json",
@@ -4577,7 +4577,7 @@
     },
     "function_scope_package_operational_evaluator": {
       "path": "control/function-scope-package-evaluator.mjs",
-      "sha256": "2920fb0fea14d8a78cf06e3e5cf3f11139bee71aca570d4a66ede409acb4853f"
+      "sha256": "9c103879a44d4cd74b14c546e2bed959d3b5044d8e93ae4d177875a9375e2bc8"
     },
     "function_scope_boundary_verifier": {
       "path": "tests/verify-function-scope-boundary.mjs",

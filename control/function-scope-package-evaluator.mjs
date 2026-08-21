@@ -9,7 +9,7 @@ import {createHash} from "node:crypto";
 import {pathToFileURL} from "node:url";
 import {canonicalDigest} from "./content-addressing.mjs";
 import {evaluateFunctionScopeBoundary, FUNCTION_SCOPE_INPUT_SCHEMA} from "./function-scope-boundary-gate.mjs";
-import {assertFunctionScopeCommittedHandoff, resolveFunctionScopeCanonicalAuthority} from "./function-scope-authority-binding.mjs";
+import {assertFunctionScopeCommittedHandoff, FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256, resolveFunctionScopeCanonicalAuthority} from "./function-scope-authority-binding.mjs";
 
 export const FUNCTION_SCOPE_EVALUATION_SCHEMA = "agentos.specialist_function_scope_package_operational_evaluation.v1";
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
@@ -122,7 +122,7 @@ async function mutation(candidateDigest) {
 }
 export async function evaluateFunctionScopePackage() {
   const authority = resolveFunctionScopeCanonicalAuthority();
-  const root = path.join(ROOT, PACKAGE); const block = json(path.join(root, "block.json")); const executionSchema = json(path.join(ROOT, "schemas/function-scope-gate-execution.v1.json")); const standard = json(path.join(ROOT, "specialist-blocks/standards/owasp-asvs/block.json")); const standardSources = json(path.join(ROOT, "specialist-blocks/standards/owasp-asvs/sources.lock"));
+  const root = path.join(ROOT, PACKAGE); const block = json(path.join(root, "block.json")); const executionSchema = json(path.join(ROOT, "schemas/function-scope-gate-execution.v1.json")); const executionPath = path.join(root, "gates/execution.json"); assert(sha(fs.readFileSync(executionPath)) === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.gate_execution, "Function Scope gate execution manifest is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID"); const standard = json(path.join(ROOT, "specialist-blocks/standards/owasp-asvs/block.json")); const standardSources = json(path.join(ROOT, "specialist-blocks/standards/owasp-asvs/sources.lock"));
   assert(block.block_id === BLOCK_ID && block.lifecycle === "CANDIDATE" && block.activation === "OFF" && block.block_sha256 === authority.block_sha256, "Function Scope package state or canonical identity is invalid", "FUNCTION_SCOPE_PACKAGE_STATE_INVALID");
   assert(executionSchema.$id === "https://agentos.dev/schemas/function-scope-gate-execution.v1.json" && executionSchema.properties?.block_id?.const === BLOCK_ID, "Function Scope gate execution schema binding is invalid", "FUNCTION_SCOPE_GATE_EXECUTION_SCHEMA_INVALID");
   assert(standard.block_id === "specialist.standard.owasp-asvs" && standard.block_sha256 === "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f", "OWASP ASVS standard binding is not canonical", "FUNCTION_SCOPE_STANDARD_BINDING_INVALID"); assert(standardSources.manifest_sha256 === "505595765deaa25206fd59936a4b7e415688c640373a83a68e76a9788ed587d6", "OWASP ASVS source manifest binding is not canonical", "FUNCTION_SCOPE_STANDARD_SOURCE_INVALID"); const lockedSources = json(path.join(root, "sources.lock")); assert(lockedSources.sources.some((source) => source.source_id === "source.owasp-asvs-5-0-0" && source.immutable_identity === "owasp-asvs-5.0.0-release-20250530"), "Function Scope package omits locked OWASP ASVS source", "FUNCTION_SCOPE_STANDARD_SOURCE_MISSING");

@@ -26,6 +26,14 @@ export const FUNCTION_SCOPE_CUSTODY_REF = "opaque:FUNCTION_SCOPE.CUSTODY";
 export const FUNCTION_SCOPE_MODEL_TASK_CLASS = "SECURITY_REVIEW";
 export const FUNCTION_SCOPE_MODEL_CAPABILITY_FLOOR = 59;
 export const FUNCTION_SCOPE_MODEL_CAPABILITIES = Object.freeze(["CODE", "SECURITY", "TOOLS"]);
+export const FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
+  block: "ac0f316100f81f6bc7ae7d8f46a1406ef8772a14ccc62e9b7f8b50e2e0ab9c21",
+  source_lock: "4f037ed75ff023c0114436140d1062585419cdf8fb14b95cfbb3b8bcc0bdcd3c",
+  gate_manifest: "5e2937bcc500f0ff598fed4208272b4c76b462c77e96a1e6fe00d23558c05456",
+  gate_execution: "023d502bb1b6e882f51e33315226b7f765d4d4def823b93f3b6cb28bdc0f7eab",
+  evaluation: "76e08d38dd355a0e06c801632fde9201ac43125f47dab280da6cb0dfbeb2f1a4",
+  handoff: "3b63f08b1ace83b40cdfaddead040e514726d9a994b8b84e493e293384e27397",
+});
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = path.join(ROOT, FUNCTION_SCOPE_PACKAGE_PATH);
@@ -126,6 +134,7 @@ export function resolveFunctionScopeCanonicalAuthority() {
   const nowMs = Date.now();
   const blockArtifact = readJson(path.join(PACKAGE, "block.json"), "Function Scope block");
   const block = checkBlock(blockArtifact, FUNCTION_SCOPE_BLOCK_ID, "Function Scope block");
+  assert(blockArtifact.file_sha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.block, "Function Scope block file is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID");
   const rosterArtifact = readJson(ROSTER_PATH, "Reusable-agent roster");
   const roster = rosterArtifact.value;
   const entry = roster.entries?.find((candidate) => candidate.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE");
@@ -134,6 +143,7 @@ export function resolveFunctionScopeCanonicalAuthority() {
   assert(entry.model_route?.task_class === FUNCTION_SCOPE_MODEL_TASK_CLASS && entry.model_route.minimum_capability === FUNCTION_SCOPE_MODEL_CAPABILITY_FLOOR && JSON.stringify(entry.model_route.required_capabilities) === JSON.stringify(FUNCTION_SCOPE_MODEL_CAPABILITIES) && entry.model_route.route_source === "GLOBAL_MODEL_POLICY_SNAPSHOT", "Function Scope model route is not canonical", "FUNCTION_SCOPE_MODEL_ROUTE_INVALID");
 
   const sourceArtifact = readJson(path.join(PACKAGE, "sources.lock"), "Function Scope source lock");
+  assert(sourceArtifact.file_sha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.source_lock, "Function Scope source lock file is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID");
   const source = sourceArtifact.value;
   assert(source.schema === "agentos.specialist_source_manifest.v1" && source.block_id === FUNCTION_SCOPE_BLOCK_ID && source.manifest_sha256 === canonicalDigest(body(source, "manifest_sha256")), "Function Scope source lock digest is invalid", "FUNCTION_SCOPE_SOURCE_LOCK_INVALID");
   const atomic = source.sources?.find((candidate) => candidate.source_id === "source.atomic-specialization-law");
@@ -152,6 +162,7 @@ export function resolveFunctionScopeCanonicalAuthority() {
   assert(standard.block_sha256 === "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f" && standardSources.manifest_sha256 === "505595765deaa25206fd59936a4b7e415688c640373a83a68e76a9788ed587d6", "OWASP ASVS standard bytes are not the canonical version", "FUNCTION_SCOPE_STANDARD_BINDING_INVALID");
 
   const manifestArtifact = readJson(path.join(PACKAGE, "gates/manifest.json"), "Function Scope gate manifest");
+  assert(manifestArtifact.file_sha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.gate_manifest, "Function Scope gate manifest file is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID");
   const manifest = manifestArtifact.value; sha(manifest.manifest_sha256, "Function Scope gate manifest");
   assert(manifest.manifest_sha256 === canonicalDigest(body(manifest, "manifest_sha256")), "Function Scope gate manifest digest differs", "FUNCTION_SCOPE_GATE_MANIFEST_INVALID");
   const gates = GATE_IDS.map((gateId, index) => {
@@ -204,6 +215,7 @@ export function assertFunctionScopeCanonicalEvidence(evidence, authority = resol
 }
 
 export function assertFunctionScopeCommittedHandoff({authority = resolveFunctionScopeCanonicalAuthority(), evaluation, handoff, evaluationFileSha256, handoffFileSha256} = {}) {
+  assert(evaluationFileSha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.evaluation && handoffFileSha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.handoff, "Function Scope committed dossier is not the pinned candidate", "FUNCTION_SCOPE_CANONICAL_PROVENANCE_INVALID");
   exactKeys(evaluation, ["schema", "version", "receipt_id", "block_id", "candidate_digest", "model_requirement", "harness", "cases", "results", "disposition", "independence_rule"], "Function Scope committed evaluation");
   assert(evaluation.schema === "agentos.specialist_evaluation.v1" && evaluation.version === 1 && evaluation.receipt_id === "specialist-eval.function-scope.v1" && evaluation.block_id === FUNCTION_SCOPE_BLOCK_ID, "Function Scope evaluation identity differs", "FUNCTION_SCOPE_EVALUATION_DOSSIER_INVALID");
   assert(evaluation.candidate_digest === authority.block_sha256 && evaluation.model_requirement === "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE" && evaluation.results?.passed === 17 && evaluation.results?.failed === 0 && evaluation.results?.pending === 0 && evaluation.disposition === "STATIC_PASS_REVIEW_REQUIRED", "Function Scope evaluation dossier is not current", "FUNCTION_SCOPE_EVALUATION_DOSSIER_INVALID");
