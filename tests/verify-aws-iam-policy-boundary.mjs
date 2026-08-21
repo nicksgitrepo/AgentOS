@@ -95,6 +95,7 @@ assertResult(evaluateAwsIamPolicyBoundary(valid), {
 }, "valid route");
 assert.throws(() => evaluateAwsIamPolicyBoundary({...valid, evidence: {...valid.evidence, unexpected: true}}), (error) => error.code === "AWS_IAM_POLICY_UNKNOWN_FIELD");
 assert.throws(() => evaluateAwsIamPolicyBoundary({...valid, evidence: {...valid.evidence, candidate_digest: authority.standard_block_sha256}}), (error) => error.code === "AWS_IAM_POLICY_CANDIDATE_BINDING_INVALID");
+assert.throws(() => evaluateAwsIamPolicyBoundary({...valid, evidence: {...valid.evidence, context_receipt_sha256: authority.router_result_sha256}}), (error) => error.code === "AWS_IAM_POLICY_CONTEXT_RECEIPT_INVALID");
 assertResult(evaluateAwsIamPolicyBoundary({...valid, request_kind: "SPAWN"}), {
   disposition: "DENY", route: "NO_AWS_IAM_POLICY_SIDE_EFFECT", error_code: "AWS_IAM_POLICY_OPERATION_FORBIDDEN",
 }, "forbidden operation");
