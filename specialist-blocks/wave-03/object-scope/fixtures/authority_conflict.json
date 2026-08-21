@@ -3,7 +3,27 @@
   "version": 1,
   "block_id": "specialist.security.object-scope",
   "class": "authority_conflict",
-  "expected": "DENY",
+  "fixture_id": "object-scope-authority_conflict",
   "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "CONTROL_PLANE_ESCALATION",
+    "error_code": "OBJECT_SCOPE_AUTHORITY_CONFLICT"
+  },
+  "vector": {
+    "entrypoint": "control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OBJECT_SCOPE",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "authority_conflict": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "CONTROL_PLANE_ESCALATION",
+      "error_code": "OBJECT_SCOPE_AUTHORITY_CONFLICT"
+    }
+  }
 }

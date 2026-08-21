@@ -5,14 +5,16 @@
   "block_id": "specialist.security.object-scope",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "266165a5fbd6f1bcfbd02577e40c2c1347b68c6662746cd736bf009547128666",
-  "source_commit": "170bbf4ca705dce9de199172910c6c25e243e7fc",
-  "source_tree": "aebfe743b8b460dd1ffb5c90cfc3342f93d18597",
+  "source_commit": "8b448e92259ce812d2395b3c7a4e3d14388f7428",
+  "source_tree": "e1fee389ec97e5ab6071d5bee07a08d084edc97a",
   "changed_paths": [
     "specialist-blocks/wave-03/object-scope/block.json",
     "specialist-blocks/wave-03/object-scope/evaluation.json",
     "specialist-blocks/wave-03/object-scope/gates/manifest.json",
+    "specialist-blocks/wave-03/object-scope/gates/execution.json",
     "specialist-blocks/wave-03/object-scope/handoff.json",
-    "specialist-blocks/wave-03/object-scope/sources.lock"
+    "specialist-blocks/wave-03/object-scope/sources.lock",
+    "specialist-blocks/wave-03/object-scope/fixtures/*.json"
   ],
   "proof": [
     "12-gate-pack-digests",
@@ -20,7 +22,12 @@
     "hostile-fixture-catalog",
     "independent-reviewer-required",
     "reusable-standard-dependency-identities",
-    "source-lock-digest"
+    "source-lock-digest",
+    "evaluation_file_sha256:6cdda97efb9cfe63cf2f10f4b6d90f3d3fe44912e46f6865ccd6fd09cea1b22f",
+    "gate_semantic_inventory_sha256:6cdeee8c475df8dca7081c7597fc4f8048c8be42f5f6ea3f789164eb3a0f214c",
+    "model_route_sha256:9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
+    "context_receipt_sha256:5bdbde4befe0b24d74fdad37f884726a1f6f054e49235ebec27fa729910c5fa3",
+    "upstream_router_file_sha256:7cb64aac3a89adc6dcb611237025160743bd40bc44edd99d4919184de78d039a"
   ],
   "residuals": [
     "applicability and project context remain external",

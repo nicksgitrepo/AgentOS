@@ -3,7 +3,27 @@
   "version": 1,
   "block_id": "specialist.security.object-scope",
   "class": "false_positive",
-  "expected": "DENY",
+  "fixture_id": "object-scope-false_positive",
   "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "TYPED_EVIDENCE_REQUIRED",
+    "error_code": "OBJECT_SCOPE_FINDING_UNSUPPORTED"
+  },
+  "vector": {
+    "entrypoint": "control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OBJECT_SCOPE",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "false_positive": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "TYPED_EVIDENCE_REQUIRED",
+      "error_code": "OBJECT_SCOPE_FINDING_UNSUPPORTED"
+    }
+  }
 }

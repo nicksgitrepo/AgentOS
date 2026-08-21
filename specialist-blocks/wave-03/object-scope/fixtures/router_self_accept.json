@@ -3,7 +3,27 @@
   "version": 1,
   "block_id": "specialist.security.object-scope",
   "class": "router_self_accept",
-  "expected": "DENY",
+  "fixture_id": "object-scope-router_self_accept",
   "hostile": true,
-  "note": "Synthetic hostile fixture for router_self_accept; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "INDEPENDENT_REVIEW_REQUIRED",
+    "error_code": "OBJECT_SCOPE_SELF_ACCEPTANCE_FORBIDDEN"
+  },
+  "vector": {
+    "entrypoint": "control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OBJECT_SCOPE",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "self_acceptance": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "INDEPENDENT_REVIEW_REQUIRED",
+      "error_code": "OBJECT_SCOPE_SELF_ACCEPTANCE_FORBIDDEN"
+    }
+  }
 }

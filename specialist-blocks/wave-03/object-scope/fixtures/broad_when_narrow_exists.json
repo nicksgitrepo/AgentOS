@@ -3,7 +3,27 @@
   "version": 1,
   "block_id": "specialist.security.object-scope",
   "class": "broad_when_narrow_exists",
-  "expected": "DENY",
+  "fixture_id": "object-scope-broad_when_narrow_exists",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "NARROW_SCOPE_REQUIRED",
+    "error_code": "OBJECT_SCOPE_SCOPE_EXPANSION_FORBIDDEN"
+  },
+  "vector": {
+    "entrypoint": "control/object-scope-boundary-gate.mjs#evaluateObjectScopeBoundary",
+    "input": {
+      "request_kind": "ANALYZE_OBJECT_SCOPE",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "broad_claim": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "OBJECT_SCOPE_SCOPE_EXPANSION_FORBIDDEN"
+    }
+  }
 }
