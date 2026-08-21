@@ -4561,7 +4561,7 @@
     },
     "function_scope_authority_binding": {
       "path": "control/function-scope-authority-binding.mjs",
-      "sha256": "3a7396d8831ee33a1cb6003b33ea3af3820d9b9edb4ef423ede6f6cd17d3cd96"
+      "sha256": "63af2e0e17893a05100b31922e0e862ed73cc276e55e2a5cd55d1c3baf82d221"
     },
     "function_scope_boundary_input_contract": {
       "path": "schemas/function-scope-boundary-input.v1.json",
@@ -4581,7 +4581,7 @@
     },
     "function_scope_boundary_verifier": {
       "path": "tests/verify-function-scope-boundary.mjs",
-      "sha256": "d1ef7d42afc0307ebe5f93898b2f7849af74bade7024e32b5a6689de0fa8935d"
+      "sha256": "a0aa7724ef71b953316659adbb5eae1557810cb8df09bb2e52d87bd454a1cb9d"
     },
     "function_scope_candidate_handoff": {
       "path": "specialist-blocks/wave-03/function-scope/handoff.json",

@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 import {evaluateFunctionScopeBoundary, FUNCTION_SCOPE_INPUT_SCHEMA, FUNCTION_SCOPE_RESULT_SCHEMA} from "../control/function-scope-boundary-gate.mjs";
 import {evaluateFunctionScopePackage} from "../control/function-scope-package-evaluator.mjs";
 import {resolveFunctionScopeCanonicalAuthority} from "../control/function-scope-authority-binding.mjs";
@@ -42,5 +43,31 @@ try {
   await assert.rejects(() => isolatedEvaluator.evaluateFunctionScopePackage(), (error) => ["FUNCTION_SCOPE_HOSTILE_RESULT_FAILED", "FUNCTION_SCOPE_GATE_EXPECTATION_UNBOUND", "FUNCTION_SCOPE_FIXTURE_VECTOR_INVALID"].includes(error?.code));
 } finally {
   fs.rmSync(temp, {recursive: true, force: true});
+}
+
+// A self-rehashed but superseded or rerouted model snapshot is not authority.
+// The production entrypoint must fail before it can emit a ROUTE result.
+const modelTemp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-function-scope-model-mutation-"));
+try {
+  fs.cpSync(path.join(repositoryRoot, "control"), path.join(modelTemp, "control"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "wave-03", "function-scope"), path.join(modelTemp, "specialist-blocks", "wave-03", "function-scope"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "standards", "owasp-asvs"), path.join(modelTemp, "specialist-blocks", "standards", "owasp-asvs"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "registry"), path.join(modelTemp, "specialist-blocks", "registry"), {recursive: true});
+  fs.mkdirSync(path.join(modelTemp, "fixtures"), {recursive: true});
+  fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(modelTemp, "fixtures", "model-policy-snapshot.initial.v1.json"));
+  fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(modelTemp, "fixtures", "model-policy-evidence"), {recursive: true});
+  const modelPath = path.join(modelTemp, "fixtures", "model-policy-snapshot.initial.v1.json");
+  const model = JSON.parse(fs.readFileSync(modelPath, "utf8"));
+  model.status = "SUPERSEDED";
+  const securityTask = model.task_classes.find((task) => task.task_class === "SECURITY_REVIEW");
+  securityTask.minimum_capability_score = 0;
+  securityTask.preferred_models = ["gpt-5.6-terra"];
+  securityTask.fallback_models = ["gpt-5.6-luna"];
+  model.snapshot_sha256 = canonicalDigest({...model, snapshot_sha256: null});
+  fs.writeFileSync(modelPath, `${JSON.stringify(model, null, 2)}\n`);
+  const isolatedBoundary = await import(`${pathToFileURL(path.join(modelTemp, "control", "function-scope-boundary-gate.mjs")).href}?model-mutation=${Date.now()}`);
+  assert.throws(() => isolatedBoundary.evaluateFunctionScopeBoundary(structuredClone(input)), (error) => error?.code === "FUNCTION_SCOPE_MODEL_POLICY_PROVENANCE_INVALID" || error?.code === "FUNCTION_SCOPE_MODEL_ROUTE_SEMANTICS_INVALID");
+} finally {
+  fs.rmSync(modelTemp, {recursive: true, force: true});
 }
 console.log("PASS Function Scope boundary: 17 executable adversarial vectors, fixture-bound expectations, mutation proof, and zero side effects");

@@ -26,6 +26,7 @@ export const FUNCTION_SCOPE_CUSTODY_REF = "opaque:FUNCTION_SCOPE.CUSTODY";
 export const FUNCTION_SCOPE_MODEL_TASK_CLASS = "SECURITY_REVIEW";
 export const FUNCTION_SCOPE_MODEL_CAPABILITY_FLOOR = 59;
 export const FUNCTION_SCOPE_MODEL_CAPABILITIES = Object.freeze(["CODE", "SECURITY", "TOOLS"]);
+export const FUNCTION_SCOPE_MODEL_SNAPSHOT_SHA256 = "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27";
 export const FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   block: "ac0f316100f81f6bc7ae7d8f46a1406ef8772a14ccc62e9b7f8b50e2e0ab9c21",
   source_lock: "4f037ed75ff023c0114436140d1062585419cdf8fb14b95cfbb3b8bcc0bdcd3c",
@@ -33,6 +34,7 @@ export const FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   gate_execution: "023d502bb1b6e882f51e33315226b7f765d4d4def823b93f3b6cb28bdc0f7eab",
   evaluation: "76e08d38dd355a0e06c801632fde9201ac43125f47dab280da6cb0dfbeb2f1a4",
   handoff: "3b63f08b1ace83b40cdfaddead040e514726d9a994b8b84e493e293384e27397",
+  model_snapshot: "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d",
 });
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -186,8 +188,11 @@ export function resolveFunctionScopeCanonicalAuthority() {
   });
 
   const modelArtifact = readJson(MODEL_PATH, "Global model-policy snapshot"); const model = modelArtifact.value;
+  assert(modelArtifact.file_sha256 === FUNCTION_SCOPE_CANONICAL_ARTIFACT_SHA256.model_snapshot && model.snapshot_sha256 === FUNCTION_SCOPE_MODEL_SNAPSHOT_SHA256, "Function Scope model-policy snapshot is not the pinned candidate", "FUNCTION_SCOPE_MODEL_POLICY_PROVENANCE_INVALID");
   validateModelPolicySnapshot(model, {requireActive: false});
   assert(model.project_agnostic === true && model.contains_consumer_context === false && model.raw_browsing_transcripts === false, "Global model-policy snapshot is not project-agnostic", "FUNCTION_SCOPE_MODEL_POLICY_INVALID");
+  const securityTask = model.task_classes?.find((task) => task.task_class === FUNCTION_SCOPE_MODEL_TASK_CLASS);
+  assert(securityTask && securityTask.minimum_capability_score === FUNCTION_SCOPE_MODEL_CAPABILITY_FLOOR && JSON.stringify(securityTask.required_capabilities) === JSON.stringify(FUNCTION_SCOPE_MODEL_CAPABILITIES) && JSON.stringify(securityTask.preferred_models) === JSON.stringify(["gpt-5.6-sol"]) && JSON.stringify(securityTask.fallback_models) === JSON.stringify([]), "Function Scope SECURITY_REVIEW model route semantics are not canonical", "FUNCTION_SCOPE_MODEL_ROUTE_SEMANTICS_INVALID");
   const modelRoute = Object.freeze({task_class: entry.model_route.task_class, minimum_capability: entry.model_route.minimum_capability, required_capabilities: Object.freeze([...entry.model_route.required_capabilities]), route_source: entry.model_route.route_source, snapshot_sha256: model.snapshot_sha256, snapshot_status: model.status, model_file_sha256: modelArtifact.file_sha256});
   const modelRouteSha256 = canonicalDigest(modelRoute);
   const routerResult = canonicalRouterResult(block.block_sha256);
