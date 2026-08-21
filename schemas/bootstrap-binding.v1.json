@@ -4555,6 +4555,34 @@
       "path": "specialist-blocks/wave-03/abac/handoff.json",
       "sha256": "cf0d38d30ae5ec342dfd868268f54377297ed85159358edf49e4ad9dbbb2ab50"
     },
+    "function_scope_boundary_gate": {
+      "path": "control/function-scope-boundary-gate.mjs",
+      "sha256": "449fd6d5298fe28bffadd6de6716d1f90c2b6bf56103da775c363795173292e6"
+    },
+    "function_scope_boundary_input_contract": {
+      "path": "schemas/function-scope-boundary-input.v1.json",
+      "sha256": "9e4537cb608d3b0ab23e85840946ace17e363ab692f047efe50a7f092cff18dd"
+    },
+    "function_scope_boundary_result_contract": {
+      "path": "schemas/function-scope-boundary-result.v1.json",
+      "sha256": "a1ae1c1a63004d96c9e8e95924fe2604192bac9c78186a15ba98c8565446f4d4"
+    },
+    "function_scope_package_operational_evaluation_contract": {
+      "path": "schemas/function-scope-package-operational-evaluation.v1.json",
+      "sha256": "dceeb54f1179ace3475145d07531a5daa08f82aefc2f5f517a768621621e3934"
+    },
+    "function_scope_package_operational_evaluator": {
+      "path": "control/function-scope-package-evaluator.mjs",
+      "sha256": "33807776457ba72c15c440672cf58be0e8f376c676a3bf67437b36503f44e237"
+    },
+    "function_scope_boundary_verifier": {
+      "path": "tests/verify-function-scope-boundary.mjs",
+      "sha256": "c12bf719fdc9aacb6af61804d0b8fcdda1f212fcce274b4a1bdf0c5c2278e5ad"
+    },
+    "function_scope_candidate_handoff": {
+      "path": "specialist-blocks/wave-03/function-scope/handoff.json",
+      "sha256": "65aaa92f3789b6ec2c6982f4bbb7c2eebb1efe48d3b27f7d7027330c8fcfeed2"
+    },
     "auth_cache_residue_boundary_gate": {
       "path": "control/auth-cache-residue-boundary-gate.mjs",
       "sha256": "c28d85c95835fcf23c4d47020ba63463f2680b9f86746b3ccbc9c30c353c7e0a"
