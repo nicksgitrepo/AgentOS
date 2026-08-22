@@ -3821,7 +3821,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "49d3c3a930ae69644dcde9c813ab97e1e66a374fbf2eadc46b08bf39849b1388"
+      "sha256": "6f7650ffd50aa6e583ed69b5ae40d742a3d83c3286d307cc81b1bc8ac04ebffe"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -5089,7 +5089,7 @@
     },
     "field_job_workflow_atomic_inventory": {
       "path": "specialist-blocks/registry/atomic-inventory.v1.json",
-      "sha256": "03c2d290e405323582edc616cce19a093420e43875ca14d3a8aa59fa90c20ea4"
+      "sha256": "428d58cb272029829fe2f89e14fae2c87f8ee98a06a9661d531cb40cea88326e"
     },
     "field_job_workflow_rebind_controller": {
       "path": "control/field-job-workflow-rebind.mjs",
