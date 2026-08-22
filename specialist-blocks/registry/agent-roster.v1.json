@@ -2148,103 +2148,103 @@
           {
             "fixture_id": "specialist.control.independent-auditor.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/authority_conflict.json",
-            "file_sha256": "6ea75377342807e2c9514b7c0dbccb292c7a485b9b5e80519164b16bd3eda4bd",
-            "expected_outcome": "ESCALATE"
+            "file_sha256": "0d31fce649ab86b6262b85b9f0dc9a87e59c2f16e5c51d33e98b3be6b09689a8",
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e8c298567e0b2ca73088741532faea868c6f5fa74e9cf8bd2fa018499e5970a4",
+            "file_sha256": "cec1a6cfd6fa8a152c445a70cad4f7d4855f51a389744522ccb0bfeb84a271ad",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "e975b97d4ab464a602f9333f0c9e5243e81d0946b41a7f62b3c31a381dfb2c54",
+            "file_sha256": "f71c224ff8e80f3826574bd8fdc0dbc63ab5239bf91950fc82d2a97a27bbdab9",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.DATA_LIMIT",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/data_limit.json",
-            "file_sha256": "9afd4fea724eb23fa983517d2b58f74dc157f1da16bb14740981a94bc48ae887",
+            "file_sha256": "d5327b8a94b4d490c4e4f8da5a0a6a5e09db072a58e8f5de3fe778253fd8584e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "35ebc0a30a429fbdc163cae16f19588b4a43d3013ce44ddc053e8b42f8e48374",
+            "file_sha256": "23054bf0af7ad2ff12fc862865a8ccaa9b3f4b63bf4be4316e0e06e54bfed48e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/false_positive.json",
-            "file_sha256": "87a66b165b481fed14631aa458eb818d426faa28a8e1979e6544fdf326cd7ea8",
+            "file_sha256": "9dbc64f6078bf3d3824bb51270048c0f14f88e312da16ec3ae15b33b0844a147",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.HANDOFF",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/handoff.json",
-            "file_sha256": "d55e0ebfabf8bb5720ab81714092a62d42d8827d39678769d64662a07489e373",
+            "file_sha256": "010afbd2163e320e31c63208158edf5e51ca83c68a1598cbca37c6d6bdfb8eed",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/missing_context.json",
-            "file_sha256": "e7c0cc4558a5699f4d9fcf95709b1bdcd8158fb5621408467d17e7f89f7d40ab",
+            "file_sha256": "7fbea4620fe3ae53ad3aaa037a606d2570180e0c6fbe1e065cb774f84dffdc69",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.NARROWNESS",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/narrowness.json",
-            "file_sha256": "889df11fcfae29ce686418e5ede0b38c2e882d095ceb8b86133b9187732d255c",
+            "file_sha256": "a70260e7d88fe918a854cbd228d3626a4b53c38a1b71296b01c75186dfe879f8",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/router_self_accept.json",
-            "file_sha256": "83cbb0bc70bbc27e85327c61c62eb900323df57eff059b95fd22465dfdd4252d",
+            "file_sha256": "f692bfe4b3b6bf76ab797aafd300b3b300fd2ed397694db7aa8cfef619623ae1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.ROUTING",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/routing.json",
-            "file_sha256": "548ffae19f7e439d3e1e5bcb331264ed29fbc511960317050a2fa87fdae5e366",
+            "file_sha256": "eee6f5d39323eb680289724c2fe084220330dc9423cd24fabacdbb69e5885fcf",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/silent_scope_expansion.json",
-            "file_sha256": "a4111261fcbdf56ac96ead3556f9e86fa44db31afbd9db3e0743076904ca1645",
+            "file_sha256": "04c9cd18a701bfd1f381e8392acaa8788a7b48604925016ae9363c1292c3a15a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.STALE_SOURCE",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/stale_source.json",
-            "file_sha256": "cd68a943f6403123dab4aa30787a1b004c0ca655de34bd954f45157a2605373a",
+            "file_sha256": "a4c8f473cd9cd5145a752566f294b4ed54234d071a58ab4c9e731b616fdc7937",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.TOOL_LIMIT",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/tool_limit.json",
-            "file_sha256": "af07096524ab10772984f2235a3d7e7421301ad1193f0ffc79360455d958cfb2",
+            "file_sha256": "5d3b0fc580ff52c57d3b3801833cb59ee56623d00ed163f1812c0863fee49107",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/umbrella_authority.json",
-            "file_sha256": "9aff869beb5cbc43ca142d6f8e03101fbe76d38b648f556339b555008342ef0d",
+            "file_sha256": "264b8093937e5edb84800c61389a90f51ea0575e9a8a3f2caf32e8e10878bfbc",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/unrelated_scope.json",
-            "file_sha256": "4caa4541566a11f7af327c44f6305e0f73eead4ff4a36bd25393eadae7b5366a",
+            "file_sha256": "25e08489c5b38daae0195e64036966e4246a6519bf4a572bf98c4adb7e11a63f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.control.independent-auditor.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-01/independent-auditor/fixtures/unsafe_action.json",
-            "file_sha256": "43e010e4b4b67f6478eea3cf8ff18031281cc16a8722a945c096593552548577",
+            "file_sha256": "e42f11c880e2baa917be2375865b556869891f0256bd1a1bdc620f2ab0c4d031",
             "expected_outcome": "DENY"
           }
         ]
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "d2605b79dec2e2956d28a8cd3b433028d702977fe8cab1c53ed5a2c7cbadf86f"
+  "roster_sha256": "a4bb344f78866d93d3821b7fff0ad4b81917707ce1171df5c7dd5c6d684bbab2"
 }
