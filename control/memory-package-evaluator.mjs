@@ -47,7 +47,7 @@ export const MEMORY_PACKAGE_EVALUATION_SCHEMA = "agentos.specialist_memory_packa
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const PACKAGE_RELATIVE = "specialist-blocks/wave-01/memory";
 const BLOCK_ID = "specialist.control.memory";
-const NOW = "2026-08-20T04:15:00.000Z";
+const NOW = new Date().toISOString();
 const SHA256 = /^[0-9a-f]{64}$/u;
 const FOCUSED_SUITES = [
   "tests/verify-project-memory-schema.mjs",

@@ -3,27 +3,107 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import {fileURLToPath, pathToFileURL} from "node:url";
+import {pathToFileURL} from "node:url";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 import {evaluateIdempotencyBoundary, IDEMPOTENCY_INPUT_SCHEMA, IDEMPOTENCY_RESULT_SCHEMA} from "../control/idempotency-boundary-gate.mjs";
 import {evaluateIdempotencyPackage} from "../control/idempotency-package-evaluator.mjs";
+import {resolveIdempotencyCanonicalAuthority} from "../control/idempotency-authority-binding.mjs";
 
+const repositoryRoot = path.resolve(new URL("..", import.meta.url).pathname);
+const fixtureRoot = path.join(repositoryRoot, "specialist-blocks/wave-03/idempotency/fixtures");
+const zeroEffects = {
+  idempotency_record_reads: 0, idempotency_store_reads: 0, source_reads: 0, concurrency_checks: 0,
+  duplicate_decisions: 0, submission_writes: 0, replay_mutations: 0, memory_writes: 0,
+  acceptance_calls: 0, credential_accesses: 0, state_changes: 0,
+};
+
+const authority = resolveIdempotencyCanonicalAuthority();
 const evaluation = await evaluateIdempotencyPackage();
-assert.equal(evaluation.status, "PASS"); assert.equal(evaluation.fixture_results.length, 17); assert.equal(evaluation.mutation_sensitivity.status, "WEAKENED");
-const validInput = {schema: IDEMPOTENCY_INPUT_SCHEMA, version: 1, request_kind: "ANALYZE_IDEMPOTENCY", evidence: {
-  authority_status: "CURRENT", security_domain: "IDEMPOTENCY", request_identity: "REQUEST.IDEMPOTENCY.ANALYSIS", idempotency_key: "0123456789abcdef".repeat(4), duplicate_detection_status: "EVIDENCE_COMPLETE", replay_status: "BOUND", concurrency_scope: "ONE_OPERATION", operation_identity: "OPERATION.IDEMPOTENCY", operation_version: "1", source_status: "CURRENT_VERIFIED", source_identity: "SOURCE.AGENTOS_IDEMPOTENCY", source_version: "1", source_effective_date: "2026-08-11", source_retrieved_date: "2026-08-20", candidate_status: "CURRENT_CANDIDATE", candidate_digest: "abcdef0123456789".repeat(4), signal_status: "BOUND", task_status: "IDEMPOTENCY_ANALYSIS", context_status: "IDEMPOTENCY_CONTEXT", context_complete: true, requested_action: "ANALYZE", requested_tools: ["READ_IDEMPOTENCY_RECORD"], required_block_identities: ["BLOCK.SECURITY.AUTHORITY", "BLOCK.SECURITY.EVIDENCE", "BLOCK.SECURITY.SCOPE", "BLOCK.SECURITY.CUSTODY", "BLOCK.SECURITY.HANDOFF", "BLOCK.SECURITY.ACCESS_CONTROL_ROUTER"], model_policy_status: "CURRENT", model_route_status: "BOUND", authority_scope: "IDEMPOTENCY", project_data_present: false, secret_data_present: false, adversarial_flags: Object.fromEntries(["authority_conflict", "scope_expanded", "protected_data", "stale_source", "unsupported_tool", "duplicate_authority", "self_acceptance", "unrelated_scope", "missing_context", "unsafe_action", "broad_claim", "cross_provider", "false_positive", "duplicate_request", "key_missing", "version_ambiguous", "replay_unproven", "concurrency_unbounded"].map((key) => [key, false])),
-}};
-const denied = evaluateIdempotencyBoundary({...validInput, request_kind: "DEPLOY"});
-assert.equal(denied.schema, IDEMPOTENCY_RESULT_SCHEMA); assert.equal(denied.disposition, "DENY"); assert.equal(denied.error_code, "IDEMPOTENCY_OPERATION_FORBIDDEN");
+assert.equal(evaluation.status, "PASS");
+assert.equal(evaluation.fixture_results.length, 17);
+assert.equal(evaluation.gate_execution.length, 12);
+assert.equal(evaluation.mutation_sensitivity.status, "WEAKENED");
 
-// Changing a committed expected route in an isolated copy must invalidate the
-// evaluation; otherwise the evaluator could be echoing implementation output.
-const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-idempotency-fixture-mutation-"));
-try {
+const fixtureFiles = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
+assert.equal(fixtureFiles.length, 17);
+for (const name of fixtureFiles) {
+  const fixture = JSON.parse(fs.readFileSync(path.join(fixtureRoot, name), "utf8"));
+  assert.equal(fixture.vector.entrypoint, "control/idempotency-boundary-gate.mjs#evaluateIdempotencyBoundary");
+  assert.equal(fixture.vector.input.schema, IDEMPOTENCY_INPUT_SCHEMA);
+  const actual = evaluateIdempotencyBoundary(fixture.vector.input);
+  assert.equal(actual.schema, IDEMPOTENCY_RESULT_SCHEMA, fixture.fixture_id);
+  assert.deepEqual({disposition: actual.disposition, route: actual.route, error_code: actual.error_code}, fixture.vector.expected_readback, fixture.fixture_id);
+  assert.equal(actual.result_sha256, canonicalDigest({...actual, result_sha256: null}), fixture.fixture_id);
+  assert.deepEqual(actual.external_side_effects, zeroEffects, fixture.fixture_id);
+  assert.equal(actual.acceptance_allowed, false, fixture.fixture_id);
+  assert.equal(actual.authorization_decision_allowed, false, fixture.fixture_id);
+  assert.equal(actual.policy_mutation_allowed, false, fixture.fixture_id);
+  assert.equal(actual.submission_mutation_allowed, false, fixture.fixture_id);
+  assert.equal(actual.replay_mutation_allowed, false, fixture.fixture_id);
+  assert.equal(actual.memory_write_allowed, false, fixture.fixture_id);
+}
+
+const valid = JSON.parse(fs.readFileSync(path.join(fixtureRoot, "routing.json"), "utf8")).vector.input;
+const substitutionDigest = canonicalDigest("caller-substitution");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, caller_authority: authority.block_sha256}}), (error) => error?.code === "IDEMPOTENCY_UNKNOWN_FIELD");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, candidate_digest: substitutionDigest, idempotency_key: substitutionDigest}}), (error) => error?.code === "IDEMPOTENCY_CANDIDATE_BINDING_INVALID");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, standard_block_sha256: substitutionDigest}}), (error) => error?.code === "IDEMPOTENCY_STANDARD_BINDING_INVALID");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, model_route_sha256: substitutionDigest}}), (error) => error?.code === "IDEMPOTENCY_MODEL_ROUTE_UNBOUND");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, context_receipt_sha256: substitutionDigest}}), (error) => error?.code === "IDEMPOTENCY_CONTEXT_RECEIPT_INVALID");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, upstream_router_result_sha256: substitutionDigest}}), (error) => error?.code === "IDEMPOTENCY_CONTEXT_RECEIPT_INVALID");
+assert.throws(() => evaluateIdempotencyBoundary({...valid, evidence: {...valid.evidence, idempotency_key: substitutionDigest}}), (error) => error?.code === "IDEMPOTENCY_KEY_BINDING_INVALID");
+const forbidden = evaluateIdempotencyBoundary({...valid, request_kind: "DEPLOY"});
+assert.equal(forbidden.disposition, "DENY");
+assert.equal(forbidden.error_code, "IDEMPOTENCY_OPERATION_FORBIDDEN");
+assert.deepEqual(forbidden.external_side_effects, zeroEffects);
+
+function copyAuthorityFixture(prefix) {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
   fs.cpSync(path.join(repositoryRoot, "control"), path.join(temp, "control"), {recursive: true});
   fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "wave-03", "idempotency"), path.join(temp, "specialist-blocks", "wave-03", "idempotency"), {recursive: true});
-  const mutated = path.join(temp, "specialist-blocks/wave-03/idempotency/fixtures/authority_conflict.json"); const fixture = JSON.parse(fs.readFileSync(mutated, "utf8")); fixture.expected.route = "NO_IDEMPOTENCY_SCOPE"; fs.writeFileSync(mutated, `${JSON.stringify(fixture)}\n`);
-  const evaluator = await import(`${pathToFileURL(path.join(temp, "control/idempotency-package-evaluator.mjs")).href}?fixture-mutation=${Date.now()}`);
-  await assert.rejects(() => evaluator.evaluateIdempotencyPackage(), (error) => error?.code === "IDEMPOTENCY_HOSTILE_RESULT_FAILED");
-} finally { fs.rmSync(temp, {recursive: true, force: true}); }
-console.log("PASS Idempotency boundary: 17 executable typed vectors, fixture-bound expectations, mutation proof, and zero side effects");
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "standards", "owasp-asvs"), path.join(temp, "specialist-blocks", "standards", "owasp-asvs"), {recursive: true});
+  fs.cpSync(path.join(repositoryRoot, "specialist-blocks", "registry"), path.join(temp, "specialist-blocks", "registry"), {recursive: true});
+  fs.mkdirSync(path.join(temp, "fixtures"), {recursive: true});
+  fs.copyFileSync(path.join(repositoryRoot, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(temp, "fixtures", "model-policy-snapshot.initial.v1.json"));
+  fs.cpSync(path.join(repositoryRoot, "fixtures", "model-policy-evidence"), path.join(temp, "fixtures", "model-policy-evidence"), {recursive: true});
+  fs.writeFileSync(path.join(temp, ".git"), fs.readFileSync(path.join(repositoryRoot, ".git"), "utf8"), {flag: "wx"});
+  return temp;
+}
+
+const modelTemp = copyAuthorityFixture("agentos-idempotency-model-substitution-");
+try {
+  const modelPath = path.join(modelTemp, "fixtures/model-policy-snapshot.initial.v1.json");
+  const model = JSON.parse(fs.readFileSync(modelPath, "utf8"));
+  model.status = "SUPERSEDED";
+  model.snapshot_sha256 = canonicalDigest({...model, snapshot_sha256: null});
+  fs.writeFileSync(modelPath, `${JSON.stringify(model, null, 2)}\n`);
+  const isolated = await import(`${pathToFileURL(path.join(modelTemp, "control/idempotency-authority-binding.mjs")).href}?model-substitution=${Date.now()}`);
+  assert.throws(() => isolated.resolveIdempotencyCanonicalAuthority(), (error) => ["IDEMPOTENCY_CANONICAL_PROVENANCE_INVALID", "IDEMPOTENCY_MODEL_POLICY_PROVENANCE_INVALID", "IDEMPOTENCY_MODEL_ROUTE_INVALID"].includes(error?.code));
+} finally {
+  fs.rmSync(modelTemp, {recursive: true, force: true});
+}
+
+const provenanceTemp = copyAuthorityFixture("agentos-idempotency-provenance-substitution-");
+try {
+  const handoffPath = path.join(provenanceTemp, "specialist-blocks/wave-03/idempotency/handoff.json");
+  const handoff = JSON.parse(fs.readFileSync(handoffPath, "utf8"));
+  handoff.source_commit = "170bbf4ca705dce9de199172910c6c25e243e7fc";
+  handoff.source_tree = "aebfe743b8b460dd1ffb5c90cfc3342f93d18597";
+  fs.writeFileSync(handoffPath, `${JSON.stringify(handoff, null, 2)}\n`);
+  const isolated = await import(`${pathToFileURL(path.join(provenanceTemp, "control/idempotency-authority-binding.mjs")).href}?provenance-substitution=${Date.now()}`);
+  assert.throws(() => isolated.resolveIdempotencyCanonicalAuthority(), (error) => ["IDEMPOTENCY_CANONICAL_PROVENANCE_INVALID", "IDEMPOTENCY_SOURCE_COMMIT_INVALID", "IDEMPOTENCY_SOURCE_TREE_INVALID"].includes(error?.code));
+} finally {
+  fs.rmSync(provenanceTemp, {recursive: true, force: true});
+}
+
+const routerTemp = copyAuthorityFixture("agentos-idempotency-router-substitution-");
+try {
+  const routerPath = path.join(routerTemp, "control/access-control-router-boundary-gate.mjs");
+  fs.appendFileSync(routerPath, "\n// hostile source substitution\n");
+  const isolated = await import(`${pathToFileURL(path.join(routerTemp, "control/idempotency-authority-binding.mjs")).href}?router-substitution=${Date.now()}`);
+  assert.throws(() => isolated.resolveIdempotencyCanonicalAuthority(), (error) => error?.code === "IDEMPOTENCY_CANONICAL_PROVENANCE_INVALID");
+} finally {
+  fs.rmSync(routerTemp, {recursive: true, force: true});
+}
+
+console.log("PASS Idempotency boundary: 17 executable hostile vectors, caller-substitution denials, mutation proof, model/router provenance, and zero side effects");

@@ -29,9 +29,9 @@
   },
   "model_policy": {
     "snapshot_path": "fixtures/model-policy-snapshot.initial.v1.json",
-    "snapshot_sha256": "d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7",
-    "observed_at_utc": "2026-08-20T04:00:00.000Z",
-    "expires_at_utc": "2026-08-21T04:00:00.000Z",
+    "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "observed_at_utc": "2026-08-21T04:09:00.000Z",
+    "expires_at_utc": "2026-08-22T04:09:00.000Z",
     "task_classes": [
       "SIMPLE_EXTRACTION",
       "DETERMINISTIC_QA",
@@ -14515,7 +14515,9 @@
         "request",
         "signals",
         "source_lock",
-        "source.atomic-specialization-law"
+        "source.agentos-idempotency",
+        "source.atomic-specialization-law",
+        "source.owasp-asvs-5-0-0"
       ],
       "deterministic_gates": {
         "status": "BOUND",
@@ -14589,103 +14591,103 @@
           {
             "fixture_id": "idempotency-authority_conflict",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/authority_conflict.json",
-            "file_sha256": "ff1aad1e83ff5deef4a0c4c2a8ffb712179a48f4bba27f5dce7f2a7ae3326c84",
+            "file_sha256": "250aa68673c0bb75fb657eb60f22c74b10ae92c74d2f20f564302167eb986175",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "5ec4740272711ded73196302331d99bdd6bea0ba38b96d5d1e5808e59bc83a2a",
+            "file_sha256": "39c0748562215cd777077fdb66b69547fa13408f21dba2ea255608c2d1da9929",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "1dbd29541dca06a496f0d9efa04878d76d93cdf287d588ad79962b991af3969d",
+            "file_sha256": "3a183363bb023a19312871d6d82c94f102c2ff6d4b6a8b02d4c385ea9f675880",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-data_limit",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/data_limit.json",
-            "file_sha256": "1f2c6310e6e0824429004c89555d1be1cc220d3560680ca60adea5fe1ceb4fe2",
+            "file_sha256": "6a46c3fe25292e3f7c20092178cc69c509010d3c84b74cf2007c09ff7620655c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "idempotency-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "d1ac0d56c15b735cfc88fead392d25745dfa2ec7ba6b0e675f2ff89e10732694",
+            "file_sha256": "03ee525d03ea89f7a89c5d6ddd69eacc948e1b80b07648588fab59360efaf4b5",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-false_positive",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/false_positive.json",
-            "file_sha256": "c908afe015a43138a7745278b3bd68f5b85738cec422cda08f85cdf4413278f1",
+            "file_sha256": "5e00655d88b088567176d4724250ccb56e8821e85d65fae93886af9d2dae9b3b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-handoff",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/handoff.json",
-            "file_sha256": "66460cbd7ceeb163bb3a95ee7488ef2ad4567814fd0277265bfb3748605568cc",
+            "file_sha256": "370cdf9faca4cb447d0203fc9caaf02e10f1f2a0b65cbfc94084134cc3088464",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "idempotency-missing_context",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/missing_context.json",
-            "file_sha256": "ac5c429e315a061f86f099b571d70155e1b60bfcaf6589dd03427462536b6cd4",
+            "file_sha256": "d7e7baa2b51ae524b21bc8792971927dc7df5de6ed06ffa9390438c15c8cbdbc",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-narrowness",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/narrowness.json",
-            "file_sha256": "49790e6ee81258c9713300f9cffeb549250c26121c5c4e0562a69acfc6050080",
+            "file_sha256": "66ee42c60b72a6cbfdfed6d30534372aa97c5a248b4dc5ab1b4086c2b10f839c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "idempotency-router_self_accept",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/router_self_accept.json",
-            "file_sha256": "592cf165b085ab4f2a9e6eab5da9ef942662640d836eaca69f8ec3bae1765c3e",
+            "file_sha256": "e9b8e9009a1107d2d67b3d10cace6dbcde4c9efdb351b3b1ca23c8aa0bb53168",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-routing",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/routing.json",
-            "file_sha256": "4d897a50133806a9270b57219edb2ddb65917770f7bab131ec34e4e03c2436a2",
+            "file_sha256": "57ba4779f81e7f0a433a6b7aa76e2f223218f811bb11e67bda5dda40fc3ec886",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "idempotency-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/silent_scope_expansion.json",
-            "file_sha256": "f186cbb31c2d99cdef2fb814d1e1f9b7878b1ee03e88033cb8b78d5494113d7d",
+            "file_sha256": "beb7ef64d70ecee54a2d7fc95f0191936fa98034232b7e5c85310458249e8d0a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-stale_source",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/stale_source.json",
-            "file_sha256": "e141628836fa5e77dc4fa212cbfb04de44d9b2a96385a68d0e9967020dfb5af6",
+            "file_sha256": "921d95783b0a0778f36c7131d5a566d0316f7f95ae04e29291d6c3277966cc0e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-tool_limit",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/tool_limit.json",
-            "file_sha256": "313cc169447160c7cc799758189b62910ae47451ea6b03c513c83b4dbfad746c",
-            "expected_outcome": "DENY"
+            "file_sha256": "66776f4164916767e00081a83558d2f6a33124bc162e1e0da704161c250278ed",
+            "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "idempotency-umbrella_authority",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/umbrella_authority.json",
-            "file_sha256": "51293c05d66bd9af7bfb726f830514a4cbae137aec32e81cafb14143d2905cb3",
+            "file_sha256": "701e10e77a95442d991c68dbe0b5e6da28c34a72ccfaf05d7fb387d481041c40",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-unrelated_scope",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/unrelated_scope.json",
-            "file_sha256": "174efe3b22002dfd101756dc9d137f962741f99dace7cd7449f23d4107aca6a8",
+            "file_sha256": "f3964ac44fd90edc9585366c851fabad914e740d443c4b9a5e53310c68f7c93b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "idempotency-unsafe_action",
             "path": "specialist-blocks/wave-03/idempotency/fixtures/unsafe_action.json",
-            "file_sha256": "8a5eea1de9ce5ef34bd2732a697a111eb4d69c2d250f5805b2f85159bc1bb992",
+            "file_sha256": "58c7978a713853c09f6e2d48b452acbe141037b26bf2f752e3462fd23ae8be2c",
             "expected_outcome": "DENY"
           }
         ]
@@ -14698,7 +14700,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/idempotency/handoff.json",
-        "handoff_file_sha256": "db5bd7edf637406776f47ffa3aba2872e09a89ccc44cb081a9f105d7ec01663b",
+        "handoff_file_sha256": "11b30c2bfae3da3ac4f50fe9ea6c00dd96857564337bc724cd30c925598ed6b3",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.idempotency.v1"
       },
@@ -40548,5 +40550,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "23e2caf585d567a20cc3e61b17df02911e65c39780c7862c9ac870ffadc41bb1"
+  "roster_sha256": "0b32c4c4c9808c5ba920ffe4e39a41f8a4aeb8d012d7f938fcb14c000c27b5da"
 }
