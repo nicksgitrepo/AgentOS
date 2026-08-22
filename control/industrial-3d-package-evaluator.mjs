@@ -136,6 +136,28 @@ async function registryProvenanceMutation() {
     }
   } finally { fs.rmSync(temp, {recursive: true, force: true}); }
 }
+async function missingSourceMutation() {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-industrial-3d-missing-source-"));
+  try {
+    fs.cpSync(path.join(ROOT, "control"), path.join(temp, "control"), {recursive: true});
+    fs.cpSync(path.join(ROOT, "specialist-blocks/wave-06/industrial-3d"), path.join(temp, "specialist-blocks/wave-06/industrial-3d"), {recursive: true});
+    fs.cpSync(path.join(ROOT, "specialist-blocks/wave-06/industrial-3d-router"), path.join(temp, "specialist-blocks/wave-06/industrial-3d-router"), {recursive: true});
+    fs.cpSync(path.join(ROOT, "specialist-blocks/standards/gltf-2-0-1"), path.join(temp, "specialist-blocks/standards/gltf-2-0-1"), {recursive: true});
+    fs.cpSync(path.join(ROOT, "specialist-blocks/registry"), path.join(temp, "specialist-blocks/registry"), {recursive: true});
+    fs.mkdirSync(path.join(temp, "fixtures"), {recursive: true});
+    fs.copyFileSync(path.join(ROOT, "fixtures/model-policy-snapshot.initial.v1.json"), path.join(temp, "fixtures/model-policy-snapshot.initial.v1.json"));
+    fs.cpSync(path.join(ROOT, "fixtures/model-policy-evidence"), path.join(temp, "fixtures/model-policy-evidence"), {recursive: true});
+    fs.rmSync(path.join(temp, "specialist-blocks/wave-06/industrial-3d/sources.lock"));
+    const module = await import(`${pathToFileURL(path.join(temp, "control/industrial-3d-boundary-gate.mjs")).href}?missing-source=${Date.now()}`);
+    const input = json(path.join(ROOT, `${PACKAGE}/fixtures/routing.json`)).vector.input;
+    try {
+      module.evaluateIndustrial3dBoundary(structuredClone(input));
+      return {status: "WEAKENED", mutation_detected: false, expected_code: "INDUSTRIAL_3D_ARTIFACT_MISSING", observed_code: null};
+    } catch (error) {
+      return {status: error.code === "INDUSTRIAL_3D_ARTIFACT_MISSING" ? "INTACT" : "WRONG_REJECTION", mutation_detected: error.code === "INDUSTRIAL_3D_ARTIFACT_MISSING", expected_code: "INDUSTRIAL_3D_ARTIFACT_MISSING", observed_code: error.code ?? "UNCODED"};
+    }
+  } finally { fs.rmSync(temp, {recursive: true, force: true}); }
+}
 
 export async function evaluateIndustrial3dPackage() {
   const authority = resolveIndustrial3dCanonicalAuthority(); const root = path.join(ROOT, PACKAGE); const block = json(path.join(root, "block.json"));
@@ -152,6 +174,7 @@ export async function evaluateIndustrial3dPackage() {
   assertIndustrial3dCommittedHandoff({authority, evaluation: evaluationArtifact.value, handoff: handoffArtifact.value, evaluationFileSha256: evaluationArtifact.file_sha256, handoffFileSha256: handoffArtifact.file_sha256});
   const sensitivity = await mutation(); assert(sensitivity.mutation_detected, "Industrial 3D mutation proof is missing", "INDUSTRIAL_3D_MUTATION_PROOF_MISSING");
   const registryProvenanceSensitivity = await registryProvenanceMutation(); assert(registryProvenanceSensitivity.mutation_detected, "Industrial 3D raw registry provenance mutation proof is missing", "INDUSTRIAL_3D_REGISTRY_MUTATION_PROOF_MISSING");
+  const missingSourceSensitivity = await missingSourceMutation(); assert(missingSourceSensitivity.mutation_detected, "Industrial 3D missing-source fail-closed proof is missing", "INDUSTRIAL_3D_MISSING_SOURCE_PROOF_MISSING");
   const evaluation = {
     schema: INDUSTRIAL_3D_EVALUATION_SCHEMA, version: 1, status: "PASS", block_id: INDUSTRIAL_3D_BLOCK_ID, lifecycle: "CANDIDATE", activation: "OFF",
     package_root_sha256: canonicalDigest(digests), package_block_sha256: block.block_sha256, source_manifest_sha256: authority.source_manifest_sha256,
@@ -172,7 +195,7 @@ export async function evaluateIndustrial3dPackage() {
     registry_agent_state: authority.registry.registry_agent_state, agent_roster_status: authority.registry.agent_roster_status,
     specialist_roster_status: authority.registry.specialist_roster_status, atomic_inventory_status: authority.registry.atomic_inventory_status,
     routing_index_status: authority.registry.routing_index_status, registry_activation: authority.registry.registry_activation, gate_execution: gateExecution,
-    fixture_results: results, mutation_sensitivity: sensitivity, registry_provenance_sensitivity: registryProvenanceSensitivity, independent_signature_required: true, evaluation_sha256: null,
+    fixture_results: results, mutation_sensitivity: sensitivity, registry_provenance_sensitivity: registryProvenanceSensitivity, missing_source_sensitivity: missingSourceSensitivity, independent_signature_required: true, evaluation_sha256: null,
   };
   evaluation.evaluation_sha256 = canonicalDigest({...evaluation, evaluation_sha256: null});
   return Object.freeze(evaluation);
