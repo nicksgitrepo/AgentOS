@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.spawner_liveness_checkpoint.v1",
+  "version": 1,
+  "checkpoint_id": "AGENTOS.API5.FUNCTION_AUTHORIZATION.FREEZE.001",
+  "lifecycle_id": "OPENAPI_ROSTER_CONTINUE_20260822",
+  "phase": "API5_FUNCTION_AUTHORIZATION_CANDIDATE_FREEZE",
+  "phase_index": 6,
+  "phase_window_seconds": 30,
+  "started_at_utc": "2026-08-22T18:54:31.000Z",
+  "observed_at_utc": "2026-08-22T18:55:01.000Z",
+  "elapsed_seconds": 30,
+  "window_status": "EXHAUSTED",
+  "meaningful_progress": true,
+  "typed_result_status": "PRESENT",
+  "exact_receipt_status": "EXACT",
+  "exact_receipt_ref": "opaque:AGENTOS.API5.FUNCTION_AUTHORIZATION.FREEZE.001",
+  "exact_receipt_sha256": "b2930f68f0c9afe14e0dfd131016a19256618d2500e5098868f403366132229e",
+  "persistence": {
+    "status": "CHECKPOINT_PERSISTED",
+    "receipt_ref": "opaque:AGENTOS.API5.FUNCTION_AUTHORIZATION.FREEZE.001",
+    "receipt_sha256": "b2930f68f0c9afe14e0dfd131016a19256618d2500e5098868f403366132229e",
+    "atomic": true,
+    "same_turn": true,
+    "write_scope": "CONTROL_PLANE_ONLY"
+  },
+  "status": "BLOCKED_EXACT",
+  "safe_stop": true,
+  "next_action": "CONTINUE_WITH_NEXT_ELIGIBLE_BLOCK",
+  "checkpoint_sha256": "68450d9ff05a52722345e4db2a1c7f0844eaeb9a2ac47c7166816b98cbd03efc"
+}
