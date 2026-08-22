@@ -8,6 +8,7 @@ import {execFileSync} from "node:child_process";
 import {canonicalJson} from "./content-addressing.mjs";
 import {prepareProtectedEvaluatorProvisioning} from "./protected-evaluator-provisioning.mjs";
 import {prepareProtectedSpawnerReviewProvisioning} from "./protected-spawner-review-provisioning.mjs";
+import {assertSpawnerPortableInputs} from "./spawner-workspace-custody.mjs";
 import {assertSealedCanonicalAuthority, readSealedAuthorityBinding, sealedAuthorityRepositoryRoot} from "./sealed-canonical-authority.mjs";
 
 const SHA = /^[0-9a-f]{64}$/u;
@@ -18,6 +19,7 @@ export function resolveCanonicalSpawnerEvaluatorHandoff(options = {}) {
   if (!options || typeof options !== "object" || Array.isArray(options) || JSON.stringify(Object.keys(options).sort()) !== JSON.stringify(["sealedAuthority"])) fail("Canonical evaluator handoff accepts only sealed authority", "CANONICAL_EVALUATOR_CALLER_AUTHORITY_FORBIDDEN");
   const {sealedAuthority} = options; assertSealedCanonicalAuthority(sealedAuthority);
   const repositoryRoot = sealedAuthorityRepositoryRoot(sealedAuthority);
+  assertSpawnerPortableInputs({repositoryRoot});
   const commit = execFileSync("git", ["rev-parse", "HEAD"], {cwd: repositoryRoot, encoding: "utf8"}).trim();
   const gitCommon = fs.realpathSync.native(execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], {cwd: repositoryRoot, encoding: "utf8"}).trim());
   const root = path.join(gitCommon, "agentos-independent-evaluator", commit);

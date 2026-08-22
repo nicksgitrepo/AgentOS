@@ -1,12 +1,12 @@
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 
 export const CANONICAL_FIXTURE_RECEIPT_SHA256 = "be24556276d410d030de1f4be81f5400e96b82627289351e5d963d1b69a4c85b";
 
 export function prepareCanonicalIndependentClearanceFixture() {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-independent-clearance-canonical-"));
+  const workspaceRoot = path.resolve(new URL("../..", import.meta.url).pathname);
+  const root = fs.mkdtempSync(path.join(workspaceRoot, ".agentos-independent-clearance-canonical-"));
   const repositoryRoot = path.join(root, "repository");
   const authorityRoot = path.join(root, "authority");
   fs.cpSync(new URL("../fixtures/independent-clearance/repository/", import.meta.url), repositoryRoot, {recursive: true});

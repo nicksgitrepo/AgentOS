@@ -4,6 +4,7 @@ import {execFileSync} from "node:child_process";
 import {realpathSync, lstatSync} from "node:fs";
 import {isAbsolute} from "node:path";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {resolveSpawnerWorkspaceCustody} from "./spawner-workspace-custody.mjs";
 
 export const SPAWNER_GIT_ANCESTRY_SCHEMA = "agentos.spawner_git_ancestry.v1";
 const GIT = /^[0-9a-f]{40}$/u;
@@ -16,6 +17,11 @@ export function resolveSpawnerGitAncestry({repositoryRoot, candidateCommit, auth
   if (typeof repositoryRoot !== "string" || !isAbsolute(repositoryRoot)) fail("repository root must be absolute");
   const root = realpathSync.native(repositoryRoot);
   if (!lstatSync(root).isDirectory()) fail("repository root must be a real directory");
+  // Git ancestry is a portable authority receipt only after the runtime has
+  // proved that the task checkout is inside the configured workspace.  The
+  // custody receipt remains runtime-only and is deliberately not serialized
+  // into this portable ancestry record.
+  resolveSpawnerWorkspaceCustody({taskRoot: root, taskLabel: "Spawner candidate checkout"});
   gitObject(candidateCommit, "candidate commit"); gitObject(authorizedPredecessor, "authorized predecessor");
   const resolvedCandidate = run(root, ["rev-parse", `${candidateCommit}^{commit}`]);
   const resolvedPredecessor = run(root, ["rev-parse", `${authorizedPredecessor}^{commit}`]);

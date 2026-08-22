@@ -5,6 +5,7 @@
 import {lstatSync, realpathSync} from "node:fs";
 import {isAbsolute} from "node:path";
 import {assertSealedCanonicalAuthority} from "./sealed-canonical-authority.mjs";
+import {resolveSpawnerWorkspaceCustody} from "./spawner-workspace-custody.mjs";
 
 const provisions = new WeakMap();
 function fail(message, code = "PROTECTED_EVALUATOR_PROVISIONING_INVALID") { const error = new Error(message); error.code = code; throw error; }
@@ -18,8 +19,9 @@ function realDirectory(value, label) {
 /* Called only by the earliest trusted Bootstrap process, never by request handling. */
 export function prepareProtectedEvaluatorProvisioning({sealedAuthority, clearanceStoreRoot, candidateRepositoryRoot} = {}) {
   assertSealedCanonicalAuthority(sealedAuthority);
+  const workspaceCustody = resolveSpawnerWorkspaceCustody({taskRoot: candidateRepositoryRoot, taskLabel: "protected evaluator candidate checkout"});
   const capability = Object.freeze(Object.create(null));
-  provisions.set(capability, Object.freeze({clearanceStoreRoot: realDirectory(clearanceStoreRoot, "clearance store root"), candidateRepositoryRoot: realDirectory(candidateRepositoryRoot, "candidate repository root")}));
+  provisions.set(capability, Object.freeze({clearanceStoreRoot: realDirectory(clearanceStoreRoot, "clearance store root"), candidateRepositoryRoot: workspaceCustody.taskRoot, workspaceCustodyReceipt: workspaceCustody.receipt}));
   return capability;
 }
 
