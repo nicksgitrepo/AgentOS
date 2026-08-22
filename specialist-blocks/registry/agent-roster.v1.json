@@ -29,9 +29,9 @@
   },
   "model_policy": {
     "snapshot_path": "fixtures/model-policy-snapshot.initial.v1.json",
-    "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
-    "observed_at_utc": "2026-08-21T04:09:00.000Z",
-    "expires_at_utc": "2026-08-22T04:09:00.000Z",
+    "snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9",
+    "observed_at_utc": "2026-08-22T15:45:41.489Z",
+    "expires_at_utc": "2026-08-23T15:45:41.489Z",
     "task_classes": [
       "SIMPLE_EXTRACTION",
       "DETERMINISTIC_QA",
@@ -4530,7 +4530,7 @@
         "write Product or consumer state"
       ],
       "stop_conditions": [
-        "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+        "{\"candidate_entry\":\"Block, source lock, twelve gates, executable gate manifest, seventeen hostile vectors, model-policy route, context projection, memory-invalidation graph, evaluation dossier, registry entry, and typed handoff have matching digests.\",\"evaluation_entry\":\"The operational evaluator invokes the public boundary for every real fixture, executes the ordered gate readback, proves unsafe-action mutation sensitivity, checks source freshness/model route, and computes invalidation closure.\",\"model_policy\":\"A changed, expired, unavailable, or capability-inadequate global snapshot invalidates the model route and all dependent context, handoff, and evaluation; prepared-inactive policy remains candidate-only.\",\"context_invalidation\":\"A changed candidate, source manifest, model snapshot, model route, upstream router result, custody reference, or context contract invalidates dependent context, route, handoff, and evaluation; no stale memory is reused.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, model-policy drift, context invalidation, or failed utility/harm review.\",\"handoff\":\"Emit WAITING_WITH_RECEIPT with execution_instruction false, memory_write_allowed false, and independent_review_required true.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
       ],
       "required_blocks": [
         "specialist.domain.workflow-router",
@@ -4542,8 +4542,12 @@
       ],
       "knowledge_context_inputs": [
         "atomic specialization law",
+        "context and memory invalidation graph",
         "exact source lock",
+        "global model-policy snapshot route",
+        "source freshness and supersession policy",
         "typed context contract",
+        "workflow-router boundary contract",
         "authority",
         "candidate.identity",
         "custody",
@@ -4565,62 +4569,62 @@
           {
             "gate_id": "00-intake",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/00-intake.gate",
-            "file_sha256": "f9a170e167c132642988c6524dd811ea8ede6691de3d5afa7434f6ecbbfd277b"
+            "file_sha256": "2faa5c090e981897b1e62fa6b1da7df77c8ec6abdea659cfb1c24142e0be715a"
           },
           {
             "gate_id": "01-applicability",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/01-applicability.gate",
-            "file_sha256": "9fc3bf43b095ea8b2dab071cf4df7f098d1b1c48c1d0a060dd755b47428222ca"
+            "file_sha256": "f5f5d17fd4ccc0efb638b766b5ffece38c0fdba9106c04c52125e4369e18db84"
           },
           {
             "gate_id": "02-authority-precedence",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/02-authority-precedence.gate",
-            "file_sha256": "66c7dc581ffba80549a73b1388568960263cb303d1a808be251b5419502c3a11"
+            "file_sha256": "7c2c42a237564071cc8859b2e31b9154c81b28c580b7f70f9a5a4cfce8f6b413"
           },
           {
             "gate_id": "03-scope-nongoals",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/03-scope-nongoals.gate",
-            "file_sha256": "a5245c580418accdb027fcdbd6a5a47d39c2e2098d7e466d1a5241b9be2cc624"
+            "file_sha256": "12cfe6dcc6508ecf396f144b00eeb27f437d43f7e16e2c4bb85d033d50342492"
           },
           {
             "gate_id": "04-source-evidence-freshness",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/04-source-evidence-freshness.gate",
-            "file_sha256": "d26e1c74a4413bb6fbcd999189317e7d02ff285a01c7a0e6facbd8b17bcea08f"
+            "file_sha256": "7c19e7386425ba064c63e259cb276ab5774fe3f890883a91d37df0aa66b65d2d"
           },
           {
             "gate_id": "05-context-completeness",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/05-context-completeness.gate",
-            "file_sha256": "3228c3072e2e497aa1a235a79fc8f1bbf788d4b23c6eaa238633b9bb7ad33d7c"
+            "file_sha256": "37e97a52019774935c8ec6e6e2ae65406f93715105a21a62a2b1560639961b84"
           },
           {
             "gate_id": "06-tool-resource-custody",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/06-tool-resource-custody.gate",
-            "file_sha256": "eefb8be6eeecac529bcd2eb8566365c2f615b2b8c29452a1c9928a559eb0602f"
+            "file_sha256": "2abadd2b60f9c50fd70860b6b61603cd87d95bf371d5321dfb55fc1d1f1ac496"
           },
           {
             "gate_id": "07-data-secret-privacy",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/07-data-secret-privacy.gate",
-            "file_sha256": "751d0222f5806d69d0cbffaf27e41b00f2551c72d6202661e7161741f74cc669"
+            "file_sha256": "86d4b353b0ff5d7a43081e9651fe623296e814784edda423c5fa432509c44c3a"
           },
           {
             "gate_id": "08-build-browser-runtime",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/08-build-browser-runtime.gate",
-            "file_sha256": "10b1e33e820be7f0975db266ed73b7ac9413f0804c84023768e7c6764624a7bc"
+            "file_sha256": "2bcbe6a3e7cc007431bb4286dcba979df816b8b37280456a54f0c97116c356b2"
           },
           {
             "gate_id": "09-output-handoff",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/09-output-handoff.gate",
-            "file_sha256": "2c37da1cab3477f7f6877fd2ed33e565490e0c8d8215d8cf1f6955799a92d139"
+            "file_sha256": "00c428a2784ab7ce69ca571b0b48b1e5529c3ec8053d445776129e6c49f54acd"
           },
           {
             "gate_id": "10-proof-acceptance",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/10-proof-acceptance.gate",
-            "file_sha256": "fb7242741b272af836ae1c8ffddffa378ac1959a68dda15df33190e42e60222b"
+            "file_sha256": "d2304dc4a5cb2e6123d5c76e61d1dc1d171cccc923e1a8f41547e4184ca23eda"
           },
           {
             "gate_id": "11-lifecycle-recovery-archive",
             "path": "specialist-blocks/wave-06/field-job-workflow/gates/11-lifecycle-recovery-archive.gate",
-            "file_sha256": "af11caa992a8d5032586a6d66dfad11321dc76ee8e37c7ff7efcae5034404fbb"
+            "file_sha256": "2019ecfc8374639ad42e1316106829e2ee7df7c0c7d14379a5713da0e839c22e"
           }
         ]
       },
@@ -4630,103 +4634,103 @@
           {
             "fixture_id": "specialist.domain.field-job-workflow.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/authority_conflict.json",
-            "file_sha256": "14b2e345c86dfc37a06e9d96e154ff4afe9162ef600af25f2dc501b35c2772b1",
+            "file_sha256": "2cf8620783ed41a359c5d0afb938df8b7163a5e470af070dc12df6bd1acc983a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e83bff85b63a163b59401584ada5cfcfde2d32faf6359d22bd7b466d1e192c76",
+            "file_sha256": "843bc1b0f8a321b3b7e232d22fad31a6a65825b64473ef3354664156f64d53eb",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "2486ce15df7303e517a6c425c0d1777c9f93e2cc56d3d4e005e8233c6de2b943",
+            "file_sha256": "b2aaeec694e9fba1e16f217c2ae5917bcff7c311b7d03f0e45a8283cd165da3a",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.DATA_LIMIT",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/data_limit.json",
-            "file_sha256": "fd24b9b732ae413d340a15a8d4612ab4dc335260be91c5ba9a9392c05ffb1ad6",
+            "file_sha256": "254cb8e60c5c5adf5566e6b832565cf4ee4e19314e0349040a37316a231fa92b",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "d214f5c0b1784f7b725847b52c6755bb4c7450b535923575e9ccbcd71601161c",
+            "file_sha256": "4103987dd5084d80595444ae784f6667e36e15c18cdd7be89367c44e479389ee",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/false_positive.json",
-            "file_sha256": "29f11bd0bb4734e1a6ee9f292f0ee67263850a7e936afe5d6ca77e0f59fd7ba5",
+            "file_sha256": "9d932947c119311a4cffa97e0439ba0061ef2dab71520550fad09cdd5c0a4fea",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.HANDOFF",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/handoff.json",
-            "file_sha256": "05fcf03619504513535e784f0098f1d22b1e632d8074ae442e875074c464f8dd",
+            "file_sha256": "61641880af87a5d8373c1eb80a86f5de5e28aba7acbb78a9a03f0d130a5f0627",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/missing_context.json",
-            "file_sha256": "ce5765002f356e3fab570b2f3cab9e385b840eb070309dabddc864818e17b10a",
+            "file_sha256": "2e309455c843df7cd72767bd1d8a48da834af58f3efb8260ac3b532a96780d69",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.NARROWNESS",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/narrowness.json",
-            "file_sha256": "e554410fbed837ec70b9e58c9f9032c08a3c1edd0171493c726b95fb2fcccee8",
+            "file_sha256": "6c1cb8663d55d9ea5506c2bcd662e370a107545c5cb8d72243c9d47812c4bb83",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/router_self_accept.json",
-            "file_sha256": "0928b2c4da35dde5b932390316bc85bfe134d87d0e82b459b589ece7e2f3e3e8",
+            "file_sha256": "ad4e61f6ad78d6aa50a410740d1a700bd68f0021bf16f920a590e1b2ac73f330",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.ROUTING",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/routing.json",
-            "file_sha256": "042a7d1e6ef7ccf34fc26e5c700481915687a8d0d0d60d0c643d8627b581d1df",
+            "file_sha256": "399c234f7592b7d80ed6afd3fcc952f4d195cd6c2dee80998091b740dc4b469d",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/silent_scope_expansion.json",
-            "file_sha256": "d26ee41ce2a4f33ef7607e97df4398b26c26b50b6e70640ca72ceb24f1a5f3ca",
+            "file_sha256": "0d0c0f749d2d74ac4c30e708481d83c316f2d29e1d360be3d49534e90c956796",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.STALE_SOURCE",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/stale_source.json",
-            "file_sha256": "8ed23577b402efc3c411e3419fe2410fc48d505c943a9a9f64ef0563a7cd2462",
+            "file_sha256": "347dbfef1968e5b620318e70fea102b89c54b0e419af142acaaf3ac631746e4f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.TOOL_LIMIT",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/tool_limit.json",
-            "file_sha256": "7347cbec1359df435c0723a4171e9f93da2993d6b78f545d59c63dfc7dfc29d9",
+            "file_sha256": "497b0009f7f232ef569306ca8626f17c65617abbe79b7a35440807fe9973401c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/umbrella_authority.json",
-            "file_sha256": "f3e420c389895ea10b0a5453ca49165d73e8f797bf0316819d941933d53b1987",
+            "file_sha256": "f85ab04ec944ff5f5c3cd1e465cff8d95c783230dd639fe8c857fdc23929fd36",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/unrelated_scope.json",
-            "file_sha256": "ca6f7810f038afb51ce12217439ee07b11c02ba8ef554f4ca7206f0b0684d9b0",
+            "file_sha256": "01c8b10f5701edfb8a349bb45b652faf96d5520fa9beedb77bb28eb441217e4f",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.domain.field-job-workflow.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-06/field-job-workflow/fixtures/unsafe_action.json",
-            "file_sha256": "3a42bfee119618a1f378a7dc280c80ef337f22abe41aec34e2d380fe16efab00",
+            "file_sha256": "6cd487dde56f3a52d20790bef5c1bfc6a3d1104e6b8098d4aca41a3093cc09ce",
             "expected_outcome": "DENY"
           }
         ]
@@ -4736,17 +4740,20 @@
           "source_lock",
           "freshness_policy",
           "claim_rule",
-          "unknown_rule"
+          "unknown_rule",
+          "model_policy_route",
+          "context_contract",
+          "memory_invalidation"
         ],
         "handoff_path": "specialist-blocks/wave-06/field-job-workflow/handoff.json",
-        "handoff_file_sha256": "be022137665f68cefe6ae7c0ebe1e553daf71c0c6a6b50dce6684f0d1b45b78e",
+        "handoff_file_sha256": "9f364f466d3b57b2a4ade36a2864f52c3de761d1dba5eb95059105c3cd48cecd",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.field-job-workflow.v1"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
         "build_rules": [
-          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+          "{\"candidate_entry\":\"Block, source lock, twelve gates, executable gate manifest, seventeen hostile vectors, model-policy route, context projection, memory-invalidation graph, evaluation dossier, registry entry, and typed handoff have matching digests.\",\"evaluation_entry\":\"The operational evaluator invokes the public boundary for every real fixture, executes the ordered gate readback, proves unsafe-action mutation sensitivity, checks source freshness/model route, and computes invalidation closure.\",\"model_policy\":\"A changed, expired, unavailable, or capability-inadequate global snapshot invalidates the model route and all dependent context, handoff, and evaluation; prepared-inactive policy remains candidate-only.\",\"context_invalidation\":\"A changed candidate, source manifest, model snapshot, model route, upstream router result, custody reference, or context contract invalidates dependent context, route, handoff, and evaluation; no stale memory is reused.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, model-policy drift, context invalidation, or failed utility/harm review.\",\"handoff\":\"Emit WAITING_WITH_RECEIPT with execution_instruction false, memory_write_allowed false, and independent_review_required true.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
         ],
         "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
         "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
@@ -4790,11 +4797,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers domain; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-06/field-job-workflow/evaluation.json"
+          "specialist-blocks/wave-06/field-job-workflow/evaluation.json",
+          "specialist-blocks/registry/field-job-workflow-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40424,5 +40432,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "6ee37c8dfe093f794cfbd2c6bd3066b0f4bf816fc9706161f27520529a9d8915"
 }

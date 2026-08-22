@@ -1,7 +1,7 @@
 {
   "schema": "agentos.model_policy_evidence_manifest.v1",
   "version": 1,
-  "source_registry_sha256": "d866c1d193d207d34696ef008409d28f6d5d8d392e238bccad737e3b1f5cc0cf",
+  "source_registry_sha256": "13e3b8b61a71c10232e24ce06ceb097810e2c8184db3924398facd099b58119c",
   "entries": [
     {
       "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
@@ -11,11 +11,11 @@
       "file_sha256": "a5f84899d8fe56369733d6d3119819c0a66f62363bd4c8918d602ec9deda1098"
     },
     {
-      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
-      "path": "current-host.2026-08-21.json",
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-22",
+      "path": "current-host.2026-08-22.json",
       "authority_class": "HOST_ATTESTATION",
-      "artifact_sha256": "5235d06738c62d06cc18190483ca1e599295f87f6728fea103aaae36712a5c00",
-      "file_sha256": "d66d9d804f5358577448850bd91e6b61564f7f51c988de9c04f11c3d38537de6"
+      "artifact_sha256": "d6cc4741793f5872a9d7c294ab8528cff638652a369ce453f754961e1f3c6f14",
+      "file_sha256": "4c8f8962f22b7098873b73ec1cc2f48fba288ea72c7191c9321fcda689395736"
     },
     {
       "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
@@ -25,5 +25,5 @@
       "file_sha256": "318d0f03d17da94be7b2b96a22dfd2729432b5e43d61d44e9065f9777e141fae"
     }
   ],
-  "manifest_sha256": "378b38e92c6cf80efe6e439786265e47d95fb7d167079f0a0e1fd858dac64a28"
+  "manifest_sha256": "037e7ff0da973893ee78a9daaf987483cf02f13baa7f62eb085a35a692902715"
 }

@@ -7,8 +7,11 @@
   "model_id": "gpt-5.6-luna",
   "reasoning_effort": "high",
   "capability_floor": 49,
-  "required_capabilities": ["CODE", "TOOLS"],
+  "required_capabilities": [
+    "CODE",
+    "TOOLS"
+  ],
   "context_floor_tokens": 64000,
-  "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
-  "route_sha256": "ecc4315ae5235b904d2d00e25a9935b9c28219898706226f6a786661c4b05bab"
+  "snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9",
+  "route_sha256": "ef9e67a40cc448e1544e7869f3e934513a2cb37db7e231e4093005670921c0f9"
 }

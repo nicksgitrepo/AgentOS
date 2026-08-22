@@ -9,8 +9,10 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {auditModelPolicyEvidenceStore, compileModelPolicyProjection, selectEcoModelRoute, validateEcoModelRoute, validateModelPolicyProjection, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NOW = "2026-08-21T04:09:00.000Z";
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json")));
+const NOW = prepared.observed_at_utc;
+const HOST_EVIDENCE_ID = prepared.evidence.find((entry) => entry.authority_class === "HOST_ATTESTATION").evidence_id;
+const HOST_ARTIFACT_PATH = `fixtures/model-policy-evidence/current-host.${NOW.slice(0, 10)}.json`;
 const activate = (snapshot) => { snapshot.status = "ACCEPTED_ACTIVE"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); return snapshot; };
 const active = activate(structuredClone(prepared));
 validateModelPolicySnapshot(active, {nowUtc: NOW, requireActive: true});
@@ -84,14 +86,14 @@ function hostile(mutate, pattern) {
   try { mutate({authorityRoot, snapshot}); assert.throws(() => auditModelPolicyEvidenceStore(snapshot, {nowUtc: NOW, requireActive: true, authorityRoot}), pattern); }
   finally { fs.rmSync(authorityRoot, {recursive: true, force: true}); }
 }
-hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, "fixtures/model-policy-evidence/current-host.2026-08-21.json")), /ENOENT|artifact/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-21", (artifact) => { artifact.observed_at_utc = "2026-08-21T17:00:00.000Z"; }), /future-dated/iu);
+hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, HOST_ARTIFACT_PATH)), /ENOENT|artifact/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, HOST_EVIDENCE_ID, (artifact) => { artifact.observed_at_utc = new Date(Date.parse(NOW) + 3_600_000).toISOString(); }), /future-dated/iu);
 hostile(({snapshot}) => { snapshot.models.push({...snapshot.models[0], model_id: "unlisted-cheap-model"}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /unlisted|coverage differs/iu);
 hostile(({snapshot}) => { snapshot.models[0].input_usd_per_million = 0.0001; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /First-party model fact conflict/iu);
 hostile(({snapshot}) => { snapshot.task_classes[2].preferred_reasoning_effort = "ultra"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /reasoning preference/iu);
 hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models.find((model) => model.model_id === "gpt-5.6-terra").input_usd_per_million = 2.5; }), /not explicitly resolved|Structured source conflicts/iu);
 hostile(({authorityRoot, snapshot}) => {
-  rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-21", (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
+  rebindArtifact(authorityRoot, snapshot, HOST_EVIDENCE_ID, (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
 }, /Host availability binding differs/iu);
 hostile(({authorityRoot, snapshot}) => {
   const artifactPath = path.join(authorityRoot, "fixtures/model-policy-evidence/openai-model-catalog.2026-08-20.json");

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/task-workspace-custody-receipt.v1.json",
+  "title": "AgentOS runtime task workspace custody receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "workspace_root_source", "workspace_root", "project_root", "git_worktree_root", "task_checkout", "task_worktree", "containment", "observed_at_utc", "custody_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.task_workspace_custody_receipt.v1"},
+    "version": {"const": 1},
+    "status": {"const": "MATCHED"},
+    "workspace_root_source": {"enum": ["EXPLICIT_RUNTIME_CONTEXT", "HOST_PROJECTS_ROOT", "ACTIVE_GIT_WORKTREE_ROOT"]},
+    "workspace_root": {"type": "string", "minLength": 1, "description": "Resolved runtime path; never persist in a portable governance record."},
+    "project_root": {"type": "string", "minLength": 1, "description": "Resolved runtime path; never persist in a portable governance record."},
+    "git_worktree_root": {"type": "string", "minLength": 1, "description": "Resolved runtime path; never persist in a portable governance record."},
+    "task_checkout": {"type": "string", "minLength": 1, "description": "Resolved runtime path; never persist in a portable governance record."},
+    "task_worktree": {"type": "string", "minLength": 1, "description": "Resolved runtime path; never persist in a portable governance record."},
+    "containment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_root", "task_checkout", "task_worktree"],
+      "properties": {"project_root": {"const": true}, "task_checkout": {"const": true}, "task_worktree": {"const": true}}
+    },
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "custody_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

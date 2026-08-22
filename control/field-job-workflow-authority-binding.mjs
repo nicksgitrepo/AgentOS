@@ -69,6 +69,7 @@ const SPECIALIST_ROSTER_PATH = path.join(ROOT, "specialist-blocks/registry/roste
 const ROUTING_INDEX_PATH = path.join(ROOT, "specialist-blocks/registry/routing-index.v1.json");
 const ATOMIC_INVENTORY_PATH = path.join(ROOT, "specialist-blocks/registry/atomic-inventory.v1.json");
 const UPSTREAM_ROUTER_PATH = path.join(ROOT, "control/workflow-router-boundary-gate.mjs");
+export const FIELD_JOB_WORKFLOW_OPERATIONAL_READBACK_PATH = "specialist-blocks/registry/field-job-workflow-operational-readback.v1.json";
 const SHA256 = /^[0-9a-f]{64}$/u;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/u;
 const REF = /^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$/u;
@@ -251,7 +252,7 @@ function sharedPinMismatches(pins, identityKey) {
   });
 }
 
-function inspectSharedRegistryIntegration(agentRosterArtifact, agentEntry, packageRegistry) {
+export function inspectSharedRegistryIntegration(agentRosterArtifact, agentEntry, packageRegistry) {
   const gatePinMismatches = sharedPinMismatches(agentEntry?.deterministic_gates?.gates, "gate_id");
   const fixturePinMismatches = sharedPinMismatches(agentEntry?.hostile_fixtures?.fixtures, "fixture_id");
   const handoffPin = agentEntry?.required_evidence_handoff;
@@ -287,18 +288,35 @@ function inspectSharedRegistryIntegration(agentRosterArtifact, agentEntry, packa
   });
 }
 
-function checkRegistry(block, source, model, context, graph) {
+function checkOperationalReadback(readback, block, model, context, graph, upstreamResult) {
+  exactKeys(readback, [
+    "schema", "version", "status", "block_id", "candidate_digest", "model_snapshot_sha256", "model_route_sha256",
+    "context_receipt_sha256", "memory_invalidation_sha256", "upstream_router_result_sha256", "gate_execution_sha256",
+    "fixture_count", "gate_count", "mutation_detected", "invalidation_status", "workspace_custody_status",
+    "observed_at_utc", "readback_sha256",
+  ], "Field Job Workflow operational evaluator readback");
+  assert(readback.schema === "agentos.field_job_workflow_operational_readback.v1" && readback.version === 1 && readback.status === "PASS", "Field Job Workflow operational evaluator readback identity differs", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_INVALID");
+  assert(readback.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && readback.candidate_digest === block.block_sha256, "Field Job Workflow operational evaluator readback candidate differs", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_STALE");
+  assert(readback.model_snapshot_sha256 === model.snapshot.snapshot_sha256 && readback.model_route_sha256 === model.route.route_sha256 && readback.context_receipt_sha256 === context.context.context_sha256 && readback.memory_invalidation_sha256 === graph.graph_sha256 && readback.upstream_router_result_sha256 === upstreamResult.result_sha256, "Field Job Workflow operational evaluator readback authority is stale", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_STALE");
+  assert(SHA256.test(readback.gate_execution_sha256) && readback.fixture_count === FIELD_JOB_WORKFLOW_FIXTURE_CLASSES.length && readback.gate_count === FIELD_JOB_WORKFLOW_GATE_IDS.length && readback.mutation_detected === true && readback.invalidation_status === "PASS" && readback.workspace_custody_status === "MATCHED", "Field Job Workflow operational evaluator readback proof is incomplete", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_INVALID");
+  assert(typeof readback.observed_at_utc === "string" && Number.isFinite(Date.parse(readback.observed_at_utc)) && Date.parse(readback.observed_at_utc) <= Date.now(), "Field Job Workflow operational evaluator readback time is invalid", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_INVALID");
+  sha(readback.readback_sha256, "Field Job Workflow operational evaluator readback digest");
+  assert(readback.readback_sha256 === canonicalDigest(body(readback, "readback_sha256")), "Field Job Workflow operational evaluator readback digest differs", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_INVALID");
+  return readback;
+}
+
+function checkRegistry(block, source, model, context, graph, upstreamResult, {allowMissingOperationalReadback = false} = {}) {
   const agentRosterArtifact = readJson(AGENT_ROSTER_PATH, "Reusable agent roster");
   const agentRoster = agentRosterArtifact.value;
   const agentEntry = agentRoster.entries?.find((entry) => entry.stable_agent_id === FIELD_JOB_WORKFLOW_AGENT_ID);
   assert(agentEntry && agentEntry.canonical_block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && agentEntry.package_path === FIELD_JOB_WORKFLOW_PACKAGE_PATH, "Field Job Workflow reusable-agent registry entry is missing or substituted", "FIELD_JOB_WORKFLOW_REGISTRY_BINDING_INVALID");
-  assert(agentEntry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION" && agentEntry.qa_state === "STATIC_PASS_REVIEW_REQUIRED" && agentEntry.independent_evaluation_state === "STATIC_PASS_REVIEW_REQUIRED", "Field Job Workflow registry entry claims unsupported admission", "FIELD_JOB_WORKFLOW_REGISTRY_STATE_INVALID");
+  assert(agentEntry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION" && ["STATIC_PASS_REVIEW_REQUIRED", "EXECUTED_REVIEW_REQUIRED"].includes(agentEntry.qa_state) && ["STATIC_PASS_REVIEW_REQUIRED", "EXECUTED_REVIEW_REQUIRED"].includes(agentEntry.independent_evaluation_state), "Field Job Workflow registry entry claims unsupported admission", "FIELD_JOB_WORKFLOW_REGISTRY_STATE_INVALID");
   assert(agentEntry.model_route?.task_class === FIELD_JOB_WORKFLOW_MODEL_TASK_CLASS && agentEntry.model_route.minimum_capability === FIELD_JOB_WORKFLOW_MODEL_CAPABILITY_FLOOR && JSON.stringify(agentEntry.model_route.required_capabilities) === JSON.stringify(FIELD_JOB_WORKFLOW_MODEL_CAPABILITIES) && agentEntry.model_route.route_source === "GLOBAL_MODEL_POLICY_SNAPSHOT", "Field Job Workflow registry model route differs", "FIELD_JOB_WORKFLOW_REGISTRY_MODEL_ROUTE_INVALID");
   const packageRegistryArtifact = readJson(path.join(PACKAGE, "registry-entry.json"), "Field Job Workflow package registry entry");
   const packageRegistry = packageRegistryArtifact.value;
-  exactKeys(packageRegistry, ["schema", "version", "stable_agent_id", "block_id", "package_path", "lifecycle", "activation", "build_state", "qa_state", "independent_evaluation_state", "block_sha256", "source_lock", "model_route", "context_projection", "memory_invalidation", "gates", "hostile_fixtures", "handoff", "evaluation", "focused_test", "custody_ref", "rollback_rule", "independent_review_required", "registry_sha256"], "Field Job Workflow package registry entry");
+  exactKeys(packageRegistry, ["schema", "version", "stable_agent_id", "block_id", "package_path", "lifecycle", "activation", "build_state", "qa_state", "independent_evaluation_state", "block_sha256", "source_lock", "model_route", "context_projection", "memory_invalidation", "gates", "hostile_fixtures", "handoff", "evaluation", "operational_readback", "focused_test", "custody_ref", "rollback_rule", "independent_review_required", "registry_sha256"], "Field Job Workflow package registry entry");
   assert(packageRegistry.schema === "agentos.field_job_workflow_registry_entry.v1" && packageRegistry.version === 1 && packageRegistry.stable_agent_id === FIELD_JOB_WORKFLOW_AGENT_ID && packageRegistry.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && packageRegistry.package_path === FIELD_JOB_WORKFLOW_PACKAGE_PATH, "Field Job Workflow package registry identity differs", "FIELD_JOB_WORKFLOW_REGISTRY_BINDING_INVALID");
-  assert(packageRegistry.lifecycle === "CANDIDATE" && packageRegistry.activation === "OFF" && packageRegistry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION" && packageRegistry.qa_state === "STATIC_PASS_REVIEW_REQUIRED" && packageRegistry.independent_evaluation_state === "STATIC_PASS_REVIEW_REQUIRED" && packageRegistry.independent_review_required === true, "Field Job Workflow package registry claims unsupported admission", "FIELD_JOB_WORKFLOW_REGISTRY_STATE_INVALID");
+  assert(packageRegistry.lifecycle === "CANDIDATE" && packageRegistry.activation === "OFF" && packageRegistry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION" && ["STATIC_PASS_REVIEW_REQUIRED", "EXECUTED_REVIEW_REQUIRED"].includes(packageRegistry.qa_state) && ["STATIC_PASS_REVIEW_REQUIRED", "EXECUTED_REVIEW_REQUIRED"].includes(packageRegistry.independent_evaluation_state) && packageRegistry.independent_review_required === true, "Field Job Workflow package registry claims unsupported admission", "FIELD_JOB_WORKFLOW_REGISTRY_STATE_INVALID");
   assert(packageRegistry.block_sha256 === block.block_sha256 && packageRegistry.registry_sha256 === canonicalDigest(body(packageRegistry, "registry_sha256")), "Field Job Workflow package registry digest is stale", "FIELD_JOB_WORKFLOW_REGISTRY_DIGEST_INVALID");
   assert(packageRegistry.source_lock?.path === `${FIELD_JOB_WORKFLOW_PACKAGE_PATH}/sources.lock` && packageRegistry.source_lock.manifest_sha256 === source.source.manifest_sha256, "Field Job Workflow package registry source binding is stale", "FIELD_JOB_WORKFLOW_REGISTRY_SOURCE_STALE");
   assert(packageRegistry.model_route?.path === `${FIELD_JOB_WORKFLOW_PACKAGE_PATH}/model-route.json` && packageRegistry.model_route.task_class === model.route.task_class && packageRegistry.model_route.model_id === model.route.model_id && packageRegistry.model_route.snapshot_sha256 === model.snapshot.snapshot_sha256 && packageRegistry.model_route.route_sha256 === model.route.route_sha256, "Field Job Workflow package registry model binding is stale", "FIELD_JOB_WORKFLOW_REGISTRY_MODEL_ROUTE_INVALID");
@@ -320,6 +338,19 @@ function checkRegistry(block, source, model, context, graph) {
   const handoffPath = path.join(PACKAGE, "handoff.json");
   assert(packageRegistry.handoff?.path === `${FIELD_JOB_WORKFLOW_PACKAGE_PATH}/handoff.json` && packageRegistry.handoff.file_sha256 === fileSha(handoffPath) && packageRegistry.handoff.independent_review_required === true, "Field Job Workflow registry handoff digest is stale", "FIELD_JOB_WORKFLOW_REGISTRY_HANDOFF_STALE");
   assert(packageRegistry.evaluation?.path === `${FIELD_JOB_WORKFLOW_PACKAGE_PATH}/evaluation.json` && packageRegistry.evaluation.disposition === "EXECUTED_REVIEW_REQUIRED" && packageRegistry.evaluation.canonical_external_admission === "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED", "Field Job Workflow registry evaluation binding is stale", "FIELD_JOB_WORKFLOW_REGISTRY_EVALUATION_INVALID");
+  const readbackBinding = packageRegistry.operational_readback;
+  assert(readbackBinding?.path === FIELD_JOB_WORKFLOW_OPERATIONAL_READBACK_PATH && readbackBinding.evaluator_entrypoint === "control/field-job-workflow-package-evaluator.mjs#evaluateFieldJobWorkflowPackage" && readbackBinding.required === true, "Field Job Workflow operational evaluator readback binding is incomplete", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_MISSING");
+  const readbackPath = path.join(ROOT, FIELD_JOB_WORKFLOW_OPERATIONAL_READBACK_PATH);
+  const readbackExists = fs.existsSync(readbackPath) && fs.lstatSync(readbackPath).isFile();
+  if (allowMissingOperationalReadback && readbackBinding.status === "PENDING_EXECUTION") {
+    assert(readbackBinding.file_sha256 === null && readbackBinding.readback_sha256 === null, "Pending Field Job Workflow readback carries an unsupported digest", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_INVALID");
+  } else {
+    assert(readbackBinding.status === "PASS" && SHA256.test(readbackBinding.file_sha256) && SHA256.test(readbackBinding.readback_sha256) && readbackExists, "Field Job Workflow operational evaluator readback is missing", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_MISSING");
+    const readbackArtifact = readJson(readbackPath, "Field Job Workflow operational evaluator readback");
+    assert(readbackArtifact.file_sha256 === readbackBinding.file_sha256, "Field Job Workflow operational evaluator readback file digest differs", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_STALE");
+    const readback = checkOperationalReadback(readbackArtifact.value, block, model, context, graph, upstreamResult);
+    assert(readback.readback_sha256 === readbackBinding.readback_sha256, "Field Job Workflow operational evaluator readback pin differs", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_STALE");
+  }
   assert(packageRegistry.focused_test === "tests/verify-field-job-workflow-boundary.mjs" && fs.existsSync(path.join(ROOT, packageRegistry.focused_test)) && packageRegistry.custody_ref === FIELD_JOB_WORKFLOW_CUSTODY_REF && packageRegistry.rollback_rule.includes("isolated lane branch"), "Field Job Workflow registry custody binding is incomplete", "FIELD_JOB_WORKFLOW_REGISTRY_CUSTODY_INVALID");
   const sharedRegistryIntegration = inspectSharedRegistryIntegration(agentRosterArtifact, agentEntry, packageRegistry);
 
@@ -332,7 +363,8 @@ function checkRegistry(block, source, model, context, graph) {
   const atomic = readJson(ATOMIC_INVENTORY_PATH, "Atomic specialist inventory").value;
   const atomicEntry = atomic.atomic_specialists?.find((entry) => entry.generic_id === "DOMAIN.FIELD_JOB_WORKFLOW");
   assert(atomicEntry && atomicEntry.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && atomicEntry.router === "specialist.domain.workflow-router", "Atomic specialist inventory binding is missing", "FIELD_JOB_WORKFLOW_REGISTRY_BINDING_INVALID");
-  return {agentRoster, agentEntry, packageRegistry, shared_registry_integration: sharedRegistryIntegration, specialistRoster, routing, atomic};
+  assert(atomicEntry.evaluator_status === "EXECUTED_REVIEW_REQUIRED" && atomicEntry.evaluator_receipt === "specialist-eval.field-job-workflow.v1", "Atomic specialist inventory evaluator state is stale", "FIELD_JOB_WORKFLOW_REGISTRY_STATE_INVALID");
+  return {agentRoster, agentEntry, packageRegistry, operational_readback: readbackBinding, shared_registry_integration: sharedRegistryIntegration, specialistRoster, routing, atomic};
 }
 
 function packageFiles() {
@@ -366,7 +398,7 @@ export function computeFieldJobWorkflowInvalidationClosure(changedKeys, graph) {
   return [...invalidated].sort(compareUtf8);
 }
 
-export function resolveFieldJobWorkflowCanonicalAuthority({nowUtc = new Date().toISOString()} = {}) {
+export function resolveFieldJobWorkflowCanonicalAuthority({nowUtc = new Date().toISOString(), allowMissingOperationalReadback = false} = {}) {
   const nowMs = Date.parse(nowUtc);
   assert(Number.isFinite(nowMs), "Field Job Workflow authority time is invalid", "FIELD_JOB_WORKFLOW_TIME_INVALID");
   const blockArtifact = readJson(path.join(PACKAGE, "block.json"), "Field Job Workflow block");
@@ -380,7 +412,7 @@ export function resolveFieldJobWorkflowCanonicalAuthority({nowUtc = new Date().t
   const invalidationArtifact = readJson(path.join(PACKAGE, "memory-invalidation.json"), "Field Job Workflow invalidation graph");
   const context = checkContext(contextArtifact, invalidationArtifact, source, model, nowMs);
   const upstreamResult = canonicalUpstreamResult(block.block_sha256);
-  const registry = checkRegistry(block, source, model, context, context.graph);
+  const registry = checkRegistry(block, source, model, context, context.graph, upstreamResult, {allowMissingOperationalReadback});
   const evidence = {
     authority_status: "CURRENT_CANDIDATE",
     custody_status: "ISOLATED_BUILDER",

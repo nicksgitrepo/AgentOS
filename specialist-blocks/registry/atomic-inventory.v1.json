@@ -513,7 +513,7 @@
       "router": "specialist.domain.workflow-router",
       "block_id": "specialist.domain.field-job-workflow",
       "package_status": "COMPILED_CANDIDATE",
-      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_status": "EXECUTED_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.field-job-workflow.v1"
     },
     {

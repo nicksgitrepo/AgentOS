@@ -6,8 +6,8 @@
   "visibility": "PRIVATE_GLOBAL_GOVERNANCE",
   "contains_consumer_context": false,
   "raw_browsing_transcripts": false,
-  "observed_at_utc": "2026-08-21T04:09:00.000Z",
-  "expires_at_utc": "2026-08-22T04:09:00.000Z",
+  "observed_at_utc": "2026-08-22T15:45:41.489Z",
+  "expires_at_utc": "2026-08-23T15:45:41.489Z",
   "evidence": [
     {
       "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
@@ -34,14 +34,14 @@
       "raw_transcript_stored": false
     },
     {
-      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-22",
       "authority_class": "HOST_ATTESTATION",
-      "observed_at_utc": "2026-08-21T04:09:00.000Z",
-      "expires_at_utc": "2026-08-22T04:09:00.000Z",
+      "observed_at_utc": "2026-08-22T15:45:41.489Z",
+      "expires_at_utc": "2026-08-23T15:45:41.489Z",
       "max_age_days": 1,
       "uncertainty": "LOW",
-      "artifact_sha256": "5235d06738c62d06cc18190483ca1e599295f87f6728fea103aaae36712a5c00",
-      "file_sha256": "d66d9d804f5358577448850bd91e6b61564f7f51c988de9c04f11c3d38537de6",
+      "artifact_sha256": "d6cc4741793f5872a9d7c294ab8528cff638652a369ce453f754961e1f3c6f14",
+      "file_sha256": "4c8f8962f22b7098873b73ec1cc2f48fba288ea72c7191c9321fcda689395736",
       "summary_sha256": "8d261155b7f284110332c77ea17af939e0b357030dcc8407f06b4d3f0a5154a5",
       "raw_transcript_stored": false
     }
@@ -53,7 +53,7 @@
       "provider_id": "OPENAI",
       "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
       "benchmark_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
-      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-22",
       "host_available": true,
       "availability_evidence": "HOST_DECLARED_NOT_EXECUTION_PROVEN",
       "capability_score": 52,
@@ -89,7 +89,7 @@
       "provider_id": "OPENAI",
       "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
       "benchmark_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
-      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-22",
       "host_available": true,
       "availability_evidence": "EXECUTION_PROVEN_MEDIUM_ONLY_OTHER_EFFORTS_DECLARED",
       "capability_score": 61,
@@ -126,7 +126,7 @@
       "provider_id": "OPENAI",
       "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
       "benchmark_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
-      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-22",
       "host_available": true,
       "availability_evidence": "HOST_DECLARED_NOT_EXECUTION_PROVEN",
       "capability_score": 57,
@@ -363,5 +363,5 @@
       ]
     }
   ],
-  "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27"
+  "snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9"
 }

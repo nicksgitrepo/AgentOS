@@ -32,7 +32,7 @@
       "artifact_path": "fixtures/model-policy-evidence/artificial-analysis.2026-08-20.json"
     },
     {
-      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-22",
       "authority_class": "HOST_ATTESTATION",
       "provider_id": "CURRENT_CODEX_HOST",
       "canonical_source_url": "host-attestation:codex-model-catalog",
@@ -49,10 +49,10 @@
       "final_url": "host-attestation:codex-model-catalog",
       "redirect_chain": [],
       "allowed_domain": "HOST_ATTESTATION",
-      "source_revision": "HOST.CATALOG.2026-08-21",
-      "acquired_at_utc": "2026-08-21T04:09:00.000Z",
-      "acquisition_receipt_sha256": "0dc666912490ec94116c9e2c4e7b67301bc99604642811bc75c6a6038ada0f42",
-      "artifact_path": "fixtures/model-policy-evidence/current-host.2026-08-21.json"
+      "source_revision": "HOST.CATALOG.2026-08-22",
+      "acquired_at_utc": "2026-08-22T15:45:41.489Z",
+      "acquisition_receipt_sha256": "ae0eb457af9ecd797a5212a34a88fb5e1a27c17c1790ecfbb24878d5f6f5405f",
+      "artifact_path": "fixtures/model-policy-evidence/current-host.2026-08-22.json"
     },
     {
       "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
@@ -81,5 +81,5 @@
       "artifact_path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-20.json"
     }
   ],
-  "registry_sha256": "d866c1d193d207d34696ef008409d28f6d5d8d392e238bccad737e3b1f5cc0cf"
+  "registry_sha256": "13e3b8b61a71c10232e24ce06ceb097810e2c8184db3924398facd099b58119c"
 }

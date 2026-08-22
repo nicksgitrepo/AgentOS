@@ -1870,7 +1870,7 @@
     "eco_model_policy_source_binding_verifier": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "tests/verify-eco-model-policy-source-binding.mjs",
-      "sha256": "73f8f83e12a92fb14be852b23573eee49221366739a8425ab9e98156b634089e"
+      "sha256": "8becd40ec79132b16e1c01e476029169aca188f4f6d6ef7b67356f71deff9fba"
     },
     "evidence_library_compiler": {
       "path": "control/evidence-library.mjs",
@@ -2316,7 +2316,7 @@
     "initial_model_policy_snapshot_fixture": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
-      "sha256": "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d"
+      "sha256": "4b3bbe8fd8cea7b0e6f031d43343b4d5276ccd4543af7fea242db26693f23c2b"
     },
     "installed_global_governance_provisioning_controller": {
       "path": "control/installed-global-governance-provisioning.mjs",
@@ -2526,12 +2526,12 @@
     "model_policy_evidence_manifest": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-evidence/manifest.json",
-      "sha256": "fbd3261261fb97d37e2b89d179887043c6fca3975e9e917ca1cd93bd3e406352"
+      "sha256": "ad1315df2ba07b3948313f3c45934857b6b35ab5ee463d785769b2bb809a02d6"
     },
     "model_policy_host_source_artifact": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
-      "path": "fixtures/model-policy-evidence/current-host.2026-08-21.json",
-      "sha256": "d66d9d804f5358577448850bd91e6b61564f7f51c988de9c04f11c3d38537de6"
+      "path": "fixtures/model-policy-evidence/current-host.2026-08-22.json",
+      "sha256": "4c8f8962f22b7098873b73ec1cc2f48fba288ea72c7191c9321fcda689395736"
     },
     "model_policy_openai_source_artifact": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
@@ -2545,7 +2545,7 @@
     "model_policy_source_registry": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-evidence/source-registry.v1.json",
-      "sha256": "48f2a098c9af20a840ab2a093770ca412b6a486c06bc8f5d861d4f2e892a6664"
+      "sha256": "57a01352e0651c9040450fe7db695b69e27984a918ba2aa5c1bb115dcccc4e98"
     },
     "naming_article": {
       "path": "governance/2.1rc/naming-and-terminology.md",
@@ -3809,7 +3809,7 @@
     },
     "reusable_agent_roster_compiler": {
       "path": "control/reusable-agent-roster-compiler.mjs",
-      "sha256": "04b58fe25259efc65b026d3fefe081507204050a3620c4c440f38fb81f16d18a"
+      "sha256": "43cf48ae8e405207aa065ccf89da00da7ae105bec8a384eed2d3df91d7d569dd"
     },
     "reusable_agent_roster_contract": {
       "path": "schemas/reusable-agent-roster.v1.json",
@@ -3821,7 +3821,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "f7e0a26ac639bc47be15b400c0a3edbf528658b805b0e39999b9d76a845191fa"
+      "sha256": "1f761eaeb769fa81726bbc1e7131a6b9fbece43218b926b8e31cb56c42ce4cd3"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -5030,6 +5030,74 @@
     "repair_inert_seed_verifier": {
       "path": "tests/verify-repair-inert-seed.mjs",
       "sha256": "78fe91dccad453670d172b4bad1fa70b8259051b5f2bdcc4c7ac9ef38797b483"
+    },
+    "field_job_workflow_authority_binding": {
+      "path": "control/field-job-workflow-authority-binding.mjs",
+      "sha256": "3a29f2777dc53e895cddc480f8882d4a7b2bc440229c1edafb122266d290f257"
+    },
+    "field_job_workflow_boundary_gate": {
+      "path": "control/field-job-workflow-boundary-gate.mjs",
+      "sha256": "2326f19f18d878611431e150f48517c37f731b19baa27c72440622af069ee697"
+    },
+    "field_job_workflow_package_evaluator": {
+      "path": "control/field-job-workflow-package-evaluator.mjs",
+      "sha256": "175377ae7f86fac61d29739db4aa28d054614860862dd907e9c67623b5559a52"
+    },
+    "field_job_workflow_refresh_controller": {
+      "path": "control/field-job-workflow-refresh.mjs",
+      "sha256": "bf3f0b51423566e38c1904ccfed1ed10b08e769283712d2947e424f7cd915dcb"
+    },
+    "field_job_workflow_model_route": {
+      "path": "specialist-blocks/wave-06/field-job-workflow/model-route.json",
+      "sha256": "885c0fc9729cd128da84bbed2d003e59c66de8c235fb43cd589c19791c2b8633"
+    },
+    "field_job_workflow_context_projection": {
+      "path": "specialist-blocks/wave-06/field-job-workflow/context.json",
+      "sha256": "7873896905bb00db4ac92cc183795196dd6e87c32039482f26886476813ec23f"
+    },
+    "field_job_workflow_evaluation_dossier": {
+      "path": "specialist-blocks/wave-06/field-job-workflow/evaluation.json",
+      "sha256": "d64fa7df93da03b99f5a82ab3b61fdbc54af7a77419cff67cef1b8b998671a0b"
+    },
+    "field_job_workflow_registry_entry": {
+      "path": "specialist-blocks/wave-06/field-job-workflow/registry-entry.json",
+      "sha256": "8635cdcb41290636a7848c43fd897d0181aa65bda2b6ac8bd76537335deaf513"
+    },
+    "field_job_workflow_operational_readback_contract": {
+      "path": "schemas/field-job-workflow-operational-readback.v1.json",
+      "sha256": "bcb11b848e87e85b7867e90b4d27587b09b309808747a4a3b97b0e47cd8c22c0"
+    },
+    "field_job_workflow_operational_readback_artifact": {
+      "path": "specialist-blocks/registry/field-job-workflow-operational-readback.v1.json",
+      "sha256": "c41f58ed0d1be61a99f89e0a15e7e93889986de3ef4af7f6459c5ea619ff5997"
+    },
+    "field_job_workflow_boundary_verifier": {
+      "path": "tests/verify-field-job-workflow-boundary.mjs",
+      "sha256": "7cc7382f8bcd4a9d0dcaa8c6091d643feefcf8b0f2d6cd6c13a4d21ece9d8e3b"
+    },
+    "field_job_workflow_workspace_custody_controller": {
+      "path": "control/task-workspace-custody.mjs",
+      "sha256": "3d6c7179489aa01284fd69d0b1e28770818b127db2cc1468cb3cb58697b4e0c5"
+    },
+    "field_job_workflow_workspace_custody_contract": {
+      "path": "schemas/task-workspace-custody-receipt.v1.json",
+      "sha256": "de71c7b9560a9bae9df5a731f2d9fe9729e8e74da9bce637cf9b98399875b649"
+    },
+    "field_job_workflow_workspace_custody_verifier": {
+      "path": "tests/verify-task-workspace-custody.mjs",
+      "sha256": "c9fe44610d74d75a4e82516028b4cd94642f29fac2e8f91f93994f4ff99df990"
+    },
+    "field_job_workflow_atomic_inventory": {
+      "path": "specialist-blocks/registry/atomic-inventory.v1.json",
+      "sha256": "845add9c506ca75eded32187f5b7db25b7b9c6f65f02418307814c673807cbb1"
+    },
+    "field_job_workflow_rebind_controller": {
+      "path": "control/field-job-workflow-rebind.mjs",
+      "sha256": "5d77ad2bb45ddc99ec0394cd931b8db2b609b5ae63c5a718df3432a5ea694be3"
+    },
+    "field_job_workflow_rebind_verifier": {
+      "path": "tests/verify-field-job-workflow-rebind.mjs",
+      "sha256": "04cfffba7825b76e44515f31047d7d0f374a18236c7595cf3b59febd76480fcc"
     }
   },
   "portable_context": {

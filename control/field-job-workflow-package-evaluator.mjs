@@ -6,7 +6,9 @@
  * through the exported public entrypoint.  Fixture metadata is never used as
  * a caller-supplied PASS flag.  The evaluator also executes the ordered gate
  * readback, proves mutation sensitivity, and records context/memory
- * invalidation closure without writing repository state.
+ * invalidation closure.  The ordinary evaluator is read-only; --write-readback
+ * writes only the current operational receipt for the explicit refresh/rebind
+ * sequence.
  */
 
 import fs from "node:fs";
@@ -16,15 +18,17 @@ import {pathToFileURL} from "node:url";
 import {createHash} from "node:crypto";
 import {canonicalDigest} from "./content-addressing.mjs";
 import {validateGatePack} from "./specialist-block-compiler.mjs";
-import {evaluateFieldJobWorkflowBoundary, FIELD_JOB_WORKFLOW_INPUT_SCHEMA} from "./field-job-workflow-boundary-gate.mjs";
+import {evaluateFieldJobWorkflowBoundaryForEvaluator, FIELD_JOB_WORKFLOW_INPUT_SCHEMA} from "./field-job-workflow-boundary-gate.mjs";
 import {
   FIELD_JOB_WORKFLOW_BLOCK_ID,
   FIELD_JOB_WORKFLOW_FIXTURE_CLASSES,
   FIELD_JOB_WORKFLOW_FLAG_NAMES,
   FIELD_JOB_WORKFLOW_GATE_IDS,
+  FIELD_JOB_WORKFLOW_OPERATIONAL_READBACK_PATH,
   computeFieldJobWorkflowInvalidationClosure,
   resolveFieldJobWorkflowCanonicalAuthority,
 } from "./field-job-workflow-authority-binding.mjs";
+import {compileTaskWorkspaceCustodyReceipt, assertTaskWorkspaceCustody} from "./task-workspace-custody.mjs";
 
 export const FIELD_JOB_WORKFLOW_EVALUATION_SCHEMA = "agentos.specialist_field_job_workflow_package_operational_evaluation.v1";
 
@@ -32,6 +36,8 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 const PACKAGE_RELATIVE = "specialist-blocks/wave-06/field-job-workflow";
 const PACKAGE = path.join(ROOT, PACKAGE_RELATIVE);
 const ENTRYPOINT = "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary";
+const READBACK_SCHEMA = "agentos.field_job_workflow_operational_readback.v1";
+const READBACK_PATH = path.join(ROOT, FIELD_JOB_WORKFLOW_OPERATIONAL_READBACK_PATH);
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const read = (file) => fs.readFileSync(file, "utf8");
 const json = (file) => JSON.parse(read(file));
@@ -62,6 +68,38 @@ function inventory(root) {
   };
   visit(root);
   return output.sort();
+}
+
+function compileOperationalReadback(evaluation) {
+  const readback = {
+    schema: READBACK_SCHEMA,
+    version: 1,
+    status: evaluation.status,
+    block_id: evaluation.block_id,
+    candidate_digest: evaluation.package_block_sha256,
+    model_snapshot_sha256: evaluation.model_snapshot_sha256,
+    model_route_sha256: evaluation.model_route_sha256,
+    context_receipt_sha256: evaluation.context_receipt_sha256,
+    memory_invalidation_sha256: evaluation.memory_invalidation_sha256,
+    upstream_router_result_sha256: evaluation.upstream_router_result_sha256,
+    gate_execution_sha256: evaluation.gate_execution.execution_sha256,
+    fixture_count: evaluation.fixture_results.length,
+    gate_count: evaluation.gate_execution.results.length,
+    mutation_detected: evaluation.mutation_sensitivity.mutation_detected,
+    invalidation_status: evaluation.context_memory_invalidation.status,
+    workspace_custody_status: evaluation.task_workspace_custody.status,
+    observed_at_utc: evaluation.observed_at_utc,
+    readback_sha256: null,
+  };
+  readback.readback_sha256 = canonicalDigest({...readback, readback_sha256: null});
+  return Object.freeze(readback);
+}
+
+export function writeFieldJobWorkflowOperationalReadback(evaluation, {file = READBACK_PATH} = {}) {
+  assert(evaluation?.status === "PASS", "Field Job Workflow operational evaluator readback requires a PASS evaluation", "FIELD_JOB_WORKFLOW_EVALUATOR_READBACK_INVALID");
+  const readback = compileOperationalReadback(evaluation);
+  fs.writeFileSync(file, `${JSON.stringify(readback, null, 2)}\n`);
+  return Object.freeze({path: FIELD_JOB_WORKFLOW_OPERATIONAL_READBACK_PATH, readback_sha256: readback.readback_sha256, file_sha256: sha(fs.readFileSync(file))});
 }
 
 function loadFixtures(root) {
@@ -122,7 +160,7 @@ function executeGates(root, block, fixtures, authority) {
     assert(entry.gate_id === FIELD_JOB_WORKFLOW_GATE_IDS[results.length], `Field Job Workflow gate order drifted at ${entry.gate_id}`, "FIELD_JOB_WORKFLOW_GATE_EXECUTION_INVALID");
     const fixtureEntry = fixtures.get(entry.fixture_class);
     assert(fixtureEntry, `Field Job Workflow gate fixture is missing: ${entry.fixture_class}`, "FIELD_JOB_WORKFLOW_GATE_FIXTURE_INVALID");
-    const actual = evaluateFieldJobWorkflowBoundary(inputFor(fixtureEntry.fixture, authority));
+    const actual = evaluateFieldJobWorkflowBoundaryForEvaluator(inputFor(fixtureEntry.fixture, authority));
     assertReadback(actual, entry.expected, `Field Job Workflow gate ${entry.gate_id}`);
     results.push({gate_id: entry.gate_id, fixture_class: entry.fixture_class, entrypoint: ENTRYPOINT, entrypoint_invoked: true, semantic_execution_completed: true, expected: entry.expected, observed: {disposition: actual.disposition, route: actual.route, error_code: actual.error_code, result_sha256: actual.result_sha256}});
   }
@@ -148,7 +186,7 @@ async function mutationProof(fixture, authority) {
     source = source.replace(anchor, 'if (flags.unsafe_action) return routeHandoff(input, authority, "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "MUTATED_UNSAFE_OPERATION_ALLOWED");');
     fs.writeFileSync(target, source);
     const isolated = await import(`${pathToFileURL(target).href}?mutation=${Date.now()}`);
-    const actual = isolated.evaluateFieldJobWorkflowBoundary(inputFor(fixture, authority));
+    const actual = isolated.evaluateFieldJobWorkflowBoundaryForEvaluator(inputFor(fixture, authority));
     return {status: actual.disposition === "ROUTE" ? "WEAKENED" : "INTACT", mutation_detected: actual.disposition === "ROUTE", expected_disposition: "DENY", observed_disposition: actual.disposition, observed_route: actual.route};
   } finally {
     fs.rmSync(temp, {recursive: true, force: true});
@@ -164,11 +202,11 @@ function evaluateInvalidation(authority) {
   return {status: "PASS", memory_scope: authority.context.context.memory_scope, write_allowed: authority.context.context.memory_write_allowed, source_changed: sourceClosure, model_changed: modelClosure, custody_changed: custodyClosure, invalidation_sha256: canonicalDigest({sourceClosure, modelClosure, custodyClosure})};
 }
 
-export async function evaluateFieldJobWorkflowPackage() {
+export async function evaluateFieldJobWorkflowPackage({allowMissingOperationalReadback = true} = {}) {
   const root = PACKAGE;
   const block = json(path.join(root, "block.json"));
   assert(block.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && block.lifecycle === "CANDIDATE" && block.activation === "OFF", "Field Job Workflow package state is not candidate/off", "FIELD_JOB_WORKFLOW_PACKAGE_STATE_INVALID");
-  const authority = resolveFieldJobWorkflowCanonicalAuthority();
+  const authority = resolveFieldJobWorkflowCanonicalAuthority({allowMissingOperationalReadback});
   const fixtures = loadFixtures(root);
   const evaluationArtifact = json(path.join(root, "evaluation.json"));
   assert(evaluationArtifact.schema === "agentos.specialist_evaluation.v1" && evaluationArtifact.block_id === FIELD_JOB_WORKFLOW_BLOCK_ID && evaluationArtifact.candidate_digest === block.block_sha256, "Field Job Workflow evaluation dossier is stale", "FIELD_JOB_WORKFLOW_EVALUATION_DOSSIER_STALE");
@@ -177,7 +215,7 @@ export async function evaluateFieldJobWorkflowPackage() {
   assert(list.filter((relative) => relative.startsWith("gates/") && relative.endsWith(".gate")).length === FIELD_JOB_WORKFLOW_GATE_IDS.length, "Field Job Workflow gate inventory is incomplete", "FIELD_JOB_WORKFLOW_GATE_INVENTORY_INVALID");
   const fixtureResults = [];
   for (const entry of [...fixtures.values()].sort((left, right) => left.fixture.class.localeCompare(right.fixture.class))) {
-    const actual = evaluateFieldJobWorkflowBoundary(inputFor(entry.fixture, authority));
+    const actual = evaluateFieldJobWorkflowBoundaryForEvaluator(inputFor(entry.fixture, authority));
     assertReadback(actual, entry.fixture.expected, `Field Job Workflow fixture ${entry.fixture.class}`);
     fixtureResults.push({fixture_id: entry.fixture.fixture_id, fixture_class: entry.fixture.class, fixture_file_sha256: entry.file_sha256, entrypoint: entry.fixture.vector.entrypoint, entrypoint_invoked: true, semantic_execution_completed: true, expected_outcome: entry.fixture.expected.disposition, actual_outcome: actual.disposition, expected_route: entry.fixture.expected.route, actual_route: actual.route, expected_error_code: entry.fixture.expected.error_code, actual_error_code: actual.error_code, external_side_effects: actual.external_side_effects, result_sha256: actual.result_sha256});
   }
@@ -185,6 +223,8 @@ export async function evaluateFieldJobWorkflowPackage() {
   const mutation = await mutationProof(fixtures.get("unsafe_action").fixture, authority);
   assert(mutation.mutation_detected === true, "Field Job Workflow mutation proof did not detect a weakened boundary", "FIELD_JOB_WORKFLOW_MUTATION_PROOF_MISSING");
   const invalidation = evaluateInvalidation(authority);
+  const taskWorkspaceCustody = compileTaskWorkspaceCustodyReceipt({projectRoot: ROOT, taskCheckout: ROOT, taskWorktree: ROOT});
+  assertTaskWorkspaceCustody(taskWorkspaceCustody);
   const packageDigests = list.map((relative_path) => ({relative_path: `${PACKAGE_RELATIVE}/${relative_path}`, sha256: sha(fs.readFileSync(path.join(root, relative_path)))}));
   const evaluation = {
     schema: FIELD_JOB_WORKFLOW_EVALUATION_SCHEMA,
@@ -206,6 +246,7 @@ export async function evaluateFieldJobWorkflowPackage() {
     fixture_results: fixtureResults,
     mutation_sensitivity: mutation,
     context_memory_invalidation: invalidation,
+    task_workspace_custody: taskWorkspaceCustody,
     independent_signature_required: true,
     canonical_external_admission: "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
     observed_at_utc: new Date().toISOString(),
@@ -215,4 +256,8 @@ export async function evaluateFieldJobWorkflowPackage() {
   return Object.freeze(evaluation);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) process.stdout.write(`${JSON.stringify(await evaluateFieldJobWorkflowPackage(), null, 2)}\n`);
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+  const evaluation = await evaluateFieldJobWorkflowPackage({allowMissingOperationalReadback: true});
+  if (process.argv.includes("--write-readback")) process.stdout.write(`${JSON.stringify({...evaluation, operational_readback: writeFieldJobWorkflowOperationalReadback(evaluation)}, null, 2)}\n`);
+  else process.stdout.write(`${JSON.stringify(evaluation, null, 2)}\n`);
+}

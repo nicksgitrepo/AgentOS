@@ -35,6 +35,7 @@ const FORBIDDEN = new Set([
 const ALLOWED_ACTIONS = new Set(["ANALYZE", "ROUTE"]);
 const ALLOWED_WORKFLOW_DOMAINS = new Set(["FIELD_WORKFLOW"]);
 const ALLOWED_TOOLS = new Set(FIELD_JOB_WORKFLOW_TOOLS);
+const EVALUATOR_READBACK_REPLAY = Symbol("agentos.field_job_workflow.evaluator_readback_replay");
 
 function fail(message, code = "FIELD_JOB_WORKFLOW_INPUT_INVALID") {
   const error = new Error(message);
@@ -168,9 +169,9 @@ function routeHandoff(input, authority, route, errorCode) {
   });
 }
 
-export function evaluateFieldJobWorkflowBoundary(input) {
+export function evaluateFieldJobWorkflowBoundary(input, evaluatorReplay = null) {
   validateInput(input);
-  const authority = resolveFieldJobWorkflowCanonicalAuthority();
+  const authority = resolveFieldJobWorkflowCanonicalAuthority({allowMissingOperationalReadback: evaluatorReplay === EVALUATOR_READBACK_REPLAY});
   const e = input.evidence;
   if (canonicalEvidenceMismatch(input, authority)) return result(input, "DENY", "TYPED_CONTEXT_REQUIRED", "FIELD_JOB_WORKFLOW_CANONICAL_BINDING_MISMATCH", authority);
   if (FORBIDDEN.has(input.request_kind)) return result(input, "DENY", "NO_FIELD_WORKFLOW_SIDE_EFFECT", "FIELD_JOB_WORKFLOW_OPERATION_FORBIDDEN", authority);
@@ -194,4 +195,8 @@ export function evaluateFieldJobWorkflowBoundary(input) {
   if (e.model_policy_status !== "PREPARED_INACTIVE" || e.model_task_class !== "NARROW_CODING" || e.model_capability_floor !== 49 || JSON.stringify(e.model_required_capabilities) !== JSON.stringify(["CODE", "TOOLS"])) return result(input, "DENY", "FIELD_WORKFLOW_MODEL_POLICY_REVIEW_REQUIRED", "FIELD_JOB_WORKFLOW_MODEL_ROUTE_INVALID", authority);
   if (!ALLOWED_ACTIONS.has(e.requested_action)) return result(input, "DENY", "FIELD_WORKFLOW_TYPED_CONTEXT_REQUIRED", "FIELD_JOB_WORKFLOW_ACTION_INVALID", authority);
   return routeHandoff(input, authority, "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "FIELD_JOB_WORKFLOW_ROUTE_READY");
+}
+
+export function evaluateFieldJobWorkflowBoundaryForEvaluator(input) {
+  return evaluateFieldJobWorkflowBoundary(input, EVALUATOR_READBACK_REPLAY);
 }
