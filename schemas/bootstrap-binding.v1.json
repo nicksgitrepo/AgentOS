@@ -2350,15 +2350,15 @@
     },
     "turn_continuation_gate_controller": {
       "path": "control/turn-continuation-gate.mjs",
-      "sha256": "01ebc98189fb017f5d950f99a0d2e3f7f174c808034f3b4e4bb02009d9aa6a42"
+      "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"
     },
     "turn_continuation_gate_contract": {
       "path": "schemas/turn-continuation-gate.v1.json",
-      "sha256": "4a230e26180574ecfbc98d55b0789ecf353790c3b20f572064b94f4f7610f315"
+      "sha256": "487d23fbc00c0dbe291641da45ca27276dd0676ae8ca7eeccf2bf81b6989b9e6"
     },
     "turn_continuation_gate_verifier": {
       "path": "tests/verify-turn-continuation-gate.mjs",
-      "sha256": "9169e49427c71a853b861125c9711ca7500fa40dcb14d20684a47ab83d0acac6"
+      "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
     }
   },
   "compatibility_only": {
