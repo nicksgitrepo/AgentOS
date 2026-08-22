@@ -9694,7 +9694,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/openapi-contracts/handoff.json",
-        "handoff_file_sha256": "bea9e7d5f7177a4a733fc6c9e99bcf89fed39b795baf98fa7ad426b014a12224",
+        "handoff_file_sha256": "c82f7f349d21ad404fe4d6db94586e6320bec2694bc3fc825b5b2801984a0f56",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.openapi-contracts.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "1916a24784aea4400bfb7fc90dadae26e1c8c51ef95498f35bc7b83d6c76238b"
+  "roster_sha256": "c96556759881986463ce7c5f4211bee98f42edad9acd8936953d38d33b1982f6"
 }
