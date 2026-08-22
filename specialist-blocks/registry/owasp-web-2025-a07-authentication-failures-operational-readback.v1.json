@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_web_a07_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-web-2025-a07-authentication-failures",
+  "candidate_digest": "27649fb6f03de598030be2c118e75434c8dad2102021606fd1ddefca816212c6",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "782661d51feb7cb85487992d643501cfba3c2bb60891765235e86cfe9bcfa9f2",
+  "upstream_router_result_sha256": "3eb9203e8fb18214a85e10aa5f3a16d442e99f25cc0d52784be13937bfa0a170",
+  "gate_execution_sha256": "83fc3358da27912a7914f4218a258f1ee30ba04431d76b8f7d2f2db14ce8db17",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T20:17:11.335Z",
+  "readback_sha256": "e7c15780a6130767ff6dfff77823c4e9c27d5c139b7856c6b90914a47a2fa871"
+}
