@@ -6813,6 +6813,28 @@
           }
         ]
       },
+      "operational_entrypoints": {
+        "boundary": "control/aws-iam-policy-boundary-gate.mjs#evaluateAwsIamPolicyBoundary",
+        "evaluator": "control/aws-iam-policy-package-evaluator.mjs#evaluateAwsIamPolicyPackage",
+        "gate_execution": "specialist-blocks/wave-02/aws-iam-policy/gates/execution.json",
+        "real_fixture_inputs": true,
+        "mutation_sensitivity_required": true,
+        "read_only": true
+      },
+      "context_invalidation": {
+        "status": "BOUND",
+        "memory_rule": "TYPED_HANDOFF_ONLY_NO_MEMORY_WRITE",
+        "rebuild_on_change": true,
+        "invalidate_on": [
+          "block digest change",
+          "source lock change or freshness expiry",
+          "standard block or source manifest change",
+          "upstream router bytes or result change",
+          "model-policy snapshot or route change",
+          "registry, gates, fixtures, evaluation, or handoff change"
+        ],
+        "rebuild_rule": "Invalidate dependent contexts, handoffs, model routes, gate readbacks, and acceptance proposals; preserve the old receipt and rebuild from exact current bytes before reuse."
+      },
       "hostile_fixtures": {
         "status": "BOUND",
         "fixtures": [
@@ -40426,5 +40448,5 @@
       "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
     }
   ],
-  "roster_sha256": "383397af3678077c74c73c65b8a14a8d7f003fee40aa68acc9495e00062ce7cd"
+  "roster_sha256": "a09cb30a188a87eeabfe5af4cf1c1611950c708f482d3a0e16cc63205f3902b7"
 }
