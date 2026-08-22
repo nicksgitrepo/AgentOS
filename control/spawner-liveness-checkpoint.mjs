@@ -79,7 +79,7 @@ function checkpointBody(checkpoint) {
 }
 
 function deriveStatus({windowStatus, meaningfulProgress, typedResultStatus, exactReceiptStatus}) {
-  if (exactReceiptStatus === "UNKNOWN") return "UNKNOWN";
+  if (exactReceiptStatus === "UNKNOWN" || typedResultStatus === "UNKNOWN") return "UNKNOWN";
   if (typedResultStatus === "PRESENT") return "TYPED_RESULT";
   if (meaningfulProgress === true) return "PROGRESS";
   if (windowStatus === "WITHIN_BOUND") return "WAITING_WITHIN_BOUND";

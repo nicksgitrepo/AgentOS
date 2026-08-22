@@ -4241,7 +4241,7 @@
     },
     "spawner_liveness_checkpoint_controller": {
       "path": "control/spawner-liveness-checkpoint.mjs",
-      "sha256": "4486de653fd476258a05c4cd857f326779e62978bac13150f0705437fe077e70"
+      "sha256": "3ca7b859909b9ccf92b19e65c5b009d3f23fa2c21c3e943cfdd9922e869b05ed"
     },
     "spawner_liveness_checkpoint_verifier": {
       "path": "tests/verify-spawner-liveness-checkpoint.mjs",
