@@ -1,0 +1,48 @@
+{
+  "schema": "agentos.specialist_context_projection.v1",
+  "version": 1,
+  "block_id": "specialist.security.owasp-web-2025-a02-security-misconfiguration",
+  "status": "BOUND_CANDIDATE_CONTEXT",
+  "context_contract_id": "specialist-context.owasp-web-2025-a02-security-misconfiguration.v1",
+  "required_fields": [
+    "web.category",
+    "web.scope",
+    "web.application",
+    "authority",
+    "candidate.identity",
+    "custody",
+    "request",
+    "signals",
+    "source_lock",
+    "standard.edition",
+    "model_policy",
+    "model_route",
+    "upstream_router_result"
+  ],
+  "source_manifest_sha256": "3e89e057776157d80646b6f71a05c2091112065fc66da5ebc8f880cb4c8d3c97",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "upstream_router_result_sha256": "86f373434ef3dcc851a3d3a20c90d5d12aade9f37e457664c830145c032843c7",
+  "memory_scope": "TYPED_HANDOFF_ONLY",
+  "memory_write_allowed": false,
+  "dependency_artifacts": [
+    "candidate_block",
+    "source_manifest",
+    "model_policy_snapshot",
+    "model_route",
+    "upstream_router_result",
+    "05ac786b3ff0afaf15610c45b7e673571ae0b5b3eaf867b3779768a81065bbfd",
+    "320aceff7a1b349f507d343cbdb3edc7ed24dcf5fda44a1f5a0bab08a671137d",
+    "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f"
+  ],
+  "invalidation_triggers": [
+    "block_sha256",
+    "source_manifest_sha256",
+    "model_policy_snapshot_sha256",
+    "model_route_sha256",
+    "upstream_router_result_sha256",
+    "context_contract_sha256",
+    "standard_dependency_sha256"
+  ],
+  "context_sha256": "d8b0fa82d856007ba12056ea76daf68037b01b8fd97e73a1a0100116e020df7d"
+}
