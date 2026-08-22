@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/owasp-web-a01-operational-readback.v1.json",
+  "title": "OWASP Web A01:2025 operational evaluator readback",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "block_id", "candidate_digest", "model_snapshot_sha256", "model_route_sha256", "context_receipt_sha256", "upstream_router_result_sha256", "gate_execution_sha256", "fixture_count", "gate_count", "mutation_detected", "invalidation_status", "shared_registry_verdict", "workspace_custody_status", "observed_at_utc", "readback_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.owasp_web_a01_operational_readback.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PASS"},
+    "block_id": {"const": "specialist.security.owasp-web-2025-a01-broken-access-control"},
+    "candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "model_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "model_route_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "upstream_router_result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gate_execution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fixture_count": {"const": 17},
+    "gate_count": {"const": 12},
+    "mutation_detected": {"const": true},
+    "invalidation_status": {"const": "PASS"},
+    "shared_registry_verdict": {"const": "ALIGNED"},
+    "workspace_custody_status": {"const": "MATCHED"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "readback_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
