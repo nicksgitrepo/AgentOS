@@ -26800,7 +26800,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/react-components/handoff.json",
-        "handoff_file_sha256": "a890d4a330c8ca9d221e3515748ecfe4a2852bc937d44d6720d7a65e7d7e6c4e",
+        "handoff_file_sha256": "25ec4080f117eb972641a56c4f50669e1faf19fbf467883f17773898fc6d9836",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.react-components.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "13c3292ab6618474030b0c6724e583bf9542d2879062524f06a90a35cfaebe8d"
+  "roster_sha256": "57f41530aa2e118657650c53015b03c914d6b36dc567b554702fbb136125582c"
 }

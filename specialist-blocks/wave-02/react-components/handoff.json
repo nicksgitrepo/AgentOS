@@ -5,8 +5,8 @@
   "block_id": "specialist.software-language-runtime.react-components",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d",
-  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
-  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
+  "source_commit": "b0eae7d1ba4a01f1f90c0cfb589ac3a8beb8702d",
+  "source_tree": "70aa2fa036290b833c10a705c4d90515fde132b1",
   "changed_paths": [
     "specialist-blocks/wave-02/react-components/block.json",
     "specialist-blocks/wave-02/react-components/evaluation.json",
