@@ -898,7 +898,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "27119bf28e5cf3cc7939df7c8a3f2f6a84737c07c7d5401ce60ec82ada0b649d"
+      "sha256": "9367f7b5394c4eebfa5c9971f6fb55f3a35634861bcadc62f8d41a561a91f4fa"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
