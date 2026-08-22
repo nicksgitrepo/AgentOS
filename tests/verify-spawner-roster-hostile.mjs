@@ -16,6 +16,10 @@ const runGit = (args) => execFileSync("git", args, {cwd: root, encoding: "utf8",
 
 try {
   const compiled = compileReusableAgentRoster({repositoryRoot});
+  const spawnerEntry = compiled.entries.find((entry) => entry.stable_agent_id === "AGENTOS.SPAWNER");
+  assert(spawnerEntry, "Spawner roster entry missing");
+  assert.equal(spawnerEntry.deterministic_gates.status, "BOUND", "canonical Spawner gate-entry manifest was not projected");
+  assert.equal(spawnerEntry.deterministic_gates.gates.length, 9, "canonical Spawner gate-entry manifest lost a gate");
   const snapshotExpired = Date.parse(compiled.model_policy.expires_at_utc) <= Date.now();
   if (snapshotExpired) {
     assert.equal(compiled.build_queue.some((item) => item.eligible), false, "stale model policy left a roster item eligible");

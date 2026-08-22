@@ -39,6 +39,7 @@ const CAMPAIGN_ROLES = Object.freeze({
 const GATE_IDS = Object.freeze(["00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff", "10-proof-acceptance", "11-lifecycle-recovery-archive"]);
 const PRIORITY_SCORE = Object.freeze({P0: 98, P1: 86, P2: 74, P3: 62, P4: 50, P5: 36, P6: 24});
 const ACCEPTANCE_LEDGER_PATH = "specialist-blocks/registry/accepted-agent-receipts.v1.json";
+const SHA256 = /^[0-9a-f]{64}$/u;
 
 function readJson(root, relativePath) { return JSON.parse(fs.readFileSync(path.join(root, relativePath), "utf8")); }
 function exists(root, relativePath) { return fs.existsSync(path.join(root, relativePath)); }
@@ -113,18 +114,39 @@ function entryType(relativePath, block, role) {
   return relativePath.includes("/standards/") ? "REUSABLE_STANDARD_BLOCK" : "REUSABLE_GOVERNANCE_BLOCK";
 }
 function familyFor(block, role) { return String(role?.family ?? block.family ?? block.block_id.split(".")[1] ?? "unclassified"); }
+function resolveManifestGatePath(relativePath, manifestPath, declaredPath) {
+  if (typeof declaredPath !== "string" || declaredPath.length === 0 || declaredPath.includes("\\") || path.posix.isAbsolute(declaredPath)) return null;
+  const segments = declaredPath.split("/");
+  if (segments.some((segment) => segment.length === 0 || segment === "." || segment === "..")) return null;
+  const candidate = (declaredPath.startsWith("gates/")
+    ? path.posix.join(relativePath, declaredPath)
+    : path.posix.join(path.posix.dirname(manifestPath), declaredPath));
+  return candidate === relativePath || candidate.startsWith(`${relativePath}/`) ? candidate : null;
+}
 function gateInventory(root, relativePath, block) {
   const manifestPath = path.join(relativePath, block.gate_pack?.manifest_path ?? "gates/manifest.json").split(path.sep).join("/");
   if (!exists(root, manifestPath)) return {status: "MISSING_GATE_MANIFEST", manifest_path: manifestPath, gates: []};
   const manifest = readJson(root, manifestPath);
-  const ids = manifest.ordered_gate_ids ?? manifest.gate_ids ?? GATE_IDS;
-  const paths = manifest.gate_paths ?? [];
-  const gates = ids.flatMap((gateId) => {
-    const declared = paths.find((candidate) => candidate.endsWith(`${gateId}.gate`)) ?? `gates/${gateId}.gate`;
-    const gatePath = (declared.startsWith("gates/") ? path.join(relativePath, declared) : path.join(path.dirname(manifestPath), declared)).split(path.sep).join("/");
-    return exists(root, gatePath) ? [{gate_id: gateId, path: gatePath, file_sha256: fileSha(root, gatePath)}] : [];
+  const hasCanonicalEntries = Object.prototype.hasOwnProperty.call(manifest, "entries");
+  const declaredEntries = hasCanonicalEntries
+    ? (Array.isArray(manifest.entries) ? manifest.entries.map((entry) => ({gate_id: entry?.gate_id, path: entry?.path, file_sha256: entry?.file_sha256})) : [])
+    : (manifest.ordered_gate_ids ?? manifest.gate_ids ?? GATE_IDS).map((gateId) => ({
+      gate_id: gateId,
+      path: (manifest.gate_paths ?? []).find((candidate) => candidate.endsWith(`${gateId}.gate`)) ?? `gates/${gateId}.gate`,
+      file_sha256: null,
+    }));
+  const gateIds = declaredEntries.map((entry) => entry.gate_id);
+  const uniqueGateIds = new Set(gateIds);
+  const gates = declaredEntries.flatMap((entry) => {
+    if (typeof entry.gate_id !== "string" || entry.gate_id.length === 0 || (entry.file_sha256 !== null && !SHA256.test(entry.file_sha256))) return [];
+    const gatePath = resolveManifestGatePath(relativePath, manifestPath, entry.path);
+    if (gatePath === null || !exists(root, gatePath)) return [];
+    const actualSha256 = fileSha(root, gatePath);
+    if (entry.file_sha256 !== null && entry.file_sha256 !== actualSha256) return [];
+    return [{gate_id: entry.gate_id, path: gatePath, file_sha256: actualSha256}];
   });
-  return {status: gates.length === ids.length ? "BOUND" : "INCOMPLETE", manifest_path: manifestPath, gates};
+  const complete = declaredEntries.length > 0 && uniqueGateIds.size === declaredEntries.length && gates.length === declaredEntries.length;
+  return {status: complete ? "BOUND" : "INCOMPLETE", manifest_path: manifestPath, gates};
 }
 function fixtureInventory(root, relativePath, block) {
   const manifestPath = path.join(relativePath, "hostile-fixtures.manifest.json").split(path.sep).join("/");
