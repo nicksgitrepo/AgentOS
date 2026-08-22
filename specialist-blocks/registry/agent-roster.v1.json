@@ -7544,7 +7544,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/cloudflare-dns/handoff.json",
-        "handoff_file_sha256": "5405f8c728fedfea0b1827cfd4667c3efd79a7fc12217401b48ccbc87ec48e49",
+        "handoff_file_sha256": "54da65b95ce33d2beab0e441a884a5cebad755dfd1b3d679a291ee7de2eb49e9",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.cloudflare-dns.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "e86ec393840fdcf9ba8b25bb468d48d3db4dcaa83f304cff0894b9d5a05b80b5"
+  "roster_sha256": "22157bac885fb7a91dfa91b9a1f4671c830da0f031da90f31657ac4467cc69e5"
 }
