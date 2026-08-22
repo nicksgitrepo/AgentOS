@@ -10,7 +10,7 @@
     {
       "case_id": "oauth-identity-authority_conflict",
       "class": "authority_conflict",
-      "expected": "DENY",
+      "expected": "ESCALATE",
       "observed": "PASS"
     },
     {
@@ -28,7 +28,7 @@
     {
       "case_id": "oauth-identity-data_limit",
       "class": "data_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {
@@ -88,7 +88,7 @@
     {
       "case_id": "oauth-identity-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {

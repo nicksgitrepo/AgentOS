@@ -1,9 +1,111 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "oauth-identity-stale_source",
   "block_id": "specialist.security.oauth-identity",
   "class": "stale_source",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; all provider, project, consumer, and applicability facts remain external."
+  "note": "Synthetic executable hostile vector for stale_source; all OAuth, provider, project, consumer, and applicability facts remain bounded and synthetic.",
+  "vector": {
+    "entrypoint": "control/oauth-identity-boundary-gate.mjs#evaluateOAuthIdentityBoundary",
+    "input": {
+      "schema": "agentos.oauth_identity_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_OAUTH_FLOW",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SECURITY_OAUTH_IDENTITY",
+        "custody_ref": "opaque:OAUTH.IDENTITY.CUSTODY",
+        "source_status": "STALE",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "standard_identity": "source.rfc-9700",
+        "standard_version": "RFC 9700",
+        "standard_effective_date": null,
+        "standard_retrieved_date": "2026-08-11",
+        "publisher_identity": "IETF",
+        "client_type": "PUBLIC",
+        "flow": "AUTHORIZATION_CODE",
+        "protocol": "OAUTH2",
+        "signal": "OAUTH",
+        "target_ref": "specialist.security.oauth-identity",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_OAUTH_FLOW",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": false,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "applicability_status": "EXTERNAL_TYPED",
+        "applicability_complete": true,
+        "flow_evidence": "BOUNDED",
+        "oauth_context": {
+          "client_type": "PUBLIC",
+          "flow": "AUTHORIZATION_CODE",
+          "protocol": "OAUTH2",
+          "authorization_server_ref": "opaque:OAUTH.AUTHORIZATION_SERVER.SYNTHETIC",
+          "redirect_uri_count": 1,
+          "pkce_method": "S256",
+          "response_mode": "QUERY",
+          "token_endpoint_auth_method": "NONE",
+          "scope_count": 2,
+          "context_digest": "128c612529f9d904466fc7ccd0b91c0637b9e2d726441d96f012567d272145d6"
+        },
+        "threats": [
+          {
+            "threat_id": "AUTHORIZATION_CODE_INJECTION",
+            "mitigation_status": "EVIDENCED",
+            "requirement_refs": [
+              "RFC9700.SEC.4.1"
+            ],
+            "evidence_ref": "opaque:OAUTH.EVIDENCE.PKCE"
+          },
+          {
+            "threat_id": "REDIRECT_URI_MIX_UP",
+            "mitigation_status": "EVIDENCED",
+            "requirement_refs": [
+              "RFC9700.SEC.4.2"
+            ],
+            "evidence_ref": "opaque:OAUTH.EVIDENCE.REDIRECT"
+          }
+        ],
+        "candidate_digest": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "42f2fc7adf4235899c81c2af327982a12fa78a67926a951cbe315cf61fb9bc12",
+        "standard_block_sha256": "b78ea77bdde8d0ed484fb135ef3eab197aced90183fa6f5afc1f3cacadfa3f6b",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "context_receipt_sha256": "0f63aa92ad77eeccaf2e7f200eacc85c1c1b5a4c9e38890fb135cf28a5c738ac",
+        "upstream_router_result_sha256": "9a78547d5800f65b879e80698121cb3660b37972dee141246ad7483331ce4340",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "cross_provider": false,
+          "duplicate_authority": false,
+          "umbrella_authority": false,
+          "false_positive": false,
+          "stale_source": true,
+          "unsupported_tool": false,
+          "missing_context": false,
+          "unsafe_action": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "OAUTH_IDENTITY_SOURCE_STALE_OR_UNVERIFIED",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }
