@@ -15747,7 +15747,6 @@
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
         "specialist.security.owasp-api-top10-router",
-        "specialist.security.owasp-api-top10-router",
         "specialist.standard.owasp-api-top10-2023",
         "specialist.standard.owasp-asvs"
       ],
@@ -15838,105 +15837,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.AUTHORITY_CONFLICT",
+            "fixture_id": "owasp-api-api1-object-authorization-authority_conflict",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/authority_conflict.json",
-            "file_sha256": "87d3d7f3365c558278a9ad378cf5b6910b75776a5f2e3cf96c3b24921e5f7000",
+            "file_sha256": "54c89926f24e693444ad32188afe7317478d3b0ecfaf6874261f53b04c37e620",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "owasp-api-api1-object-authorization-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "0ad87eb56adb7f24c4f14818310627d9e194565b7b70a7cc36628a8b22d45ff2",
+            "file_sha256": "7db002a5cfdd03e8e621f69e0df346aa7a7c7ece32fabc275cae9c9f5339257a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "owasp-api-api1-object-authorization-cross_provider_version_claim",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "9c2eda7e9a0bd2993e0b145fa72d493e4e9854405f9b8c6fbd7db19c38f31f93",
+            "file_sha256": "38dcc4e94568e441a1eb13db4396bfa94474aae23c21afe8f97a4e3e12b98eb3",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.DATA_LIMIT",
+            "fixture_id": "owasp-api-api1-object-authorization-data_limit",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/data_limit.json",
-            "file_sha256": "7d7419938745b8f7502adf450798a19994298d7d60cb9f20330e151ad3645ca7",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "40ac1668cd79b7c8d7bb99e23744e882234ae6372f0ac82bf17ee84651e029fc",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "owasp-api-api1-object-authorization-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "9f5ed7b6c09da9f1e2e5fd4bd61e15533b029bf07c8785f6344335d70d69d4f8",
+            "file_sha256": "a8dc38c985cc93e33ffdb03f9765e1ad06916e7e055e801b76b954a27e06de66",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.FALSE_POSITIVE",
+            "fixture_id": "owasp-api-api1-object-authorization-false_positive",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/false_positive.json",
-            "file_sha256": "ed3633bc3257669ce0dfa1412e2b7bb7001e2136f7642f2715ddd6bbde347499",
+            "file_sha256": "fc0aee1881d8dfc18091aaaa98761e4b1c8739ca17ef8b13ce3649decd5f920b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.HANDOFF",
+            "fixture_id": "owasp-api-api1-object-authorization-handoff",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/handoff.json",
-            "file_sha256": "5dc87897fb3a2f76dd660c72867af606a76de194350d3eadef66021d40c8bebf",
+            "file_sha256": "81e6958916250a1eec4a045652062b6378a3a132d04c202495d96d908aefe900",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.MISSING_CONTEXT",
+            "fixture_id": "owasp-api-api1-object-authorization-missing_context",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/missing_context.json",
-            "file_sha256": "8c72116312833ebc16d35cabf9f4070657f73b04c1f5a2050275a0cebd938a36",
+            "file_sha256": "609b7886687c4185393a2d11f94456c8677779378d28b34d830a0186f78e16ac",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.NARROWNESS",
+            "fixture_id": "owasp-api-api1-object-authorization-narrowness",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/narrowness.json",
-            "file_sha256": "9ca11bc7443f10a04ed9f77fd8cdf7fd513221f5a79965572cf02688afa5a529",
+            "file_sha256": "3797984c86817330699d4dd3910cab1c23ad17de6c8eacce37f20a1c306d77b7",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.ROUTER_SELF_ACCEPT",
+            "fixture_id": "owasp-api-api1-object-authorization-router_self_accept",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/router_self_accept.json",
-            "file_sha256": "33c7e1f0b9a9f8d272c9bf0c8ce1d5aa0ba8f95c3b7f31d78d792d375f409d84",
+            "file_sha256": "8a6b3c252bf0baa362c962bdd44f5be6e5ce9df54cf95f1474b4942ec8bfdb8b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.ROUTING",
+            "fixture_id": "owasp-api-api1-object-authorization-routing",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/routing.json",
-            "file_sha256": "f205b4ac2fac86ede2526eea9a6cd4a1f74b61ce3231899360288a338626742f",
+            "file_sha256": "7bfb1f7fc69bc330cf818fce577ce24d2b651315ca74645df5c372ad1e4504ab",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "owasp-api-api1-object-authorization-silent_scope_expansion",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/silent_scope_expansion.json",
-            "file_sha256": "8904fb0fb0fdc8aca2bb60780d89e01fe7904022a9f4b58749262d82a2aa51c9",
+            "file_sha256": "19c08414dcd0e22b05dd3f5226ec99b21a4b9476b29c5053343ffbc72031f5f9",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.STALE_SOURCE",
+            "fixture_id": "owasp-api-api1-object-authorization-stale_source",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/stale_source.json",
-            "file_sha256": "85eaaf47c1a42e3c309f0bb1d76483a322d922ebd2bc8f039105a01c35c9cd51",
+            "file_sha256": "991e10ca4f267f32fe215f5e87260be21029ddce71ef83eb6c1e2c9d8e8ceab9",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.TOOL_LIMIT",
+            "fixture_id": "owasp-api-api1-object-authorization-tool_limit",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/tool_limit.json",
-            "file_sha256": "b561b0a6182be6b01179f610ed7644563054a187cfab83bf26e2fc366946f674",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "a975c34e62bb24b2f46fec33bb3efaae1b67e76bae63cec656d7ce02064611de",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.UMBRELLA_AUTHORITY",
+            "fixture_id": "owasp-api-api1-object-authorization-umbrella_authority",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/umbrella_authority.json",
-            "file_sha256": "30bd9f9ad394713fc2f58ba0ec20fa84e7d63680bfa1b85f921ca9a7c74c3e03",
+            "file_sha256": "46b6fff0fc4a20eba124a6fd90b2696a051bc580adc3d36151b033dc9cef5f4a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.UNRELATED_SCOPE",
+            "fixture_id": "owasp-api-api1-object-authorization-unrelated_scope",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/unrelated_scope.json",
-            "file_sha256": "51465d61997e346ae78a0572ed4038d4710f09a24b2e4d59d8558aa9a7fe26f5",
+            "file_sha256": "e31abd62a0eb9613ddd5756b14a9640373d47fdc9436d6dbde31821f07c54263",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.owasp-api-2023-api1-object-authorization.UNSAFE_ACTION",
+            "fixture_id": "owasp-api-api1-object-authorization-unsafe_action",
             "path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/fixtures/unsafe_action.json",
-            "file_sha256": "91493a395f764bbab5e6d4c6bf2ccaafade42ef29d3150d369f815e267714749",
+            "file_sha256": "d1d9c8acabcbff74a45deca91c1800a8941cae104e05139daed5213d3fe8a110",
             "expected_outcome": "DENY"
           }
         ]
@@ -15946,12 +15945,52 @@
           "source_lock",
           "freshness_policy",
           "claim_rule",
-          "unknown_rule"
+          "unknown_rule",
+          "tenant_scope_status",
+          "tenant_scope_ref",
+          "object_scope_status",
+          "object_scope_ref",
+          "scope_relation",
+          "auditor_role",
+          "auditor_custody_ref",
+          "auditor_write_allowed",
+          "auditor_backend_access",
+          "auditor_project_mutation_allowed",
+          "backend_evidence_status",
+          "backend_evidence_claimed",
+          "backend_evidence_digest",
+          "mutation_sensitivity"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/handoff.json",
-        "handoff_file_sha256": "4c62f1942c4bb517d7983a03f1c2e7ab112b10727ceea95b8aad55f215da8b8f",
+        "handoff_file_sha256": "fad48caf09020082937aadec432b6a3eafa6cee24fe15590833a02d4e5175aaf",
         "independent_review_required": true,
-        "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v1"
+        "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v2"
+      },
+      "scope_binding": {
+        "tenant_scope_status": "BOUND",
+        "tenant_scope_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.TENANT_SCOPE",
+        "object_scope_status": "BOUND",
+        "object_scope_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.OBJECT_SCOPE",
+        "scope_relation": "TENANT_OBJECT_BOUND"
+      },
+      "auditor_custody": {
+        "role": "INDEPENDENT_READ_ONLY_AUDITOR",
+        "custody_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.READ_ONLY_AUDITOR",
+        "write_allowed": false,
+        "backend_access": false,
+        "project_mutation_allowed": false,
+        "acceptance_allowed": false,
+        "authorization_decision_allowed": false
+      },
+      "backend_evidence": {
+        "status": "NOT_PROVIDED",
+        "claimed": false,
+        "digest": null
+      },
+      "mutation_proof": {
+        "entrypoint": "control/owasp-api-2023-api1-object-authorization-package-evaluator.mjs#evaluateOwaspApiObjectAuthorizationPackage",
+        "status": "REQUIRED",
+        "protected_transition": "DENY_TO_ROUTE"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
@@ -15979,7 +16018,6 @@
         "specialist.foundation.role-intake-classifier",
         "specialist.foundation.scope-non-goal-gate",
         "specialist.foundation.tool-custody-gate",
-        "specialist.security.owasp-api-top10-router",
         "specialist.security.owasp-api-top10-router",
         "specialist.standard.owasp-api-top10-2023",
         "specialist.standard.owasp-asvs"

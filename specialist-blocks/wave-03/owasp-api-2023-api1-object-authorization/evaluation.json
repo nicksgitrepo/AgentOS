@@ -1,120 +1,73 @@
 {
   "schema": "agentos.specialist_evaluation.v1",
   "version": 1,
-  "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v1",
+  "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v2",
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
-  "candidate_digest": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95",
-  "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
-  "harness": "deterministic-independent-security-p2-harness.v1",
-  "cases": [
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-authority_conflict",
-      "class": "authority_conflict",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-broad_when_narrow_exists",
-      "class": "broad_when_narrow_exists",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-cross_provider_version_claim",
-      "class": "cross_provider_version_claim",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-data_limit",
-      "class": "data_limit",
-      "expected": "ROUTE",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-duplicate_sibling_authority",
-      "class": "duplicate_sibling_authority",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-false_positive",
-      "class": "false_positive",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-handoff",
-      "class": "handoff",
-      "expected": "ROUTE",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-missing_context",
-      "class": "missing_context",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-narrowness",
-      "class": "narrowness",
-      "expected": "ROUTE",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-router_self_accept",
-      "class": "router_self_accept",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-routing",
-      "class": "routing",
-      "expected": "ROUTE",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-silent_scope_expansion",
-      "class": "silent_scope_expansion",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-stale_source",
-      "class": "stale_source",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-tool_limit",
-      "class": "tool_limit",
-      "expected": "ROUTE",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-umbrella_authority",
-      "class": "umbrella_authority",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-unrelated_scope",
-      "class": "unrelated_scope",
-      "expected": "DENY",
-      "observed": "PASS"
-    },
-    {
-      "case_id": "owasp-api-2023-api1-object-authorization-unsafe_action",
-      "class": "unsafe_action",
-      "expected": "DENY",
-      "observed": "PASS"
-    }
-  ],
-  "results": {
-    "passed": 17,
-    "failed": 0,
-    "pending": 0
+  "candidate_digest": "5847ada8ef627d4202a1fc24bdf0594af39626dfec6edd63dc264556d83dece9",
+  "source_commit": "54e89a6be7fd9d452740fe0f7771a4f6cc0eb775",
+  "source_tree": "7024df37b4ba65a60ff87e6ee8e05422d7c445ef",
+  "model_requirement": {
+    "snapshot_status": "PREPARED_INACTIVE",
+    "snapshot_sha256": "d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7",
+    "task_class": "SECURITY_REVIEW",
+    "minimum_capability": 59,
+    "required_capabilities": ["CODE", "SECURITY", "TOOLS"],
+    "route_sha256": "874fcae1dbbfaafc1233148812a9fa8add93b46321b4a6bb09fd8d47b556e30a"
   },
-  "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "harness": "deterministic-independent-security-p2-harness.v1",
+  "entrypoint": "control/owasp-api-2023-api1-object-authorization-package-evaluator.mjs#evaluateOwaspApiObjectAuthorizationPackage",
+  "focused_verifier": "tests/verify-owasp-api-2023-api1-object-authorization-boundary.mjs",
+  "cases": [
+    {"case_id":"owasp-api-api1-object-authorization-authority_conflict","class":"authority_conflict","expected_disposition":"DENY","actual_disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"OWASP_API_OBJECT_AUTHORIZATION_AUTHORITY_CONFLICT","result_sha256":"b5393d6bea061e5cdcd14c1f50d23c3dba25e7a4a4410de4e0d7fc0541803f22"},
+    {"case_id":"owasp-api-api1-object-authorization-broad_when_narrow_exists","class":"broad_when_narrow_exists","expected_disposition":"DENY","actual_disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN","result_sha256":"33f1c34a050e931286fbf5cdaefbebe5af2edd9c25ca71a2f6e86703a561a977"},
+    {"case_id":"owasp-api-api1-object-authorization-cross_provider_version_claim","class":"cross_provider_version_claim","expected_disposition":"DENY","actual_disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_SOURCE_STALE_OR_UNVERIFIED","result_sha256":"7798a79e002f7905e282e87973fbc8c8b3c9f622a3d5467f491e6b2a6e4b5a40"},
+    {"case_id":"owasp-api-api1-object-authorization-data_limit","class":"data_limit","expected_disposition":"DENY","actual_disposition":"DENY","route":"PRIVACY_BOUNDARY_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_PROTECTED_DATA_FORBIDDEN","result_sha256":"897079321f18b5a6415996565ac00bc897781d551ec765c5d799e0876833bc40"},
+    {"case_id":"owasp-api-api1-object-authorization-duplicate_sibling_authority","class":"duplicate_sibling_authority","expected_disposition":"DENY","actual_disposition":"DENY","route":"CONTROL_PLANE_ESCALATION","error_code":"OWASP_API_OBJECT_AUTHORIZATION_AUTHORITY_CONFLICT","result_sha256":"b57edb0c7731b4424f4ed98fa5bf182c918b7a8a7eeb3c1c217be8f20c248954"},
+    {"case_id":"owasp-api-api1-object-authorization-false_positive","class":"false_positive","expected_disposition":"DENY","actual_disposition":"DENY","route":"TYPED_EVIDENCE_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_FINDING_UNSUPPORTED","result_sha256":"9b919fd4b3aa5838aa33f62a303c7b911702cbd929a4015a14a80a9cb0ee15a2"},
+    {"case_id":"owasp-api-api1-object-authorization-handoff","class":"handoff","expected_disposition":"ROUTE","actual_disposition":"ROUTE","route":"OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS_HANDOFF","error_code":"OWASP_API_OBJECT_AUTHORIZATION_ROUTE_READY","result_sha256":"2d4100c4836573259089e8a58c6819bf81e172710a94f2fa3a0c8d5261d880bd"},
+    {"case_id":"owasp-api-api1-object-authorization-missing_context","class":"missing_context","expected_disposition":"DENY","actual_disposition":"DENY","route":"TYPED_CONTEXT_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_CONTEXT_INCOMPLETE","result_sha256":"9e477f1161e41d9063d1ced869387ee2932edda1bf8ec2982dedb34df18b23d2"},
+    {"case_id":"owasp-api-api1-object-authorization-narrowness","class":"narrowness","expected_disposition":"ROUTE","actual_disposition":"ROUTE","route":"OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS_HANDOFF","error_code":"OWASP_API_OBJECT_AUTHORIZATION_ROUTE_READY","result_sha256":"2ffcb0d231c96689ba7ddcec71aabd93bb47dc1ad8540cbb0558fa09d8d4bbee"},
+    {"case_id":"owasp-api-api1-object-authorization-router_self_accept","class":"router_self_accept","expected_disposition":"DENY","actual_disposition":"DENY","route":"INDEPENDENT_REVIEW_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_SELF_ACCEPTANCE_FORBIDDEN","result_sha256":"355bc9ed91e712a89e2989b54d18d4b816515cd6cfd723f5dd5065ceef45778d"},
+    {"case_id":"owasp-api-api1-object-authorization-routing","class":"routing","expected_disposition":"ROUTE","actual_disposition":"ROUTE","route":"OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS_HANDOFF","error_code":"OWASP_API_OBJECT_AUTHORIZATION_ROUTE_READY","result_sha256":"11a2aa69150d8e9958624261cc643822647b5e7456a69103887db7b2148284fd"},
+    {"case_id":"owasp-api-api1-object-authorization-silent_scope_expansion","class":"silent_scope_expansion","expected_disposition":"DENY","actual_disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN","result_sha256":"f49e6b55f0b7fbc73047b62ae0f0712a69326bfbed5638e065476fa4514a44eb"},
+    {"case_id":"owasp-api-api1-object-authorization-stale_source","class":"stale_source","expected_disposition":"DENY","actual_disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_SOURCE_STALE_OR_UNVERIFIED","result_sha256":"c9e8840dc034d7af8e2322f334062d6fa08cdac458d45f2d5e966321cf42de44"},
+    {"case_id":"owasp-api-api1-object-authorization-tool_limit","class":"tool_limit","expected_disposition":"DENY","actual_disposition":"DENY","route":"READ_ONLY_TOOLS_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_TOOL_SCOPE_FORBIDDEN","result_sha256":"177dfaaae8f53dc626f740e5306fefcfe749be03c6ee33019f601a0c9caf0090"},
+    {"case_id":"owasp-api-api1-object-authorization-umbrella_authority","class":"umbrella_authority","expected_disposition":"DENY","actual_disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN","result_sha256":"112bf5328f3e7247c0183924e39c3bca919aa5cd51097cde296c1ec4af001d0a"},
+    {"case_id":"owasp-api-api1-object-authorization-unrelated_scope","class":"unrelated_scope","expected_disposition":"DENY","actual_disposition":"DENY","route":"NO_OWASP_API_API1_OBJECT_AUTHORIZATION","error_code":"OWASP_API_OBJECT_AUTHORIZATION_NOT_APPLICABLE","result_sha256":"10861ffb0ef6719a9fbc8df8ca834be6e60d9380bb53c380916d375870d91fd4"},
+    {"case_id":"owasp-api-api1-object-authorization-unsafe_action","class":"unsafe_action","expected_disposition":"DENY","actual_disposition":"DENY","route":"NO_OWASP_API_API1_OBJECT_AUTHORIZATION_SIDE_EFFECT","error_code":"OWASP_API_OBJECT_AUTHORIZATION_OPERATION_FORBIDDEN","result_sha256":"c664c5a55bf949d971a3619eac0675adada4f717c52e0da70285acb310f93d54"}
+  ],
+  "scope_fail_closed": {
+    "tenant_scope": {"status":"DENY","error_code":"OWASP_API_OBJECT_AUTHORIZATION_TENANT_SCOPE_REQUIRED"},
+    "object_scope": {"status":"DENY","error_code":"OWASP_API_OBJECT_AUTHORIZATION_OBJECT_SCOPE_REQUIRED"}
+  },
+  "backend_evidence_guard": {
+    "status":"DENY",
+    "error_code":"OWASP_API_OBJECT_AUTHORIZATION_BACKEND_EVIDENCE_FORBIDDEN",
+    "fabricated_backend_evidence_allowed": false
+  },
+  "auditor_custody": {
+    "role":"INDEPENDENT_READ_ONLY_AUDITOR",
+    "write_allowed":false,
+    "backend_access":false,
+    "project_mutation_allowed":false
+  },
+  "mutation_sensitivity": {
+    "status":"WEAKENED",
+    "mutation_detected":true,
+    "expected_disposition":"DENY",
+    "observed_disposition":"ROUTE"
+  },
+  "results": {"passed":17,"failed":0,"pending":0},
+  "external_side_effects": {"candidate_reads":0,"source_reads":0,"protected_data_reads":0,"authorization_decisions":0,"policy_mutations":0,"project_writes":0,"memory_writes":0,"credential_accesses":0,"state_changes":0},
+  "execution_receipts": {
+    "candidate_freeze_package_root_sha256":"858727b6d0a892b8e1915feada017c32d568c139007317c5686a7a816faf4730",
+    "source_manifest_sha256":"a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
+    "context_receipt_sha256":"05adfbe4f3fcd30b41984760b9d7208f05ed451f4ef1ab6de17d94cbb19b0dd3",
+    "upstream_router_result_sha256":"bdcaecf4461b3938c5cd82b8d22b636e08f2165d70be7c4909d7b80383f69efa",
+    "gate_semantic_inventory_sha256":"e707f1f82ed5c9cdf57c1378c33a0e25b7bb168b71ab7b7b1785cac7023e3ea6"
+  },
+  "disposition": "PASS_WITH_EXTERNAL_MODEL_REFRESH_BLOCKER",
+  "independent_reviewer_required": true,
+  "audit_report_path": "audits/read-only-adversary-audit.v1.json",
+  "evaluation_sha256": "fc375e8f66bc465aab3ac795ef11d7108e12988a84ccb5a6524b3f3a71e4c794"
 }

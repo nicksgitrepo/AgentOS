@@ -1,33 +1,74 @@
 {
   "schema": "agentos.specialist_handoff.v1",
   "version": 1,
-  "handoff_id": "specialist-handoff.owasp-api-2023-api1-object-authorization.v1",
+  "receipt_id": "specialist-handoff.owasp-api-2023-api1-object-authorization.v2",
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
+  "candidate_digest": "5847ada8ef627d4202a1fc24bdf0594af39626dfec6edd63dc264556d83dece9",
+  "source_commit": "54e89a6be7fd9d452740fe0f7771a4f6cc0eb775",
+  "source_tree": "7024df37b4ba65a60ff87e6ee8e05422d7c445ef",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95",
-  "source_commit": "170bbf4ca705dce9de199172910c6c25e243e7fc",
-  "source_tree": "aebfe743b8b460dd1ffb5c90cfc3342f93d18597",
-  "changed_paths": [
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/block.json",
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/evaluation.json",
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/gates/manifest.json",
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/handoff.json",
-    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/sources.lock"
-  ],
+  "scope": {
+    "authority_scope": "OWASP_API_2023_API1_OBJECT_AUTHORIZATION",
+    "api_category": "API1:2023",
+    "scope": "NARROW",
+    "tenant_scope_status": "BOUND",
+    "tenant_scope_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.TENANT_SCOPE",
+    "object_scope_status": "BOUND",
+    "object_scope_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.OBJECT_SCOPE",
+    "scope_relation": "TENANT_OBJECT_BOUND"
+  },
+  "auditor_custody": {
+    "role": "INDEPENDENT_READ_ONLY_AUDITOR",
+    "custody_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.READ_ONLY_AUDITOR",
+    "write_allowed": false,
+    "backend_access": false,
+    "project_mutation_allowed": false,
+    "acceptance_allowed": false,
+    "authorization_decision_allowed": false
+  },
+  "backend_evidence": {
+    "status": "NOT_PROVIDED",
+    "claimed": false,
+    "digest": null,
+    "rule": "No backend data was read and no authorization decision was made; externally supplied typed evidence is required for any dependent backend claim."
+  },
   "proof": [
-    "12-gate-pack-digests",
-    "atomic-scope-and-upstream-router",
-    "hostile-fixture-catalog",
-    "independent-reviewer-required",
-    "reusable-standard-dependency-identities",
-    "source-lock-digest"
+    "12-executable-gates",
+    "17-executable-hostile-fixtures",
+    "fixture-bound-expected-readback",
+    "tenant-object-scope-fail-closed",
+    "read-only-auditor-custody",
+    "no-fabricated-backend-evidence",
+    "mutation-sensitivity-deny-to-route-detected",
+    "zero-external-side-effects",
+    "upstream-router-receipt-bound",
+    "source-lock-receipt-bound",
+    "model-context-route-bound"
   ],
+  "evidence_receipts": {
+    "candidate_freeze_package_root_sha256": "858727b6d0a892b8e1915feada017c32d568c139007317c5686a7a816faf4730",
+    "source_manifest_sha256": "a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
+    "model_snapshot_sha256": "d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7",
+    "model_route_sha256": "874fcae1dbbfaafc1233148812a9fa8add93b46321b4a6bb09fd8d47b556e30a",
+    "context_receipt_sha256": "05adfbe4f3fcd30b41984760b9d7208f05ed451f4ef1ab6de17d94cbb19b0dd3",
+    "upstream_router_result_sha256": "bdcaecf4461b3938c5cd82b8d22b636e08f2165d70be7c4909d7b80383f69efa",
+    "gate_semantic_inventory_sha256": "e707f1f82ed5c9cdf57c1378c33a0e25b7bb168b71ab7b7b1785cac7023e3ea6",
+    "focused_verifier": "tests/verify-owasp-api-2023-api1-object-authorization-boundary.mjs"
+  },
   "residuals": [
     "applicability and project context remain external",
+    "global model-policy snapshot is PREPARED_INACTIVE and expired; governance owner must refresh and rebind it before qualification",
     "candidate is not admitted or activated",
+    "no backend evidence or consumer functionality is inferred",
     "independent utility/harm evaluation has not run",
-    "main AgentOS 3.0 integration owner must intake exact digest"
+    "main AgentOS integration owner must intake the exact candidate receipt"
   ],
-  "next_action": "Route the immutable P2 security candidate through its upstream router and independent evaluator; preserve activation OFF.",
+  "audit": {
+    "report_path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/audits/read-only-adversary-audit.v1.json",
+    "audited_commit": "54e89a6be7fd9d452740fe0f7771a4f6cc0eb775",
+    "audited_tree": "7024df37b4ba65a60ff87e6ee8e05422d7c445ef",
+    "disposition": "REPAIR_REQUIRED_WITH_MODEL_REFRESH_BLOCKER"
+  },
+  "next_action": "Route the immutable candidate through its upstream router and independent read-only auditor; refresh and explicitly rebind the expired model-policy snapshot before qualification; preserve activation OFF.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }
