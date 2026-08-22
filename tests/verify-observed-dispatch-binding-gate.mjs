@@ -61,7 +61,7 @@ const source = compileActionResultContinuation({
 });
 const authorityRebindReceipt = compileAuthorityRebindReceipt({
   receiptId: "RECEIPT.AGENTOS.AUTHORITY.REBIND.OBSERVED.TEST",
-  authority: {repository: "AgentOS", branch: "codex/observed-dispatch", remote_ref: "refs/heads/codex/observed-dispatch", commit: "a".repeat(40), tree: "b".repeat(40), parent: "c".repeat(40), remote_verified: true, worktree_clean: true},
+  authority: {repository: "AgentOS", branch: "lane/observed-dispatch", remote_ref: "refs/heads/lane/observed-dispatch", commit: "a".repeat(40), tree: "b".repeat(40), parent: "c".repeat(40), remote_verified: true, worktree_clean: true},
   repair: {helper: "control/observed-dispatch-binding-gate.mjs#rebaseObservedDispatchPendingBinding", source_helper: "control/observed-dispatch-binding-gate.mjs#compileObservedDispatchSourceSuccessor", schema: "schemas/observed-dispatch-binding-gate.v1.json", rule: "Rebase the pending route onto the validated current authority before dispatch."},
   focusedChecks: ["node:observed-dispatch", "node:authority-rebind"],
   custody: {execution_owner: "LANE_AGENT", direct_consumer: "INDEPENDENT_PLATFORM_REVIEW", controller_approval_required: false, control_plane_only: true, consumer_product_mutated: false, protected_action: false, provider_access: false, credential_access: false, spend: false, destructive_work: false, wave_activation: "OFF"},

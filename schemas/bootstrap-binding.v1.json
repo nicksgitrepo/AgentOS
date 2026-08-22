@@ -934,7 +934,7 @@
     },
     "observed_dispatch_binding_verifier": {
       "path": "tests/verify-observed-dispatch-binding-gate.mjs",
-      "sha256": "df40b4947038883c2b381f962efdf98d10dcdceeff6e65e4b857cc880fc1315c"
+      "sha256": "581bf7503b5cbbdd269673fe9858d4a7d2d8eca3624664ba8c4950894349318e"
     },
     "authority_rebind_receipt_controller": {
       "path": "control/authority-rebind-receipt.mjs",
@@ -946,7 +946,7 @@
     },
     "authority_rebind_receipt_verifier": {
       "path": "tests/verify-authority-rebind-receipt.mjs",
-      "sha256": "405025d78d8210428168149ca98d342a0f8879d0dc8c11527d9231838fb5408e"
+      "sha256": "aa143ffb9b0487f31f417f5a8837c72e98894babfa79268fa839400af6fb4752"
     },
     "local_proof_evidence_gate_controller": {
       "path": "control/local-proof-evidence-gate.mjs",
