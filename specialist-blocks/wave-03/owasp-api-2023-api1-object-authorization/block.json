@@ -14,7 +14,10 @@
     "included": [
       "category-scoped evidence",
       "exact OWASP API category identity",
-      "version-bound API security findings"
+      "version-bound API security findings",
+      "tenant-bound object scope evidence",
+      "read-only auditor custody and mutation proof",
+      "externally supplied backend evidence status only"
     ],
     "non_goals": [
       "Product writing",
@@ -137,7 +140,11 @@
       "specialist.standard.owasp-api-top10-2023 hash",
       "specialist.standard.owasp-asvs hash",
       "typed context",
-      "unknown ledger"
+      "unknown ledger",
+      "tenant scope and object scope bindings",
+      "read-only auditor custody receipt",
+      "backend evidence status; no fabricated backend proof",
+      "mutation sensitivity proof"
     ],
     "handoff_fields": [
       "block_id",
@@ -181,7 +188,10 @@
     "source_lock": "sources.lock",
     "freshness_policy": "Check publisher, identifier, version, publication/effective/supersession status, retrieved date, immutable identity, and digest when obtainable; stale or unverifiable evidence denies the dependent action.",
     "claim_rule": "Claims are limited to the exact source-backed concern and selected reusable standard blocks; no cross-version or cross-specialist claims.",
-    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion."
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion.",
+    "tenant_object_scope_rule": "Tenant scope, object scope, and their TENANT_OBJECT_BOUND relation are required; missing or unbound scope denies dependent analysis.",
+    "backend_evidence_rule": "Backend evidence is NOT_PROVIDED at this boundary; claimed or fabricated backend proof denies the dependent action.",
+    "mutation_rule": "A mutation that turns a protected DENY into ROUTE must be detected by the executable evaluator."
   },
   "controls": {
     "read": [
@@ -199,6 +209,12 @@
       "fixture evaluator",
       "local deterministic validator",
       "source-lock reader"
+    ],
+    "auditor": [
+      "independent read-only custody",
+      "no backend access",
+      "no project mutation",
+      "no acceptance or authorization decision"
     ],
     "data": [
       "no protected consumer data",
@@ -311,5 +327,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95"
+  "block_sha256": "5847ada8ef627d4202a1fc24bdf0594af39626dfec6edd63dc264556d83dece9"
 }

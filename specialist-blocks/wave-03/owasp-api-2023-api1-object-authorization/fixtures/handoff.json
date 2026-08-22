@@ -3,7 +3,27 @@
   "version": 1,
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "class": "handoff",
-  "expected": "ROUTE",
+  "fixture_id": "owasp-api-api1-object-authorization-handoff",
   "hostile": true,
-  "note": "Synthetic hostile fixture for handoff; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "ROUTE",
+    "route": "OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS_HANDOFF",
+    "error_code": "OWASP_API_OBJECT_AUTHORIZATION_ROUTE_READY"
+  },
+  "vector": {
+    "entrypoint": "control/owasp-api-2023-api1-object-authorization-boundary-gate.mjs#evaluateOwaspApiObjectAuthorizationBoundary",
+    "input": {
+      "schema": "agentos.owasp_api_object_authorization_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_OWASP_API_API1_OBJECT_AUTHORIZATION",
+      "evidence_overrides": {
+        "adversarial_flags": {}
+      }
+    },
+    "expected_readback": {
+      "disposition": "ROUTE",
+      "route": "OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS_HANDOFF",
+      "error_code": "OWASP_API_OBJECT_AUTHORIZATION_ROUTE_READY"
+    }
+  }
 }

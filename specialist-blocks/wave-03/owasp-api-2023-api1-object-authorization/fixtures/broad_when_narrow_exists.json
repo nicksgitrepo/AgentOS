@@ -3,7 +3,29 @@
   "version": 1,
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "class": "broad_when_narrow_exists",
-  "expected": "DENY",
+  "fixture_id": "owasp-api-api1-object-authorization-broad_when_narrow_exists",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {
+    "disposition": "DENY",
+    "route": "NARROW_SCOPE_REQUIRED",
+    "error_code": "OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN"
+  },
+  "vector": {
+    "entrypoint": "control/owasp-api-2023-api1-object-authorization-boundary-gate.mjs#evaluateOwaspApiObjectAuthorizationBoundary",
+    "input": {
+      "schema": "agentos.owasp_api_object_authorization_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_OWASP_API_API1_OBJECT_AUTHORIZATION",
+      "evidence_overrides": {
+        "adversarial_flags": {
+          "broad_claim": true
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN"
+    }
+  }
 }

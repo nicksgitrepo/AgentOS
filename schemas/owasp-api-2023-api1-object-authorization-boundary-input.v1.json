@@ -1,0 +1,357 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/owasp-api-2023-api1-object-authorization-boundary-input.v1.json",
+  "title": "Project-agnostic OWASP API API1 object authorization boundary input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "request_kind",
+    "evidence"
+  ],
+  "properties": {
+    "schema": {
+      "const": "agentos.owasp_api_object_authorization_boundary_input.v1"
+    },
+    "version": {
+      "const": 1
+    },
+    "request_kind": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_status",
+        "security_domain",
+        "control_identity",
+        "control_version",
+        "api_category",
+        "api_scope",
+        "standard_edition",
+        "custody_status",
+        "custody_owner",
+        "custody_ref",
+        "auditor_role",
+        "auditor_custody_status",
+        "auditor_custody_ref",
+        "auditor_write_allowed",
+        "auditor_backend_access",
+        "auditor_project_mutation_allowed",
+        "source_status",
+        "source_identity",
+        "source_version",
+        "source_effective_date",
+        "source_retrieved_date",
+        "candidate_status",
+        "candidate_digest",
+        "signal",
+        "signal_status",
+        "task_status",
+        "context_status",
+        "context_complete",
+        "requested_action",
+        "requested_tools",
+        "required_block_identities",
+        "model_policy_status",
+        "model_route_status",
+        "authority_scope",
+        "scope",
+        "object_authorization_status",
+        "authorization_boundary_status",
+        "tenant_scope_status",
+        "tenant_scope_ref",
+        "object_scope_status",
+        "object_scope_ref",
+        "scope_relation",
+        "backend_evidence_status",
+        "backend_evidence_claimed",
+        "backend_evidence_digest",
+        "standard_id",
+        "standard_version",
+        "standard_block_sha256",
+        "standard_source_manifest_sha256",
+        "asvs_block_sha256",
+        "asvs_source_manifest_sha256",
+        "model_snapshot_sha256",
+        "model_task_class",
+        "model_capability_floor",
+        "model_required_capabilities",
+        "model_route_sha256",
+        "context_receipt_sha256",
+        "upstream_router_result_sha256",
+        "project_data_present",
+        "secret_data_present",
+        "adversarial_flags"
+      ],
+      "properties": {
+        "authority_status": {
+          "type": "string"
+        },
+        "security_domain": {
+          "type": "string"
+        },
+        "control_identity": {
+          "type": "string"
+        },
+        "control_version": {
+          "type": "string"
+        },
+        "api_category": {
+          "const": "API1:2023"
+        },
+        "api_scope": {
+          "const": "BOUND"
+        },
+        "standard_edition": {
+          "const": "2023"
+        },
+        "custody_status": {
+          "type": "string"
+        },
+        "custody_owner": {
+          "type": "string"
+        },
+        "custody_ref": {
+          "type": "string"
+        },
+        "auditor_role": {
+          "const": "INDEPENDENT_READ_ONLY_AUDITOR"
+        },
+        "auditor_custody_status": {
+          "const": "BOUND"
+        },
+        "auditor_custody_ref": {
+          "type": "string"
+        },
+        "auditor_write_allowed": {
+          "const": false
+        },
+        "auditor_backend_access": {
+          "const": false
+        },
+        "auditor_project_mutation_allowed": {
+          "const": false
+        },
+        "source_status": {
+          "type": "string"
+        },
+        "source_identity": {
+          "type": "string"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "source_effective_date": {
+          "type": "string"
+        },
+        "source_retrieved_date": {
+          "type": "string"
+        },
+        "candidate_status": {
+          "type": "string"
+        },
+        "candidate_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "signal": {
+          "type": "string"
+        },
+        "signal_status": {
+          "type": "string"
+        },
+        "task_status": {
+          "type": "string"
+        },
+        "context_status": {
+          "type": "string"
+        },
+        "context_complete": {
+          "type": "boolean"
+        },
+        "requested_action": {
+          "type": "string"
+        },
+        "requested_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_block_identities": {
+          "type": "array",
+          "minItems": 9,
+          "maxItems": 9,
+          "items": {
+            "type": "string"
+          }
+        },
+        "model_policy_status": {
+          "type": "string"
+        },
+        "model_route_status": {
+          "type": "string"
+        },
+        "authority_scope": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "object_authorization_status": {
+          "const": "BOUND"
+        },
+        "authorization_boundary_status": {
+          "const": "BOUND"
+        },
+        "tenant_scope_status": {
+          "type": "string"
+        },
+        "tenant_scope_ref": {
+          "type": "string"
+        },
+        "object_scope_status": {
+          "type": "string"
+        },
+        "object_scope_ref": {
+          "type": "string"
+        },
+        "scope_relation": {
+          "type": "string"
+        },
+        "backend_evidence_status": {
+          "type": "string"
+        },
+        "backend_evidence_claimed": {
+          "const": false
+        },
+        "backend_evidence_digest": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "standard_id": {
+          "const": "source.owasp-api-top10-2023"
+        },
+        "standard_version": {
+          "const": "2023"
+        },
+        "standard_block_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "standard_source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "asvs_block_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "asvs_source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_task_class": {
+          "const": "SECURITY_REVIEW"
+        },
+        "model_capability_floor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "model_required_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "model_route_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "context_receipt_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "upstream_router_result_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "project_data_present": {
+          "type": "boolean"
+        },
+        "secret_data_present": {
+          "type": "boolean"
+        },
+        "adversarial_flags": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authority_conflict",
+            "scope_expanded",
+            "protected_data",
+            "stale_source",
+            "unsupported_tool",
+            "duplicate_authority",
+            "self_acceptance",
+            "unrelated_scope",
+            "missing_context",
+            "unsafe_action",
+            "broad_claim",
+            "cross_provider",
+            "false_positive"
+          ],
+          "properties": {
+            "authority_conflict": {
+              "type": "boolean"
+            },
+            "scope_expanded": {
+              "type": "boolean"
+            },
+            "protected_data": {
+              "type": "boolean"
+            },
+            "stale_source": {
+              "type": "boolean"
+            },
+            "unsupported_tool": {
+              "type": "boolean"
+            },
+            "duplicate_authority": {
+              "type": "boolean"
+            },
+            "self_acceptance": {
+              "type": "boolean"
+            },
+            "unrelated_scope": {
+              "type": "boolean"
+            },
+            "missing_context": {
+              "type": "boolean"
+            },
+            "unsafe_action": {
+              "type": "boolean"
+            },
+            "broad_claim": {
+              "type": "boolean"
+            },
+            "cross_provider": {
+              "type": "boolean"
+            },
+            "false_positive": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

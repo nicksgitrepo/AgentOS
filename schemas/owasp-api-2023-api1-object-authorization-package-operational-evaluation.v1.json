@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/owasp-api-2023-api1-object-authorization-package-operational-evaluation.v1.json",
+  "title": "Operational OWASP API API1 specialist package evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "block_id",
+    "lifecycle",
+    "activation",
+    "package_root_sha256",
+    "package_block_sha256",
+    "gate_inventory_sha256",
+    "fixture_inventory_sha256",
+    "gate_execution",
+    "fixture_results",
+    "scope_fail_closed",
+    "backend_evidence_guard",
+    "mutation_sensitivity",
+    "auditor_custody",
+    "independent_signature_required",
+    "observed_at_utc",
+    "source_manifest_sha256",
+    "model_snapshot_sha256",
+    "model_route_sha256",
+    "context_receipt_sha256",
+    "upstream_router_result_sha256",
+    "gate_semantic_inventory_sha256",
+    "evaluation_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "agentos.specialist_owasp_api_object_authorization_package_operational_evaluation.v1"
+    },
+    "version": {
+      "const": 1
+    },
+    "status": {
+      "const": "PASS"
+    },
+    "block_id": {
+      "const": "specialist.security.owasp-api-2023-api1-object-authorization"
+    },
+    "lifecycle": {
+      "const": "CANDIDATE"
+    },
+    "activation": {
+      "const": "OFF"
+    },
+    "package_root_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "package_block_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gate_inventory_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "fixture_inventory_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gate_execution": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12
+    },
+    "fixture_results": {
+      "type": "array",
+      "minItems": 17,
+      "maxItems": 17
+    },
+    "scope_fail_closed": {
+      "type": "object"
+    },
+    "backend_evidence_guard": {
+      "type": "object"
+    },
+    "mutation_sensitivity": {
+      "type": "object"
+    },
+    "auditor_custody": {
+      "type": "object"
+    },
+    "independent_signature_required": {
+      "const": true
+    },
+    "observed_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model_snapshot_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model_route_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "context_receipt_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "upstream_router_result_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gate_semantic_inventory_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evaluation_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

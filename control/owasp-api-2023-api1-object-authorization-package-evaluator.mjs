@@ -1,0 +1,113 @@
+#!/usr/bin/env node
+
+/* Independent, read-only evaluator for the OWASP API API1 specialist. */
+
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {createHash} from "node:crypto";
+import {fileURLToPath, pathToFileURL} from "node:url";
+import {canonicalDigest} from "./content-addressing.mjs";
+import {
+  evaluateOwaspApiObjectAuthorizationBoundary,
+  OWASP_API_OBJECT_AUTHORIZATION_INPUT_SCHEMA,
+} from "./owasp-api-2023-api1-object-authorization-boundary-gate.mjs";
+import {
+  OWASP_API_OBJECT_AUTHORIZATION_BLOCK_ID,
+  resolveOwaspApiObjectAuthorizationCanonicalAuthority,
+} from "./owasp-api-2023-api1-object-authorization-authority-binding.mjs";
+
+export const OWASP_API_OBJECT_AUTHORIZATION_EVALUATION_SCHEMA = "agentos.specialist_owasp_api_object_authorization_package_operational_evaluation.v1";
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const PACKAGE = "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization";
+const CLASSES = Object.freeze([
+  "authority_conflict", "broad_when_narrow_exists", "cross_provider_version_claim", "data_limit",
+  "duplicate_sibling_authority", "false_positive", "handoff", "missing_context", "narrowness",
+  "router_self_accept", "routing", "silent_scope_expansion", "stale_source", "tool_limit",
+  "umbrella_authority", "unrelated_scope", "unsafe_action",
+]);
+const GATE_IDS = Object.freeze([
+  "00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals",
+  "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody",
+  "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff",
+  "10-proof-acceptance", "11-lifecycle-recovery-archive",
+]);
+const FLAGS = Object.freeze([
+  "authority_conflict", "scope_expanded", "protected_data", "stale_source", "unsupported_tool",
+  "duplicate_authority", "self_acceptance", "unrelated_scope", "missing_context", "unsafe_action",
+  "broad_claim", "cross_provider", "false_positive",
+]);
+const SIDE_EFFECT_KEYS = Object.freeze([
+  "candidate_reads", "source_reads", "protected_data_reads", "authorization_decisions", "policy_mutations",
+  "project_writes", "memory_writes", "credential_accesses", "state_changes",
+]);
+const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const read = (file) => fs.readFileSync(file, "utf8");
+const json = (file) => JSON.parse(read(file));
+function fail(message, code = "OWASP_API_OBJECT_AUTHORIZATION_EVALUATION_INVALID") { const error = new Error(message); error.code = code; throw error; }
+function assert(value, message, code) { if (!value) fail(message, code); }
+
+function assertBoundaryResult(actual, expected, label) {
+  assert(actual && typeof actual === "object" && !Array.isArray(actual), `${label} result is not an object`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_SCHEMA_INVALID");
+  const base = ["schema", "version", "disposition", "route", "analysis_allowed", "acceptance_allowed", "authorization_decision_allowed", "policy_mutation_allowed", "external_side_effects", "error_code", "input_sha256", "result_sha256"];
+  const expectedKeys = expected.disposition === "ROUTE" ? [...base, "selected_specialist", "handoff"] : base;
+  assert(JSON.stringify(Object.keys(actual).sort()) === JSON.stringify(expectedKeys.slice().sort()), `${label} result fields differ`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_SCHEMA_INVALID");
+  assert(actual.schema === "agentos.owasp_api_object_authorization_boundary_result.v1" && actual.version === 1 && actual.disposition === expected.disposition && actual.route === expected.route && actual.error_code === expected.error_code, `${label} result differs from committed expected readback`, "OWASP_API_OBJECT_AUTHORIZATION_HOSTILE_RESULT_FAILED");
+  assert(actual.analysis_allowed === (expected.disposition === "ROUTE") && actual.acceptance_allowed === false && actual.authorization_decision_allowed === false && actual.policy_mutation_allowed === false, `${label} exposes a forbidden capability`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_CAPABILITY_INVALID");
+  assert(actual.external_side_effects && JSON.stringify(Object.keys(actual.external_side_effects).sort()) === JSON.stringify(SIDE_EFFECT_KEYS.slice().sort()) && SIDE_EFFECT_KEYS.every((key) => actual.external_side_effects[key] === 0), `${label} side effects are malformed or nonzero`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_SIDE_EFFECT");
+  assert(/^[0-9a-f]{64}$/u.test(actual.input_sha256) && /^[0-9a-f]{64}$/u.test(actual.result_sha256) && actual.result_sha256 === canonicalDigest({...actual, result_sha256: null}), `${label} result digest is not self-consistent`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_DIGEST_INVALID");
+  if (expected.disposition === "ROUTE") { assert(actual.selected_specialist === OWASP_API_OBJECT_AUTHORIZATION_BLOCK_ID, `${label} selected specialist differs`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_CAPABILITY_INVALID"); assert(actual.handoff && JSON.stringify(Object.keys(actual.handoff).sort()) === JSON.stringify(["execution_instruction", "next_action", "status"].sort()) && actual.handoff.status === "WAITING_WITH_RECEIPT" && actual.handoff.execution_instruction === false, `${label} handoff widens authority`, "OWASP_API_OBJECT_AUTHORIZATION_RESULT_SCHEMA_INVALID"); }
+  return actual;
+}
+
+function inventory(root) {
+  const files = ["block.json", "sources.lock", "gates/manifest.json", "gates/execution.json", "evaluation.json", "handoff.json"];
+  for (const name of fs.readdirSync(path.join(root, "gates")).filter((name) => name.endsWith(".gate"))) files.push(`gates/${name}`);
+  for (const name of fs.readdirSync(path.join(root, "fixtures")).filter((name) => name.endsWith(".json"))) files.push(`fixtures/${name}`);
+  return files.sort();
+}
+function fixtureMap(root) {
+  const names = fs.readdirSync(path.join(root, "fixtures")).filter((name) => name.endsWith(".json")).sort(); assert(names.length === CLASSES.length && new Set(names).size === CLASSES.length, "API1 fixture inventory is incomplete", "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_INVENTORY_INVALID"); const map = new Map();
+  for (const name of names) {
+    const fixture = json(path.join(root, "fixtures", name));
+    assert(fixture.block_id === OWASP_API_OBJECT_AUTHORIZATION_BLOCK_ID && CLASSES.includes(fixture.class) && fixture.hostile === true, `API1 fixture is not a bound hostile vector: ${name}`, "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_UNBOUND");
+    assert(fixture.fixture_id === `owasp-api-api1-object-authorization-${fixture.class}`, `API1 fixture ID is not canonical: ${name}`, "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_ID_INVALID");
+    assert(fixture.expected && JSON.stringify(Object.keys(fixture.expected).sort()) === JSON.stringify(["disposition", "error_code", "route"].sort()), `API1 fixture expectation is invalid: ${name}`, "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_EXPECTATION_INVALID");
+    assert(fixture.vector?.entrypoint === "control/owasp-api-2023-api1-object-authorization-boundary-gate.mjs#evaluateOwaspApiObjectAuthorizationBoundary" && fixture.vector.input?.schema === OWASP_API_OBJECT_AUTHORIZATION_INPUT_SCHEMA && fixture.vector.input?.version === 1 && fixture.vector.input?.request_kind && fixture.vector.expected_readback && JSON.stringify(fixture.vector.expected_readback) === JSON.stringify(fixture.expected), `API1 fixture vector is not executable/bound: ${name}`, "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_VECTOR_INVALID");
+    assert(!map.has(fixture.class), `API1 duplicate fixture class: ${name}`, "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_ALIAS"); map.set(fixture.class, {fixture, file_sha256: sha(fs.readFileSync(path.join(root, "fixtures", name)))});
+  }
+  assert([...map.keys()].sort().join("\0") === CLASSES.slice().sort().join("\0"), "API1 fixture classes are incomplete", "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_CLASS_INVENTORY_INVALID"); return map;
+}
+export function buildOwaspApiObjectAuthorizationInput(candidateDigest, authority = resolveOwaspApiObjectAuthorizationCanonicalAuthority()) {
+  const adversarial_flags = Object.fromEntries(FLAGS.map((key) => [key, false]));
+  return {schema: OWASP_API_OBJECT_AUTHORIZATION_INPUT_SCHEMA, version: 1, request_kind: "ANALYZE_OWASP_API_API1_OBJECT_AUTHORIZATION", evidence: {
+    authority_status: "CURRENT", security_domain: "OWASP_API_SECURITY_TOP10", control_identity: "CONTROL.OWASP_API_2023_API1_OBJECT_AUTHORIZATION", control_version: "1", api_category: "API1:2023", api_scope: "BOUND", standard_edition: "2023", custody_status: "BOUND", custody_owner: "AGENT.SECURITY.OWASP_API_OBJECT_AUTHORIZATION", custody_ref: authority.custody_ref, auditor_role: "INDEPENDENT_READ_ONLY_AUDITOR", auditor_custody_status: "BOUND", auditor_custody_ref: authority.auditor_custody_ref, auditor_write_allowed: false, auditor_backend_access: false, auditor_project_mutation_allowed: false, source_status: "CURRENT_VERIFIED", source_identity: authority.source_identity, source_version: authority.source_version, source_effective_date: authority.source_effective_date, source_retrieved_date: authority.source_retrieved_date, candidate_status: "CURRENT_CANDIDATE", candidate_digest: candidateDigest, signal: "OWASP_API_API1_OBJECT_AUTHORIZATION", signal_status: "BOUND", task_status: "OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS", context_status: "OWASP_API_API1_OBJECT_AUTHORIZATION_CONTEXT", context_complete: true, requested_action: "ANALYZE", requested_tools: ["READ_CANDIDATE", "READ_SOURCE_LOCK", "READ_CONTEXT"], required_block_identities: authority.required_block_identities, model_policy_status: authority.model.snapshot_status, model_route_status: "BOUND", authority_scope: "OWASP_API_2023_API1_OBJECT_AUTHORIZATION", scope: "NARROW", object_authorization_status: "BOUND", authorization_boundary_status: "BOUND", tenant_scope_status: "BOUND", tenant_scope_ref: authority.tenant_scope_ref, object_scope_status: "BOUND", object_scope_ref: authority.object_scope_ref, scope_relation: "TENANT_OBJECT_BOUND", backend_evidence_status: "NOT_PROVIDED", backend_evidence_claimed: false, backend_evidence_digest: null, standard_id: "source.owasp-api-top10-2023", standard_version: "2023", standard_block_sha256: authority.api_standard_block_sha256, standard_source_manifest_sha256: authority.api_standard_source_manifest_sha256, asvs_block_sha256: authority.asvs_block_sha256, asvs_source_manifest_sha256: authority.asvs_source_manifest_sha256, model_snapshot_sha256: authority.model.snapshot_sha256, model_task_class: authority.model.task_class, model_capability_floor: authority.model.minimum_capability, model_required_capabilities: authority.model.required_capabilities, model_route_sha256: authority.model_route_sha256, context_receipt_sha256: authority.context_sha256, upstream_router_result_sha256: authority.router_result_sha256, project_data_present: false, secret_data_present: false, adversarial_flags,
+  }};
+}
+export function buildOwaspApiObjectAuthorizationFixtureInput(fixture, candidateDigest, authority = resolveOwaspApiObjectAuthorizationCanonicalAuthority()) { const input = buildOwaspApiObjectAuthorizationInput(candidateDigest, authority); Object.assign(input.evidence.adversarial_flags, fixture.vector.input.evidence_overrides?.adversarial_flags ?? {}); Object.assign(input.evidence, fixture.vector.input.evidence_overrides?.evidence ?? {}); if (fixture.vector.input.request_kind) input.request_kind = fixture.vector.input.request_kind; return input; }
+const inputFor = buildOwaspApiObjectAuthorizationFixtureInput;
+function gateExecutions(root, manifest, fixtures, authority) {
+  const execution = json(path.join(root, "gates/execution.json")); assert(execution.schema === "agentos.owasp_api_object_authorization_gate_execution.v1" && execution.version === 1 && execution.block_id === OWASP_API_OBJECT_AUTHORIZATION_BLOCK_ID && execution.evaluator_entrypoint === "control/owasp-api-2023-api1-object-authorization-package-evaluator.mjs#evaluateOwaspApiObjectAuthorizationPackage", "API1 gate execution manifest is invalid", "OWASP_API_OBJECT_AUTHORIZATION_GATE_EXECUTION_INVALID"); assert(JSON.stringify(execution.ordered_gate_ids) === JSON.stringify(manifest.ordered_gate_ids) && execution.executions.length === GATE_IDS.length, "API1 gate execution order/inventory is invalid", "OWASP_API_OBJECT_AUTHORIZATION_GATE_EXECUTION_INVALID"); const seen = new Set(); const results = [];
+  for (const entry of execution.executions) { assert(!seen.has(entry.gate_id) && GATE_IDS.includes(entry.gate_id), `API1 gate execution is duplicated or unknown: ${entry.gate_id}`, "OWASP_API_OBJECT_AUTHORIZATION_GATE_EXECUTION_ID_INVALID"); seen.add(entry.gate_id); const fixtureEntry = fixtures.get(entry.fixture_class); assert(fixtureEntry, `API1 gate fixture is missing: ${entry.fixture_class}`, "OWASP_API_OBJECT_AUTHORIZATION_GATE_FIXTURE_MISSING"); const expected = entry.adversarial_flags && Object.keys(entry.adversarial_flags).length ? entry.expected : fixtureEntry.fixture.expected; if (!entry.adversarial_flags || Object.keys(entry.adversarial_flags).length === 0) assert(JSON.stringify(entry.expected) === JSON.stringify(fixtureEntry.fixture.expected), `API1 gate expected result is not fixture-bound: ${entry.gate_id}`, "OWASP_API_OBJECT_AUTHORIZATION_GATE_EXPECTATION_UNBOUND"); const input = inputFor(fixtureEntry.fixture, authority.block_sha256, authority); Object.assign(input.evidence.adversarial_flags, entry.adversarial_flags ?? {}); const actual = evaluateOwaspApiObjectAuthorizationBoundary(input); assertBoundaryResult(actual, expected, `API1 gate ${entry.gate_id}`); results.push({gate_id: entry.gate_id, fixture_class: entry.fixture_class, entrypoint: execution.evaluator_entrypoint, expected, actual: {disposition: actual.disposition, route: actual.route, error_code: actual.error_code, result_sha256: actual.result_sha256}, external_side_effects: actual.external_side_effects}); }
+  assert(seen.size === GATE_IDS.length, "API1 gate execution coverage is incomplete", "OWASP_API_OBJECT_AUTHORIZATION_GATE_EXECUTION_COVERAGE_INVALID"); return results;
+}
+async function mutation(candidateDigest) {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-owasp-api1-object-authorization-mutation-"));
+  try {
+    fs.cpSync(path.join(ROOT, "control"), path.join(temp, "control"), {recursive: true}); fs.cpSync(path.join(ROOT, "specialist-blocks", "wave-03", "owasp-api-2023-api1-object-authorization"), path.join(temp, "specialist-blocks", "wave-03", "owasp-api-2023-api1-object-authorization"), {recursive: true}); fs.cpSync(path.join(ROOT, "specialist-blocks", "standards"), path.join(temp, "specialist-blocks", "standards"), {recursive: true}); fs.cpSync(path.join(ROOT, "specialist-blocks", "registry"), path.join(temp, "specialist-blocks", "registry"), {recursive: true}); fs.mkdirSync(path.join(temp, "fixtures"), {recursive: true}); fs.copyFileSync(path.join(ROOT, "fixtures", "model-policy-snapshot.initial.v1.json"), path.join(temp, "fixtures", "model-policy-snapshot.initial.v1.json"));
+    const target = path.join(temp, "control", "owasp-api-2023-api1-object-authorization-boundary-gate.mjs"); let source = read(target); const anchor = 'if (f.scope_expanded || f.broad_claim || e.scope !== "NARROW") return result("DENY", "NARROW_SCOPE_REQUIRED", "OWASP_API_OBJECT_AUTHORIZATION_SCOPE_EXPANSION_FORBIDDEN", input);'; assert(source.includes(anchor), "API1 mutation anchor is missing", "OWASP_API_OBJECT_AUTHORIZATION_MUTATION_ANCHOR_MISSING"); source = source.replace(anchor, 'if (f.scope_expanded || f.broad_claim || e.scope !== "NARROW") return result("ROUTE", "OWASP_API_API1_OBJECT_AUTHORIZATION_ANALYSIS_HANDOFF", "MUTATED_SCOPE_EXPANSION_ALLOWED", input, {analysis_allowed: true, selected_specialist: "specialist.security.owasp-api-2023-api1-object-authorization", handoff: {status: "WAITING_WITH_RECEIPT", next_action: "mutated", execution_instruction: false}});'); fs.writeFileSync(target, source);
+    const authorityModule = await import(`${pathToFileURL(path.join(temp, "control", "owasp-api-2023-api1-object-authorization-authority-binding.mjs")).href}?mutation-authority=${Date.now()}`); const authority = authorityModule.resolveOwaspApiObjectAuthorizationCanonicalAuthority(); const module = await import(`${pathToFileURL(target).href}?mutation=${Date.now()}`); const fixture = json(path.join(ROOT, PACKAGE, "fixtures/broad_when_narrow_exists.json")); const observed = module.evaluateOwaspApiObjectAuthorizationBoundary(inputFor(fixture, candidateDigest, authority)); return {status: observed.disposition === "ROUTE" ? "WEAKENED" : "INTACT", mutation_detected: observed.disposition === "ROUTE", expected_disposition: "DENY", observed_disposition: observed.disposition};
+  } finally { fs.rmSync(temp, {recursive: true, force: true}); }
+}
+
+export async function evaluateOwaspApiObjectAuthorizationPackage() {
+  const authority = resolveOwaspApiObjectAuthorizationCanonicalAuthority(); const root = path.join(ROOT, PACKAGE); const block = json(path.join(root, "block.json")); assert(block.block_id === OWASP_API_OBJECT_AUTHORIZATION_BLOCK_ID && block.lifecycle === "CANDIDATE" && block.activation === "OFF" && block.block_sha256 === authority.block_sha256, "API1 package state or identity is invalid", "OWASP_API_OBJECT_AUTHORIZATION_PACKAGE_STATE_INVALID");
+  const files = inventory(root); const digests = files.map((relative_path) => ({relative_path: `${PACKAGE}/${relative_path}`, sha256: sha(fs.readFileSync(path.join(root, relative_path)))})); assert(files.filter((file) => file.startsWith("gates/") && file.endsWith(".gate")).length === GATE_IDS.length, "API1 gates are incomplete", "OWASP_API_OBJECT_AUTHORIZATION_GATE_INVENTORY_INVALID"); const fixtures = fixtureMap(root); const gateManifest = json(path.join(root, "gates/manifest.json")); const gateExecution = gateExecutions(root, gateManifest, fixtures, authority); const results = [];
+  for (const entry of [...fixtures.values()].sort((a, b) => a.fixture.class.localeCompare(b.fixture.class))) { const fixture = entry.fixture; const actual = evaluateOwaspApiObjectAuthorizationBoundary(inputFor(fixture, authority.block_sha256, authority)); assertBoundaryResult(actual, fixture.expected, `API1 vector ${fixture.class}`); results.push({fixture_id: fixture.fixture_id, fixture_class: fixture.class, fixture_file_sha256: entry.file_sha256, entrypoint: fixture.vector.entrypoint, entrypoint_invoked: true, semantic_execution_completed: true, expected_outcome: fixture.expected.disposition, actual_outcome: actual.disposition, expected_route: fixture.expected.route, actual_route: actual.route, expected_error_code: fixture.expected.error_code, actual_error_code: actual.error_code, external_side_effects: actual.external_side_effects, result_sha256: canonicalDigest({class: fixture.class, expected: fixture.expected, actual: actual.result_sha256})}); }
+  const tenantMissing = inputFor(fixtures.get("handoff").fixture, authority.block_sha256, authority); tenantMissing.evidence.tenant_scope_status = "MISSING"; const tenantResult = evaluateOwaspApiObjectAuthorizationBoundary(tenantMissing); assertBoundaryResult(tenantResult, {disposition: "DENY", route: "TENANT_SCOPE_REQUIRED", error_code: "OWASP_API_OBJECT_AUTHORIZATION_TENANT_SCOPE_REQUIRED"}, "tenant scope fail-closed vector");
+  const objectMissing = inputFor(fixtures.get("handoff").fixture, authority.block_sha256, authority); objectMissing.evidence.object_scope_status = "MISSING"; const objectResult = evaluateOwaspApiObjectAuthorizationBoundary(objectMissing); assertBoundaryResult(objectResult, {disposition: "DENY", route: "OBJECT_SCOPE_REQUIRED", error_code: "OWASP_API_OBJECT_AUTHORIZATION_OBJECT_SCOPE_REQUIRED"}, "object scope fail-closed vector");
+  const backendClaim = inputFor(fixtures.get("handoff").fixture, authority.block_sha256, authority); backendClaim.evidence.backend_evidence_status = "CLAIMED"; backendClaim.evidence.backend_evidence_claimed = true; const backendResult = evaluateOwaspApiObjectAuthorizationBoundary(backendClaim); assertBoundaryResult(backendResult, {disposition: "DENY", route: "EXTERNAL_BACKEND_EVIDENCE_REQUIRED", error_code: "OWASP_API_OBJECT_AUTHORIZATION_BACKEND_EVIDENCE_FORBIDDEN"}, "fabricated backend evidence vector");
+  const sensitivity = await mutation(authority.block_sha256); assert(sensitivity.mutation_detected, "API1 mutation proof is missing", "OWASP_API_OBJECT_AUTHORIZATION_MUTATION_PROOF_MISSING");
+  const evaluation = {schema: OWASP_API_OBJECT_AUTHORIZATION_EVALUATION_SCHEMA, version: 1, status: "PASS", block_id: OWASP_API_OBJECT_AUTHORIZATION_BLOCK_ID, lifecycle: "CANDIDATE", activation: "OFF", package_root_sha256: canonicalDigest(digests), package_block_sha256: authority.block_sha256, gate_inventory_sha256: canonicalDigest(digests.filter((entry) => entry.relative_path.includes("/gates/"))), fixture_inventory_sha256: canonicalDigest(digests.filter((entry) => entry.relative_path.includes("/fixtures/"))), gate_execution: gateExecution, fixture_results: results, scope_fail_closed: {tenant_scope: {status: tenantResult.disposition, error_code: tenantResult.error_code}, object_scope: {status: objectResult.disposition, error_code: objectResult.error_code}}, backend_evidence_guard: {status: backendResult.disposition, error_code: backendResult.error_code, fabricated_backend_evidence_allowed: false}, mutation_sensitivity: sensitivity, independent_signature_required: true, auditor_custody: {role: "INDEPENDENT_READ_ONLY_AUDITOR", write_allowed: false, backend_access: false, project_mutation_allowed: false}, observed_at_utc: new Date().toISOString(), source_manifest_sha256: authority.source_manifest_sha256, model_snapshot_sha256: authority.model.snapshot_sha256, model_route_sha256: authority.model_route_sha256, context_receipt_sha256: authority.context_sha256, upstream_router_result_sha256: authority.router_result_sha256, gate_semantic_inventory_sha256: authority.gate_semantic_inventory_sha256, evaluation_sha256: null}; evaluation.evaluation_sha256 = canonicalDigest({...evaluation, evaluation_sha256: null}); return Object.freeze(evaluation);
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) process.stdout.write(`${JSON.stringify(await evaluateOwaspApiObjectAuthorizationPackage(), null, 2)}\n`);
