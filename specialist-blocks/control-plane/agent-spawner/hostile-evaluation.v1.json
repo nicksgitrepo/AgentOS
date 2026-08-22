@@ -1,7 +1,7 @@
 {
   "schema": "agentos.spawner_hostile_evaluation.v1",
   "version": 1,
-  "candidate_package_file_sha256": "4e6c311c13f5b9c4f8a39c2a64d094bf84967fd4c4ebd167c4619841d831c2c2",
+  "candidate_package_file_sha256": "2652c188ffb65cb6bf87a76b8b88616bdcbc1859aa934a8c91925f130120e653",
   "fixture_manifest_sha256": "963992e6accbd5d60fad1fca8bb0632b69f6df58d77cd1609430e3297270076a",
   "gate_contracts_sha256": "2b0859eff4f699ed79020e0205e06966ca81573b2dbfde7e63acd76784acdfbf",
   "result_count": 38,
@@ -139,8 +139,8 @@
       "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
       "implementation_entrypoint": "control/agent-lifecycle-custody.mjs#authorizeAgentDespawn",
       "negative_assertion_count": 2,
-      "error_code": "Error",
-      "error_message_sha256": "9229d48f16e5834c04b2cd326cb121736bcd88c4ae5d60e612ecac5875dd57ee",
+      "error_code": "AGENT_LIFECYCLE_CUSTODY_INVALID",
+      "error_message_sha256": "7a1ce9fb697257eba5ff6e2fa5b2ebf67d4450d1ec959a5a24e3dcf0acdc1a25",
       "result": "PASS"
     },
     {
@@ -187,8 +187,8 @@
       "actual_outcome": "REJECT_WITH_TYPED_DEFECT",
       "implementation_entrypoint": "control/collaborative-audit-workflow.mjs#compileCollaborativeAuditWave",
       "negative_assertion_count": 2,
-      "error_code": "Error",
-      "error_message_sha256": "fbff7dccabb44d1427cad9046feacd1d41490777602c4deb1d388c88e6cc7d1d",
+      "error_code": "COLLABORATIVE_AUDIT_TEMPORARY_ROLE_ADMISSION_REQUIRED",
+      "error_message_sha256": "9a73d87ed6941373713f717a6e6613707e318260cdcb43737c55dff26e3d5e20",
       "result": "PASS"
     },
     {
@@ -577,5 +577,5 @@
     }
   ],
   "status": "PASS",
-  "evaluation_sha256": "4cbcdf779cff8fc1a55d63badda454f26b40577e37d32afce3476b9a45ac9f1d"
+  "evaluation_sha256": "1853b841b679f30fbd3c945fcb111a62d7c3483b486d7d6832ba90b4d38a574f"
 }
