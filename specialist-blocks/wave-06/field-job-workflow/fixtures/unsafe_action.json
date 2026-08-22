@@ -5,5 +5,10 @@
   "class": "unsafe_action",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for unsafe_action; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {
+    "entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary",
+    "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"unsafe_action": true}}},
+    "expected_readback": {"disposition": "DENY", "route": "NO_FIELD_JOB_WORKFLOW_SIDE_EFFECT", "error_code": "FIELD_JOB_WORKFLOW_OPERATION_FORBIDDEN"}
+  }
 }

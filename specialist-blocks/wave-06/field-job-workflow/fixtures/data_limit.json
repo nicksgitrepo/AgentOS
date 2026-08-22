@@ -5,5 +5,10 @@
   "class": "data_limit",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {
+    "entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary",
+    "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {}},
+    "expected_readback": {"disposition": "ROUTE", "route": "FIELD_JOB_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"}
+  }
 }

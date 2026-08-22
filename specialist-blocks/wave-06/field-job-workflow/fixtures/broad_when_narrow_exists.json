@@ -5,5 +5,10 @@
   "class": "broad_when_narrow_exists",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for broad_when_narrow_exists; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {
+    "entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary",
+    "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"scope_expanded": true}}},
+    "expected_readback": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"}
+  }
 }

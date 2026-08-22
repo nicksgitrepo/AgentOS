@@ -5,5 +5,10 @@
   "class": "unrelated_scope",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {
+    "entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary",
+    "input": {"request_kind": "UNRELATED_REQUEST", "evidence_overrides": {}},
+    "expected_readback": {"disposition": "DENY", "route": "NO_FIELD_JOB_WORKFLOW_SCOPE", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_NOT_APPLICABLE"}
+  }
 }

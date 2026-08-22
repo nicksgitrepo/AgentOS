@@ -5,5 +5,10 @@
   "class": "tool_limit",
   "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {
+    "entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary",
+    "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"unsupported_tool": true}}},
+    "expected_readback": {"disposition": "ROUTE", "route": "TOOL_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_TOOL_REVIEW_REQUIRED"}
+  }
 }

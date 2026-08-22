@@ -5,5 +5,10 @@
   "class": "cross_provider_version_claim",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
+  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external.",
+  "vector": {
+    "entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary",
+    "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"cross_provider": true}}},
+    "expected_readback": {"disposition": "DENY", "route": "SOURCE_REFRESH_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SOURCE_IDENTITY_INVALID"}
+  }
 }
