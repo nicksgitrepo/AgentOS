@@ -951,8 +951,8 @@
       "router": "specialist.security.owasp-web-top10-router",
       "block_id": "specialist.security.owasp-web-2025-a01-broken-access-control",
       "package_status": "COMPILED_CANDIDATE",
-      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
-      "evaluator_receipt": "specialist-eval.owasp-web-2025-a01-broken-access-control.v1"
+      "evaluator_status": "EXECUTED_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.owasp-api-2023-web_a01-inventory.v1"
     },
     {
       "generic_id": "SEC.OWASP_WEB_2025_A02_SECURITY_MISCONFIGURATION",

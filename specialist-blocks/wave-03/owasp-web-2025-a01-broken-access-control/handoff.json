@@ -8,26 +8,35 @@
   "source_commit": "170bbf4ca705dce9de199172910c6c25e243e7fc",
   "source_tree": "aebfe743b8b460dd1ffb5c90cfc3342f93d18597",
   "changed_paths": [
+    "specialist-blocks/registry/owasp-web-2025-a01-broken-access-control-operational-readback.v1.json",
     "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/block.json",
+    "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/context.json",
     "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/evaluation.json",
+    "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/gates/execution.json",
     "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/gates/manifest.json",
     "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/handoff.json",
+    "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/model-route.json",
     "specialist-blocks/wave-03/owasp-web-2025-a01-broken-access-control/sources.lock"
   ],
   "proof": [
     "12-gate-pack-digests",
     "atomic-scope-and-upstream-router",
+    "executable-boundary-hostile-regression",
     "hostile-fixture-catalog",
     "independent-reviewer-required",
+    "operational-evaluator-readback",
     "reusable-standard-dependency-identities",
+    "runtime-workspace-custody",
     "source-lock-digest"
   ],
   "residuals": [
     "applicability and project context remain external",
     "candidate is not admitted or activated",
+    "external admission remains BLOCKED_EXACT",
+    "external reviewer provisioning and Luna audit remain required",
     "independent utility/harm evaluation has not run",
     "main AgentOS 3.0 integration owner must intake exact digest"
   ],
-  "next_action": "Route the immutable P2 security candidate through its upstream router and independent evaluator; preserve activation OFF.",
+  "next_action": "Preserve activation OFF; route the exact candidate through the external independent reviewer after fresh authority and read-only Luna audit are available.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }
