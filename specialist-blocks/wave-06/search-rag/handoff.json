@@ -5,8 +5,8 @@
   "block_id": "specialist.ai.search-rag",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "c661430c0f7b9da3c833a914f9f3cb1d4b4e9fe3d02303dc6b3db9447eb2a3ce",
-  "source_commit": "7ba72b318dd7ee48fa64f7ee8bbb6e412524496e",
-  "source_tree": "050a8eea7c8e63cf97a164519d925943bc9eeba5",
+  "source_commit": "eae3cb734a91f52116ac499ed072fb86523ad071",
+  "source_tree": "3bf38d205efd74df57509535c7b8ee92162a3407",
   "changed_paths": [
     "control/ai-search-rag-authority-binding.mjs",
     "control/ai-search-rag-boundary-gate.mjs",
