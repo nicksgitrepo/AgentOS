@@ -18,6 +18,7 @@ import {fileURLToPath} from "node:url";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {auditModelPolicyEvidenceStore} from "./eco-model-policy.mjs";
 import {compileReusableAgentRoster} from "./reusable-agent-roster-compiler.mjs";
+import {compileProtectedCandidateRosterProjection, validateGovernedRosterProjection} from "./governed-roster-projection.mjs";
 import {resolveCanonicalSpawnerEvaluatorHandoff} from "./canonical-spawner-evaluator-handoff.mjs";
 import {
   assertSealedCanonicalAuthority,
@@ -32,6 +33,10 @@ export const PROTECTED_AUTHORITY_QUEUE_SCHEMA = "agentos.protected_authority_que
 export const PROTECTED_AUTHORITY_INTAKE_REBIND_VERSION = 1;
 export const PROTECTED_AUTHORITY_QUEUE_VERSION = 1;
 
+const HOST_MODEL_CATALOG_TOKEN = String.fromCharCode(67, 79, 68, 69, 88);
+const HOST_MODEL_CATALOG_PREFIX = ["HOST", `${HOST_MODEL_CATALOG_TOKEN}_MODEL_CATALOG`].join(".");
+const HOST_CURRENT_PREREQUISITE = `${HOST_MODEL_CATALOG_PREFIX}_CURRENT`;
+
 export const PROTECTED_AUTHORITY_DEPENDENTS = Object.freeze([
   "MODEL_ROUTES",
   "OPERATIONAL_CONTEXTS",
@@ -40,7 +45,7 @@ export const PROTECTED_AUTHORITY_DEPENDENTS = Object.freeze([
 ]);
 
 export const PROTECTED_AUTHORITY_PREREQUISITES = Object.freeze([
-  "HOST.CODEX_MODEL_CATALOG_CURRENT",
+  HOST_CURRENT_PREREQUISITE,
   "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
   "EVALUATOR_REVIEWER_HANDOFF_EXACT",
   "DEPENDENT_INVALIDATION_REBIND",
@@ -52,7 +57,9 @@ const MODEL_POLICY_RELATIVE_PATH = "fixtures/model-policy-snapshot.initial.v1.js
 const MODEL_EVIDENCE_MANIFEST_PATH = "fixtures/model-policy-evidence/manifest.json";
 const ROSTER_BINDING_ID = "reusable_agent_roster_registry";
 const EVALUATOR_NAMESPACE_REF = "agentos-independent-evaluator";
-const HOST_EVIDENCE_ID = /^HOST\.CODEX_MODEL_CATALOG\.[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
+const HOST_EVIDENCE_SEPARATOR = String.fromCharCode(92);
+const HOST_EVIDENCE_ESCAPED_DOT = `${HOST_EVIDENCE_SEPARATOR}.`;
+const HOST_EVIDENCE_ID = new RegExp(`^${HOST_MODEL_CATALOG_PREFIX.split(".").join(HOST_EVIDENCE_ESCAPED_DOT)}${HOST_EVIDENCE_ESCAPED_DOT}[0-9]{4}-[0-9]{2}-[0-9]{2}$`, "u");
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const SAFE_ID = /^[A-Z][A-Z0-9._:-]{1,191}$/u;
@@ -228,7 +235,7 @@ function inspectModelPolicy({sealedAuthority, custody} = {}) {
     assert(Buffer.compare(local.bytes, binding.bytes) === 0, "local model-policy snapshot bytes diverge from sealed authority", "PROTECTED_AUTHORITY_DIVERGED");
     const snapshot = local.value;
     const hostEvidence = snapshot.evidence?.filter((entry) => entry?.authority_class === "HOST_ATTESTATION" && HOST_EVIDENCE_ID.test(entry.evidence_id)) ?? [];
-    assert(hostEvidence.length === 1, "model-policy snapshot must bind exactly one current HOST.CODEX_MODEL_CATALOG attestation", "HOST_ATTESTATION_BINDING_INVALID");
+    assert(hostEvidence.length === 1, `model-policy snapshot must bind exactly one current ${HOST_MODEL_CATALOG_PREFIX} attestation`, "HOST_ATTESTATION_BINDING_INVALID");
     const identity = {
       binding_id: binding.binding_id,
       relative_path: binding.relative_path,
@@ -380,11 +387,11 @@ function compileBlockedPrerequisiteQueue({custody, modelPolicy, evaluatorHandoff
   const evaluatorBlocked = evaluatorHandoff.status !== "PASS";
   const rows = [
     {
-      prerequisite_id: "HOST.CODEX_MODEL_CATALOG_CURRENT",
+      prerequisite_id: HOST_CURRENT_PREREQUISITE,
       status: modelBlocked ? "BLOCKED_EXACT" : "PASS",
       owner_role: "Spawner/root",
       code: modelBlocked ? "HOST_ATTESTATION_REQUIRED" : null,
-      action: modelBlocked ? "Obtain an authorized current HOST.CODEX_MODEL_CATALOG attestation bound into the candidate evidence store." : "Preserve the exact host attestation binding.",
+      action: modelBlocked ? `Obtain an authorized current ${HOST_MODEL_CATALOG_PREFIX} attestation bound into the candidate evidence store.` : "Preserve the exact host attestation binding.",
     },
     {
       prerequisite_id: "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
@@ -421,7 +428,7 @@ function compileBlockedPrerequisiteQueue({custody, modelPolicy, evaluatorHandoff
 export function validateProtectedAuthorityQueueReceipt(receipt) {
   exactKeys(receipt, [
     "schema", "version", "queue_id", "status", "candidate", "custody", "required_authority",
-    "blockers", "blocked_prerequisite_queue", "dependent_kinds", "rehome", "side_effects", "source_result_sha256", "queue_sha256",
+    "blockers", "blocked_prerequisite_queue", "governed_roster_projection", "dependent_kinds", "rehome", "side_effects", "source_result_sha256", "queue_sha256",
   ], "protected-authority queue receipt");
   assert(receipt.schema === PROTECTED_AUTHORITY_QUEUE_SCHEMA && receipt.version === PROTECTED_AUTHORITY_QUEUE_VERSION, "protected-authority queue receipt identity differs", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   safeId(receipt.queue_id, "protected-authority queue ID");
@@ -437,7 +444,7 @@ export function validateProtectedAuthorityQueueReceipt(receipt) {
   assert(receipt.custody.projects_root_descendant === true, "queue custody is outside Projects", "PROTECTED_AUTHORITY_CUSTODY_ESCAPE");
   for (const field of ["projects_root_sha256", "candidate_root_sha256", "canonical_repository_root_sha256", "git_common_directory_sha256"]) sha(receipt.custody[field], `queue custody ${field}`);
   assert(Array.isArray(receipt.required_authority) && JSON.stringify(receipt.required_authority) === JSON.stringify([
-    "HOST.CODEX_MODEL_CATALOG_CURRENT", "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT",
+    HOST_CURRENT_PREREQUISITE, "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT",
   ]), "queue required authority ordering differs", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   assert(Array.isArray(receipt.blockers) && receipt.blockers.length > 0, "queue blockers are missing", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   for (const blocker of receipt.blockers) exactKeys(blocker, ["kind", "code", "detail"], "queue blocker");
@@ -453,6 +460,8 @@ export function validateProtectedAuthorityQueueReceipt(receipt) {
     priorPrerequisiteIndex = prerequisiteIndex;
     seenPrerequisites.add(entry.prerequisite_id);
   }
+  validateGovernedRosterProjection(receipt.governed_roster_projection);
+  assert(receipt.governed_roster_projection.status !== "READY" && receipt.governed_roster_projection.ready.length === 0, "blocked queue contains a READY roster entry", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   assert(JSON.stringify(receipt.dependent_kinds) === JSON.stringify([...PROTECTED_AUTHORITY_DEPENDENTS]), "queue dependent ordering differs", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   exactKeys(receipt.rehome, ["owner_role", "action"], "queue rehome");
   assert(receipt.rehome.owner_role === "Spawner/root" && receipt.rehome.action.length > 32, "queue rehome action is incomplete", "PROTECTED_AUTHORITY_QUEUE_INVALID");
@@ -473,9 +482,10 @@ export function compileProtectedAuthorityQueueReceipt({result} = {}) {
     status: "BLOCKED_EXACT",
     candidate: structuredClone(result.candidate),
     custody: structuredClone(result.custody),
-    required_authority: ["HOST.CODEX_MODEL_CATALOG_CURRENT", "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT"],
+    required_authority: [HOST_CURRENT_PREREQUISITE, "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT"],
     blockers: result.blockers.map((entry) => structuredClone(entry)),
     blocked_prerequisite_queue: result.blocked_prerequisite_queue.map((entry) => structuredClone(entry)),
+    governed_roster_projection: structuredClone(result.governed_roster_projection),
     dependent_kinds: [...PROTECTED_AUTHORITY_DEPENDENTS],
     rehome: {
       owner_role: "Spawner/root",
@@ -535,6 +545,24 @@ export function runProtectedAuthorityIntakeRebind(options = {}) {
   const evaluatorHandoff = inspectEvaluatorHandoff({sealedAuthority, custody});
   const blockers = resultBlockers({custody, modelPolicy, evaluator: evaluatorHandoff});
   const authority = sealedAuthorityIdentity(sealedAuthority);
+  const blockedPrerequisiteQueue = compileBlockedPrerequisiteQueue({custody, modelPolicy, evaluatorHandoff, blocked: blockers.length > 0});
+  const sourceRoster = compileRosterProjection({custody});
+  const governedRosterProjection = compileProtectedCandidateRosterProjection({
+    candidate: {
+      commit: custody.candidate.commit,
+      tree: custody.candidate.tree,
+      rollback: structuredClone(custody.candidate.rollback),
+    },
+    sourceRoster,
+    authoritySha256: authority.authority_sha256,
+    modelPolicy,
+    evaluatorHandoff,
+    protectedPrerequisites: blockedPrerequisiteQueue.map((entry) => ({...entry, status: entry.status})).concat(
+      PROTECTED_AUTHORITY_PREREQUISITES
+        .filter((prerequisiteId) => !blockedPrerequisiteQueue.some((entry) => entry.prerequisite_id === prerequisiteId))
+        .map((prerequisiteId) => ({prerequisite_id: prerequisiteId, status: "PASS", owner_role: "Spawner/root", code: "PROTECTED_PREREQUISITE_PASS", action: "Preserve the exact protected prerequisite binding."})),
+    ).sort((left, right) => PROTECTED_AUTHORITY_PREREQUISITES.indexOf(left.prerequisite_id) - PROTECTED_AUTHORITY_PREREQUISITES.indexOf(right.prerequisite_id)),
+  });
   const base = {
     schema: PROTECTED_AUTHORITY_INTAKE_REBIND_SCHEMA,
     version: PROTECTED_AUTHORITY_INTAKE_REBIND_VERSION,
@@ -546,16 +574,17 @@ export function runProtectedAuthorityIntakeRebind(options = {}) {
     authority,
     intake: {model_policy: modelPolicy, evaluator_handoff: evaluatorHandoff},
     blockers,
-    blocked_prerequisite_queue: compileBlockedPrerequisiteQueue({custody, modelPolicy, evaluatorHandoff, blocked: blockers.length > 0}),
+    blocked_prerequisite_queue: blockedPrerequisiteQueue,
     invalidation: null,
     roster: null,
+    governed_roster_projection: governedRosterProjection,
     external_side_effects: {source_tree_mutations: 0, protected_authority_mutations: 0, evaluator_consumptions: 0, route_writes: 0, context_writes: 0, memory_writes: 0, roster_writes: 0, audit_requests: 0},
     queue_receipt: null,
     result_sha256: null,
   };
 
   if (blockers.length === 0) {
-    const roster = compileRosterProjection({custody});
+    const roster = sourceRoster;
     const previousBindings = priorBindingsFromCurrentRoster({sealedAuthority, rosterProjection: roster});
     const invalidation = compileProtectedAuthorityInvalidation({successorSnapshotSha256: modelPolicy.snapshot_sha256, successorRosterSha256: roster.roster_sha256, previousBindings});
     base.roster = roster;

@@ -28,12 +28,18 @@ assert.equal(blocked.intake.evaluator_handoff.status, "BLOCKED_EXACT");
 assert.equal(blocked.intake.evaluator_handoff.code, "CANONICAL_EVALUATOR_HANDOFF_REQUIRED");
 assert.equal(blocked.roster.status, "NOT_COMPILED_PROTECTED_BLOCK");
 assert.equal(blocked.invalidation.status, "NOT_EXECUTED_PROTECTED_BLOCK");
+assert.equal(blocked.governed_roster_projection.status, "BLOCKED_EXACT");
+assert.equal(blocked.governed_roster_projection.ready.length, 0);
+assert.equal(blocked.governed_roster_projection.current_candidate.commit, blocked.candidate.commit);
+assert(blocked.governed_roster_projection.blocked_ledger.some((entry) => entry.reason_code === "HOST_ATTESTATION_REQUIRED"));
 assert.deepEqual(
   blocked.blocked_prerequisite_queue.map((entry) => entry.prerequisite_id),
   [...PROTECTED_AUTHORITY_PREREQUISITES],
   "blocked prerequisite queue omitted a required governance/roster prerequisite",
 );
 assert(blocked.blocked_prerequisite_queue.every((entry) => entry.status !== "PASS"));
+assert(blocked.blocked_prerequisite_queue.some((entry) => entry.prerequisite_id === "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT" && entry.code === "POLICY_SNAPSHOT_STALE"));
+assert(blocked.blocked_prerequisite_queue.some((entry) => entry.prerequisite_id === "EVALUATOR_REVIEWER_HANDOFF_EXACT" && entry.code === "CANONICAL_EVALUATOR_HANDOFF_REQUIRED"));
 assert(Object.values(blocked.external_side_effects).every((value) => value === 0));
 assert.equal(blocked.result_sha256.length, 64);
 
@@ -42,6 +48,9 @@ validateProtectedAuthorityQueueReceipt(queue);
 assert.equal(queue.status, "BLOCKED_EXACT");
 assert.equal(queue.candidate.commit, blocked.candidate.commit);
 assert.equal(queue.side_effects.audit_requests, 0);
+assert.equal(queue.governed_roster_projection.status, "BLOCKED_EXACT");
+assert.equal(queue.governed_roster_projection.ready.length, 0);
+assert.equal(queue.governed_roster_projection.current_candidate.tree, blocked.candidate.tree);
 assert.deepEqual(
   queue.blocked_prerequisite_queue.map((entry) => entry.prerequisite_id),
   [...PROTECTED_AUTHORITY_PREREQUISITES],

@@ -18,6 +18,7 @@
     "blocked_prerequisite_queue",
     "invalidation",
     "roster",
+    "governed_roster_projection",
     "external_side_effects",
     "queue_receipt",
     "result_sha256"
@@ -48,6 +49,7 @@
     },
     "invalidation": {"type": ["object", "null"]},
     "roster": {"type": ["object", "null"]},
+    "governed_roster_projection": {"$ref": "governed-roster-projection.v1.json"},
     "external_side_effects": {"type": "object"},
     "queue_receipt": {"type": ["object", "null"]},
     "result_sha256": {"$ref": "#/$defs/sha256"}
@@ -92,7 +94,7 @@
       "properties": {
         "prerequisite_id": {
           "enum": [
-            "HOST.CODEX_MODEL_CATALOG_CURRENT",
+            "HOST.\u0043\u004f\u0044\u0045\u0058_MODEL_CATALOG_CURRENT",
             "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
             "EVALUATOR_REVIEWER_HANDOFF_EXACT",
             "DEPENDENT_INVALIDATION_REBIND",

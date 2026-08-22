@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.governed_roster_projection.v1",
+  "title": "Exact protected Spawner roster admission projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "current_candidate", "source_roster", "ready", "blocked_ledger", "projection_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.governed_roster_projection.v1"},
+    "version": {"const": 1},
+    "status": {"enum": ["READY", "BLOCKED_EXACT", "UNKNOWN"]},
+    "current_candidate": {"$ref": "#/$defs/candidate"},
+    "source_roster": {"$ref": "#/$defs/sourceRoster"},
+    "ready": {"type": "array", "items": {"$ref": "#/$defs/readyEntry"}},
+    "blocked_ledger": {"type": "array", "items": {"$ref": "#/$defs/blockedEntry"}},
+    "projection_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "candidate": {
+      "type": "object", "additionalProperties": false, "required": ["commit", "tree", "rollback"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/gitObject"}, "tree": {"$ref": "#/$defs/gitObject"},
+        "rollback": {"type": "object", "additionalProperties": false, "required": ["commit", "tree"], "properties": {"commit": {"$ref": "#/$defs/gitObject"}, "tree": {"$ref": "#/$defs/gitObject"}}}
+      }
+    },
+    "sourceRoster": {
+      "type": "object", "additionalProperties": false, "required": ["status", "roster_sha256", "entry_count", "package_count", "model_policy_snapshot_sha256"],
+      "properties": {"status": {"const": "PASS"}, "roster_sha256": {"$ref": "#/$defs/sha256"}, "entry_count": {"type": "integer", "minimum": 1}, "package_count": {"type": "integer", "minimum": 1}, "model_policy_snapshot_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false, "required": ["source_ref", "source_sha256"],
+      "properties": {"source_ref": {"type": "string", "minLength": 1}, "source_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "modelBinding": {
+      "type": "object", "additionalProperties": false, "required": ["status", "model_id", "reasoning_effort", "fresh", "policy_snapshot_sha256", "host_attestation_sha256", "evaluation_receipt_sha256"],
+      "properties": {"status": {"enum": ["PASS", "BLOCKED_EXACT", "UNKNOWN"]}, "model_id": {"type": ["string", "null"]}, "reasoning_effort": {"type": ["string", "null"]}, "fresh": {"type": "boolean"}, "policy_snapshot_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "host_attestation_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "evaluation_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}}
+    },
+    "contextBinding": {
+      "type": "object", "additionalProperties": false, "required": ["status", "model_policy_snapshot_sha256", "operational_context_sha256", "governance_memory_sha256", "roster_projection_sha256"],
+      "properties": {"status": {"enum": ["PASS", "BLOCKED_EXACT", "UNKNOWN"]}, "model_policy_snapshot_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "operational_context_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "governance_memory_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "roster_projection_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}}
+    },
+    "finalReview": {
+      "type": "object", "additionalProperties": false, "required": ["status", "approved", "receipt_sha256", "reviewer_ref", "separately_controlled"],
+      "properties": {"status": {"enum": ["PASS", "BLOCKED_EXACT", "UNKNOWN"]}, "approved": {"type": "boolean"}, "receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "reviewer_ref": {"type": ["string", "null"]}, "separately_controlled": {"type": "boolean"}}
+    },
+    "lunaReview": {
+      "type": "object", "additionalProperties": false, "required": ["status", "model_id", "reasoning_effort", "fresh", "receipt_sha256", "reviewer_ref", "separately_controlled"],
+      "properties": {"status": {"enum": ["PASS", "BLOCKED_EXACT", "UNKNOWN"]}, "model_id": {"type": ["string", "null"]}, "reasoning_effort": {"type": ["string", "null"]}, "fresh": {"type": "boolean"}, "receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}, "reviewer_ref": {"type": ["string", "null"]}, "separately_controlled": {"type": "boolean"}}
+    },
+    "prerequisite": {
+      "type": "object", "additionalProperties": false, "required": ["prerequisite_id", "status", "owner_role", "code", "action"],
+      "properties": {"prerequisite_id": {"type": "string", "minLength": 1}, "status": {"enum": ["PASS", "BLOCKED_EXACT", "DEFERRED_PROTECTED_BLOCK", "UNKNOWN"]}, "owner_role": {"const": "Spawner/root"}, "code": {"type": "string", "minLength": 1}, "action": {"type": "string", "minLength": 1}}
+    },
+    "readyEntry": {
+      "type": "object", "additionalProperties": false, "required": ["stable_agent_id", "status", "candidate", "provenance", "model_binding", "context_binding", "final_review", "luna_max_review", "protected_prerequisites", "entry_sha256"],
+      "properties": {"stable_agent_id": {"type": "string", "minLength": 2}, "status": {"const": "READY"}, "candidate": {"$ref": "#/$defs/candidate"}, "provenance": {"$ref": "#/$defs/provenance"}, "model_binding": {"$ref": "#/$defs/modelBinding"}, "context_binding": {"$ref": "#/$defs/contextBinding"}, "final_review": {"$ref": "#/$defs/finalReview"}, "luna_max_review": {"$ref": "#/$defs/lunaReview"}, "protected_prerequisites": {"type": "array", "minItems": 5, "items": {"$ref": "#/$defs/prerequisite"}}, "entry_sha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "blockedEntry": {
+      "type": "object", "additionalProperties": false, "required": ["stable_agent_id", "status", "candidate", "provenance", "model_binding", "context_binding", "final_review", "luna_max_review", "reason_code", "reason", "superseded_by", "entry_sha256"],
+      "properties": {"stable_agent_id": {"type": "string", "minLength": 2}, "status": {"enum": ["BLOCKED_EXACT", "UNKNOWN", "STALE_DUPLICATE"]}, "candidate": {"$ref": "#/$defs/candidate"}, "provenance": {"$ref": "#/$defs/provenance"}, "model_binding": {"$ref": "#/$defs/modelBinding"}, "context_binding": {"$ref": "#/$defs/contextBinding"}, "final_review": {"$ref": "#/$defs/finalReview"}, "luna_max_review": {"$ref": "#/$defs/lunaReview"}, "reason_code": {"type": "string", "minLength": 1}, "reason": {"type": "string", "minLength": 1}, "superseded_by": {"type": ["string", "null"]}, "entry_sha256": {"$ref": "#/$defs/sha256"}}
+    }
+  }
+}
