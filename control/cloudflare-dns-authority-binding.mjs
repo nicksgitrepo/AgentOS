@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {createHash} from "node:crypto";
+import {execFileSync} from "node:child_process";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 import {evaluateProviderEdgeRouterBoundary} from "./provider-edge-router-boundary-gate.mjs";
 
@@ -41,6 +42,7 @@ export const CLOUDFLARE_DNS_FIXTURE_CLASSES = Object.freeze([
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, CLOUDFLARE_DNS_PACKAGE_PATH);
 const SHA256 = /^[0-9a-f]{64}$/u;
+const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const FILE_SHA256 = (file) => createHash("sha256").update(fs.readFileSync(file)).digest("hex");
 
 function fail(message, code = "CLOUDFLARE_DNS_CANONICAL_AUTHORITY_INVALID") {
@@ -201,6 +203,20 @@ function checkFixtures() {
   return records.sort((left, right) => compareUtf8(left.fixture_id, right.fixture_id));
 }
 
+function checkHandoff() {
+  const artifact = readJson(path.join(PACKAGE_ROOT, "handoff.json"), "Cloudflare DNS handoff");
+  const handoff = artifact.value;
+  assert(handoff.schema === "agentos.specialist_handoff.v1" && handoff.version === 1 && handoff.handoff_id === "specialist-handoff.cloudflare-dns.v1" && handoff.block_id === CLOUDFLARE_DNS_BLOCK_ID, "Cloudflare DNS handoff identity differs", "CLOUDFLARE_DNS_HANDOFF_INVALID");
+  assert(handoff.disposition === "WAITING_WITH_RECEIPT" && handoff.authority === "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION", "Cloudflare DNS handoff disposition is unsafe", "CLOUDFLARE_DNS_HANDOFF_INVALID");
+  assert(GIT_OBJECT.test(handoff.source_commit) && GIT_OBJECT.test(handoff.source_tree), "Cloudflare DNS handoff source identity is not immutable", "CLOUDFLARE_DNS_HANDOFF_SOURCE_INVALID");
+  let observedTree;
+  try { observedTree = execFileSync("git", ["rev-parse", `${handoff.source_commit}^{tree}`], {cwd: ROOT, encoding: "utf8"}).trim(); } catch { fail("Cloudflare DNS handoff source commit is unavailable", "CLOUDFLARE_DNS_HANDOFF_SOURCE_INVALID"); }
+  assert(observedTree === handoff.source_tree, "Cloudflare DNS handoff source tree does not match its commit", "CLOUDFLARE_DNS_HANDOFF_SOURCE_INVALID");
+  assert(Array.isArray(handoff.changed_paths) && handoff.changed_paths.length > 0 && handoff.changed_paths.every((relativePath) => typeof relativePath === "string" && !path.isAbsolute(relativePath) && fs.existsSync(path.join(ROOT, relativePath))), "Cloudflare DNS handoff changed-path receipt is incomplete", "CLOUDFLARE_DNS_HANDOFF_PATHS_INVALID");
+  assert(handoff.proof.includes("executable-public-boundary") && handoff.proof.includes("mutation-regression") && handoff.proof.includes("memory-context-invalidation"), "Cloudflare DNS handoff proof is incomplete", "CLOUDFLARE_DNS_HANDOFF_PROOF_INVALID");
+  return {file_sha256: artifact.file_sha256, disposition: handoff.disposition, source_commit: handoff.source_commit, source_tree: handoff.source_tree, changed_paths: handoff.changed_paths};
+}
+
 function checkRoster() {
   const artifact = readJson(path.join(ROOT, "specialist-blocks/registry/agent-roster.v1.json"), "Cloudflare DNS reusable-agent roster");
   const roster = artifact.value;
@@ -273,6 +289,7 @@ export function resolveCloudflareDnsCanonicalAuthority() {
     readJson(path.join(PACKAGE_ROOT, "gates/execution.json"), "Cloudflare DNS gate execution"),
   );
   const fixtures = checkFixtures();
+  const handoff = checkHandoff();
   const roster = checkRoster();
   const files = packageFiles().map((relativePath) => ({relative_path: `${CLOUDFLARE_DNS_PACKAGE_PATH}/${relativePath}`, sha256: FILE_SHA256(path.join(PACKAGE_ROOT, relativePath))}));
   const binding = {
@@ -310,6 +327,7 @@ export function resolveCloudflareDnsCanonicalAuthority() {
       ordered_gate_ids: CLOUDFLARE_DNS_GATE_IDS,
     },
     fixtures,
+    handoff,
     model_policy: modelPolicy,
     context: {
       receipt_sha256: contextReceiptSha,
