@@ -1,0 +1,47 @@
+{
+  "status": "BLOCKED_EXACT",
+  "block_id": "specialist.security.owasp-web-2025-a05-injection",
+  "candidate_digest": "c4bd5ec70145090d9a65131a12532e5a6c583675eaa10eeec199af07b6ba5520",
+  "local_status": "PASS",
+  "local_proof": {
+    "fixture_count": 17,
+    "gate_count": 12,
+    "mutation_detected": true,
+    "canonical_binding_regression": "PASS",
+    "shared_registry_verdict": "ALIGNED",
+    "hostile_shared_registry_regression": "BLOCKED_EXACT:SHARED_REGISTRY_SPAWNER_INTEGRATION_DRIFT",
+    "workspace_custody_status": "MATCHED",
+    "source_manifest_sha256": "7a1ba532af8a027579b7eb3bd23198387e3ee6632fa6f3be83d7cf3756018527",
+    "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+    "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+    "context_sha256": "cb983850a98b09ad0892904c0102417702d1c5d1be9175ab4fe6170e2f6751ba",
+    "upstream_router_result_sha256": "51bfcb11b29a543a23e64bbc18a6960645b17960babc9311624f21ea2aef8be0",
+    "gate_execution_sha256": "8b2f0e3d73681996df7085534d8ae2d22130826fd7d861d116a75a0f015db827",
+    "readback_sha256": "019bedfc006af5da4e65afe7da60c398900e6fb8d7b2983181a70f4cfc247641",
+    "readback_file_sha256": "fa4f724ee8304f89351d5ef89a4fd720d35eb88033f4066666a01ea0ba781bb4",
+    "roster_sha256": "ea8541b82cb9c3ba33ea0b46dc4015d897ec688c7debf03b4e884dab1a2a3155",
+    "next_eligible": "AGENT.SECURITY_OWASP_WEB_2025_A06_INSECURE_DESIGN"
+  },
+  "external_admission": "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+  "error": {
+    "error_name": "Error",
+    "error_code": "SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+    "error_message_sha256": "bade8e2732d6331542a220f5bdc4aab817ce97891e59c1cea62c68a78baa1c37"
+  },
+  "known_unrelated_bootstrap_alignment_regression": {
+    "status": "PRESERVED_EXACT_MISMATCH",
+    "expected_pattern": "Controller Runtime readback",
+    "actual_error_code": "LEGACY_BOOTSTRAP_EXECUTION_RETIRED",
+    "actual_error_message_sha256": "a3c69ecd5234be73303f55012ffc8390525ada6a7ee2d1241cec5e0711b9e689"
+  },
+  "runtime_custody": {
+    "workspace_root_source": "ACTIVE_GIT_WORKTREE_ROOT",
+    "worktree_name": "AgentOS-product-client-openapi-contracts-spawner-lane-20260822-web-a05-01",
+    "branch": "codex/product-client-openapi-contracts-spawner-lane-20260822-web-a05-01",
+    "resolved_custody_path_sha256": "d8b6e724a1690fa3f13286c11fd11e2827552bb70aac367e9e8db5abe3847b28",
+    "project_root_contained": true,
+    "task_checkout_contained": true,
+    "task_worktree_contained": true
+  },
+  "observed_at_utc": "2026-08-22T20:00:22.000Z"
+}
