@@ -16,6 +16,8 @@ import {pathToFileURL} from "node:url";
 import {spawnSync} from "node:child_process";
 import {canonicalDigest} from "./content-addressing.mjs";
 import {evaluateSchedulerResourceBoundary, SCHEDULER_RESOURCE_BOUNDARY_SCHEMA} from "./scheduler-resource-boundary-gate.mjs";
+import {assertSchedulerResourceCanonicalEvidence, assertSchedulerResourceCommittedHandoff, resolveSchedulerResourceCanonicalAuthority, SCHEDULER_RESOURCE_REQUIRED_TOOLS} from "./scheduler-resource-authority-binding.mjs";
+import {validateSchedulerResourceRollbackReceipt} from "./scheduler-resource-receipts.mjs";
 
 export const SCHEDULER_PACKAGE_EVALUATION_SCHEMA = "agentos.specialist_scheduler_resource_package_operational_evaluation.v1";
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
@@ -23,7 +25,7 @@ const PACKAGE_RELATIVE = "specialist-blocks/wave-01/resource-scheduler";
 const BLOCK_ID = "specialist.control.resource-scheduler";
 const FOCUSED_SUITES = [
   "tests/verify-rapid-prototype.mjs",
-  "tests/verify-global-governance-operational-integration.mjs",
+  "tests/verify-specialist-block-library.mjs",
   "tests/verify-durable-session-process-provenance.mjs",
   "tests/verify-task-run-loop.mjs",
 ];
@@ -36,10 +38,76 @@ function readBytes(file) { assert(fs.existsSync(file), `${file} is missing`, "SC
 function digestResult(value) { return canonicalDigest({...value, result_sha256: null}); }
 
 function packageFiles(packageRoot) {
-  const files = ["block.json", "sources.lock", "gates/manifest.json", "evaluation.json", "handoff.json"];
+  const files = ["block.json", "sources.lock", "gates/manifest.json", "gates/execution.json", "evaluation.json", "handoff.json", "rollback.json"];
   for (const name of fs.readdirSync(path.join(packageRoot, "gates")).filter((entry) => entry.endsWith(".gate"))) files.push(`gates/${name}`);
   for (const name of fs.readdirSync(path.join(packageRoot, "fixtures")).filter((entry) => entry.endsWith(".json"))) files.push(`fixtures/${name}`);
   return files.sort();
+}
+
+function boundInput(fixture, authority, {canonical = false} = {}) {
+  const input = structuredClone(fixture.vector.input);
+  const evidence = input.evidence;
+  Object.assign(evidence, {
+    authority_status: "CURRENT",
+    owner_role: "AGENTOS_CONTROLLER",
+    owner_identity: "OWNER.TYPED.RESOURCE",
+    owner_intent_status: "BOUND",
+    owner_intent_digest: "1".repeat(64),
+    intent_provenance_status: "EXACT_TYPED_RECORD",
+    candidate_status: "CURRENT_CANDIDATE",
+    candidate_digest: authority.block_sha256,
+    source_status: "CURRENT_VERIFIED",
+    source_manifest_sha256: authority.source_manifest_sha256,
+    source_lock_sha256: authority.source_file_sha256,
+    source_identities: authority.source_identities,
+    source_versions: authority.source_versions,
+    signal: "EXPLICIT_TYPED_RESOURCE_SIGNAL",
+    signal_status: "BOUND",
+    task_status: "RESOURCE_SCHEDULING",
+    context_status: "RESOURCE_SCHEDULER_CONTEXT",
+    context_complete: true,
+    model_policy_status: "CURRENT",
+    model_route_status: "BOUND",
+    model: authority.model_route.model,
+    reasoning_effort: authority.model_route.reasoning_effort,
+    model_route_sha256: authority.model_route_sha256,
+    context_receipt_sha256: authority.context_sha256,
+    route_receipt_sha256: authority.route_sha256,
+    custody_status: "BOUND",
+    custody_owner: "AGENTOS.CONTROL.RESOURCE_SCHEDULER",
+    custody_ref: authority.custody_ref,
+    project_data_present: false,
+    secret_data_present: false,
+  });
+  if (evidence.requested_tools === undefined) evidence.requested_tools = [...SCHEDULER_RESOURCE_REQUIRED_TOOLS];
+  if (canonical || evidence.authority_scope === undefined) evidence.authority_scope = "RESOURCE_SCHEDULING";
+  if (canonical || evidence.scope === undefined) evidence.scope = "NARROW";
+  return input;
+}
+
+function runGateExecutions(packageRoot, fixtures, authority) {
+  const executionPath = path.join(packageRoot, "gates/execution.json");
+  const execution = readJson(executionPath);
+  assert(execution.schema === "agentos.scheduler_resource_gate_execution.v1" && execution.version === 1 && execution.block_id === BLOCK_ID, "Scheduler gate execution manifest identity is invalid", "SCHEDULER_GATE_EXECUTION_INVALID");
+  assert(execution.evaluator_entrypoint === "control/scheduler-resource-package-evaluator.mjs#evaluateSchedulerResourcePackage" && execution.boundary_entrypoint === "control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary", "Scheduler gate execution entrypoint is not bound", "SCHEDULER_GATE_EXECUTION_INVALID");
+  assert(JSON.stringify(execution.ordered_gate_ids) === JSON.stringify(["00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff", "10-proof-acceptance", "11-lifecycle-recovery-archive"]), "Scheduler gate execution order is invalid", "SCHEDULER_GATE_EXECUTION_INVALID");
+  assert(Array.isArray(execution.executions) && execution.executions.length === execution.ordered_gate_ids.length, "Scheduler gate execution coverage is incomplete", "SCHEDULER_GATE_EXECUTION_INVALID");
+  const seen = new Set();
+  const results = execution.executions.map((entry) => {
+    assert(!seen.has(entry.gate_id) && execution.ordered_gate_ids.includes(entry.gate_id), `Scheduler gate execution ${entry.gate_id} is duplicated or unknown`, "SCHEDULER_GATE_EXECUTION_INVALID");
+    seen.add(entry.gate_id);
+    const fixtureInfo = [...fixtures.values()].find(({fixture}) => fixture.class === entry.fixture_class);
+    assert(fixtureInfo, `Scheduler gate execution fixture ${entry.fixture_class} is missing`, "SCHEDULER_GATE_EXECUTION_INVALID");
+    const input = boundInput(fixtureInfo.fixture, authority, {canonical: entry.fixture_class === "handoff"});
+    if (entry.fixture_class === "handoff") assertSchedulerResourceCanonicalEvidence(input.evidence, authority);
+    const actual = evaluateSchedulerResourceBoundary(input);
+    const expected = entry.expected;
+    const sideEffectsZero = Object.values(actual.external_side_effects).every((value) => value === 0);
+    assert(actual.disposition === expected.disposition && actual.route === expected.route && actual.error_code === expected.error_code && sideEffectsZero && actual.classification_allowed === false, `Scheduler gate ${entry.gate_id} readback failed`, "SCHEDULER_GATE_EXECUTION_FAILED");
+    return {gate_id: entry.gate_id, fixture_class: entry.fixture_class, expected, actual: {disposition: actual.disposition, route: actual.route, error_code: actual.error_code, result_sha256: actual.result_sha256}, external_side_effects: actual.external_side_effects};
+  });
+  assert(seen.size === execution.ordered_gate_ids.length, "Scheduler gate execution coverage is incomplete", "SCHEDULER_GATE_EXECUTION_INVALID");
+  return {execution, execution_file_sha256: rawSha256(readBytes(executionPath)), results};
 }
 
 function readFixtureMap(expectedClasses) {
@@ -96,11 +164,14 @@ export async function evaluateSchedulerResourcePackage() {
   assert(files.filter((file) => file.startsWith("gates/") && file.endsWith(".gate")).length === 12, "Scheduler gate inventory is incomplete", "SCHEDULER_GATE_INVENTORY_INVALID");
   const expectedFixtureClasses = Array.isArray(block.evaluation?.fixture_classes) ? block.evaluation.fixture_classes : [];
   const fixtures = readFixtureMap(expectedFixtureClasses);
+  const authority = resolveSchedulerResourceCanonicalAuthority();
+  assert(authority.block_sha256 === block.block_sha256, "Scheduler authority binding does not match package candidate", "SCHEDULER_AUTHORITY_BINDING_INVALID");
+  const gateExecution = runGateExecutions(packageRoot, fixtures, authority);
   const results = [];
   for (const fixtureInfo of [...fixtures.values()].sort((left, right) => left.fixture.fixture_id.localeCompare(right.fixture.fixture_id))) {
     const fixture = fixtureInfo.fixture; const expected = fixture.vector.expected_readback; const started = Date.now();
     let actual;
-    try { actual = evaluateSchedulerResourceBoundary(fixture.vector.input); }
+    try { actual = evaluateSchedulerResourceBoundary(boundInput(fixture, authority)); }
     catch (error) { fail(`${fixture.fixture_id} execution failed: ${error.code ?? error.message}`, "SCHEDULER_HOSTILE_EXECUTION_FAILED"); }
     const sideEffectsZero = Object.values(actual.external_side_effects).every((value) => value === 0);
     const assertionReadbacks = [
@@ -118,9 +189,31 @@ export async function evaluateSchedulerResourcePackage() {
   assert(focusedSuites.every((suite) => suite.status === "PASS"), "One or more focused Scheduler suites failed", "SCHEDULER_FOCUSED_SUITE_FAILED");
   const mutation = await auditBoundaryMutation(readJson(path.join(packageRoot, "fixtures/unsafe_action.json")));
   assert(mutation.status === "WEAKENED" && mutation.mutation_detected === true, "Scheduler mutation proof did not execute", "SCHEDULER_MUTATION_PROOF_MISSING");
+  const evaluationPath = path.join(packageRoot, "evaluation.json");
+  const handoffPath = path.join(packageRoot, "handoff.json");
+  const rollbackPath = path.join(packageRoot, "rollback.json");
+  const staticEvaluation = readJson(evaluationPath);
+  const staticHandoff = readJson(handoffPath);
+  const staticRollback = readJson(rollbackPath);
+  validateSchedulerResourceRollbackReceipt(staticRollback, {
+    candidateDigest: authority.block_sha256,
+    gateSemanticInventorySha256: authority.gate_semantic_inventory_sha256,
+    modelRouteSha256: authority.model_route_sha256,
+    contextSha256: authority.context_sha256,
+    routeSha256: authority.route_sha256,
+  });
+  assertSchedulerResourceCommittedHandoff({
+    authority,
+    evaluation: staticEvaluation,
+    handoff: staticHandoff,
+    evaluationFileSha256: rawSha256(readBytes(evaluationPath)),
+    handoffFileSha256: rawSha256(readBytes(handoffPath)),
+    rollbackFileSha256: rawSha256(readBytes(rollbackPath)),
+    rollbackReceiptSha256: staticRollback.digest,
+  });
   const observedAtUtc = new Date().toISOString();
   const packageRootSha256 = canonicalDigest(fileDigests);
-  const evaluation = {schema: SCHEDULER_PACKAGE_EVALUATION_SCHEMA, version: 1, status: "PASS", block_id: BLOCK_ID, lifecycle: "CANDIDATE", activation: "OFF", package_root_sha256: packageRootSha256, package_block_sha256: block.block_sha256, gate_inventory_sha256: canonicalDigest(fileDigests.filter((entry) => entry.relative_path.includes("/gates/"))), fixture_inventory_sha256: canonicalDigest(fileDigests.filter((entry) => entry.relative_path.includes("/fixtures/"))), fixture_results: results, focused_suites: focusedSuites, mutation_sensitivity: mutation, independent_signature_required: true, observed_at_utc: observedAtUtc, evaluation_sha256: null};
+  const evaluation = {schema: SCHEDULER_PACKAGE_EVALUATION_SCHEMA, version: 1, status: "PASS", block_id: BLOCK_ID, lifecycle: "CANDIDATE", activation: "OFF", package_root_sha256: packageRootSha256, package_block_sha256: block.block_sha256, gate_inventory_sha256: canonicalDigest(fileDigests.filter((entry) => entry.relative_path.includes("/gates/"))), fixture_inventory_sha256: canonicalDigest(fileDigests.filter((entry) => entry.relative_path.includes("/fixtures/"))), gate_execution: gateExecution.results, gate_execution_file_sha256: gateExecution.execution_file_sha256, fixture_results: results, focused_suites: focusedSuites, mutation_sensitivity: mutation, source_manifest_sha256: authority.source_manifest_sha256, source_lock_file_sha256: authority.source_file_sha256, model_route_sha256: authority.model_route_sha256, context_receipt_sha256: authority.context_sha256, route_receipt_sha256: authority.route_sha256, gate_semantic_inventory_sha256: authority.gate_semantic_inventory_sha256, rollback_receipt_sha256: staticRollback.digest, authority_binding: {candidate_digest: authority.block_sha256, source_manifest_sha256: authority.source_manifest_sha256, source_lock_file_sha256: authority.source_file_sha256, model_route_sha256: authority.model_route_sha256, context_receipt_sha256: authority.context_sha256, route_receipt_sha256: authority.route_sha256, rollback_receipt_sha256: staticRollback.digest}, static_handoff_binding: {evaluation_file_sha256: rawSha256(readBytes(evaluationPath)), handoff_file_sha256: rawSha256(readBytes(handoffPath)), rollback_file_sha256: rawSha256(readBytes(rollbackPath))}, independent_signature_required: true, observed_at_utc: observedAtUtc, evaluation_sha256: null};
   evaluation.evaluation_sha256 = canonicalDigest({...evaluation, evaluation_sha256: null});
   return Object.freeze(evaluation);
 }

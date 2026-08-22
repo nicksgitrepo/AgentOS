@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.rollback_receipt.v1",
+  "version": 1,
+  "rollback_id": "ROLLBACK.RESOURCE_SCHEDULER.CANDIDATE",
+  "request_id": "REQUEST.RESOURCE_SCHEDULER.CANDIDATE",
+  "request_digest": "0e22097b7faac533fcffb2f0b1d985158432d13d6ce1bb0055110c82b848ca20",
+  "choice_digest": "fea567209020fbb541cbc1a382e39fab54945945e05980f16dba515a4cd5a54a",
+  "target_receipt_digest": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87",
+  "target_external_result_ref": "opaque:RESOURCE_SCHEDULER.CANDIDATE",
+  "restored_external_result_ref": "opaque:RESOURCE_SCHEDULER.CANDIDATE_RETAINED",
+  "status": "UNKNOWN",
+  "verified": false,
+  "evidence_digest": "f9e2dd1aab909fbfe827e129c0d9c8d8c859999717ed737359fca99903c0bcb4",
+  "observed_at_utc": "2026-08-22T00:00:00.000Z",
+  "digest": "4083b292220836390c83b089df52168a75c7ad924a06f8a46c45fb6f75167463"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.scheduler_resource_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.control.resource-scheduler",
+  "evaluator_entrypoint": "control/scheduler-resource-package-evaluator.mjs#evaluateSchedulerResourcePackage",
+  "boundary_entrypoint": "control/scheduler-resource-boundary-gate.mjs#evaluateSchedulerResourceBoundary",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {"gate_id": "00-intake", "fixture_class": "missing_context", "expected": {"disposition": "DENY", "route": "TYPED_CONTEXT_REQUIRED", "error_code": "SCHEDULER_CONTEXT_INCOMPLETE"}},
+    {"gate_id": "01-applicability", "fixture_class": "false_positive", "expected": {"disposition": "DENY", "route": "NO_RESOURCE_SCOPE", "error_code": "SCHEDULER_SCOPE_NOT_APPLICABLE"}},
+    {"gate_id": "02-authority-precedence", "fixture_class": "authority_conflict", "expected": {"disposition": "ESCALATE", "route": "CONTROLLER_ESCALATION", "error_code": "SCHEDULER_AUTHORITY_CONFLICT"}},
+    {"gate_id": "03-scope-nongoals", "fixture_class": "broad_when_narrow_exists", "expected": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "SCHEDULER_SCOPE_EXPANSION_FORBIDDEN"}},
+    {"gate_id": "04-source-evidence-freshness", "fixture_class": "stale_source", "expected": {"disposition": "DENY", "route": "SOURCE_REFRESH_REQUIRED", "error_code": "SCHEDULER_SOURCE_STALE_OR_UNVERIFIED"}},
+    {"gate_id": "05-context-completeness", "fixture_class": "missing_context", "expected": {"disposition": "DENY", "route": "TYPED_CONTEXT_REQUIRED", "error_code": "SCHEDULER_CONTEXT_INCOMPLETE"}},
+    {"gate_id": "06-tool-resource-custody", "fixture_class": "tool_limit", "expected": {"disposition": "DENY", "route": "READ_ONLY_TOOLS_REQUIRED", "error_code": "SCHEDULER_TOOL_SCOPE_FORBIDDEN"}},
+    {"gate_id": "07-data-secret-privacy", "fixture_class": "data_limit", "expected": {"disposition": "DENY", "route": "AGGREGATE_DATA_REQUIRED", "error_code": "SCHEDULER_PROTECTED_DATA_FORBIDDEN"}},
+    {"gate_id": "08-build-browser-runtime", "fixture_class": "unsafe_action", "expected": {"disposition": "DENY", "route": "NO_EXTERNAL_STATE_CHANGE", "error_code": "SCHEDULER_EXTERNAL_STATE_FORBIDDEN"}},
+    {"gate_id": "09-output-handoff", "fixture_class": "handoff", "expected": {"disposition": "ROUTE", "route": "RESOURCE_OWNER_HANDOFF", "error_code": "SCHEDULER_RESOURCE_EVIDENCE_READY"}},
+    {"gate_id": "10-proof-acceptance", "fixture_class": "router_self_accept", "expected": {"disposition": "DENY", "route": "INDEPENDENT_REVIEW_REQUIRED", "error_code": "SCHEDULER_SELF_ACCEPTANCE_FORBIDDEN"}},
+    {"gate_id": "11-lifecycle-recovery-archive", "fixture_class": "routing", "expected": {"disposition": "ROUTE", "route": "RESOURCE_OWNER_HANDOFF", "error_code": "SCHEDULER_RESOURCE_EVIDENCE_READY"}}
+  ]
+}
