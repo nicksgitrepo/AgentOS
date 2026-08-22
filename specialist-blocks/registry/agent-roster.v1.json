@@ -27597,105 +27597,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.AUTHORITY_CONFLICT",
+            "fixture_id": "typescript-language-authority_conflict",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/authority_conflict.json",
-            "file_sha256": "04a625abf49dec61d990844fdcf8c39eca49c28e9c9d0389a4207e4933f7e2ec",
-            "expected_outcome": "DENY"
+            "file_sha256": "30f93b137984e6753573e11dde4add53383f9974ef53045dd40166bc6c823299",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "typescript-language-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "e5330b93fdc816cc669d58812563a70c86b39826838ecdac2a03a6e9a35db333",
+            "file_sha256": "71ca80fd0e2d9e92423f6699177952a558c1c1bfc7c9e07b0d1b6341d7f9e907",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "typescript-language-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "7cd5233474bfe06b097c8326e205ca8dcdfad223af14bd5cb9c150cfe06689de",
+            "file_sha256": "c742c42f1e37b16d440282ca09c5d7bee3bdf5d5d8a7f00e41b7707884b22c60",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.DATA_LIMIT",
+            "fixture_id": "typescript-language-data_limit",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/data_limit.json",
-            "file_sha256": "4cf1b3b499547ec8ca5380847b33070eddb51b0935ca35b8cdf329be0a874c8d",
+            "file_sha256": "8b084a08d2fada46faddf9b6417370d0d128b74a91a7a579d41213d0a05acc2e",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "typescript-language-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "7380138ecd87812bd2d71ab17cb09308ebdad30bd13f815aa6b3f1115e2f9b40",
+            "file_sha256": "939cf2f4671821275baaeeb02f37ef9270b9c65792766a2c943d719aa17f433c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.FALSE_POSITIVE",
+            "fixture_id": "typescript-language-false_positive",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/false_positive.json",
-            "file_sha256": "61568c9558920d1b6f47d9d878d3bc318c78a9cefbf584bbebbce0c256057332",
+            "file_sha256": "05c91e1433d6fe315361b85201962636ad009e439923f7e06f052c8bcf9db487",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.HANDOFF",
+            "fixture_id": "typescript-language-handoff",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/handoff.json",
-            "file_sha256": "b5532a57ab9ff0a72431e4de602865126053d068e953c82d83d328e8d0bed0b2",
+            "file_sha256": "9fbf0b4310abe0b8eca14910fe0cb001ca6ffcfe074e32e55d667a28c6a000e8",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.MISSING_CONTEXT",
+            "fixture_id": "typescript-language-missing_context",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/missing_context.json",
-            "file_sha256": "79258f774c57b53b7a593f3aeb1720175e15eb41bda7e02760b232d39a83826f",
+            "file_sha256": "3d2932750ddd836069bd91117c13dead2f421794b5e7bf42515926ba0b96fa5a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.NARROWNESS",
+            "fixture_id": "typescript-language-narrowness",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/narrowness.json",
-            "file_sha256": "42d73931bafff48667f95fa83c51d108a9afa8aee9d124c7bd6f5c6d0f9a5422",
+            "file_sha256": "88def1675f70cb0a65f819ddf2189f372c89ebde7b01ee11a9f3374b783b1dbf",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.ROUTER_SELF_ACCEPT",
+            "fixture_id": "typescript-language-router_self_accept",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/router_self_accept.json",
-            "file_sha256": "6ebc27bb15f095de64d3618145a7d568d2704cccde9ef5f942bc963e74ab6ecc",
+            "file_sha256": "db4fd84d24cb46d64b9f51f9d117ae1d3ee51e05c72dfd577a1b7240a2ec439a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.ROUTING",
+            "fixture_id": "typescript-language-routing",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/routing.json",
-            "file_sha256": "4d9df9f8eb9b084a3df82ae39eb824230a9796dab5a43894c5e3fc1d89efe5ff",
+            "file_sha256": "dd5cc5475f4d77024ee0aba7f2cb9512b2171933a99526aa2b5b941cf8d3eda3",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "typescript-language-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/silent_scope_expansion.json",
-            "file_sha256": "1c4c3bd31315272531df8ba5893a5a8ba7af9699bd5ccea9f81ac48ae5d7dcd6",
+            "file_sha256": "8d65017855ff97e7382164f391311ae59e5aa579fa053d2b07c4b059f6e5fb30",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.STALE_SOURCE",
+            "fixture_id": "typescript-language-stale_source",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/stale_source.json",
-            "file_sha256": "fdae81d26243b9e5535e7ce0864d1629e95e0a1779ee82d9b3c6654b19204dba",
+            "file_sha256": "6fbf9caf814b036e42f025c951f4f84c64f216d66659722f81b08f9b38c8ff0e",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.TOOL_LIMIT",
+            "fixture_id": "typescript-language-tool_limit",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/tool_limit.json",
-            "file_sha256": "77a7cceb43cb83e1efab25e8ee759d4c420829d9dc1b6c78eec0c230a80babda",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "50e9caec8fd71c80406bb248c3aa776ce8e4c84464283287402eb95129c8c3d4",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.UMBRELLA_AUTHORITY",
+            "fixture_id": "typescript-language-umbrella_authority",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/umbrella_authority.json",
-            "file_sha256": "7c165419e7b1af0840df7c9013038dfd79e51c86f9d4300a1e4626f550774302",
+            "file_sha256": "9add106f37939fcbc209cbbfdd7ed88532e7a5904176f10d072d0abfd083aa1a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.UNRELATED_SCOPE",
+            "fixture_id": "typescript-language-unrelated_scope",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/unrelated_scope.json",
-            "file_sha256": "60dc505c3c6a363c7cc544f3200f1d2bcd00adf11dec70bee3c03db0276fd2e2",
+            "file_sha256": "26d6532937c478712214278bda8626de77905c37116156141dfdceacee550819",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.typescript-language.UNSAFE_ACTION",
+            "fixture_id": "typescript-language-unsafe_action",
             "path": "specialist-blocks/wave-02/typescript-language/fixtures/unsafe_action.json",
-            "file_sha256": "b3c93b3a8eed1b30508ba420ef84b6bafbb59c656174ed465b88a986994ef469",
+            "file_sha256": "e89be493ceb7380efa6f9d215bf4d459cc606461386d6f1ab5ad55a102fe6590",
             "expected_outcome": "DENY"
           }
         ]
@@ -27708,7 +27708,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/typescript-language/handoff.json",
-        "handoff_file_sha256": "8a189b6be8e3a574e6136f3d6a7cd56df6ed5233839fa121068f7841a380d540",
+        "handoff_file_sha256": "018e9149d33912d19d9bcd845f8f94ebab74edc972a52b291fc59873271418fe",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.typescript-language.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "0beb127badada860fa454dc0008f58a181244ba499158840c85490c23a8c16e0"
 }

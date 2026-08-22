@@ -1,0 +1,35 @@
+{
+  "schema": "agentos.typescript_language_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.typescript-language",
+  "evaluator_entrypoint": "control/typescript-language-package-evaluator.mjs#evaluateTypeScriptLanguagePackage",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {"gate_id": "00-intake", "fixture_class": "narrowness", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "ROUTE", "route": "TYPESCRIPT_LANGUAGE_SPECIALIST_HANDOFF", "error_code": "TYPESCRIPT_LANGUAGE_ROUTE_READY", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "01-applicability", "fixture_class": "data_limit", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "ROUTE", "route": "TYPESCRIPT_LANGUAGE_SPECIALIST_HANDOFF", "error_code": "TYPESCRIPT_LANGUAGE_ROUTE_READY", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "02-authority-precedence", "fixture_class": "authority_conflict", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "ESCALATE", "route": "CONTROL_PLANE_ESCALATION", "error_code": "TYPESCRIPT_LANGUAGE_AUTHORITY_CONFLICT", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "03-scope-nongoals", "fixture_class": "broad_when_narrow_exists", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "NARROW_SCOPE_REQUIRED", "error_code": "TYPESCRIPT_LANGUAGE_SCOPE_EXPANSION_FORBIDDEN", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "04-source-evidence-freshness", "fixture_class": "stale_source", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "SOURCE_REFRESH_REQUIRED", "error_code": "TYPESCRIPT_LANGUAGE_SOURCE_STALE_OR_UNVERIFIED", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "05-context-completeness", "fixture_class": "missing_context", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "TYPED_CONTEXT_REQUIRED", "error_code": "TYPESCRIPT_LANGUAGE_CONTEXT_INCOMPLETE", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "06-tool-resource-custody", "fixture_class": "tool_limit", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "READ_ONLY_TOOLS_REQUIRED", "error_code": "TYPESCRIPT_LANGUAGE_TOOL_SCOPE_FORBIDDEN", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "07-data-secret-privacy", "fixture_class": "unsafe_action", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "NO_TYPESCRIPT_LANGUAGE_SIDE_EFFECT", "error_code": "TYPESCRIPT_LANGUAGE_OPERATION_FORBIDDEN", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "08-build-browser-runtime", "fixture_class": "false_positive", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "NO_TYPESCRIPT_LANGUAGE_SCOPE", "error_code": "TYPESCRIPT_LANGUAGE_SCOPE_NOT_APPLICABLE", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "09-output-handoff", "fixture_class": "handoff", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "ROUTE", "route": "TYPESCRIPT_LANGUAGE_SPECIALIST_HANDOFF", "error_code": "TYPESCRIPT_LANGUAGE_ROUTE_READY", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "10-proof-acceptance", "fixture_class": "router_self_accept", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "DENY", "route": "INDEPENDENT_REVIEW_REQUIRED", "error_code": "TYPESCRIPT_LANGUAGE_SELF_ACCEPTANCE_FORBIDDEN", "zero_side_effects": true, "acceptance_allowed": false}},
+    {"gate_id": "11-lifecycle-recovery-archive", "fixture_class": "routing", "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary", "expected": {"disposition": "ROUTE", "route": "TYPESCRIPT_LANGUAGE_SPECIALIST_HANDOFF", "error_code": "TYPESCRIPT_LANGUAGE_ROUTE_READY", "zero_side_effects": true, "acceptance_allowed": false}}
+  ],
+  "execution_sha256": "5eab0d78b770668ec4113596b565a662a3e9bee58cfdd29ce2742add633c88b1"
+}

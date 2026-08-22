@@ -5,12 +5,14 @@
   "block_id": "specialist.software-language-runtime.typescript-language",
   "candidate_digest": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
+  "independent_reviewer_required": true,
+  "audit_status": "NOT_STARTED_BLOCKED_EXACT_PROTECTED_AUTHORITY",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [
     {
       "case_id": "typescript-language-authority_conflict",
       "class": "authority_conflict",
-      "expected": "DENY",
+      "expected": "ESCALATE",
       "observed": "PASS"
     },
     {
@@ -88,7 +90,7 @@
     {
       "case_id": "typescript-language-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {

@@ -1,9 +1,126 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "typescript-language-duplicate_sibling_authority",
   "block_id": "specialist.software-language-runtime.typescript-language",
   "class": "duplicate_sibling_authority",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for duplicate_sibling_authority; all provider, project, consumer, and applicability facts remain external."
+  "note": "Synthetic executable hostile vector for duplicate_sibling_authority; all compiler, project, consumer, and applicability facts remain bounded and synthetic.",
+  "vector": {
+    "entrypoint": "control/typescript-language-boundary-gate.mjs#evaluateTypeScriptLanguageBoundary",
+    "input": {
+      "schema": "agentos.typescript_language_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_TYPESCRIPT_LANGUAGE",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_TYPESCRIPT_LANGUAGE",
+        "custody_ref": "opaque:TYPESCRIPT.LANGUAGE.CUSTODY",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "standard_identity": "source.typescript-5-9",
+        "standard_version": "5.9",
+        "standard_effective_date": "2025-08-01",
+        "standard_retrieved_date": "2026-08-11",
+        "publisher_identity": "Microsoft TypeScript",
+        "language": "TYPESCRIPT",
+        "language_version": "5.9",
+        "runtime_surface": "WEB",
+        "signal": "TYPESCRIPT",
+        "target_ref": "specialist.software-language-runtime.typescript-language",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_TYPESCRIPT_LANGUAGE",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": false,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "applicability_status": "EXTERNAL_TYPED",
+        "applicability_complete": true,
+        "compiler_options": {
+          "target": "ES2022",
+          "module": "ESNext",
+          "module_resolution": "Bundler",
+          "strict": true,
+          "no_emit": true,
+          "declaration": false,
+          "isolated_modules": true
+        },
+        "compiler_evidence": {
+          "status": "BOUNDED",
+          "version": "5.9",
+          "options_digest": "339f4c2be6a72cd12f6647d411c41c5d1c413588c03b39b692ddeb84749195fc",
+          "options_status": "EVIDENCED",
+          "emit_status": "ANALYSIS_ONLY",
+          "context_digest": "0ed984f75fd4abb8fc788958f2dce929b6478e0a1663925084e3c835654ec9b8"
+        },
+        "type_system_evidence": {
+          "status": "BOUNDED",
+          "version": "5.9",
+          "strictness": "DECLARED",
+          "check_status": "EVIDENCED",
+          "unknowns": "EXPLICIT",
+          "context_digest": "0ed984f75fd4abb8fc788958f2dce929b6478e0a1663925084e3c835654ec9b8"
+        },
+        "emission_evidence": {
+          "status": "BOUNDED",
+          "no_emit": true,
+          "declaration_emission": false,
+          "output_status": "NOT_REQUESTED",
+          "context_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "runtime_context": {
+          "language": "TYPESCRIPT",
+          "version": "5.9",
+          "target": "ES2022",
+          "module": "ESNext",
+          "module_resolution": "Bundler",
+          "context_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "candidate_digest": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "2032201fefb064d5fa2869875f43dc5f8533132c51d68e8947e1b29aaa9db4a7",
+        "standard_block_sha256": "a4fee33b93f943b2af855c429ae2bb68668ad8bcea39f1a8903e6aa4375c533d",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "context_receipt_sha256": "0ed984f75fd4abb8fc788958f2dce929b6478e0a1663925084e3c835654ec9b8",
+        "upstream_router_result_sha256": "2110188aa83d158f7474631134464b32c0568521cd4f5d25304b4c04a1d37e17",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "cross_provider": false,
+          "duplicate_authority": true,
+          "umbrella_authority": false,
+          "false_positive": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "wrong_language": false,
+          "wrong_version": false,
+          "react_scope": false,
+          "compiler_options_unverified": false,
+          "type_system_unverified": false,
+          "emit_unverified": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SPECIALIST_REQUIRED",
+      "error_code": "TYPESCRIPT_LANGUAGE_SIBLING_SUBSTITUTION_FORBIDDEN",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }
