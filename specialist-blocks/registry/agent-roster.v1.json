@@ -26689,105 +26689,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.AUTHORITY_CONFLICT",
+            "fixture_id": "react-components-authority_conflict",
             "path": "specialist-blocks/wave-02/react-components/fixtures/authority_conflict.json",
-            "file_sha256": "537c30f718e97bee6fe9eff8a4cbc81c141651a2d6efb34b6fa10c1fef3ca31a",
-            "expected_outcome": "DENY"
+            "file_sha256": "461cda57afce6947e824521afda0894c207cb2c6d837b662c92128c6864cd753",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "react-components-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/react-components/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "8367c7ffce78342a8c6698834b1fd04e691418eb103fbda385a73805485d3c8f",
+            "file_sha256": "d996f294d1d08800ef18fc39636d977f35c78ec20ac6473a33440cca3225a135",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "react-components-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/react-components/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "356183a7cb8243b78b8880f1e6f87377c62b631dbf6a3fb07022dd38bb3d7f70",
+            "file_sha256": "bcb710ccc85a603eccabfc556849ef3de3c7fe12b5173e1f1853d4eeac8b09a8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.DATA_LIMIT",
+            "fixture_id": "react-components-data_limit",
             "path": "specialist-blocks/wave-02/react-components/fixtures/data_limit.json",
-            "file_sha256": "4e46e706f19a8b6123b542a6b4a4a0a3898e8e875a042c661625adafc4717b48",
+            "file_sha256": "cbd2761f7864bab7522613d62360702466c7d8516314af07e57f1b20f3f0f428",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "react-components-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/react-components/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "6f11c14db041719b3c3b2571daad310d8a20a9a2706735dc27eeaeaf892bf670",
+            "file_sha256": "9c8bd668660207622e12c0bc4bf7b0e3428d18619def10e9402ad2ccd4129d84",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.FALSE_POSITIVE",
+            "fixture_id": "react-components-false_positive",
             "path": "specialist-blocks/wave-02/react-components/fixtures/false_positive.json",
-            "file_sha256": "267636539851523ece118f84c7d864b8dc968bd76a8d44ccc0b43757b228aba2",
+            "file_sha256": "ab38854eb60c24fa8675e815b3d5a5843657608ec5e8001286deaee7d2b2b411",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.HANDOFF",
+            "fixture_id": "react-components-handoff",
             "path": "specialist-blocks/wave-02/react-components/fixtures/handoff.json",
-            "file_sha256": "28bc5487051e3b8cd16a2067db0255b7f0cf328c55c8888b12eedec7f73042a9",
+            "file_sha256": "f7c87709e901c74c5ef19ecc1fbfd7056958931a91e669f9379a585fa035f0dc",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.MISSING_CONTEXT",
+            "fixture_id": "react-components-missing_context",
             "path": "specialist-blocks/wave-02/react-components/fixtures/missing_context.json",
-            "file_sha256": "0cf088a08ecb8f34809a25ce7bb91180bccc95109e7d606eff9015d57aab1023",
+            "file_sha256": "bf687e533d76c55bc4f2e506cc496f342f68e9bec3d251c5f8f08d510d935346",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.NARROWNESS",
+            "fixture_id": "react-components-narrowness",
             "path": "specialist-blocks/wave-02/react-components/fixtures/narrowness.json",
-            "file_sha256": "7603ef5e64718deb8ca8b8309eb716ecaa6d9b33c1ebe2777d47399d08fe5ba8",
+            "file_sha256": "add27137dcd13ceaa40132edc30ec6b2e8864281f2c728651cabcb31d884653e",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.ROUTER_SELF_ACCEPT",
+            "fixture_id": "react-components-router_self_accept",
             "path": "specialist-blocks/wave-02/react-components/fixtures/router_self_accept.json",
-            "file_sha256": "cc382b394589a3179b1c2f54ed85c3aec7e2a3f3304a618c8a9a446bff9ea99e",
+            "file_sha256": "337f66a70fc6ec6ea18994d4cc5e448b6edd8a6aebaeb995d68a3e524ba47ee8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.ROUTING",
+            "fixture_id": "react-components-routing",
             "path": "specialist-blocks/wave-02/react-components/fixtures/routing.json",
-            "file_sha256": "2fe4820f2dc7938f0e310c446234aa3d3c9c595881266c91e301c49a76ba1b24",
+            "file_sha256": "0b0cbbab272eedf42d9169d29436bfa08312edc06ead5e972b7a00783e7dde80",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "react-components-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/react-components/fixtures/silent_scope_expansion.json",
-            "file_sha256": "753e57addec27ec0236aad87523e6348890cbc904d72981b3aa1f65c2ded4600",
+            "file_sha256": "4d5a9ae2f60c62ea5810af6142ced457da745e41a5c3a93bde72fce0a03139d6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.STALE_SOURCE",
+            "fixture_id": "react-components-stale_source",
             "path": "specialist-blocks/wave-02/react-components/fixtures/stale_source.json",
-            "file_sha256": "1c1a6acfd47473f1a89ca578f8f09a4dcdebe568b62f12c3614d693cdee550d9",
+            "file_sha256": "50febdf0d1acaaf12cd188230fad12388108e20722177c506c67bd6a88c8b68f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.TOOL_LIMIT",
+            "fixture_id": "react-components-tool_limit",
             "path": "specialist-blocks/wave-02/react-components/fixtures/tool_limit.json",
-            "file_sha256": "aeff9297c729244c0cf35dd8bb220f6453e23f28292d87812cecd9b0487094e2",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "ccfc661dc9ad50fe0373e434b319fabd80ecdf7c816372618e580707894dfb05",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.UMBRELLA_AUTHORITY",
+            "fixture_id": "react-components-umbrella_authority",
             "path": "specialist-blocks/wave-02/react-components/fixtures/umbrella_authority.json",
-            "file_sha256": "4d297b35b9eac3b1895c1e6610f16871099c35fcb5bec693c6913ad8ed6362fb",
+            "file_sha256": "52828496f40d2623de9fcd4feda99daffdfb04d852afa2e9fb15da33aa48803f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.UNRELATED_SCOPE",
+            "fixture_id": "react-components-unrelated_scope",
             "path": "specialist-blocks/wave-02/react-components/fixtures/unrelated_scope.json",
-            "file_sha256": "eed245a242828598f7be4c9da84977beb0973e3a365b32c8cea977df90dcf276",
+            "file_sha256": "c8234979069682d4e14ad089b3f950617f653ee7621da387d5c266d7ba1f894a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.react-components.UNSAFE_ACTION",
+            "fixture_id": "react-components-unsafe_action",
             "path": "specialist-blocks/wave-02/react-components/fixtures/unsafe_action.json",
-            "file_sha256": "e3c23f2d0b88e847d82a4ab16de25d435464ef57ee8dc4d663b02c70a4ba510c",
+            "file_sha256": "c7910b66f6747ea40f8f8ef8fa1542a0228e8218421d6a9319724992846491e9",
             "expected_outcome": "DENY"
           }
         ]
@@ -26800,7 +26800,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/react-components/handoff.json",
-        "handoff_file_sha256": "496c2e79bd71c46596ace507f5872bba3405ef75e76627c61b8190566a63af3d",
+        "handoff_file_sha256": "a890d4a330c8ca9d221e3515748ecfe4a2852bc937d44d6720d7a65e7d7e6c4e",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.react-components.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "13c3292ab6618474030b0c6724e583bf9542d2879062524f06a90a35cfaebe8d"
 }

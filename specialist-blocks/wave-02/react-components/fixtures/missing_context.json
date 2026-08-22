@@ -1,9 +1,104 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "react-components-missing_context",
   "block_id": "specialist.software-language-runtime.react-components",
   "class": "missing_context",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; all provider, project, consumer, and applicability facts remain external."
+  "note": "Synthetic executable hostile vector for missing_context; all component, project, consumer, and applicability facts remain bounded and synthetic.",
+  "vector": {
+    "entrypoint": "control/react-components-boundary-gate.mjs#evaluateReactComponentsBoundary",
+    "input": {
+      "schema": "agentos.react_components_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_REACT_COMPONENT",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_REACT_COMPONENTS",
+        "custody_ref": "opaque:REACT.COMPONENTS.CUSTODY",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "standard_identity": "source.react-19-2",
+        "standard_version": "19.2",
+        "standard_effective_date": "2025-10-01",
+        "standard_retrieved_date": "2026-08-11",
+        "publisher_identity": "React",
+        "framework": "REACT",
+        "runtime_surface": "WEB",
+        "version": "19.2",
+        "component_ref": "opaque:REACT.COMPONENT.SYNTHETIC",
+        "component_kind": "FUNCTION",
+        "render_mode": "CLIENT",
+        "signal": "REACT",
+        "target_ref": "specialist.software-language-runtime.react-components",
+        "context_complete": false,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_COMPONENT_RUNTIME",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": false,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "applicability_status": "EXTERNAL_TYPED",
+        "applicability_complete": true,
+        "runtime_evidence": "BOUNDED",
+        "component_context": {
+          "framework": "REACT",
+          "version": "19.2",
+          "component_ref": "opaque:REACT.COMPONENT.SYNTHETIC",
+          "component_kind": "FUNCTION",
+          "render_mode": "CLIENT",
+          "server_boundary": "NONE",
+          "hook_mode": "HOOKS",
+          "props_digest": "opaque:REACT.PROPS.SYNTHETIC",
+          "context_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "props_evidence": {
+          "status": "BOUNDED",
+          "props_digest": "opaque:REACT.PROPS.SYNTHETIC",
+          "serializable": true,
+          "unknown_keys": []
+        },
+        "candidate_digest": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "5f19b2a40c13c8a4fc0d03b22b659159a61e6da9689c543fc73b6bb8edb02cd3",
+        "standard_block_sha256": "5aab3dada3967f3def8daf9984e894119303ee9f521b3114972d4694bd7259cf",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+      "context_receipt_sha256": "7b9a299d1081c3e013a35e05d4f95a1ff9659a3daf381a47d73bf0e05d8ff091",
+      "upstream_router_result_sha256": "bd77a62cfc93323b614afd1da4ae4f3d66dcf84bad1a5f1492cae593683c7f45",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "cross_provider": false,
+          "duplicate_authority": false,
+          "umbrella_authority": false,
+          "false_positive": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "missing_context": true,
+          "unsafe_action": false,
+          "wrong_framework": false,
+          "wrong_version": false,
+          "server_boundary_mismatch": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "TYPED_CONTEXT_REQUIRED",
+      "error_code": "REACT_COMPONENTS_CONTEXT_INCOMPLETE",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

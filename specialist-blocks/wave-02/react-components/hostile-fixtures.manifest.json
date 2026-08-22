@@ -1,0 +1,92 @@
+{
+  "schema": "agentos.react_components_hostile_fixture_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.react-components",
+  "entries": [
+    {
+      "fixture_id": "react-components-authority_conflict",
+      "path": "fixtures/authority_conflict.json",
+      "expected_outcome": "ESCALATE"
+    },
+    {
+      "fixture_id": "react-components-broad_when_narrow_exists",
+      "path": "fixtures/broad_when_narrow_exists.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-cross_provider_version_claim",
+      "path": "fixtures/cross_provider_version_claim.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-data_limit",
+      "path": "fixtures/data_limit.json",
+      "expected_outcome": "ROUTE"
+    },
+    {
+      "fixture_id": "react-components-duplicate_sibling_authority",
+      "path": "fixtures/duplicate_sibling_authority.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-false_positive",
+      "path": "fixtures/false_positive.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-handoff",
+      "path": "fixtures/handoff.json",
+      "expected_outcome": "ROUTE"
+    },
+    {
+      "fixture_id": "react-components-missing_context",
+      "path": "fixtures/missing_context.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-narrowness",
+      "path": "fixtures/narrowness.json",
+      "expected_outcome": "ROUTE"
+    },
+    {
+      "fixture_id": "react-components-router_self_accept",
+      "path": "fixtures/router_self_accept.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-routing",
+      "path": "fixtures/routing.json",
+      "expected_outcome": "ROUTE"
+    },
+    {
+      "fixture_id": "react-components-silent_scope_expansion",
+      "path": "fixtures/silent_scope_expansion.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-stale_source",
+      "path": "fixtures/stale_source.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-tool_limit",
+      "path": "fixtures/tool_limit.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-umbrella_authority",
+      "path": "fixtures/umbrella_authority.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-unrelated_scope",
+      "path": "fixtures/unrelated_scope.json",
+      "expected_outcome": "DENY"
+    },
+    {
+      "fixture_id": "react-components-unsafe_action",
+      "path": "fixtures/unsafe_action.json",
+      "expected_outcome": "DENY"
+    }
+  ]
+}

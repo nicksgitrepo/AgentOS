@@ -5,12 +5,14 @@
   "block_id": "specialist.software-language-runtime.react-components",
   "candidate_digest": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
+  "independent_reviewer_required": true,
+  "audit_status": "NOT_STARTED_BLOCKED_EXACT_PROTECTED_AUTHORITY",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [
     {
       "case_id": "react-components-authority_conflict",
       "class": "authority_conflict",
-      "expected": "DENY",
+      "expected": "ESCALATE",
       "observed": "PASS"
     },
     {
@@ -88,7 +90,7 @@
     {
       "case_id": "react-components-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {
