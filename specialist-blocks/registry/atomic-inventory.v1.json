@@ -923,7 +923,7 @@
       "router": "specialist.security.owasp-api-top10-router",
       "block_id": "specialist.security.owasp-api-2023-api10-unsafe-api-consumption",
       "package_status": "COMPILED_CANDIDATE",
-      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_status": "EXECUTED_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.owasp-api-2023-api10-unsafe-api-consumption.v1"
     },
     {
