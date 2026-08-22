@@ -423,7 +423,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-06/search-rag/handoff.json",
-        "handoff_file_sha256": "554ae5645ea25d8549ca9f70f10a5ad4e30d0e6e31d8553c0df9e75d5184738f",
+        "handoff_file_sha256": "9ca2367c06483b716a7aaddd5cde1ca66387a9f7b8e5912b8d7ade97ec9cd6ed",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.search-rag.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "bb1139deccf41fe203600cbc35fd35be697d06dce9ad3a513235d2c8b6825172"
+  "roster_sha256": "538e385dd052426e76fb63d433514b11f683a6aaf2c385c4e3b158c2e938994e"
 }

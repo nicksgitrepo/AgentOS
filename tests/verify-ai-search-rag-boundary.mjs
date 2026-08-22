@@ -75,6 +75,9 @@ const memoryResult = evaluateAiSearchRagBoundary(memoryWrite);
 assert.equal(memoryResult.disposition, "DENY");
 assert.equal(memoryResult.error_code, "AI_SEARCH_RAG_MEMORY_WRITE_FORBIDDEN");
 
+const handoff = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "specialist-blocks/wave-06/search-rag/handoff.json"), "utf8"));
+assert(handoff.changed_paths.every((changedPath) => changedPath.startsWith("specialist-blocks/wave-06/search-rag/")), "handoff changed paths must remain package-local");
+
 for (const relativePath of [
   "control/ai-search-rag-authority-binding.mjs",
   "control/ai-search-rag-boundary-gate.mjs",
