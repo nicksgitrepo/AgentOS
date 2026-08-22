@@ -14,10 +14,10 @@
     "included": [
       "category-scoped evidence",
       "exact OWASP API category identity",
-      "version-bound API security findings",
-      "tenant-bound object scope evidence",
+      "externally supplied backend evidence status only",
       "read-only auditor custody and mutation proof",
-      "externally supplied backend evidence status only"
+      "tenant-bound object scope evidence",
+      "version-bound API security findings"
     ],
     "non_goals": [
       "Product writing",
@@ -135,16 +135,16 @@
       "unknowns"
     ],
     "evidence_obligations": [
+      "backend evidence status; no fabricated backend proof",
       "exact source lock identity",
       "gate trace",
+      "mutation sensitivity proof",
+      "read-only auditor custody receipt",
       "specialist.standard.owasp-api-top10-2023 hash",
       "specialist.standard.owasp-asvs hash",
-      "typed context",
-      "unknown ledger",
       "tenant scope and object scope bindings",
-      "read-only auditor custody receipt",
-      "backend evidence status; no fabricated backend proof",
-      "mutation sensitivity proof"
+      "typed context",
+      "unknown ledger"
     ],
     "handoff_fields": [
       "block_id",
@@ -212,9 +212,9 @@
     ],
     "auditor": [
       "independent read-only custody",
+      "no acceptance or authorization decision",
       "no backend access",
-      "no project mutation",
-      "no acceptance or authorization decision"
+      "no project mutation"
     ],
     "data": [
       "no protected consumer data",
@@ -327,5 +327,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "5847ada8ef627d4202a1fc24bdf0594af39626dfec6edd63dc264556d83dece9"
+  "block_sha256": "739cebe10ca46d6dfb1b0e5faed961a69986cb84b38f8aa9df0cb732ed8b7d6e"
 }

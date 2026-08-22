@@ -1,7 +1,7 @@
 {
   "schema": "agentos.specialist_read_only_adversary_audit.v1",
   "version": 1,
-  "audit_id": "owasp-api-2023-api1-object-authorization.read-only-adversary.2026-08-22.v1",
+  "audit_id": "owasp-api-2023-api1-object-authorization.read-only-adversary.2026-08-22.v2",
   "auditor": {
     "role": "INDEPENDENT_READ_ONLY_AUDITOR",
     "custody_ref": "opaque:OWASP_API_2023_API1_OBJECT_AUTHORIZATION.READ_ONLY_AUDITOR",
@@ -12,24 +12,34 @@
     "authorization_decision_allowed": false
   },
   "audited_candidate": {
-    "commit": "54e89a6be7fd9d452740fe0f7771a4f6cc0eb775",
-    "tree": "7024df37b4ba65a60ff87e6ee8e05422d7c445ef",
-    "package_block_sha256": "5847ada8ef627d4202a1fc24bdf0594af39626dfec6edd63dc264556d83dece9",
-    "package_root_sha256": "858727b6d0a892b8e1915feada017c32d568c139007317c5686a7a816faf4730",
+    "commit": "1596faf4675ef2ad46e49714fd33574fd659d780",
+    "tree": "eb1a606a2c8d4dac3d48ea374e9f010ec33a45a0",
+    "package_block_sha256": "739cebe10ca46d6dfb1b0e5faed961a69986cb84b38f8aa9df0cb732ed8b7d6e",
+    "package_root_sha256": "6fcf3a9f85d9dedf6ef65c944c5f6992697ac03eeb6e04c6a93f3ddd4857808a",
     "source_manifest_sha256": "a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
-    "model_snapshot_sha256": "d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7",
-    "context_receipt_sha256": "05adfbe4f3fcd30b41984760b9d7208f05ed451f4ef1ab6de17d94cbb19b0dd3",
+    "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "model_route_sha256": "9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
+    "context_receipt_sha256": "9b049b35b778970139b7ac5a8439bf70889e92b2b29b5c85df06e444dcfdd47d",
     "gate_semantic_inventory_sha256": "e707f1f82ed5c9cdf57c1378c33a0e25b7bb168b71ab7b7b1785cac7023e3ea6"
+  },
+  "model_policy": {
+    "snapshot_status": "PREPARED_INACTIVE",
+    "observed_at_utc": "2026-08-21T04:09:00.000Z",
+    "expires_at_utc": "2026-08-22T04:09:00.000Z",
+    "source_verifier_status": "PASS",
+    "freshness_claim": "The refresh is accepted only for its signed observed/expiry interval; no later time is inferred."
   },
   "method": {
     "source_readback": "git archive of the exact audited commit into an isolated directory",
     "verifier": "tests/verify-owasp-api-2023-api1-object-authorization-boundary.mjs",
+    "model_verifier": "tests/verify-eco-model-policy-source-binding.mjs",
     "mutation_policy": "candidate tree was not edited; evaluator-only temporary mutation copies were disposable",
     "backend_policy": "no backend was queried and no backend evidence was supplied"
   },
   "execution": {
-    "status": "PASS_WITH_FINDINGS",
+    "status": "PASS",
     "focused_verifier_status": "PASS",
+    "model_policy_verifier_status": "PASS",
     "executable_gate_count": 12,
     "hostile_fixture_count": 17,
     "tenant_scope_fail_closed": true,
@@ -38,40 +48,18 @@
     "mutation_detected": true,
     "external_side_effects": 0
   },
-  "findings": [
-    {
-      "finding_id": "OWASP_API1-AUDIT-001",
-      "severity": "HIGH",
-      "status": "REPAIR_REQUIRED",
-      "code": "CANDIDATE_RECEIPT_STALE",
-      "evidence": "handoff.json and evaluation.json still identify the pre-freeze block digest and the old source commit/tree rather than the audited commit/tree",
-      "required_repair": "Rebind the handoff and evaluation dossier to the exact audited commit/tree and executable package receipts"
-    },
-    {
-      "finding_id": "OWASP_API1-AUDIT-002",
-      "severity": "HIGH",
-      "status": "REPAIR_REQUIRED",
-      "code": "STATIC_EVALUATION_CONTRADICTS_EXECUTION",
-      "evidence": "evaluation.json expects data_limit and tool_limit to ROUTE while the executable hostile vectors correctly DENY them for privacy and tool custody",
-      "required_repair": "Replace static PASS labels with the executable expected disposition, route, error code, result receipts, and fail-closed custody evidence"
-    },
-    {
-      "finding_id": "OWASP_API1-AUDIT-003",
-      "severity": "MEDIUM",
-      "status": "REPAIR_REQUIRED",
-      "code": "ROSTER_PROVENANCE_STALE",
-      "evidence": "the reusable roster contains a duplicated upstream router dependency, pre-change gate and fixture digests, and does not declare tenant/object, auditor, or backend-evidence custody fields",
-      "required_repair": "Update the scoped roster entry and rebind its pinned roster file digest in the authority module"
-    },
-    {
-      "finding_id": "OWASP_API1-AUDIT-004",
-      "severity": "BLOCKER",
-      "status": "EXTERNAL_REFRESH_REQUIRED",
-      "code": "MODEL_POLICY_SNAPSHOT_STALE",
-      "evidence": "the exact inherited model snapshot d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7 expired at 2026-08-21T04:00:00.000Z",
-      "required_repair": "A governance owner must refresh and explicitly rebind the model-policy snapshot before qualification; this candidate remains PREPARED_INACTIVE and must not infer fresh model evidence"
-    }
-  ],
-  "disposition": "REPAIR_REQUIRED_WITH_MODEL_REFRESH_BLOCKER",
-  "audit_sha256": "a2c1e7b0ed855bc056d7017293b5e3016daf46ac8366c14ed76a05128d3c6d7a"
+  "prior_audit": {
+    "report_digest": "a2c1e7b0ed855bc056d7017293b5e3016daf46ac8366c14ed76a05128d3c6d7a",
+    "audited_commit": "54e89a6be7fd9d452740fe0f7771a4f6cc0eb775",
+    "audited_tree": "7024df37b4ba65a60ff87e6ee8e05422d7c445ef",
+    "repaired_findings": [
+      "CANDIDATE_RECEIPT_STALE",
+      "STATIC_EVALUATION_CONTRADICTS_EXECUTION",
+      "ROSTER_PROVENANCE_STALE",
+      "MODEL_POLICY_SNAPSHOT_STALE"
+    ]
+  },
+  "findings": [],
+  "disposition": "PASS_WITH_INACTIVE_MODEL_REVIEW_REQUIRED",
+  "audit_sha256": "9b6f7bfd5fafe631ce0545fe234d923b080302f48e931946d5bb748ddbc23a4a"
 }
