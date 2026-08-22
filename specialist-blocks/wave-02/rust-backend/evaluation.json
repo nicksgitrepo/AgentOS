@@ -5,12 +5,14 @@
   "block_id": "specialist.software-language-runtime.rust-backend",
   "candidate_digest": "a52204f7a2a7e00ce5f7ca5120333a4d3d7ea2956194bdf03eea32d96199d877",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
+  "independent_reviewer_required": true,
+  "audit_status": "NOT_STARTED_BLOCKED_EXACT_PROTECTED_AUTHORITY",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [
     {
       "case_id": "rust-backend-authority_conflict",
       "class": "authority_conflict",
-      "expected": "DENY",
+      "expected": "ESCALATE",
       "observed": "PASS"
     },
     {
@@ -88,7 +90,7 @@
     {
       "case_id": "rust-backend-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {

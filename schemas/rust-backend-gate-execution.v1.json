@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.rust_backend_gate_execution.v1",
+  "title": "Rust Backend Runtime gate execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "block_id", "evaluator_entrypoint", "ordered_gate_ids", "executions", "execution_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.rust_backend_gate_execution.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.software-language-runtime.rust-backend"},
+    "evaluator_entrypoint": {"const": "control/rust-backend-package-evaluator.mjs#evaluateRustBackendPackage"},
+    "ordered_gate_ids": {"type": "array", "minItems": 12, "maxItems": 12, "items": {"type": "string"}},
+    "executions": {
+      "type": "array", "minItems": 12, "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["gate_id", "fixture_class", "entrypoint", "expected"],
+        "properties": {
+          "gate_id": {"type": "string"},
+          "fixture_class": {"type": "string"},
+          "entrypoint": {"const": "control/rust-backend-boundary-gate.mjs#evaluateRustBackendBoundary"},
+          "expected": {
+            "type": "object", "additionalProperties": false,
+            "required": ["disposition", "route", "error_code", "zero_side_effects", "acceptance_allowed"],
+            "properties": {
+              "disposition": {"enum": ["ROUTE", "DENY", "ESCALATE"]},
+              "route": {"type": "string"},
+              "error_code": {"type": "string"},
+              "zero_side_effects": {"const": true},
+              "acceptance_allowed": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    "execution_sha256": {"pattern": "^[0-9a-f]{64}$"}
+  }
+}

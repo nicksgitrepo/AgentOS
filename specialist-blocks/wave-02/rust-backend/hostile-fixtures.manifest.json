@@ -1,0 +1,24 @@
+{
+  "schema": "agentos.rust_backend_hostile_fixture_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.software-language-runtime.rust-backend",
+  "entries": [
+    {"fixture_id": "rust-backend-authority_conflict", "path": "fixtures/authority_conflict.json", "expected_outcome": "ESCALATE"},
+    {"fixture_id": "rust-backend-broad_when_narrow_exists", "path": "fixtures/broad_when_narrow_exists.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-cross_provider_version_claim", "path": "fixtures/cross_provider_version_claim.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-data_limit", "path": "fixtures/data_limit.json", "expected_outcome": "ROUTE"},
+    {"fixture_id": "rust-backend-duplicate_sibling_authority", "path": "fixtures/duplicate_sibling_authority.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-false_positive", "path": "fixtures/false_positive.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-handoff", "path": "fixtures/handoff.json", "expected_outcome": "ROUTE"},
+    {"fixture_id": "rust-backend-missing_context", "path": "fixtures/missing_context.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-narrowness", "path": "fixtures/narrowness.json", "expected_outcome": "ROUTE"},
+    {"fixture_id": "rust-backend-router_self_accept", "path": "fixtures/router_self_accept.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-routing", "path": "fixtures/routing.json", "expected_outcome": "ROUTE"},
+    {"fixture_id": "rust-backend-silent_scope_expansion", "path": "fixtures/silent_scope_expansion.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-stale_source", "path": "fixtures/stale_source.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-tool_limit", "path": "fixtures/tool_limit.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-umbrella_authority", "path": "fixtures/umbrella_authority.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-unrelated_scope", "path": "fixtures/unrelated_scope.json", "expected_outcome": "DENY"},
+    {"fixture_id": "rust-backend-unsafe_action", "path": "fixtures/unsafe_action.json", "expected_outcome": "DENY"}
+  ]
+}

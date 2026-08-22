@@ -1,9 +1,116 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "rust-backend-silent_scope_expansion",
   "block_id": "specialist.software-language-runtime.rust-backend",
   "class": "silent_scope_expansion",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for silent_scope_expansion; all provider, project, consumer, and applicability facts remain external."
+  "note": "Synthetic executable hostile vector for silent_scope_expansion; all language, toolchain, project, consumer, and applicability facts remain bounded and synthetic.",
+  "vector": {
+    "entrypoint": "control/rust-backend-boundary-gate.mjs#evaluateRustBackendBoundary",
+    "input": {
+      "schema": "agentos.rust_backend_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_RUST_BACKEND",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SOFTWARE_LANGUAGE_RUNTIME_RUST_BACKEND",
+        "custody_ref": "opaque:RUST.BACKEND.CUSTODY",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "standard_identity": "source.rust-reference-1-97-1",
+        "standard_version": "1.97.1",
+        "standard_effective_date": null,
+        "standard_retrieved_date": "2026-08-11",
+        "publisher_identity": "Rust Project",
+        "language": "RUST",
+        "edition": "2024",
+        "toolchain": "1.97.1",
+        "runtime_surface": "BACKEND",
+        "crate_ref": "opaque:RUST.CRATE.SYNTHETIC",
+        "target_triple": "opaque:RUST.TARGET.SYNTHETIC",
+        "async_model": "ASYNC_DECLARED",
+        "signal": "RUST",
+        "target_ref": "specialist.software-language-runtime.rust-backend",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_RUST_BACKEND",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": true,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "applicability_status": "EXTERNAL_TYPED",
+        "applicability_complete": true,
+        "runtime_evidence": "BOUNDED",
+        "ownership_evidence": {
+          "status": "BOUNDED",
+          "borrow_model": "OWNERSHIP_BORROWING",
+          "lifetime_status": "BOUNDED",
+          "unsafe_boundary": "DECLARED",
+          "aliasing_status": "EXPLICIT",
+          "context_digest": "b66c2479daadc8b8b231e5ac9ce62e38436e3cca22d9375b1080d151f84da110"
+        },
+        "runtime_context": {
+          "language": "RUST",
+          "edition": "2024",
+          "toolchain": "1.97.1",
+          "crate_ref": "opaque:RUST.CRATE.SYNTHETIC",
+          "target_triple": "opaque:RUST.TARGET.SYNTHETIC",
+          "async_model": "ASYNC_DECLARED",
+          "context_digest": "b66c2479daadc8b8b231e5ac9ce62e38436e3cca22d9375b1080d151f84da110"
+        },
+        "code_evidence": {
+          "status": "BOUNDED",
+          "language": "RUST",
+          "edition": "2024",
+          "toolchain": "1.97.1",
+          "borrow_check_status": "EVIDENCED",
+          "unsafe_blocks": 0,
+          "compile_mode": "ANALYSIS_ONLY"
+        },
+        "candidate_digest": "a52204f7a2a7e00ce5f7ca5120333a4d3d7ea2956194bdf03eea32d96199d877",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "fff90b56de29d4c45c0217d7f5a5c33f8abb3457d5edccc61726e67ee0e2f065",
+        "standard_block_sha256": "7b447ef37ef69054faa6b343b0a9083a86388e976111326a86fe7c0834ed8d0c",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "context_receipt_sha256": "b66c2479daadc8b8b231e5ac9ce62e38436e3cca22d9375b1080d151f84da110",
+        "upstream_router_result_sha256": "ab8f045ce5ca3258b2b0f17fc8c99ed45423eb4b6c196d1042f9425b88adbef7",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": true,
+          "cross_provider": false,
+          "duplicate_authority": false,
+          "umbrella_authority": false,
+          "false_positive": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "wrong_language": false,
+          "wrong_version": false,
+          "borrow_unverified": false,
+          "crate_mismatch": false,
+          "unsafe_boundary": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SCOPE_REQUIRED",
+      "error_code": "RUST_BACKEND_SCOPE_EXPANSION_FORBIDDEN",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

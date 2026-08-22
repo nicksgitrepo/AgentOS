@@ -27290,105 +27290,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.AUTHORITY_CONFLICT",
+            "fixture_id": "rust-backend-authority_conflict",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/authority_conflict.json",
-            "file_sha256": "25c7f97a096e60752648d6113475cff3ab2892137bf94f5b9fd5cbe86235fe9d",
-            "expected_outcome": "DENY"
+            "file_sha256": "31bf55fad735e9446c3a361d43c38c3cfb04f39f2f9bef7d02babddeacb10932",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "rust-backend-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "982876c5a3099ac4a5fcdaf700bbfdc54351567ed36ec2afe0e190380edeb3d5",
+            "file_sha256": "bf576c7623af53f2afd7abb221e5bd6beb0ca9509c92592553aec0a85c8dfd8c",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "rust-backend-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "5c56123dd09b3d1f1ae9f0c33d868e4df5469214109193cea0d348909794215e",
+            "file_sha256": "dda8d099c0e0d3903eaf2ac5f62a93470633ea016d5517acbef6b2dd3cf8d6ec",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.DATA_LIMIT",
+            "fixture_id": "rust-backend-data_limit",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/data_limit.json",
-            "file_sha256": "5af8fff4f69952f31aaafed2d3895a478bd608c8a371828a6181ebe5bb83dd69",
+            "file_sha256": "25fe1945329947058543fdef6b17b4815aa181d9c6ec29a061301443a5ed3abe",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "rust-backend-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "90a2d9a7b825148e31943d9f3d3f64b796c0fea24aab5eaee7c56ae2c674caa7",
+            "file_sha256": "2e2f00e77e755da4e909596deaaf0f1def525352528c5efb2508b858ac29a583",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.FALSE_POSITIVE",
+            "fixture_id": "rust-backend-false_positive",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/false_positive.json",
-            "file_sha256": "8560db61589a630fb6d5640d9f6e156d5ed90bc3458e57d2943e75433c58e232",
+            "file_sha256": "e1399c5590cadedb82cfe124626cb676a8799ba5656c56d9866b38ca7db6fe97",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.HANDOFF",
+            "fixture_id": "rust-backend-handoff",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/handoff.json",
-            "file_sha256": "91b55f0273e2bfbff3291c559d65aee6cbc4d2682c7f5a646312fe59888730c4",
+            "file_sha256": "79ad31bed66abad6e341eb9d4c5d9870a00e2d5b454d592d5d92415ff8a02bce",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.MISSING_CONTEXT",
+            "fixture_id": "rust-backend-missing_context",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/missing_context.json",
-            "file_sha256": "4b01cada1ee839b805346e2dd15bc0fabe1c1340514f50a537262ae0b38dddcc",
+            "file_sha256": "742f8ff482659bbedbcef5c5acaf8ee0f3b71cded9d369c8f0017703dd114e3f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.NARROWNESS",
+            "fixture_id": "rust-backend-narrowness",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/narrowness.json",
-            "file_sha256": "b9a86f20bcbd8a3180cd563a8f72f3722d910cdfbe15b909fb2bfbcdd84d6ead",
+            "file_sha256": "3e6c7265e68236aca5c3013a2a4c5464bbc9866b11bfd473b7ff2527b7a022f0",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.ROUTER_SELF_ACCEPT",
+            "fixture_id": "rust-backend-router_self_accept",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/router_self_accept.json",
-            "file_sha256": "093a897394dbd5c8d772c6373971c1d0102f9034ada6e9188120f1de86ec5af7",
+            "file_sha256": "cd8ff4dd7e4cb7c02e9298b3f705387dd6b7d3d1a8be216ee077c1d443de4896",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.ROUTING",
+            "fixture_id": "rust-backend-routing",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/routing.json",
-            "file_sha256": "088c5783d09b00de64e981184bdb5efd75e4a1f0c89d9dd4dd01e0977aaa992c",
+            "file_sha256": "792ae2141f127dcd4ccaad85e4de64b66739cbed5f045d0c559e75910d298f6b",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "rust-backend-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/silent_scope_expansion.json",
-            "file_sha256": "e68c6f1596247135548071ecb16ef469e042152facc2b677a6c87fb6da2d8f29",
+            "file_sha256": "46f0bb64c8cc26357e16033d24090ebfb1816e55847b1242ff4c5299a4017ec7",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.STALE_SOURCE",
+            "fixture_id": "rust-backend-stale_source",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/stale_source.json",
-            "file_sha256": "70b8dfcb66ec523bdbcbf7ad40ff713d3e8fe66f3f31a6c07d14722147ef58a9",
+            "file_sha256": "cc1ffc72dc31fc7a02ccc4447410b77973a9fcfd00b6882d7cc8646d121a1169",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.TOOL_LIMIT",
+            "fixture_id": "rust-backend-tool_limit",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/tool_limit.json",
-            "file_sha256": "e7ccb709094b18044067bf41607dc7f49eaec7a6905b1f536743e8c103b1ff56",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "070be6ac591907fcd627f8c81d13fda7e87b63cab0213815f7571354aa4eb2ad",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.UMBRELLA_AUTHORITY",
+            "fixture_id": "rust-backend-umbrella_authority",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/umbrella_authority.json",
-            "file_sha256": "062fed0436ee2cf1ea3e9c1f77119d2062d94da32446a9da2f9d10c7cf7611cb",
+            "file_sha256": "061e8f61222dc88869d29d65f62cfcbeb167931bd8ea634897691bfa343568a7",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.UNRELATED_SCOPE",
+            "fixture_id": "rust-backend-unrelated_scope",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/unrelated_scope.json",
-            "file_sha256": "de32de39d5e291d1977563d4721535050416986da105baed5531903a7623d903",
+            "file_sha256": "9265d0c332b6aa4c4e972f808f8870a398845d75b096d486ecf6cb87a5e7d39f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.software-language-runtime.rust-backend.UNSAFE_ACTION",
+            "fixture_id": "rust-backend-unsafe_action",
             "path": "specialist-blocks/wave-02/rust-backend/fixtures/unsafe_action.json",
-            "file_sha256": "c2475e11f088dcb3b415ae83d4cb49067c80c0bcb06549265e11b47d2589951c",
+            "file_sha256": "785e3923606aa6484452d77d75a6f58484e2b171907f10ee3b2d1b1e3934252a",
             "expected_outcome": "DENY"
           }
         ]
@@ -27401,7 +27401,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/rust-backend/handoff.json",
-        "handoff_file_sha256": "f9d824181049dd41bccb2617af3d45895b13c9efeff46565d6a9ba0aca75e7f8",
+        "handoff_file_sha256": "6871707507923489e0dc2fc979435f712bf1babdd44ca13979f7e4491bb3783b",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.rust-backend.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "446181e82c9c460f0e9e4044c4a4e9607eeec6e46cfbf0fea77334b8ac257266"
 }
