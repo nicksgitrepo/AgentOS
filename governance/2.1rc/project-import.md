@@ -84,15 +84,22 @@ receipt, and fails closed if any precondition changes. A missing candidate
 repository is an unfinished import step, not a reason to wait for protected
 authority: the Controller repairs or advances the pyramid first.
 
-The Agent Spawner compiles only roles requested by the Controller. It must
-select a dependency-complete block set, source-lock it, run independent QA,
-and return `NOT_READY` while any required block is incomplete. Seeds are
-immutable checkpoints and never work; only governed clones work. While the
-current wave runs, the Spawner prepares the next two eligible waves. It also
-continues building missing reusable blocks and emits a typed roster projection
-whenever a route becomes complete. The Controller may choose among complete
-available waves while incomplete routes remain pending; no incomplete route
-ever enters the possible-agent roster or runtime.
+The Agent Spawner creates and archives only the agents named by authorized,
+typed lifecycle requests. The requesting Controller or Orchestrator supplies
+the role, campaign, priority, scope, admission evidence, custody, and return
+route. The Spawner validates request completeness, uniqueness, capacity,
+available model/tool context, and exact receipt bindings; it does not plan a
+wave, prepare future waves, direct work, perform independent QA, review a
+result, or accept a candidate. An incomplete request returns a typed
+non-provisioning result to its requester. Seeds are immutable checkpoints and
+never work; only a host-created governed clone works.
+
+The Orchestrator owns wave order, worker direction, handoffs, repair routing,
+and acceptance flow. The Controller owns liveness and bounded workflow repair.
+Independent evaluators own quality judgments. When those authorities issue a
+valid create or archive request, the Spawner performs the host lifecycle
+operation, updates the active lifecycle roster, and returns an exact receipt.
+Archival never implies acceptance.
 
 Routine gate passes are event-driven and automatic. Before a Controller turn
 ends, it starts the next eligible transition or persists an exact resumable

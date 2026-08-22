@@ -2,9 +2,9 @@
   "schema": "agentos.spawner_gate.v1",
   "version": 1,
   "gate_id": "SPAWNER.TURN_CONTINUATION",
-  "question": "Does the turn end with a useful started successor, a complete six-auditor handoff, delivered redistribution, or a genuine protected blocker with zero resources and an exact restart event?",
-  "pass": "CLOSE_TURN_WITH_TYPED_RECEIPT",
-  "fail": "REJECT_CLOSEOUT_AND_START_NEXT_ELIGIBLE_ACTION",
-  "unknown": "REJECT_CLOSEOUT",
-  "gate_sha256": "e627c7a2bf76e742af21cb5d6cddfeec77de0ab8924781ccf4c576df68ecb5dd"
+  "question": "Did the requested lifecycle operation return an exact spawn/archive receipt or a typed provisioning failure to the requesting authority without selecting, directing, reviewing, or repairing project work?",
+  "pass": "CLOSE_LIFECYCLE_OPERATION_WITH_TYPED_RECEIPT",
+  "fail": "RETURN_LIFECYCLE_OPERATION_FAILURE_TO_REQUESTER",
+  "unknown": "REJECT_UNPROVEN_LIFECYCLE_CLOSEOUT",
+  "gate_sha256": "c39ddf04d30186312ceea01f909b93365adf879f11e1ba82ccbebe27a3c4c880"
 }

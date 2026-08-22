@@ -86,8 +86,8 @@
     {
       "gate_id": "SPAWNER.TURN_CONTINUATION",
       "path": "gates/turn-closeout.gate",
-      "file_sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234",
-      "gate_sha256": "e627c7a2bf76e742af21cb5d6cddfeec77de0ab8924781ccf4c576df68ecb5dd",
+      "file_sha256": "f71cf284dac9b261500839aa6e97af649ed317a25950dd651fdec92c7c543ce2",
+      "gate_sha256": "c39ddf04d30186312ceea01f909b93365adf879f11e1ba82ccbebe27a3c4c880",
       "hostile_fixture_ids": [
         "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
         "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"
@@ -106,13 +106,13 @@
     {
       "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
       "path": "gates/feature-implementation-loop.gate",
-      "file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0",
-      "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e",
+      "file_sha256": "c41c0a648e32f0c7b385a7c3ec291983a1e1c171c6c291f232275dd80b7b2959",
+      "gate_sha256": "8d073a3d768bb048fb26135877b6d3a66b9e4b1d76dbe6877818a2a40db4cfd6",
       "hostile_fixture_ids": [
         "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
         "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
       ]
     }
   ],
-  "manifest_sha256": "629861f05f46812ba036a31d95422f53591ecf047e92fdd5fce6d7f392a1497e"
+  "manifest_sha256": "bee380b16fc8781962bb08ff5c78f4873fc6173e81c2d7b0086b52d0b9541e8a"
 }

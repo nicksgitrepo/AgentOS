@@ -17,7 +17,7 @@
       "persistent": false,
       "controller": "control/import-orchestrator.mjs",
       "contract": "schemas/import-orchestrator.v1.json",
-      "responsibility": "Own the project-bound import plan, derive wave order, request and QA-gate Spawner routes, start admitted campaign workers, keep each worker in one named lane, preserve custody and handoffs, collect repairs, and advance the candidate through integration."
+      "responsibility": "Own the project-bound import plan, derive wave order, prepare and QA-gate typed lifecycle requests, direct admitted campaign workers, keep each worker in one named lane, preserve custody and handoffs, collect repairs, and advance the candidate through integration. Agent creation and archival are requested from and executed only by the Spawner."
     },
     "auditor": {
       "persistent": false,

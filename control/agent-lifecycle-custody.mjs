@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
-/* Spawner-exclusive, receipt-driven agent lifecycle and safe despawn. */
+/*
+ * Spawner-exclusive, receipt-driven agent create/archive execution.
+ * Every substantive disposition is supplied as an external typed receipt;
+ * this boundary records and consumes it without planning, directing,
+ * supervising, evaluating, accepting, repair-routing, or integrating work.
+ */
 
 import {canonicalDigest} from "./content-addressing.mjs";
 import {assertOperationalGlobalGovernanceContext} from "./global-governance-operational-context.mjs";

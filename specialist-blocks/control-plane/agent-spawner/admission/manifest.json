@@ -15,9 +15,9 @@
       "layer": "GLOBAL",
       "version": "1.0.0",
       "path": "global.block.json",
-      "file_sha256": "3aaacf5e592b7248059af555612249979ffea539c248c27a1fe0669f149c820c",
-      "block_sha256": "e57be5b15b7ee519b9b975e0ada10fe0fc98e7cc5ac010434825d25207ae9e75",
-      "content_sha256": "5ea545c6cbdabb04a5a44df2d36e6d0cf06793a077722651d5f8884a33c34844"
+      "file_sha256": "176210d1719510ee7d84fc1ba04e7cda04145931ea67b0e7c7e6347f1e55c290",
+      "block_sha256": "0506ba63cc167b872e100d18a9a7db5474d35a6150f8e7b8c85d041faa392a3b",
+      "content_sha256": "f7f7028d2301e185d18bf174685612afb67f57b23c0da0a5f2eb4101b02c60b3"
     },
     {
       "block_id": "BLOCK.SPAWNER.PROJECT",
@@ -65,6 +65,6 @@
       "content_sha256": "fbb216ffb1125dbe14240d2988d8305b3986c6f1d3d7560add49ac5d9a91caf5"
     }
   ],
-  "manifest_sha256": "95d7dc16e24f4f4b8328f1a4af97250823a0c87825950787062569e566cc2881",
+  "manifest_sha256": "3cb532d31f3de70742918b253e107658f10d12196a39c682db8d534cfdc9928f",
   "gate_manifest_sha256": "5f10c8f9560430f208876d21c770c265934d9e3f54aafacf183870a516ebbaab"
 }

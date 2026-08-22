@@ -117,7 +117,8 @@
     "agent_spawner_lifecycle": {
       "controller": "control/agent-spawner-lifecycle.mjs",
       "contract": "schemas/agent-spawner-lifecycle.v1.json",
-      "rule": "The Agent Spawner compiler has an explicit persistent lifecycle. COMPILER_ACTIVE is a safe no-side-effect mode that may compile complete or incomplete blocks and publish typed roster projections without admission, worker spawning, Product mutation, provider access, credentials, or polling. Governed spawning is a separate state requiring complete blocks, independent clearance, and explicit adapter readback."
+      "responsibility_contract": "schemas/agent-spawner-role-boundary.v1.json",
+      "rule": "The Agent Spawner is the sole host-facing executor for authorized ordinary-agent create, archive, and despawn requests. It validates lifecycle request structure, exact authority and custody receipts, uniqueness, capacity, and host availability; updates the active lifecycle roster; and returns a typed readback. It does not plan, prioritize, direct, monitor, supervise, evaluate, review, accept, repair-route, integrate, merge, deploy, or release agent work. COMPILER_ACTIVE validates lifecycle requests without host side effects; governed lifecycle execution requires exact external admission evidence and adapter readback."
     },
     "campaign_orchestrator": "CAMPAIGN_SCOPED",
     "runtime_rule": "No consequential transition completes until a project-bound adapter performs the action and returns a readback bound to the exact project, controller, policy, campaign, event, action, and external identity.",

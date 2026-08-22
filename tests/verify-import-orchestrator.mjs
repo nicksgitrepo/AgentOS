@@ -429,4 +429,4 @@ for (const relative of ["control/import-orchestrator.mjs", "schemas/import-orche
   assert(!/Sociuna|JobSight|WellSight/iu.test(text), `${relative} contains consumer-specific policy`);
 }
 
-console.log("PASS Import Orchestrator: owns plan, waves, Spawner QA, spawning, custody, handoffs, repair intake, review, candidate advance, same-turn continuation, and protected waits");
+console.log("PASS Import Orchestrator: owns plan, waves, lifecycle-request preparation, worker direction, custody, handoffs, repair intake, review, candidate advance, same-turn continuation, and protected waits while Spawner alone executes create/archive operations");

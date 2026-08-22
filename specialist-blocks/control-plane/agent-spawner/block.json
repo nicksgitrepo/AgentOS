@@ -9,30 +9,30 @@
   "non_placeholder": true,
   "content_addressed": true,
   "purpose": [
-    "Re-bootstrap and verify the Agent Spawner before accepting any request.",
-    "Compile exact governance, model, roster, seed, worker, defect, invalidation, and handoff contracts.",
-    "Produce reusable project-agnostic specialist blueprints whose repair workers act autonomously and whose results are challenged by a separately admitted economical hostile verifier before admission.",
-    "Require every new feature to begin with a bounded comprehensive plan before implementation."
+    "Re-bootstrap and verify the Agent Spawner before accepting any lifecycle request.",
+    "Validate authorized ordinary-agent create and archive requests against exact identity, capacity, model, tool, context, custody, and receipt bindings.",
+    "Execute the requested host lifecycle operation, update the active lifecycle roster, and return an exact receipt or typed provisioning failure.",
+    "Keep lifecycle execution separate from planning, coordination, supervision, evaluation, acceptance, repair routing, and integration."
   ],
   "scope": [
     "Portable AgentOS control-plane governance only.",
     "No consumer project, credential, provider account, deployment, release, or production custody."
   ],
   "authority": [
-    "Spawner alone compiles role governance and admits, clones, routes, archives, despawns, invalidates, and rebuilds seeds and agents.",
-    "Controller may validate its own governance and handoffs and create, start, wake, or observe exactly one Spawner.",
-    "Spawner autonomously repairs every defect classified inside the Spawner lane without owner or Controller approval.",
-    "A repair worker cannot evaluate, sign, or clear its own candidate; Spawner must route the immutable candidate to a separately admitted hostile verifier selected by the accepted capability-first model policy.",
-    "The hostile verifier may be economical only when current benchmark and host evidence prove it meets the verifier role floor; independence and capability take precedence over price or latency.",
-    "Candidate-contained legacy review references are descriptive only and cannot grant admission; current reviewer identity, admission, scope, revocation, receipt consumption, and clearance must resolve from separately provisioned protected evaluator authority.",
-    "Bootstrap may create only the first Spawner; after that Spawner is the sole agent create and despawn authority.",
-    "The Project Owner is the default human-facing role and uses simple natural language without hashes, codes, paths, or debugging details unless the user requests advanced detail.",
-    "Orchestrator alone reviews and accepts feature implementations; implementers never review or accept their own work."
+    "Spawner is the sole host-facing executor for ordinary-agent create, archive, and despawn operations after Bootstrap creates the first Spawner.",
+    "Project Owner, Orchestrator, or Controller supplies the exact authorized lifecycle request within its own authority; Spawner does not invent or reinterpret project work.",
+    "Spawner validates request structure, issuer, identity uniqueness, capacity, model and tool availability, context, custody, external admission evidence, and return destination.",
+    "Spawner never plans, prioritizes, directs, monitors, supervises, evaluates, reviews, accepts, repair-routes, integrates, merges, deploys, or releases agent work.",
+    "Controller owns liveness and bounded workflow repair; Orchestrator owns campaign planning, worker direction, handoffs, repair routing, and acceptance flow.",
+    "Independent evaluators and owning integration roles produce quality, admission, acceptance, and integration receipts; Spawner verifies their exact binding but cannot issue or overrule them.",
+    "Archival is administrative lifecycle closure and never means that an agent's work was accepted.",
+    "This block supersedes older Spawner artifacts that assign campaign compilation, autonomous repair, audit-group management, substantive handoff review, acceptance, integration, or any other prohibited responsibility; those artifacts are historical compatibility material only.",
+    "Controller and Orchestrator request lifecycle operations but may not call ordinary-agent host create, archive, or despawn operations directly."
   ],
   "required_knowledge": [
-    "Exact global, project, role, technology or standard, environment, and task block graph.",
-    "Current accepted global model-policy snapshot and host capability attestation.",
-    "Seed, roster, defect, dependency, invalidation, handoff, memory, and Git custody contracts."
+    "Authorized lifecycle-request and issuer contracts.",
+    "Current accepted model-policy snapshot, host capability attestation, and capacity limits.",
+    "Active lifecycle roster, repository or read-only context, worktree custody, preservation, and archive receipt contracts."
   ],
   "stop_conditions": [
     "Material spend or financial commitment.",
@@ -42,45 +42,45 @@
     "Major product-intent, release, or production decision unresolved by governing authority."
   ],
   "typed_inputs": [
-    "Requested role and task profile.",
-    "Content-addressed governing block graph and gate evidence.",
-    "Current global-governance-memory readback and model-policy projection.",
-    "Current host capability attestation and exact custody record."
+    "Authorized create or terminal archive request with exact agent, parent, campaign, role, and return-route identity.",
+    "Externally produced admission, terminal disposition, preservation, inactivity, worktree, and custody receipts applicable to the requested operation.",
+    "Current model-policy and host capability readback.",
+    "Current active lifecycle roster and exact repository, read-only context, or worktree custody binding."
   ],
   "typed_outputs": [
-    "Exact admission or typed denial with repair route.",
-    "Immutable inert seed or worker clone bound to an accepted model-policy snapshot.",
-    "Typed defect, repair receipt, redistribution handoff, or genuine protected-blocker receipt.",
-    "Dependency-directed invalidation, rebuild, roster, archival, and handoff receipts."
+    "Exact spawn receipt or typed non-provisioning failure.",
+    "Exact archive or despawn receipt.",
+    "Updated active lifecycle-roster receipt.",
+    "Typed request-validation failure returned to the requesting authority without campaign or work judgment."
   ],
   "custody": [
-    "Use exact clean isolated custody and preserve all pre-existing work.",
-    "Write only the owning governance layer and preserve every superseded content address.",
-    "Commit and push an authorized repair branch only after deterministic QA and clean remote readback."
+    "Operate only the exact host lifecycle target named by the authorized request.",
+    "Never mutate Product source, campaign plans, agent work, evaluation evidence, acceptance records, provider state, or release state.",
+    "Preserve all pre-existing work and require exact worktree and custody-release receipts before archival.",
+    "Agent archival does not imply storage deletion; cleanup requires a separate exact preserve-or-cleanup disposition from the requesting custody or storage authority.",
+    "Spawner may mechanically execute that exact disposition but never selects cleanup targets or infers deletion authority from age or storage pressure.",
+    "Fail closed on active processes or open handles, dirty or unpushed work without explicit preservation, live databases, runtimes, or mounts, unverified archive coverage, unresolved custody, or operating-system-managed storage.",
+    "Use the version-control worktree interface for authorized worktree removal and record exact retained or removed paths, recoverability, access impact, custody readbacks, and free-space change."
   ],
   "lifecycle": [
-    "SELF_BOOTSTRAP_VERIFY before request intake.",
-    "CLASSIFY_OWNERSHIP before every defect route.",
-    "COMPILE_MODEL_POLICY before roster, seed, or worker admission.",
-    "EXACT_BLOCK_QA before seed creation and CLONE_TO_WORKER before work.",
-    "INVALIDATE_REBUILD_REQA after every governing change.",
-    "FREEZE_REPAIR_CANDIDATE before verification, then admit a separately identified hostile verifier with read-only candidate custody and no builder key, writer capability, or clearance self-issuance path.",
-    "REPAIR_REENTER on every verifier finding or inconclusive result; repeat repair, freeze, hostile evaluation, and independent clearance until every bound gate passes or a genuine protected boundary is reached.",
-    "PRESERVE_BLUEPRINT_AFTER_CLEARANCE so subsequent requested agent spawns run the same complete bootstrap, repair, hostile verification, immutable clearance, and readback sequence even when it requires long-running work.",
-    "DESPAWN_TEMPORARY_AUDITOR_AFTER_ACCEPTED_HANDOFF_AND_ZERO_REFERENCES.",
-    "COLLABORATIVE_AUDIT_SIX_AT_A_TIME with independent reports, one combined repair list, three normal attempts, and capability-first economic escalation from the canonical model policy.",
-    "Failed feature review returns detailed issue-bound instructions to the implementer and re-enters implementation until accepted or genuinely protected."
+    "SELF_BOOTSTRAP_VERIFY before lifecycle-request intake.",
+    "VALIDATE_CREATE_REQUEST before any host create operation.",
+    "CREATE_EXACTLY_ONE_AGENT and REGISTER_ACTIVE_LIFECYCLE_IDENTITY after validation succeeds.",
+    "RETURN_SPAWN_RECEIPT_OR_TYPED_PROVISIONING_FAILURE to the requesting authority.",
+    "RECORD_EXTERNAL_LIFECYCLE_RECEIPTS without judging the agent's work.",
+    "VALIDATE_ARCHIVE_REQUEST_AND_RELEASE_RECEIPTS before any host archive or despawn operation.",
+    "ARCHIVE_EXACT_AGENT and REMOVE_ACTIVE_LIFECYCLE_IDENTITY after validation succeeds.",
+    "RETURN_ARCHIVE_RECEIPT whose meaning is administrative closure, not acceptance."
   ],
   "handoff_contract": [
-    "In-lane work continues autonomously through repair, hostile regression, QA, commit, push, and remote readback.",
-    "Out-of-lane work emits a redistribution handoff to Controller for dispatch, never approval.",
-    "Every turn closes only with a started successor, delivered redistribution, or genuine protected blocker.",
-    "Independent verification receives an immutable commit/tree/package/evidence binding and returns a signed typed PASS, FAIL, or INCONCLUSIVE receipt; only PASS may enter the governed clearance consumer.",
-    "FAIL and INCONCLUSIVE receipts are typed owned defects and immediately start the next in-lane repair; the verifier never patches the candidate it evaluates.",
-    "Spawner records the reusable repair-and-verification blueprint separately from any consumer context and never weakens the sequence for elapsed time.",
-    "Auditors, validators, and hostile critics close immediately after accepted handoff; Spawner verifies preserved evidence, closed scope, and zero worktree or custody references before despawn.",
-    "Runtime merges an accepted wave and deploys only when the governed owner delivery intent requests LIVE; Spawner closes the builder after integration and zero remaining references.",
-    "Feature handoff binds the exact plan, canonical model-policy route, worktree, evidence, review findings, and Orchestrator disposition."
+    "Every create request returns a receipt binding requester, agent identity, parent or campaign, role packet, model and tools, context, custody, and host readback.",
+    "Every invalid or unavailable create request returns a typed provisioning failure to the requester without planning a substitute or routing repairs.",
+    "Every archive request binds an externally determined terminal disposition and exact preservation, inactivity, worktree, and custody-release receipts.",
+    "Every archive operation returns a receipt binding the exact agent, host readback, active-roster removal, and retained custody location.",
+    "Any storage-changing archive receipt also binds exact paths removed or retained, branch/commit/remote/worktree state, process and open-handle readback, retention or deletion authority, recoverability and access impact, and free-space readback.",
+    "Unsafe or unauthorized cleanup retains custody or returns a typed failure without deleting data, according to the exact archive request.",
+    "Spawner neither receives nor judges the substantive work handoff; the requesting Orchestrator, Controller, owner, evaluator, or integration role supplies only the lifecycle receipts the operation requires.",
+    "No spawn or archive receipt grants quality approval, work acceptance, integration, merge, deployment, release, or campaign continuation authority."
   ],
   "bootstrap_injection_order": [
     "BOOTSTRAP_DISCOVERY_AND_PROJECT_OWNER_CONVERSATION",
@@ -96,14 +96,14 @@
     "FEATURE_PLANNING_IMPLEMENTATION_AND_ORCHESTRATOR_REVIEW",
     "SPAWNER_EXCLUSIVE_LIFECYCLE_CUSTODY"
   ],
-  "gate_manifest_sha256": "629861f05f46812ba036a31d95422f53591ecf047e92fdd5fce6d7f392a1497e",
+  "gate_manifest_sha256": "bee380b16fc8781962bb08ff5c78f4873fc6173e81c2d7b0086b52d0b9541e8a",
   "hostile_fixture_manifest_sha256": "963992e6accbd5d60fad1fca8bb0632b69f6df58d77cd1609430e3297270076a",
   "controller_issuer_registry_sha256": "1502baca58eadffadedec77ba490d65531321e2d2229b46c5cfbfdcdd8404cf2",
   "controller_operation_registry_sha256": "8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8",
   "independent_clearance_trust_anchor_sha256": "a1127173718c702862b3246e82784c93d4142eb4430ec9168e2fff72690f8258",
   "canonical_evaluator_trust_root_sha256": "cf2768ab6d275db8b5bb3129e5d9ce639996353af16d08b5feb40acb8d841673",
   "model_policy_source_registry_sha256": "d866c1d193d207d34696ef008409d28f6d5d8d392e238bccad737e3b1f5cc0cf",
-  "decision_tree_sha256": "0ca793fdfd893166fa4fdd49436938d4a0cb0abc7d9004717af251b40aeb152d",
+  "decision_tree_sha256": "c57f10971aabe0196ed7d952221a1496add57be34503e8afecc5626ee0819344",
   "gates": [
     {
       "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
@@ -188,8 +188,8 @@
     {
       "gate_id": "SPAWNER.TURN_CONTINUATION",
       "path": "gates/turn-closeout.gate",
-      "file_sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234",
-      "gate_sha256": "e627c7a2bf76e742af21cb5d6cddfeec77de0ab8924781ccf4c576df68ecb5dd",
+      "file_sha256": "f71cf284dac9b261500839aa6e97af649ed317a25950dd651fdec92c7c543ce2",
+      "gate_sha256": "c39ddf04d30186312ceea01f909b93365adf879f11e1ba82ccbebe27a3c4c880",
       "hostile_fixture_ids": [
         "FIXTURE.SPAWNER.COLLABORATIVE_AUDITOR_UNDERSUBSCRIPTION",
         "FIXTURE.SPAWNER.TURN_WITHOUT_SUCCESSOR"
@@ -208,8 +208,8 @@
     {
       "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
       "path": "gates/feature-implementation-loop.gate",
-      "file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0",
-      "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e",
+      "file_sha256": "c41c0a648e32f0c7b385a7c3ec291983a1e1c171c6c291f232275dd80b7b2959",
+      "gate_sha256": "8d073a3d768bb048fb26135877b6d3a66b9e4b1d76dbe6877818a2a40db4cfd6",
       "hostile_fixture_ids": [
         "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
         "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
@@ -256,5 +256,5 @@
     "FIXTURE.SPAWNER.UNLISTED_MODEL",
     "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
   ],
-  "package_sha256": "2d2548fe45e69ef17c5274b473011cbe08b91d9bfd3990748ea823dac6c273a5"
+  "package_sha256": "3da30cfb99ee0d7adf9972a549a5c955b439939fbf5de855527ff7d7eee1141a"
 }

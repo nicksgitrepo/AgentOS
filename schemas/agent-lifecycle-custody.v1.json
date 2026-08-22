@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "agentos.agent_lifecycle_custody.v1",
   "title": "Spawner-exclusive agent lifecycle custody",
+  "description": "Compatibility projection for receipt-bound Spawner create/archive execution only; substantive work direction, supervision, evaluation, acceptance, repair routing, and integration remain outside Spawner authority.",
   "type": "object",
   "additionalProperties": false,
   "required": ["spawn", "despawn", "auditor_closeout"],

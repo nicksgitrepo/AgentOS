@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/agent-spawner-lifecycle.v1.json",
   "title": "AgentOS Agent Spawner Lifecycle",
-  "description": "Project-agnostic descriptive lifecycle for the persistent no-side-effect Agent Spawner compiler. This public compiler can never derive governed spawn authority from caller flags; only the separately bound canonical clearance-consuming adapter may emit admission authority.",
+  "description": "Project-agnostic lifecycle for the persistent Agent Spawner lifecycle-request compiler and separately admitted host create/archive execution. In COMPILER_ONLY mode, the Spawner validates typed lifecycle requests and active-roster projections without planning work, supervising agents, evaluating quality, accepting results, or invoking host lifecycle adapters. Governed execution requires exact external admission or terminal receipts plus project-bound adapter readback.",
   "type": "object",
   "additionalProperties": false,
   "required": [

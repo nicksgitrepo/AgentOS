@@ -85,7 +85,7 @@
       "classification": "HISTORICAL_READ_ONLY_OR_RETIRED_AUTHORITY",
       "current_portable_kernel_input": false,
       "path": "schemas/continuous-operating-loop.v1.json",
-      "sha256": "799dc4b6314188e1870c2a9a3cde93a3d367168cd2618f7b7297e78c702619b6"
+      "sha256": "884a907f77cc5c56c149321e2ba9cc2c7993c3f7a45a1acb95ea8490985ba853"
     },
     "continuous_operating_loop_controller": {
       "classification": "HISTORICAL_READ_ONLY_OR_RETIRED_AUTHORITY",
@@ -584,11 +584,11 @@
     },
     "agent_lifecycle_custody_contract": {
       "path": "schemas/agent-lifecycle-custody.v1.json",
-      "sha256": "54cfc99cdb8fdef27909d8f895bb877bbf5c66543214e858d00dc150ef04740c"
+      "sha256": "f73e29fa78e049bab95e4c2f5997aabce0168c878e03e2e88a7359a5bff3f5a6"
     },
     "agent_lifecycle_custody_controller": {
       "path": "control/agent-lifecycle-custody.mjs",
-      "sha256": "ee16620329e015fc2c326fc9225c636d52cee8dafac3fe474a4c8ef3d4660068"
+      "sha256": "36e1088a4d3bb92cea342398d1a818b42d1b2aedf6e940d8f9b14f1e63936c78"
     },
     "agent_lifecycle_custody_opaque_verifier": {
       "path": "tests/verify-agent-lifecycle-custody-opaque.mjs",
@@ -596,7 +596,7 @@
     },
     "agent_lifecycle_custody_v2_contract": {
       "path": "schemas/agent-lifecycle-custody.v2.json",
-      "sha256": "18707d5968f9dea9c4c71f86ac1af1cb2769bbceeb81d56a0272a3190156f651"
+      "sha256": "d77f29e33b23b897fe88dbe953c4c75654806b0a61a4e630c6b34e58a556e3b3"
     },
     "double_submission_boundary_controller": {
       "path": "control/double-submission-boundary-gate.mjs",
@@ -684,19 +684,27 @@
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
-      "sha256": "9b40453dc215d5d559d45e8af08eae7743bde9da2d60109d8f776a3d537b8bec"
+      "sha256": "79f9b4ec4a4c7f6981484e5b427829f4ab7d8cb2f4a02d03695e7774a8738c58"
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "aace94644bc230ecafb92a19e5f78fd5025805bd3093f2c5c73800b70825dd84"
+      "sha256": "232e70542ce18165bfaa36ca708a6d054af9beb27019b93a78fd1352c0f4770b"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "c5af0e65aa5194a186942a33f059d6e1cd81f3ebd271db5a8ec93e3d65c5c799"
+      "sha256": "4442350d06924d789cbac494d1b4105206a51dada7443ff8281c0e77035accd7"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
       "sha256": "be93a32b4e2b9d21d0d7737151359d8a4e270ff87dda1f8d21a16862b9b1e918"
+    },
+    "agent_spawner_role_boundary_contract": {
+      "path": "schemas/agent-spawner-role-boundary.v1.json",
+      "sha256": "83d11cfb586e4f87944d7bc12d458ec68fbd888f704131cdffdea38a796a1f2f"
+    },
+    "agent_spawner_role_boundary_verifier": {
+      "path": "tests/verify-agent-spawner-role-boundary.mjs",
+      "sha256": "cf1f71afb8afa136c0a4d747c16bd3ca0318050707d8c0325602a12e98eb51b0"
     },
     "agentos_controller": {
       "path": "control/agentos-controller.mjs",
@@ -704,7 +712,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "3635e52b09a41d68eef30d76cb39c49adbfe04583079448fdc42b0acd86bf9be"
+      "sha256": "a72d5f57db3d528a7c7e4445b7c0f33504a1fe4c5942e914c2040d3609c08c58"
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",
@@ -1316,7 +1324,7 @@
     },
     "canonical_spawner_decision_tree": {
       "path": "specialist-blocks/control-plane/agent-spawner/decision-tree.json",
-      "sha256": "c5784ab86b701ab9acf31078196a6779be6b9a61d9a96925ad7313403aaf6666"
+      "sha256": "7cd6f7d87eee3e2ba6cda26132392bf36e2d96099173463429742b71ce0f27f8"
     },
     "canonical_spawner_evaluator_handoff_controller": {
       "path": "control/canonical-spawner-evaluator-handoff.mjs",
@@ -1328,7 +1336,7 @@
     },
     "canonical_spawner_gate_manifest": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
-      "sha256": "a8f7ad5e4e86f79bc84b91d7a7b5652d53d1bc2442b6c74a3660aceec48bedbb"
+      "sha256": "4443c140c3d1530459c15e857dcb32f59107ccf81ce0eec57ad7324227ae6cf0"
     },
     "canonical_spawner_git_integration_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/git-integration.gate",
@@ -1356,11 +1364,11 @@
     },
     "canonical_spawner_specialist_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/block.json",
-      "sha256": "2652c188ffb65cb6bf87a76b8b88616bdcbc1859aa934a8c91925f130120e653"
+      "sha256": "8f268b03f2e647167bf1ce8cee539e4c1b072c47f49429ffac4f2f53d7ad2c60"
     },
     "canonical_spawner_turn_closeout_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
-      "sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234"
+      "sha256": "f71cf284dac9b261500839aa6e97af649ed317a25950dd651fdec92c7c543ce2"
     },
     "cascade_economics_article": {
       "path": "governance/2.1rc/cascade-economics.md",
@@ -1504,7 +1512,7 @@
     },
     "controller_import_planning_contract": {
       "path": "schemas/controller-import-planning.v1.json",
-      "sha256": "a95cd21ba5c1de2e4201affcbc93d5e200637ccd793b1df58ff7e10ab59734e0"
+      "sha256": "c609ab582e3bba6e76ebcfda8ecd5a6f54327def6ba517a4f5de49d64135ef08"
     },
     "controller_intent_hardening_verifier": {
       "path": "tests/verify-controller-intent-hardening.mjs",
@@ -2147,11 +2155,11 @@
     },
     "import_orchestrator_article": {
       "path": "docs/import-orchestrator.md",
-      "sha256": "37966d8a97079616f095be75cde9edfb79f8c05c04981c5a05f9a44b43d3d749"
+      "sha256": "548129bc49930e836369133dcf520f5ed7695e1bcbd6725791ca645ba2eb158e"
     },
     "import_orchestrator_contract": {
       "path": "schemas/import-orchestrator.v1.json",
-      "sha256": "db5b2ecd185f7ae9885a3645821bc99be8a4fb09c2d0c087d017356df8b0f8ff"
+      "sha256": "2e498eac940cc3f0ce42440692e3489e3fcc51acfc6b98211f53fe31af304a84"
     },
     "import_orchestrator_controller": {
       "path": "control/import-orchestrator.mjs",
@@ -2159,7 +2167,7 @@
     },
     "import_orchestrator_governance_readiness_contract": {
       "path": "schemas/import-orchestrator-governance-readiness.v1.json",
-      "sha256": "406109f9cbf4e0126bd83b0b03940e451df13af7c42a63d9c0c4b1d9556cf8d0"
+      "sha256": "6500d598cfdaf5e30b9f798c8572d3a14f31da50a28bd42549501e0ed3415174"
     },
     "import_orchestrator_governance_readiness_controller": {
       "path": "control/import-orchestrator-governance-readiness.mjs",
@@ -2171,7 +2179,7 @@
     },
     "import_orchestrator_verifier": {
       "path": "tests/verify-import-orchestrator.mjs",
-      "sha256": "8310fbda2eb6c34be705b28e3f67159b932958bc3129e3137b60554c4cb09894"
+      "sha256": "6fc984a062a6ba1ff823eeab034614601ea2401537807bf0582e128ae3a6c9d6"
     },
     "imported_rapid_development_owner_approval_contract": {
       "path": "schemas/imported-rapid-development-owner-approval.v1.json",
@@ -2388,7 +2396,7 @@
     },
     "kernel_registry": {
       "path": "schemas/kernel.v1.json",
-      "sha256": "183424f228db8c94dce097567a7c8d21a0b58a8d2ebab3218156a7c5ce6a09a6"
+      "sha256": "d92c1d04ff159de40331893d04162eaf3dfd580509ef31868298b1ea054220d8"
     },
     "layered_governance_binding_controller": {
       "path": "control/layered-governance-binding.mjs",
@@ -2873,7 +2881,7 @@
     },
     "permanent_role_roster_contract": {
       "path": "schemas/permanent-role-roster.v1.json",
-      "sha256": "963658947f912677c087b3e050738105135d6af3fce9221721da5c5c1a50f53c"
+      "sha256": "379c1a0d3f5b6953ac305e4dabf322d901670e2d11a8b752097d64f65519a73a"
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
@@ -3121,11 +3129,11 @@
     },
     "project_import_article": {
       "path": "governance/2.1rc/project-import.md",
-      "sha256": "4a33e6606eaee20d723ef21624ef5ed05540d9da3660b650e1b913d8bf2726d8"
+      "sha256": "b4a2a839a68ad81d2be74ab58b2292986f2ffcbd5bd2795226cba0440c06135f"
     },
     "project_import_contract": {
       "path": "schemas/project-import.v1.json",
-      "sha256": "6ec74fb9787c12821327a96a89d41411ab637e57bd5687c36fb0151892ef720d"
+      "sha256": "825b19887fedf22159b1aa1483a6f0a21dc1684e1d8e714f441fe741d8ea9b08"
     },
     "project_import_controller": {
       "path": "control/project-import.mjs",
@@ -4041,11 +4049,11 @@
     },
     "spawner_admission_global_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/global.block.json",
-      "sha256": "3aaacf5e592b7248059af555612249979ffea539c248c27a1fe0669f149c820c"
+      "sha256": "176210d1719510ee7d84fc1ba04e7cda04145931ea67b0e7c7e6347f1e55c290"
     },
     "spawner_admission_manifest": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/manifest.json",
-      "sha256": "f6159a07f625887187b10efc493d993943f52460b640b7fa397291d0f57679c0"
+      "sha256": "707231a2bbc201899651b1f56cba45ca97ce1ae52a2c60ff78a6498a6569716b"
     },
     "spawner_admission_project_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/project.block.json",
@@ -4229,7 +4237,7 @@
     },
     "spawner_feature_implementation_loop_gate": {
       "path": "specialist-blocks/control-plane/agent-spawner/gates/feature-implementation-loop.gate",
-      "sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0"
+      "sha256": "c41c0a648e32f0c7b385a7c3ec291983a1e1c171c6c291f232275dd80b7b2959"
     },
     "spawner_feature_model_bypass_fixture": {
       "path": "specialist-blocks/control-plane/agent-spawner/fixtures/feature-model-hardcode-bypass.json",

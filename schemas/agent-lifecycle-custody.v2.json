@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "agentos.agent_lifecycle_custody.v2",
-  "title": "Receipt-driven Spawner-exclusive lifecycle custody",
+  "title": "Receipt-driven Spawner-exclusive create and archive custody",
+  "description": "The Spawner validates and executes externally authorized agent create/archive lifecycle operations. It records supplied lifecycle receipts but does not plan, direct, monitor, evaluate, accept, repair-route, integrate, merge, deploy, or release agent work.",
   "type": "object",
   "additionalProperties": false,
   "required": ["spawn", "transition", "despawn", "restart"],

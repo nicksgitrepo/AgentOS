@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/agent-spawner-role-boundary.v1.json",
+  "schema": "agentos.agent_spawner_role_boundary.v1",
+  "version": 1,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "role_id": "AGENTOS.SPAWNER",
+  "purpose": "Execute authorized ordinary-agent creation and archival as receipt-bound host lifecycle operations without acquiring campaign-management or work-judgment authority.",
+  "request_authorities": [
+    "PROJECT_OWNER",
+    "ORCHESTRATOR",
+    "CONTROLLER"
+  ],
+  "create": {
+    "inputs": [
+      "AUTHORIZED_REQUEST_ISSUER",
+      "EXACT_ROLE_AND_ASSIGNMENT_PACKET",
+      "PARENT_OR_CAMPAIGN_BINDING",
+      "MODEL_AND_TOOL_ROUTE",
+      "REPOSITORY_OR_READ_ONLY_CONTEXT",
+      "CUSTODY_BINDING",
+      "RETURN_DESTINATION"
+    ],
+    "validations": [
+      "REQUEST_COMPLETE_AND_EXACT",
+      "IDENTITY_NOT_ACTIVE_OR_DUPLICATED",
+      "CAPACITY_AVAILABLE",
+      "MODEL_AND_TOOLS_AVAILABLE",
+      "CONTEXT_AND_CUSTODY_RESOLVE"
+    ],
+    "effects": [
+      "CREATE_EXACTLY_ONE_AGENT",
+      "REGISTER_ACTIVE_LIFECYCLE_IDENTITY",
+      "RETURN_SPAWN_RECEIPT_OR_TYPED_PROVISIONING_FAILURE"
+    ]
+  },
+  "archive": {
+    "inputs": [
+      "AUTHORIZED_TERMINAL_LIFECYCLE_REQUEST",
+      "EXACT_AGENT_IDENTITY",
+      "INACTIVE_PROCESS_READBACK",
+      "STATE_PRESERVATION_RECEIPT",
+      "WORKTREE_AND_CUSTODY_RELEASE_RECEIPTS"
+    ],
+    "effects": [
+      "ARCHIVE_OR_DESPAWN_EXACT_AGENT",
+      "REMOVE_ACTIVE_LIFECYCLE_IDENTITY",
+      "RETURN_ARCHIVE_RECEIPT"
+    ],
+    "meaning": "ADMINISTRATIVE_LIFECYCLE_CLOSURE_NOT_WORK_ACCEPTANCE"
+  },
+  "storage_and_worktree_boundary": {
+    "rule": "AGENT_ARCHIVAL_DOES_NOT_IMPLY_STORAGE_DELETION",
+    "decision_authority": "REQUESTING_CUSTODY_OR_STORAGE_AUTHORITY",
+    "spawner_authority": "EXECUTE_ONLY_THE_EXACT_AUTHORIZED_PRESERVE_OR_CLEANUP_DISPOSITION_AND_RETURN_A_RECEIPT",
+    "required_before_cleanup": [
+      "EXACT_PATH_AND_CUSTODY_IDENTITY",
+      "NO_LIVE_AGENT_PROCESS_OR_OPEN_HANDLE",
+      "WORKTREE_CLEAN_OR_EXPLICITLY_PRESERVED",
+      "BRANCH_COMMIT_AND_REMOTE_CUSTODY_VERIFIED_WHEN_APPLICABLE",
+      "REBUILDABILITY_OR_VERIFIED_ARCHIVE_COVERAGE_WHEN_APPLICABLE",
+      "RECOVERY_AND_ACCESS_IMPACT_RECORDED"
+    ],
+    "hard_blocks": [
+      "ACTIVE_AGENT_OR_PROCESS",
+      "DIRTY_OR_UNPUSHED_WORK_WITHOUT_EXPLICIT_PRESERVATION",
+      "LIVE_DATABASE_RUNTIME_OR_MOUNT",
+      "UNVERIFIED_ARCHIVE_OR_BACKUP_COVERAGE",
+      "UNRESOLVED_CUSTODY_OR_OWNERSHIP",
+      "OPERATING_SYSTEM_MANAGED_STORAGE"
+    ],
+    "rules": [
+      "AGE_OR_STORAGE_PRESSURE_IS_TRIAGE_EVIDENCE_NOT_DELETION_AUTHORITY",
+      "WORKTREE_REMOVAL_USES_THE_VERSION_CONTROL_WORKTREE_INTERFACE",
+      "CLEANUP_SELECTION_AND_RETENTION_JUDGMENT_REMAIN_EXTERNAL_TO_SPAWNER",
+      "ARCHIVAL_MAY_RETAIN_CUSTODY_OR_FAIL_CLOSED_WHEN_CLEANUP_IS_NOT_AUTHORIZED",
+      "HISTORY_REMOVAL_REQUIRES_EXACT_MANIFEST_AND_INTEGRITY_VERIFICATION",
+      "REBUILDABLE_CACHE_REMOVAL_REQUIRES_NO_ACTIVE_DEPENDENCY"
+    ],
+    "receipt_fields": [
+      "EXACT_PATHS_REMOVED_OR_RETAINED",
+      "RECOVERABILITY_AND_ACCESS_IMPACT",
+      "BRANCH_COMMIT_REMOTE_AND_WORKTREE_STATE",
+      "PROCESS_AND_OPEN_HANDLE_READBACK",
+      "RETENTION_OR_DELETION_AUTHORITY",
+      "FREE_SPACE_READBACK_WHEN_STORAGE_CHANGED"
+    ]
+  },
+  "prohibited_responsibilities": [
+    "ACCEPT_OR_REJECT_AGENT_WORK",
+    "COORDINATE_CAMPAIGN_EXECUTION",
+    "DECIDE_PROJECT_PRIORITY",
+    "DIRECT_AGENT_WORK",
+    "EVALUATE_OR_REVIEW_AGENT_WORK",
+    "INTEGRATE_MERGE_DEPLOY_OR_RELEASE",
+    "MONITOR_OR_SUPERVISE_PROGRESS",
+    "PLAN_ASSIGNMENTS_OR_WAVES",
+    "ROUTE_REPAIRS_OR_FINDINGS"
+  ],
+  "authority_split": {
+    "project_owner": "Owns user intent and owner-authorized lifecycle requests.",
+    "orchestrator": "Plans and directs campaign work, prepares lifecycle requests, receives handoffs, routes repairs, and owns acceptance flow.",
+    "controller": "Observes liveness, performs bounded workflow repair, and requests lifecycle changes without directly operating the host lifecycle.",
+    "independent_evaluator": "Produces quality and admission evidence without lifecycle authority.",
+    "spawner": "Validates and executes exact lifecycle requests and records lifecycle receipts without judging work."
+  },
+  "authority_precedence": {
+    "rule": "THIS_CONTRACT_SUPERSEDES_ANY_OLDER_SPAWNER_ARTIFACT_THAT_ASSIGNS_A_PROHIBITED_RESPONSIBILITY",
+    "legacy_behavior": "HISTORICAL_COMPATIBILITY_ONLY_NOT_CURRENT_ROLE_AUTHORITY",
+    "conflict_disposition": "FAIL_CLOSED_AND_RETURN_THE_CONFLICT_TO_THE_GOVERNING_AUTHORITY"
+  }
+}

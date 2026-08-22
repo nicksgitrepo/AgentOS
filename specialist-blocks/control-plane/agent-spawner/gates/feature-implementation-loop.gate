@@ -2,9 +2,9 @@
   "schema": "agentos.spawner_gate.v1",
   "version": 1,
   "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
-  "question": "Does this feature have a bounded comprehensive plan, a canonical capability-first model route, separate implementer and Orchestrator identities, detailed repair feedback for every failed review, and Orchestrator-only acceptance with no open findings?",
-  "pass": "AUTHORIZE_BOUNDED_FEATURE_IMPLEMENTATION_OR_ACCEPTED_HANDOFF",
-  "fail": "REJECT_SELF_REVIEW_MODEL_OVERRIDE_SCOPE_WIDENING_OR_DEFICIENT_FEEDBACK",
-  "unknown": "REJECT_UNPROVEN_FEATURE_RESULT",
-  "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e"
+  "question": "Does the create request carry an externally prepared bounded assignment, canonical model and tool route, separate worker and reviewer identities, exact custody, and a return destination without asking Spawner to plan, direct, supervise, evaluate, or accept the work?",
+  "pass": "AUTHORIZE_EXACT_AGENT_CREATE_LIFECYCLE_OPERATION",
+  "fail": "RETURN_TYPED_INVALID_LIFECYCLE_REQUEST_TO_REQUESTER",
+  "unknown": "DO_NOT_CREATE_AGENT_FROM_INCOMPLETE_REQUEST",
+  "gate_sha256": "8d073a3d768bb048fb26135877b6d3a66b9e4b1d76dbe6877818a2a40db4cfd6"
 }

@@ -29,12 +29,12 @@
   "planning_rule": "The Controller derives applicable roles, priority, dependency order, Platform ownership, resource limits, and acceptance gates from goals, architecture, features, environments, hardware, standards, evidence, and unresolved unknowns. A fixed project roster is forbidden.",
   "wave_rule": "At most six cognitive lanes run concurrently. Every wave passes specialist audit and repair, Platform review/test/integration, Central integration, and independent re-audit before dependent work advances.",
   "spawner_boundary": {
-    "rule": "The Controller requests typed roles. The Agent Spawner selects the smallest dependency-complete block set, compiles and independently evaluates immutable seeds, and spawns governed working clones. It does not choose project priorities.",
-    "incomplete_blocks": "Return NOT_READY, build and source-lock missing blocks, iterate through QA, and never spawn an incomplete seed or working agent.",
+    "rule": "The Controller requests typed roles with exact priority, dependency, scope, admission, custody, and return-route bindings. The Agent Spawner validates the lifecycle request and creates or archives the exact governed agent; it does not choose priorities, plan waves, direct work, supervise progress, evaluate quality, accept results, or route repairs.",
+    "incomplete_blocks": "Return a typed non-provisioning result to the requester and never create an agent from an incomplete lifecycle request.",
     "seed_rule": "Seeds never perform work.",
-    "background_rule": "While a wave runs, prepare and independently evaluate the next two eligible waves without duplicating active work.",
-    "invalidation_rule": "A governing-block change invalidates and rebuilds every dependent seed before reuse.",
-    "incremental_library_rule": "Build missing blocks continuously and publish typed roster projections as routes become ready. The Controller may choose among available complete waves while pending routes remain pending.",
+    "background_rule": "The Spawner performs no background wave preparation or campaign scheduling; it acts on explicit lifecycle requests.",
+    "invalidation_rule": "The requesting authority supplies current invalidation and admission evidence; the Spawner rejects stale bindings without repairing or evaluating them.",
+    "incremental_library_rule": "Library construction and evaluation occur outside the Spawner lifecycle operation. The Spawner consumes only the resulting exact authorized request and receipts.",
     "roster_projection_schema": "agentos.controller_import_roster_projection.v1",
     "controller_consumes_only_typed_roster_projection": true
   },

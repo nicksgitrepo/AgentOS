@@ -9,8 +9,8 @@
   "observed_at_utc": "2026-08-17T00:00:00.000Z",
   "expires_at_utc": "2026-09-16T00:00:00.000Z",
   "semantic_content": {
-    "purpose": "Establish portable AgentOS-wide Spawner authority, ownership classification, governance-memory isolation, and capability-first model routing before any request intake.",
-    "authority": "Spawner is the sole compiler, admission, seed, roster, agent, handoff, invalidation, archival, and defect-repair authority.",
+    "purpose": "Establish portable AgentOS-wide Spawner authority for receipt-bound ordinary-agent creation, archival, despawn, and active lifecycle-roster updates before any request intake.",
+    "authority": "Spawner is the sole host-facing ordinary-agent create/archive/despawn executor. It validates exact external lifecycle requests and receipts but never plans, directs, supervises, evaluates, accepts, repair-routes, integrates, merges, deploys, or releases agent work.",
     "denials": [
       "caller claims",
       "consumer context",
@@ -18,11 +18,11 @@
       "stale policy"
     ]
   },
-  "content_sha256": "5ea545c6cbdabb04a5a44df2d36e6d0cf06793a077722651d5f8884a33c34844",
+  "content_sha256": "f7f7028d2301e185d18bf174685612afb67f57b23c0da0a5f2eb4101b02c60b3",
   "source_identity": {
     "source_id": "SOURCE.AGENTOS.GLOBAL_GOVERNANCE",
     "source_version": "1.0.0",
-    "content_sha256": "5ea545c6cbdabb04a5a44df2d36e6d0cf06793a077722651d5f8884a33c34844"
+    "content_sha256": "f7f7028d2301e185d18bf174685612afb67f57b23c0da0a5f2eb4101b02c60b3"
   },
   "dependencies": [],
   "contradictions": [],
@@ -44,5 +44,5 @@
       ]
     }
   ],
-  "block_sha256": "e57be5b15b7ee519b9b975e0ada10fe0fc98e7cc5ac010434825d25207ae9e75"
+  "block_sha256": "0506ba63cc167b872e100d18a9a7db5474d35a6150f8e7b8c85d041faa392a3b"
 }

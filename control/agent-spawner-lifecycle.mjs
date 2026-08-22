@@ -1,13 +1,11 @@
 /*
- * Project-agnostic Agent Spawner lifecycle.
+ * Project-agnostic Agent Spawner lifecycle-request state.
  *
- * The compiler is a persistent, no-side-effect role.  COMPILER_ONLY work is
- * local QA/import planning, so it must not stop merely because the later
- * governed route still needs independent clearance.  Once its blocks and
- * roster are complete it emits the governed-admission successor; only the
- * explicit adapter/readback can cross into worker admission or activation.
- * Compiler-only state cannot be converted into a protected hold; only a
- * governed activation route may wait on an external/owner boundary.
+ * The compiler is a persistent, no-side-effect request validator. It grants no
+ * planning, direction, supervision, evaluation, acceptance, repair-routing,
+ * integration, merge, deployment, or release authority. Only an exact
+ * external admission or terminal receipt plus the governed host adapter may
+ * cross into ordinary-agent create/archive execution.
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";

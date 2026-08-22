@@ -138,4 +138,4 @@ for (const relative of ["control/controller-import-planner.mjs", "schemas/contro
   assert(!/Sociuna|JobSight|WellSight/iu.test(text), `${relative} contains consumer-specific policy`);
 }
 
-console.log("PASS Controller-derived import campaign planning (dynamic roster, six-lane waves, Spawner QA, automatic continuation, pyramid acceptance, hostile validation, and portability)");
+console.log("PASS Controller-derived import campaign planning (dynamic roster, six-lane waves, externally evaluated lifecycle requests, automatic continuation, pyramid acceptance, hostile validation, and portability)");

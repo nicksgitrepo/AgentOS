@@ -52,7 +52,7 @@
     "contract": "schemas/continuous-operating-loop.v1.json",
     "default_meaningful_progress_window_minutes": 15,
     "persistent_roles": ["CONTROLLER", "PRODUCT_OWNER", "MEMORY", "RUNTIME", "SCHEDULER", "ORCHESTRATOR"],
-    "temporary_role_rule": "Agent Spawner alone owns governance compilation, roster admission, seeds, working agents, handoffs, repair intake, invalidation, rebuild, archival, and despawn; Controller only validates its own governance and the Spawner handoff, starts or wakes one Spawner, observes it, and dispatches typed redistribution.",
+    "temporary_role_rule": "Agent Spawner alone executes ordinary-agent host create, archive, and despawn operations and updates the active lifecycle roster from exact receipts. Controller owns liveness and bounded workflow repair, while Orchestrator owns campaign planning, direction, handoffs, repair intake, and acceptance flow. Controller and Orchestrator submit typed lifecycle requests instead of operating the host lifecycle directly.",
     "repair_rule": "Preserve evidence, classify the finding, record root cause, apply the smallest admitted repair, refresh bindings, replace the predecessor with visible host receipts, and require independent clearance.",
     "naming_rule": "Temporary role display names carry the exact version and two-digit test-build tag."
   },
@@ -75,7 +75,7 @@
     "orchestrator": "CAMPAIGN_SCOPED",
     "import_orchestrator_contract": "schemas/import-orchestrator.v1.json",
     "import_orchestrator_controller": "control/import-orchestrator.mjs",
-    "import_orchestrator_rule": "Any Orchestrator is admitted, routed, observed, and archived only by Agent Spawner. Controller has no Orchestrator, roster, seed, working-agent, handoff-approval, invalidation, or archival authority.",
+    "import_orchestrator_rule": "Controller determines when an Orchestrator is needed and owns its liveness boundary, but submits exact create or archive requests to Agent Spawner. Spawner executes lifecycle operations only; it does not route, observe, direct, review, or accept Orchestrator work. Controller has no direct host create, despawn, or archival authority.",
     "controller": "PROJECT_PERSISTENT",
     "platform_agents": "CAMPAIGN_LOCAL_ON_DEMAND",
     "runtime": "PERSISTENT_PROJECT_RUNTIME",

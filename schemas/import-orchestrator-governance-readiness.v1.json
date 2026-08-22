@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/import-orchestrator-governance-readiness.v1.json",
   "title": "Project-agnostic Import Orchestrator governance injection and readiness",
-  "description": "The Import Orchestrator must inject and verify its own complete governance envelope before campaign planning, wave routing, Spawner QA, spawning, custody, handoffs, or candidate advancement. This contract is compiler-only and does not activate workers or bypass protected gates.",
+  "description": "The Import Orchestrator must inject and verify its own complete governance envelope before campaign planning, wave routing, lifecycle-request preparation, custody, handoffs, review, or candidate advancement. Agent creation and archival remain Spawner-executed host operations requested by the Orchestrator. This contract is compiler-only and does not activate workers or bypass protected gates.",
   "type": "object",
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},

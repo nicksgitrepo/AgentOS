@@ -4,7 +4,7 @@
   "version": 1,
   "status": "PREPARED_NOT_ACTIVATED",
   "title": "One-at-a-time permanent AgentOS role roster",
-  "description": "The persistent Spawner audits complete role blocks, admits canonical control-plane roles one at a time, and publishes a roster-ready successor only after every role passes. No worker or wave is activated by this contract.",
+  "description": "The persistent Spawner consumes externally produced role-admission evidence and creates canonical control-plane roles one at a time from authorized lifecycle requests. It does not audit, independently evaluate, direct, or accept those roles. No worker or wave is activated by this contract.",
   "additionalProperties": false,
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
