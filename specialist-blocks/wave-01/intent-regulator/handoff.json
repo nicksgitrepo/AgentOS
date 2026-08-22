@@ -5,8 +5,8 @@
   "block_id": "specialist.control.intent-regulator",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d",
-  "source_commit": "590c07ddd4be7a8c24727c24b40808e44ca7357d",
-  "source_tree": "f1b358d87e6a969fb9631e202a3d478540edd4d9",
+  "source_commit": "ddb934fbc1ac9fe6b66d223b1ac5515e47b55d57",
+  "source_tree": "ac4760453b30777593e0d627ff5db58e0680d5c5",
   "changed_paths": [
     "specialist-blocks/wave-01/intent-regulator/block.json",
     "specialist-blocks/wave-01/intent-regulator/evaluation.json",
@@ -40,6 +40,9 @@
     "specialist-blocks/wave-01/intent-regulator/gates/10-proof-acceptance.gate",
     "specialist-blocks/wave-01/intent-regulator/gates/11-lifecycle-recovery-archive.gate",
     "specialist-blocks/wave-01/intent-regulator/gates/manifest.json",
+    "specialist-blocks/wave-01/intent-regulator/gates/execution.json",
+    "specialist-blocks/wave-01/intent-regulator/handoff.json",
+    "specialist-blocks/wave-01/intent-regulator/rollback.json",
     "specialist-blocks/wave-01/intent-regulator/sources.lock"
   ],
   "proof": [
@@ -47,14 +50,26 @@
     "block-schema-and-reuse-contract",
     "hostile-fixture-catalog",
     "independent-reviewer-required",
-    "source-lock-digest"
+    "source-lock-digest",
+    "candidate_block_file_sha256:0c5de395a619e25b4c1cd6eb50ca4f270d489679adaebe92e327de9ecd86f614",
+    "source_lock_file_sha256:2ac24cdd191404a1bff6c26d64f72f20a84b2a9d6dc31663a561a6209d5d2767",
+    "gate_manifest_file_sha256:a00ebaa04604dbfbb530c70d7d2177b74a9dc5db6a51ba0e3c36622d360847d5",
+    "gate_execution_file_sha256:b196a1618fa5515ef908b3cd91cd6e4030a873859d87390dc09f7cb5b7aaa6ed",
+    "gate_semantic_inventory_sha256:df0a28ef464985579a082c8cbdf9e4e366c2f861091ec6d1440f2735fa5919d1",
+    "model_route_sha256:63e7644bc8c1edaede43c46ff294841a81bd3d9fd41ff257223f8989d966d0d5",
+    "context_receipt_sha256:9fb049ada48e0cbc3f66830edc27a6ec7019e4f2557dc58e4e80ddec763b5d9e",
+    "route_receipt_sha256:b46e44a7a644e4210b6d1636a3393577f499662b1ac53505f91e5cce1e928f53",
+    "rollback_file_sha256:07146f5e777ca0af2d524117e247ea8ae8e2bde12c44535b326f9f699ece9268",
+    "rollback_receipt_sha256:63d53ca0673844e2191492f9f392ab8fc5d3722384a9aa992eb071e89008e5d4",
+    "evaluation_file_sha256:52e4f6926ae4eaa37817036ea20fb409b7d7b5436e15aff8413443f359e3c8ac"
   ],
   "residuals": [
     "candidate is not admitted or activated",
-    "independent utility/harm evaluation has not run",
+    "independent authority must review the static PASS receipt before any admission decision",
     "typed owner authority must be supplied before any dependent action advances",
+    "rollback receipt is UNKNOWN and no external rollback was executed",
     "no Product write, deployment, publication, migration, or external side effect is authorized"
   ],
-  "next_action": "Route the frozen candidate to an independent evaluator and then the designated integration authority; preserve activation OFF.",
+  "next_action": "Route the frozen inert candidate to an independent evaluator and designated integration authority; preserve activation OFF and require the typed rollback receipt for any future recovery decision.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

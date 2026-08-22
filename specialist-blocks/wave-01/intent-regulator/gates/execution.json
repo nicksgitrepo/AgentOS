@@ -1,0 +1,26 @@
+{
+  "schema": "agentos.intent_regulator_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.control.intent-regulator",
+  "evaluator_entrypoint": "control/intent-regulator-package-evaluator.mjs#evaluateIntentRegulatorPackage",
+  "ordered_gate_ids": [
+    "00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals",
+    "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody",
+    "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff",
+    "10-proof-acceptance", "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {"gate_id":"00-intake","fixture_class":"missing_context","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_TYPED_CONTEXT_REQUIRED"}},
+    {"gate_id":"01-applicability","fixture_class":"false_positive","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_TYPED_CONTEXT_REQUIRED"}},
+    {"gate_id":"02-authority-precedence","fixture_class":"authority_conflict","expected":{"disposition":"ESCALATE","route":"OWNER_AUTHORITY_REVIEW","error_code":"INTENT_REGULATOR_AUTHORITY_CONFLICT"}},
+    {"gate_id":"03-scope-nongoals","fixture_class":"broad_when_narrow_exists","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_SCOPE_EXPANSION_FORBIDDEN"}},
+    {"gate_id":"04-source-evidence-freshness","fixture_class":"stale_source","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_SOURCE_REFRESH_REQUIRED"}},
+    {"gate_id":"05-context-completeness","fixture_class":"missing_context","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_TYPED_CONTEXT_REQUIRED"}},
+    {"gate_id":"06-tool-resource-custody","fixture_class":"tool_limit","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_TOOL_SCOPE_FORBIDDEN"}},
+    {"gate_id":"07-data-secret-privacy","fixture_class":"data_limit","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_PROTECTED_DATA_FORBIDDEN"}},
+    {"gate_id":"08-build-browser-runtime","fixture_class":"unsafe_action","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_SIDE_EFFECT_FORBIDDEN"}},
+    {"gate_id":"09-output-handoff","fixture_class":"handoff","expected":{"disposition":"ROUTE","route":"INTENT_PRESERVATION_HANDOFF","error_code":"INTENT_REGULATOR_TYPED_INTENT_READY"}},
+    {"gate_id":"10-proof-acceptance","fixture_class":"router_self_accept","expected":{"disposition":"DENY","route":"NO_ROUTE","error_code":"INTENT_REGULATOR_SELF_ACCEPTANCE_FORBIDDEN"}},
+    {"gate_id":"11-lifecycle-recovery-archive","fixture_class":"routing","expected":{"disposition":"ROUTE","route":"OWNER_AUTHORITY_REVIEW","error_code":"INTENT_REGULATOR_AUTHORITY_QUESTION_ROUTED"}}
+  ]
+}

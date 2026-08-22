@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.rollback_receipt.v1",
+  "version": 1,
+  "rollback_id": "ROLLBACK.INTENT_REGULATOR.CANDIDATE",
+  "request_id": "REQUEST.INTENT_REGULATOR.CANDIDATE",
+  "request_digest": "7d4c27448bf53379d99d03ad8f3f52ecfc0e1bca147e827f9a79e2d8083a8fb6",
+  "choice_digest": "8677480ae1ac2a98968fbcd5c028f2d49f2cd9ba8b1c8625a4d713839093478d",
+  "target_receipt_digest": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d",
+  "target_external_result_ref": "opaque:INTENT_REGULATOR.CANDIDATE",
+  "restored_external_result_ref": "opaque:INTENT_REGULATOR.CANDIDATE_RETAINED",
+  "status": "UNKNOWN",
+  "verified": false,
+  "evidence_digest": "ad07663ef40b64631f3e2f37ecdd623068b3e5997131b70f87af19f59716cc9b",
+  "observed_at_utc": "2026-08-21T00:00:00.000Z",
+  "digest": "63d53ca0673844e2191492f9f392ab8fc5d3722384a9aa992eb071e89008e5d4"
+}
