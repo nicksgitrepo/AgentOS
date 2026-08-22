@@ -276,7 +276,11 @@
   "evaluation": {
     "dossier_path": "evaluation.json",
     "receipt_id": "specialist-eval.function-scope.v1",
-    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "disposition": "EXECUTABLE_PASS_REVIEW_REQUIRED",
+    "fixture_policy": "EXACT_DECLARED",
+    "harness": "deterministic-executable-atomic-p2-harness.v1",
+    "boundary_entrypoint": "control/function-scope-boundary-gate.mjs#evaluateFunctionScopeBoundary",
+    "evaluator_entrypoint": "control/function-scope-package-evaluator.mjs#evaluateFunctionScopePackage",
     "independent_reviewer_required": true,
     "fixture_classes": [
       "authority_conflict",
@@ -308,5 +312,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "f726682b8b6fab0d53c472558c97fd7ac0de4286c4f4856b6940de3c99cbca93"
+  "block_sha256": "e150cf2d4419bf3c2b513b50a7d5101b8928a0de90369c61d43dc6e37a9890f1"
 }

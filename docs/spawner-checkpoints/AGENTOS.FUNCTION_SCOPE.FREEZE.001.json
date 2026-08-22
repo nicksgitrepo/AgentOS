@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.spawner_liveness_checkpoint.v1",
+  "version": 1,
+  "checkpoint_id": "AGENTOS.FUNCTION_SCOPE.FREEZE.001",
+  "lifecycle_id": "ROSTER_CONTINUE_20260822",
+  "phase": "FUNCTION_SCOPE_CANDIDATE_FREEZE",
+  "phase_index": 2,
+  "phase_window_seconds": 30,
+  "started_at_utc": "2026-08-22T18:08:03.234Z",
+  "observed_at_utc": "2026-08-22T18:08:33.234Z",
+  "elapsed_seconds": 30,
+  "window_status": "EXHAUSTED",
+  "meaningful_progress": true,
+  "typed_result_status": "PRESENT",
+  "exact_receipt_status": "EXACT",
+  "exact_receipt_ref": "opaque:AGENTOS.FUNCTION_SCOPE.FREEZE.001",
+  "exact_receipt_sha256": "6536bd0370daa4a6d731eb1fff07688694f4b1ef317a15a3c05b7f0a953c512e",
+  "persistence": {
+    "status": "CHECKPOINT_PERSISTED",
+    "receipt_ref": "opaque:AGENTOS.FUNCTION_SCOPE.FREEZE.001",
+    "receipt_sha256": "6536bd0370daa4a6d731eb1fff07688694f4b1ef317a15a3c05b7f0a953c512e",
+    "atomic": true,
+    "same_turn": true,
+    "write_scope": "CONTROL_PLANE_ONLY"
+  },
+  "status": "BLOCKED_EXACT",
+  "safe_stop": true,
+  "next_action": "REHOME_OR_RESTART",
+  "checkpoint_sha256": "eea54647e5131d0c3396e715f6125e2fd56070299e888931e144ab6f03d1e737"
+}

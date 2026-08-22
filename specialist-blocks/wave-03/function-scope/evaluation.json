@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.function-scope.v1",
   "block_id": "specialist.security.function-scope",
-  "candidate_digest": "f726682b8b6fab0d53c472558c97fd7ac0de4286c4f4856b6940de3c99cbca93",
+  "candidate_digest": "e150cf2d4419bf3c2b513b50a7d5101b8928a0de90369c61d43dc6e37a9890f1",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-independent-security-p2-harness.v1",
   "cases": [

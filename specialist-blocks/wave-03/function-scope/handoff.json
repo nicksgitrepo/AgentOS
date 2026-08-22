@@ -4,7 +4,7 @@
   "handoff_id": "specialist-handoff.function-scope.v1",
   "block_id": "specialist.security.function-scope",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "f726682b8b6fab0d53c472558c97fd7ac0de4286c4f4856b6940de3c99cbca93",
+  "candidate_digest": "e150cf2d4419bf3c2b513b50a7d5101b8928a0de90369c61d43dc6e37a9890f1",
   "source_commit": "38d8d5b36ecd9284c8d297d19a304b38660d76b5",
   "source_tree": "1c781ad3dab822d040cf652433f63733ceadb26c",
   "changed_paths": [
@@ -53,12 +53,12 @@
     "independent-reviewer-required",
     "reusable-standard-dependency-identities",
     "source-lock-digest",
-    "evaluation_file_sha256:76e08d38dd355a0e06c801632fde9201ac43125f47dab280da6cb0dfbeb2f1a4",
+    "evaluation_file_sha256:6d55f929eb3a20685a315fec113ac9da5ae2c2c5e0358cc6ac672ad039335ac8",
     "gate_semantic_inventory_sha256:d103c5149592df4908b413208c5e369e22ede398bbcd6691f20adad2be236843",
     "model_route_sha256:02451d11a2b8a9867f6c80290040b4e751150b94c2903e1f42ddd446c3966c07",
-    "context_receipt_sha256:3f758810ed3797d3e35a6dd7380bef07e0152b73ac7d2d1b7d46d4ce4dd80fcd",
+    "context_receipt_sha256:ce7aaa3392cab85910a21e6c802dbe642354fd588c65ace2e33a77c6fd52b7a3",
     "upstream_router_file_sha256:7cb64aac3a89adc6dcb611237025160743bd40bc44edd99d4919184de78d039a",
-    "upstream_router_result_sha256:f6509c0e3fe9af7ab5a19ea58ebb2a63c7af1a7db61043c8570a92968fdc507d"
+    "upstream_router_result_sha256:b0a403e7b048caf6643c43c60430528d944d01419aa73e7f1855bd901640a438"
   ],
   "residuals": [
     "applicability and project context remain external",

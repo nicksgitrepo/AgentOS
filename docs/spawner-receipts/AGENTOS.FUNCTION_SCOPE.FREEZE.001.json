@@ -1,0 +1,9 @@
+{
+  "status": "EXECUTION_ERROR",
+  "error": {
+    "error_name": "AssertionError",
+    "error_code": "BOOTSTRAP_ALIGNMENT_EXPECTATION_MISMATCH",
+    "observed_error_code": "LEGACY_BOOTSTRAP_EXECUTION_RETIRED",
+    "error_message_sha256": "85dae835fd7df00c62f7b10ea702c8399cc6a8ca3ccf1a26cf5eb9a90c6fdb28"
+  }
+}

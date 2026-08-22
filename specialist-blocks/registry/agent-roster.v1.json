@@ -14244,6 +14244,14 @@
           }
         ]
       },
+      "operational_entrypoints": {
+        "boundary": "control/function-scope-boundary-gate.mjs#evaluateFunctionScopeBoundary",
+        "evaluator": "control/function-scope-package-evaluator.mjs#evaluateFunctionScopePackage",
+        "gate_execution": "specialist-blocks/wave-03/function-scope/gates/execution.json",
+        "real_fixture_inputs": true,
+        "mutation_sensitivity_required": true,
+        "read_only": true
+      },
       "hostile_fixtures": {
         "status": "BOUND",
         "fixtures": [
@@ -14359,7 +14367,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/function-scope/handoff.json",
-        "handoff_file_sha256": "08dfdd466ca7f8ecccc4348f29226c290fcf936c5274352844c9c4fe0eedb7c6",
+        "handoff_file_sha256": "ac428a81368b770fdd27643390f11faff08a4e577911e06fdbeffe92d77ca18e",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.function-scope.v1"
       },
@@ -40494,5 +40502,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "8c56a55ce009b85bd18b9a8525a535707319acf24877bff7ed2f409c5205e439"
+  "roster_sha256": "76aa7a5928cfe969db1e85cb8669c68a8ce1c5586c8092a52c7c48b0313cd199"
 }

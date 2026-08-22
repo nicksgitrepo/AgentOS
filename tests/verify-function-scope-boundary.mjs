@@ -9,11 +9,25 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {evaluateFunctionScopeBoundary, FUNCTION_SCOPE_INPUT_SCHEMA, FUNCTION_SCOPE_RESULT_SCHEMA} from "../control/function-scope-boundary-gate.mjs";
 import {evaluateFunctionScopePackage} from "../control/function-scope-package-evaluator.mjs";
 import {resolveFunctionScopeCanonicalAuthority} from "../control/function-scope-authority-binding.mjs";
+import {compileReusableAgentRoster} from "../control/reusable-agent-roster-compiler.mjs";
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const authority = resolveFunctionScopeCanonicalAuthority();
 const evaluation = await evaluateFunctionScopePackage();
 assert.equal(evaluation.status, "PASS");
 assert.equal(evaluation.fixture_results.length, 17);
 assert.equal(evaluation.mutation_sensitivity.status, "WEAKENED");
+const roster = compileReusableAgentRoster({repositoryRoot, writeGenerated: false});
+const rosterEntry = roster.entries.find((entry) => entry.stable_agent_id === "AGENT.SECURITY_FUNCTION_SCOPE");
+assert.deepEqual(rosterEntry?.operational_entrypoints, {
+  boundary: "control/function-scope-boundary-gate.mjs#evaluateFunctionScopeBoundary",
+  evaluator: "control/function-scope-package-evaluator.mjs#evaluateFunctionScopePackage",
+  gate_execution: "specialist-blocks/wave-03/function-scope/gates/execution.json",
+  real_fixture_inputs: true,
+  mutation_sensitivity_required: true,
+  read_only: true,
+});
+assert.equal(rosterEntry?.hostile_fixtures?.status, "BOUND");
+assert.equal(rosterEntry?.hostile_fixtures?.fixtures?.length, 17);
 const input = {schema: FUNCTION_SCOPE_INPUT_SCHEMA, version: 1, request_kind: "SPAWN", evidence: {
   authority_status: "CURRENT", custody_status: "BOUND", custody_owner: "AGENT.SECURITY.FUNCTION_SCOPE", custody_ref: authority.custody_ref, source_status: "CURRENT_VERIFIED", source_identity: authority.source_identity, source_version: authority.source_version, source_effective_date: authority.source_effective_date, source_retrieved_date: authority.source_retrieved_date, candidate_status: "CURRENT_CANDIDATE", candidate_digest: authority.block_sha256, signal: "FUNCTION_SCOPE", signal_status: "BOUND", context_status: "FUNCTION_SCOPE_CONTEXT", context_complete: true, requested_action: "ANALYZE", requested_tools: ["READ_CANDIDATE"], required_block_identities: ["specialist.foundation.authority-jurisdiction-gate", "specialist.foundation.evidence-freshness-gate", "specialist.foundation.role-intake-classifier", "specialist.foundation.scope-non-goal-gate", "specialist.foundation.tool-custody-gate", "specialist.security.access-control-router", "specialist.standard.owasp-asvs"], model_policy_status: authority.model.snapshot_status, model_route_status: "BOUND", authority_scope: "FUNCTION_SCOPE", scope: "NARROW", tenant_scope_status: "BOUND", standard_id: "source.owasp-asvs-5-0-0", standard_version: "5.0.0", standard_block_sha256: authority.standard_block_sha256, standard_source_manifest_sha256: authority.standard_source_manifest_sha256, model_snapshot_sha256: authority.model.snapshot_sha256, model_task_class: authority.model.task_class, model_capability_floor: authority.model.minimum_capability, model_required_capabilities: authority.model.required_capabilities, model_route_sha256: authority.model_route_sha256, context_receipt_sha256: authority.context_sha256, upstream_router_result_sha256: authority.router_result_sha256, project_data_present: false, secret_data_present: false, adversarial_flags: Object.fromEntries(["authority_conflict", "scope_expanded", "protected_data", "stale_source", "unsupported_tool", "duplicate_authority", "self_acceptance", "unrelated_scope", "missing_context", "unsafe_action", "broad_claim", "cross_provider", "false_positive"].map((key) => [key, false])),
 }};
@@ -32,7 +46,6 @@ assert.throws(() => evaluateFunctionScopeBoundary(wrongAuthorityScope), (error) 
 // The evaluator must use the fixture's committed expected route/error, not echo
 // whatever the implementation happened to return.  Run an isolated copy and
 // mutate one expectation; a proof that still passes would be tautological.
-const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-function-scope-fixture-mutation-"));
 try {
   fs.cpSync(path.join(repositoryRoot, "control"), path.join(temp, "control"), {recursive: true});
