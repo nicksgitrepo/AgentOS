@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.receipt_cross_binding_gate.v1",
+  "title": "AgentOS Receipt Cross-Binding Gate",
+  "description": "Rejects mixed-authority and stale source/readback/lifecycle/handoff chains before a control-plane receipt is current.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "gate_id", "status", "defect_id", "authority_binding", "chain_identity", "artifacts",
+    "nested_bindings", "cross_binding_rule", "custody", "evidence_refs", "hostile_fixture_refs", "source_action",
+    "next_action", "next_handler", "dispatch_observed", "duplicate_dispatch", "same_turn_dispatch", "spawnable", "gate_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.receipt_cross_binding_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/identifier"},
+    "status": {"const": "REPAIR_REQUIRED"},
+    "defect_id": {"$ref": "#/$defs/identifier"},
+    "authority_binding": {"$ref": "#/$defs/authority"},
+    "chain_identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["chain_id", "authority_commit", "authority_tree"],
+      "properties": {
+        "chain_id": {"$ref": "#/$defs/identifier"},
+        "authority_commit": {"$ref": "#/$defs/commit"},
+        "authority_tree": {"$ref": "#/$defs/commit"}
+      }
+    },
+    "artifacts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_successor", "dispatch_receipt", "dispatch_readback", "next_lifecycle", "handoff"],
+      "properties": {
+        "source_successor": {"$ref": "#/$defs/artifact"},
+        "dispatch_receipt": {"$ref": "#/$defs/artifact"},
+        "dispatch_readback": {"$ref": "#/$defs/artifact"},
+        "next_lifecycle": {"$ref": "#/$defs/artifact"},
+        "handoff": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "nested_bindings": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "source_successor_authority_receipt_sha256", "dispatch_receipt_authority_receipt_sha256", "dispatch_readback_authority_receipt_sha256",
+        "next_lifecycle_authority_receipt_sha256", "handoff_authority_receipt_sha256", "dispatch_receipt_source_successor_sha256",
+        "dispatch_readback_source_successor_sha256", "dispatch_readback_dispatch_receipt_sha256", "dispatch_readback_next_lifecycle_sha256",
+        "next_lifecycle_source_receipt_sha256", "next_lifecycle_handoff_sha256", "handoff_source_successor_sha256",
+        "handoff_dispatch_readback_sha256", "handoff_next_lifecycle_sha256"
+      ],
+      "properties": {
+        "source_successor_authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "dispatch_receipt_authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "dispatch_readback_authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "next_lifecycle_authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_authority_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "dispatch_receipt_source_successor_sha256": {"$ref": "#/$defs/sha256"},
+        "dispatch_readback_source_successor_sha256": {"$ref": "#/$defs/sha256"},
+        "dispatch_readback_dispatch_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "dispatch_readback_next_lifecycle_sha256": {"$ref": "#/$defs/sha256"},
+        "next_lifecycle_source_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "next_lifecycle_handoff_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_source_successor_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_dispatch_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "handoff_next_lifecycle_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "cross_binding_rule": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "all_artifacts_share_current_authority", "all_digests_non_null_and_canonical", "nested_refs_match_artifact_digests",
+        "stale_or_mixed_authority_rejected", "source_successor_and_lifecycle_identity_match", "no_duplicate_dispatch"
+      ],
+      "properties": {
+        "all_artifacts_share_current_authority": {"const": true},
+        "all_digests_non_null_and_canonical": {"const": true},
+        "nested_refs_match_artifact_digests": {"const": true},
+        "stale_or_mixed_authority_rejected": {"const": true},
+        "source_successor_and_lifecycle_identity_match": {"const": true},
+        "no_duplicate_dispatch": {"const": true}
+      }
+    },
+    "custody": {"$ref": "#/$defs/custody"},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence"}},
+    "hostile_fixture_refs": {
+      "type": "array", "uniqueItems": true, "minItems": 6,
+      "items": {"enum": [
+        "FIXTURE.RECEIPT_CROSS_BINDING.AUTHORITY_DRIFT",
+        "FIXTURE.RECEIPT_CROSS_BINDING.DISPATCH_READBACK_DRIFT",
+        "FIXTURE.RECEIPT_CROSS_BINDING.HANDOFF_DRIFT",
+        "FIXTURE.RECEIPT_CROSS_BINDING.LIFECYCLE_DRIFT",
+        "FIXTURE.RECEIPT_CROSS_BINDING.NULL_DIGEST",
+        "FIXTURE.RECEIPT_CROSS_BINDING.SOURCE_SUCCESSOR_DRIFT"
+      ]}
+    },
+    "source_action": {"const": "COMPILE_BLOCK_PATCH"},
+    "next_action": {"const": "REPAIR_BLOCKS"},
+    "next_handler": {"const": "HANDLER.ORCHESTRATOR_BLOCK_REPAIR"},
+    "dispatch_observed": {"const": true},
+    "duplicate_dispatch": {"const": false},
+    "same_turn_dispatch": {"const": true},
+    "spawnable": {"const": false},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "not": {"enum": ["0000000000000000000000000000000000000000000000000000000000000000", "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"]}},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$", "not": {"enum": ["0000000000000000000000000000000000000000", "ffffffffffffffffffffffffffffffffffffffff"]}},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "tree", "receipt_ref", "receipt_sha256"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/commit"},
+        "tree": {"$ref": "#/$defs/commit"},
+        "receipt_ref": {"$ref": "#/$defs/reference"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reference", "sha256", "authority_commit", "authority_tree", "chain_id"],
+      "properties": {
+        "reference": {"$ref": "#/$defs/reference"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "authority_commit": {"$ref": "#/$defs/commit"},
+        "authority_tree": {"$ref": "#/$defs/commit"},
+        "chain_id": {"$ref": "#/$defs/identifier"}
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/identifier"},
+        "reference": {"$ref": "#/$defs/reference"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "compiler_only", "controller_approval_required", "execution_owner", "direct_consumer", "product_mutation",
+        "provider_access", "credential_access", "spend", "destructive_work", "worker_activation", "wave_activation"
+      ],
+      "properties": {
+        "compiler_only": {"const": true},
+        "controller_approval_required": {"const": false},
+        "execution_owner": {"const": "LANE_AGENT"},
+        "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+        "product_mutation": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false},
+        "spend": {"const": false},
+        "destructive_work": {"const": false},
+        "worker_activation": {"const": false},
+        "wave_activation": {"const": false}
+      }
+    }
+  }
+}

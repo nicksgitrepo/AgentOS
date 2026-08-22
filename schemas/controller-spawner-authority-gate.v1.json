@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.controller_spawner_authority_gate.v1",
+  "title": "AgentOS Controller/Spawner Authority Gate",
+  "description": "Restricts Controller custody to governance validation, Spawner start/wake, liveness observation, and typed-defect routing; ordinary agent and roster authority remains with Spawner.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "status", "authority_binding", "action", "custody", "spawner_sole_authority", "evidence_refs", "hostile_fixture_refs", "next_action", "next_handler", "same_turn_successor", "true_stop_gate", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.controller_spawner_authority_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/identifier"},
+    "status": {"const": "ENFORCED"},
+    "authority_binding": {"$ref": "#/$defs/authority"},
+    "action": {
+      "type": "object", "additionalProperties": false,
+      "required": ["actor_role", "action_id", "target_role", "requested_mutations", "typed_readback"],
+      "properties": {
+        "actor_role": {"const": "CONTROLLER"},
+        "action_id": {"enum": ["OBSERVE_LIVENESS", "ROUTE_TYPED_DEFECT", "START_AGENT_SPAWNER", "VALIDATE_GOVERNANCE_HANDOFF", "WAKE_AGENT_SPAWNER"]},
+        "target_role": {"enum": ["AGENT_SPAWNER", "CONTROLLER_GOVERNANCE"]},
+        "requested_mutations": {"$ref": "#/$defs/mutations"},
+        "typed_readback": {
+          "type": "object", "additionalProperties": false,
+          "required": ["readback_sha256", "same_turn_successor", "true_stop_gate"],
+          "oneOf": [
+            {"properties": {"same_turn_successor": {"const": true}, "true_stop_gate": {"const": false}}},
+            {"properties": {"same_turn_successor": {"const": false}, "true_stop_gate": {"const": true}}}
+          ],
+          "properties": {
+            "readback_sha256": {"$ref": "#/$defs/sha256"},
+            "same_turn_successor": {"type": "boolean"},
+            "true_stop_gate": {"type": "boolean"}
+          }
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"action_id": {"const": "OBSERVE_LIVENESS"}}}, "then": {"properties": {"target_role": {"const": "CONTROLLER_GOVERNANCE"}}}},
+        {"if": {"properties": {"action_id": {"const": "ROUTE_TYPED_DEFECT"}}}, "then": {"properties": {"target_role": {"const": "AGENT_SPAWNER"}}}},
+        {"if": {"properties": {"action_id": {"const": "START_AGENT_SPAWNER"}}}, "then": {"properties": {"target_role": {"const": "AGENT_SPAWNER"}}}},
+        {"if": {"properties": {"action_id": {"const": "VALIDATE_GOVERNANCE_HANDOFF"}}}, "then": {"properties": {"target_role": {"const": "CONTROLLER_GOVERNANCE"}}}},
+        {"if": {"properties": {"action_id": {"const": "WAKE_AGENT_SPAWNER"}}}, "then": {"properties": {"target_role": {"const": "AGENT_SPAWNER"}}}}
+      ]
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false,
+      "required": ["controller_approval_required", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work", "protected_action"],
+      "properties": {
+        "controller_approval_required": {"const": false},
+        "product_mutation": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false},
+        "spend": {"const": false},
+        "destructive_work": {"const": false},
+        "protected_action": {"const": false}
+      }
+    },
+    "spawner_sole_authority": {"const": true},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence"}},
+    "hostile_fixture_refs": {
+      "type": "array", "uniqueItems": true, "minItems": 6,
+      "items": {"enum": [
+        "FIXTURE.CONTROLLER_SPAWNER.DIRECT_AGENT_CONSTRUCTION",
+        "FIXTURE.CONTROLLER_SPAWNER.DIRECT_ARCHIVE",
+        "FIXTURE.CONTROLLER_SPAWNER.DIRECT_ROSTER_MUTATION",
+        "FIXTURE.CONTROLLER_SPAWNER.DIRECT_SPAWN",
+        "FIXTURE.CONTROLLER_SPAWNER.MISSING_READBACK",
+        "FIXTURE.CONTROLLER_SPAWNER.MISSING_SUCCESSOR"
+      ]}
+    },
+    "next_action": {"$ref": "#/$defs/identifier"},
+    "next_handler": {"enum": ["HANDLER.CONTROLLER_AVAILABLE_TRANSITION", "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER", "HANDLER.SPAWNER_COMPILER"]},
+    "same_turn_successor": {"type": "boolean"},
+    "true_stop_gate": {"type": "boolean"},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {"if": {"properties": {"action": {"properties": {"action_id": {"const": "OBSERVE_LIVENESS"}}}}}, "then": {"properties": {"next_handler": {"const": "HANDLER.CONTROLLER_AVAILABLE_TRANSITION"}}}},
+    {"if": {"properties": {"action": {"properties": {"action_id": {"const": "ROUTE_TYPED_DEFECT"}}}}}, "then": {"properties": {"next_handler": {"const": "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER"}}}},
+    {"if": {"properties": {"action": {"properties": {"action_id": {"const": "START_AGENT_SPAWNER"}}}}}, "then": {"properties": {"next_handler": {"const": "HANDLER.SPAWNER_COMPILER"}}}},
+    {"if": {"properties": {"action": {"properties": {"action_id": {"const": "VALIDATE_GOVERNANCE_HANDOFF"}}}}}, "then": {"properties": {"next_handler": {"const": "HANDLER.CONTROLLER_AVAILABLE_TRANSITION"}}}},
+    {"if": {"properties": {"action": {"properties": {"action_id": {"const": "WAKE_AGENT_SPAWNER"}}}}}, "then": {"properties": {"next_handler": {"const": "HANDLER.SPAWNER_COMPILER"}}}}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "not": {"enum": ["0000000000000000000000000000000000000000000000000000000000000000", "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"]}},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$", "not": {"enum": ["0000000000000000000000000000000000000000", "ffffffffffffffffffffffffffffffffffffffff"]}},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commit", "tree", "receipt_ref", "receipt_sha256"],
+      "properties": {
+        "commit": {"$ref": "#/$defs/commit"},
+        "tree": {"$ref": "#/$defs/commit"},
+        "receipt_ref": {"$ref": "#/$defs/reference"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "mutations": {
+      "type": "object", "additionalProperties": false,
+      "required": ["archive_ordinary_agent", "admit_ordinary_agent", "complete_qa", "construct_ordinary_agent", "despawn_ordinary_agent", "emit_lane_handoff", "mutate_roster", "spawn_agent_or_seed", "update_governance_blocks"],
+      "properties": {
+        "archive_ordinary_agent": {"const": false},
+        "admit_ordinary_agent": {"const": false},
+        "complete_qa": {"const": false},
+        "construct_ordinary_agent": {"const": false},
+        "despawn_ordinary_agent": {"const": false},
+        "emit_lane_handoff": {"const": false},
+        "mutate_roster": {"const": false},
+        "spawn_agent_or_seed": {"const": false},
+        "update_governance_blocks": {"const": false}
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/identifier"},
+        "reference": {"$ref": "#/$defs/reference"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

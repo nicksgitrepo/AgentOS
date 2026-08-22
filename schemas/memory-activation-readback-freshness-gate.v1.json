@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory_activation_readback_freshness_gate.v1",
+  "title": "AgentOS Memory Activation/Readback Freshness Gate",
+  "description": "Distinguishes historical activation-time memory baselines from current ledger and snapshot readbacks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "gate_id", "status", "defect_id", "activation_baseline", "live_readback", "freshness_rule", "limitations", "custody", "evidence_refs", "hostile_fixture_refs", "source_action", "next_action", "next_handler", "spawnable", "same_turn_dispatch", "gate_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.memory_activation_readback_freshness_gate.v1"},
+    "version": {"const": 1},
+    "gate_id": {"$ref": "#/$defs/identifier"},
+    "status": {"const": "REPAIR_REQUIRED"},
+    "defect_id": {"$ref": "#/$defs/identifier"},
+    "activation_baseline": {
+      "type": "object", "additionalProperties": false,
+      "required": ["activation_receipt_ref", "activation_receipt_sha256", "event_count", "ledger_head_sha256", "snapshot_sha256"],
+      "properties": {
+        "activation_receipt_ref": {"$ref": "#/$defs/reference"},
+        "activation_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "event_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "ledger_head_sha256": {"$ref": "#/$defs/sha256"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "live_readback": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ledger_ref", "ledger_event_count", "ledger_head_sha256", "snapshot_ref", "snapshot_event_cursor", "snapshot_head_sha256", "snapshot_sha256", "ledger_snapshot_consistent", "readback_sha256"],
+      "properties": {
+        "ledger_ref": {"$ref": "#/$defs/reference"},
+        "ledger_event_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "ledger_head_sha256": {"$ref": "#/$defs/sha256"},
+        "snapshot_ref": {"$ref": "#/$defs/reference"},
+        "snapshot_event_cursor": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "snapshot_head_sha256": {"$ref": "#/$defs/sha256"},
+        "snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "ledger_snapshot_consistent": {"const": true},
+        "readback_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "freshness_rule": {
+      "type": "object", "additionalProperties": false,
+      "required": ["baseline_is_historical", "live_state_is_current", "activation_matches_live", "stale_mismatch_rejected", "ledger_snapshot_heads_must_match", "snapshot_digest_must_match", "readback_digest_revalidated"],
+      "properties": {
+        "baseline_is_historical": {"const": true},
+        "live_state_is_current": {"const": true},
+        "activation_matches_live": {"const": false},
+        "stale_mismatch_rejected": {"const": true},
+        "ledger_snapshot_heads_must_match": {"const": true},
+        "snapshot_digest_must_match": {"const": true},
+        "readback_digest_revalidated": {"const": true}
+      }
+    },
+    "limitations": {
+      "type": "object", "additionalProperties": false,
+      "required": ["snapshot_status", "graph_projection", "derived_index_sha256"],
+      "properties": {
+        "snapshot_status": {"const": "PARTIAL"},
+        "graph_projection": {"const": "ADVISORY_ONLY_REBUILDABLE"},
+        "derived_index_sha256": {"const": null}
+      }
+    },
+    "custody": {"$ref": "#/$defs/custody"},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidence"}},
+    "hostile_fixture_refs": {
+      "type": "array", "uniqueItems": true, "minItems": 5,
+      "items": {"enum": [
+        "FIXTURE.MEMORY.ACTIVATION_BASELINE_AS_LIVE",
+        "FIXTURE.MEMORY.CANONICAL_ACTIVATION_DIGEST_DRIFT",
+        "FIXTURE.MEMORY.LEDGER_HEAD_DRIFT",
+        "FIXTURE.MEMORY.SNAPSHOT_CURSOR_DRIFT",
+        "FIXTURE.MEMORY.SNAPSHOT_DIGEST_DRIFT"
+      ]}
+    },
+    "source_action": {"const": "COMPILE_BLOCK_PATCH"},
+    "next_action": {"const": "REPAIR_BLOCKS"},
+    "next_handler": {"const": "HANDLER.ORCHESTRATOR_BLOCK_REPAIR"},
+    "spawnable": {"const": false},
+    "same_turn_dispatch": {"const": true},
+    "gate_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "not": {"enum": ["0000000000000000000000000000000000000000000000000000000000000000", "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"]}},
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "reference", "sha256"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/identifier"},
+        "reference": {"$ref": "#/$defs/reference"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "custody": {
+      "type": "object", "additionalProperties": false,
+      "required": ["compiler_only", "controller_approval_required", "execution_owner", "direct_consumer", "product_mutation", "provider_access", "credential_access", "spend", "destructive_work", "worker_activation", "wave_activation"],
+      "properties": {
+        "compiler_only": {"const": true},
+        "controller_approval_required": {"const": false},
+        "execution_owner": {"const": "LANE_AGENT"},
+        "direct_consumer": {"const": "INDEPENDENT_PLATFORM_REVIEW"},
+        "product_mutation": {"const": false},
+        "provider_access": {"const": false},
+        "credential_access": {"const": false},
+        "spend": {"const": false},
+        "destructive_work": {"const": false},
+        "worker_activation": {"const": false},
+        "wave_activation": {"const": false}
+      }
+    }
+  }
+}
