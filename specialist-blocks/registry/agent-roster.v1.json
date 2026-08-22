@@ -22192,7 +22192,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-web-2025-a09-security-logging-alerting-failures/handoff.json",
-        "handoff_file_sha256": "cf5f9a3a77e3b4159e33b1228eb6fe894fe34498fa9ac7b3a4248718304c4d0a",
+        "handoff_file_sha256": "705ea897ba4906e7c0292252f1e6dfb1becad0360efe579aee689bb222569a8f",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-web-2025-a09-security-logging-alerting-failures.v1"
       },
@@ -22247,11 +22247,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-03/owasp-web-2025-a09-security-logging-alerting-failures/evaluation.json"
+          "specialist-blocks/wave-03/owasp-web-2025-a09-security-logging-alerting-failures/evaluation.json",
+          "specialist-blocks/registry/owasp-web-2025-a09-security-logging-alerting-failures-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40221,17 +40222,17 @@
       "rank": 69,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Frozen after local execution; waits for fresh external authority and read-only Luna audit."
     },
     {
       "rank": 70,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 71,
@@ -40450,5 +40451,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "1a52cab3baaed21c2a36dd644df737a77a8e5396a5e1f686df90c5269cb67430"
+  "roster_sha256": "1528f8c078e3fb4a960bb0a4babe3ed810fcace64d6780b5f0c886075e896e7f"
 }

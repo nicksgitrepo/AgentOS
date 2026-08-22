@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_web_a09_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-web-2025-a09-security-logging-alerting-failures",
+  "candidate_digest": "0596b66087597af496868771440b9cff1dfcb4cff2e6d39a349bcfc23c58f6af",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "c8904df0a48e1d894c1d955444d50f9136ebb26998d66be838899d188d288f04",
+  "upstream_router_result_sha256": "5b79c3789199079dae65796650e60c6ef4c12b84ba9b420732aef4a930758c51",
+  "gate_execution_sha256": "f7df404f5d4eefa7ec291b2f47c73f85315ab79279c06f8e4ee1a6e2d4b02f2a",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T20:15:42.476Z",
+  "readback_sha256": "771468393bf8789cbc911b39090309cd6533e10359d4645b006bde5777700ee7"
+}
