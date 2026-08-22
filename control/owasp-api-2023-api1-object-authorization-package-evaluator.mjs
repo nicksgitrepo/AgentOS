@@ -66,9 +66,16 @@ function inventory(root) {
   for (const name of fs.readdirSync(path.join(root, "fixtures")).filter((name) => name.endsWith(".json"))) files.push(`fixtures/${name}`);
   return files.sort();
 }
-const FREEZE_ROOT_EXCLUDED_SUFFIXES = Object.freeze(["/evaluation.json", "/handoff.json", "/audits/read-only-adversary-audit.v1.json"]);
+// Only the three mutable package-level receipts are excluded from the
+// immutable freeze root.  Match their complete package-relative paths so an
+// immutable fixture such as fixtures/handoff.json cannot be silently omitted.
+const FREEZE_ROOT_EXCLUDED_PATHS = Object.freeze([
+  `${PACKAGE}/evaluation.json`,
+  `${PACKAGE}/handoff.json`,
+  `${PACKAGE}/audits/read-only-adversary-audit.v1.json`,
+]);
 function freezeRootDigest(digests) {
-  return canonicalDigest(digests.filter((entry) => !FREEZE_ROOT_EXCLUDED_SUFFIXES.some((suffix) => entry.relative_path.endsWith(suffix))));
+  return canonicalDigest(digests.filter((entry) => !FREEZE_ROOT_EXCLUDED_PATHS.includes(entry.relative_path)));
 }
 function fixtureMap(root) {
   const names = fs.readdirSync(path.join(root, "fixtures")).filter((name) => name.endsWith(".json")).sort(); assert(names.length === CLASSES.length && new Set(names).size === CLASSES.length, "API1 fixture inventory is incomplete", "OWASP_API_OBJECT_AUTHORIZATION_FIXTURE_INVENTORY_INVALID"); const map = new Map();

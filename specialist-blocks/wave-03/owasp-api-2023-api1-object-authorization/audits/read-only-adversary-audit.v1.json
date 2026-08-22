@@ -15,7 +15,7 @@
     "commit": "3e891505f6cea189ccdbe63a21e5d4d8f887ddf8",
     "tree": "eef11ab7b7d98ad8b1b4671719035d629f5ab24a",
     "package_block_sha256": "739cebe10ca46d6dfb1b0e5faed961a69986cb84b38f8aa9df0cb732ed8b7d6e",
-    "package_root_sha256": "511026dd0b3b36994aff01e8f8f367039d49159cd9aa8830af50c55cf9a7a43c",
+    "package_root_sha256": "a922d17e8e5c52e263da13f9c671ab16756b7b99ce2f47686f60b45749a78e33",
     "source_manifest_sha256": "a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
     "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
     "model_route_sha256": "9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
@@ -61,5 +61,5 @@
   },
   "findings": [],
   "disposition": "PASS_WITH_INACTIVE_MODEL_REVIEW_REQUIRED",
-  "audit_sha256": "0ad971c117d33e6c11b8c8821e6948a93d724407a769f9ed528673ffbb79c4b2"
+  "audit_sha256": "4054e2a69c2665a8b7382573c1e5721271bd990d3a69ef11425f3f223edf352c"
 }

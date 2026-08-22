@@ -53,7 +53,7 @@
     "model-context-route-bound"
   ],
   "evidence_receipts": {
-    "candidate_freeze_package_root_sha256": "511026dd0b3b36994aff01e8f8f367039d49159cd9aa8830af50c55cf9a7a43c",
+    "candidate_freeze_package_root_sha256": "a922d17e8e5c52e263da13f9c671ab16756b7b99ce2f47686f60b45749a78e33",
     "source_manifest_sha256": "a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
     "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
     "model_route_sha256": "9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
