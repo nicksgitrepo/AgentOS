@@ -24,7 +24,7 @@ import {compileProjectOwnerResponse} from "./project-owner-conversation.mjs";
 export const SPAWNER_HOSTILE_EVALUATION_SCHEMA = "agentos.spawner_hostile_evaluation.v1";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, "specialist-blocks/control-plane/agent-spawner");
-const NOW = "2026-08-20T04:15:00.000Z";
+const NOW = "2026-08-21T04:09:00.000Z";
 function typedRejection(code, message) { const error = new Error(message); error.code = code; throw error; }
 
 function mutateJson(file, mutate) { const value = JSON.parse(fs.readFileSync(file)); mutate(value); fs.writeFileSync(file, `${JSON.stringify(value)}\n`); }

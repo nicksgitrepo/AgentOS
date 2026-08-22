@@ -29,9 +29,9 @@
   },
   "model_policy": {
     "snapshot_path": "fixtures/model-policy-snapshot.initial.v1.json",
-    "snapshot_sha256": "d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7",
-    "observed_at_utc": "2026-08-20T04:00:00.000Z",
-    "expires_at_utc": "2026-08-21T04:00:00.000Z",
+    "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "observed_at_utc": "2026-08-21T04:09:00.000Z",
+    "expires_at_utc": "2026-08-22T04:09:00.000Z",
     "task_classes": [
       "SIMPLE_EXTRACTION",
       "DETERMINISTIC_QA",
@@ -40217,5 +40217,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "7ea0e7f4b9b5978b3b9cc7699b707ba407c75822719bd0d583d62ef0d32c8a21"
+  "roster_sha256": "8fb77602a4aab078da3a861b8803a43a82ab3f937d0a6e603ee01f03597ed182"
 }
