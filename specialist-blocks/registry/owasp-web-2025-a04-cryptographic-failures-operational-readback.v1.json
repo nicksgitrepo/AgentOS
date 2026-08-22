@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_web_a04_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-web-2025-a04-cryptographic-failures",
+  "candidate_digest": "5310465a02ef7d7d7faf3f61a076ed5e73e77332625995efd6177b7ef8da8701",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "85315adfb971d5624faad0b07f2368625737898420ab7ca2f75692f98befd986",
+  "upstream_router_result_sha256": "43d6a5ae518342af2c721741631b3d971a82a72298713cbd9f09d372de5b0cec",
+  "gate_execution_sha256": "e54e6aa99dbd2df4c6298480f6c70e1363899f29562d76e45509ec953e4714e2",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T20:07:59.285Z",
+  "readback_sha256": "55be427685501ac6ff3b9b0a99914c75b3e7e4d93799e1f6028c39e9001b8717"
+}
