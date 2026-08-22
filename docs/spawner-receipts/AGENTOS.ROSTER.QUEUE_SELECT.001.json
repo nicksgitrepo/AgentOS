@@ -1,0 +1,8 @@
+{
+  "status": "EXECUTION_ERROR",
+  "error": {
+    "error_name": "Error",
+    "error_code": "POLICY_SNAPSHOT_STALE",
+    "error_message_sha256": "a184ad237a19fb06aac34176bd2ede40b85685f88fa88e2e1dec8b1a5175aedb"
+  }
+}

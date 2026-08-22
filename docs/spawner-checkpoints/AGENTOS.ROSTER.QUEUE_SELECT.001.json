@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.spawner_liveness_checkpoint.v1",
+  "version": 1,
+  "checkpoint_id": "AGENTOS.ROSTER.QUEUE_SELECT.001",
+  "lifecycle_id": "OPENAPI_ROSTER_CONTINUE_20260822",
+  "phase": "ROSTER_QUEUE_SELECTION",
+  "phase_index": 1,
+  "phase_window_seconds": 1,
+  "started_at_utc": "2026-08-22T17:46:20.373Z",
+  "observed_at_utc": "2026-08-22T17:46:25.373Z",
+  "elapsed_seconds": 5,
+  "window_status": "EXHAUSTED",
+  "meaningful_progress": false,
+  "typed_result_status": "ABSENT",
+  "exact_receipt_status": "EXACT",
+  "exact_receipt_ref": "opaque:AGENTOS.ROSTER.QUEUE_SELECT.001",
+  "exact_receipt_sha256": "3beb1eba4c169576b8ee2abb925dd153d3cfa546f9ce8a493d218148a5baabc6",
+  "persistence": {
+    "status": "CHECKPOINT_PERSISTED",
+    "receipt_ref": "opaque:AGENTOS.ROSTER.QUEUE_SELECT.001",
+    "receipt_sha256": "3beb1eba4c169576b8ee2abb925dd153d3cfa546f9ce8a493d218148a5baabc6",
+    "atomic": true,
+    "same_turn": true,
+    "write_scope": "CONTROL_PLANE_ONLY"
+  },
+  "status": "BLOCKED_EXACT",
+  "safe_stop": true,
+  "next_action": "REHOME_OR_RESTART",
+  "checkpoint_sha256": "fe16e7586bf0c13ff151d8ce56ed5ef04f98dc60eac75ec92054cc314c088ec4"
+}
