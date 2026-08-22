@@ -115,6 +115,12 @@
     "failed": 0,
     "pending": 0
   },
-  "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "disposition": "EXECUTED_REVIEW_REQUIRED",
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION",
+  "operational_readback": {
+    "path": "specialist-blocks/registry/owasp-web-2025-a07-authentication-failures-operational-readback.v1.json",
+    "required": true,
+    "file_sha256": "660a8d34a8237a940a40c3204cc25ee2f05af54cd7663b253decd32f8783efc5",
+    "readback_sha256": "0f3384ec93c6214ead482fae60a2fd323d509ca2abcc2596207d903951ec59f6"
+  }
 }

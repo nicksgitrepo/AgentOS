@@ -21560,7 +21560,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-web-2025-a07-authentication-failures/handoff.json",
-        "handoff_file_sha256": "8f42c73df466bdb914aa513afe6f0f6a6870945193a062ae3156c7b75546f619",
+        "handoff_file_sha256": "5bd4feeeb249787e670ba1dd1aaab93b358ab9a7536b5315f003810927a37a95",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-web-2025-a07-authentication-failures.v1"
       },
@@ -21615,11 +21615,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-03/owasp-web-2025-a07-authentication-failures/evaluation.json"
+          "specialist-blocks/wave-03/owasp-web-2025-a07-authentication-failures/evaluation.json",
+          "specialist-blocks/registry/owasp-web-2025-a07-authentication-failures-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40203,17 +40204,17 @@
       "rank": 67,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A07_AUTHENTICATION_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Frozen after local execution; waits for fresh external authority and read-only Luna audit."
     },
     {
       "rank": 68,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 69,
@@ -40448,5 +40449,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "4a05546d15c83cd23c52f8fdcf419a81757de810ee545793c99fc52ad49da10b"
+  "roster_sha256": "2e0e8610533cd75ebf8318ca817969cae3e97582217709f79741202341e9f1cd"
 }
