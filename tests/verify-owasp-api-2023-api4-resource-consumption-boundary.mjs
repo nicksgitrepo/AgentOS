@@ -33,7 +33,7 @@ assert(api4, "API4 roster entry missing");
 assert.equal(api4.qa_state, "EXECUTED_REVIEW_REQUIRED");
 assert.equal(api4.independent_evaluation_state, "EXECUTED_REVIEW_REQUIRED");
 assert.equal(roster.build_queue.find((entry) => entry.stable_agent_id === api4.stable_agent_id)?.eligible, false);
-assert.equal(roster.build_queue.find((entry) => entry.eligible)?.stable_agent_id, "AGENT.SECURITY_OWASP_API_2023_API8_MISCONFIGURATION");
+assert.equal(roster.build_queue.find((entry) => entry.eligible)?.stable_agent_id, "AGENT.SECURITY_OWASP_API_2023_API9_INVENTORY");
 
 const personalPath = new RegExp(`${["/", "Users", "/"].join("")}(?:[^/\\s]+/)+|${["/", "home", "/"].join("")}(?:[^/\\s]+/)`, "u");
 const persisted = [
