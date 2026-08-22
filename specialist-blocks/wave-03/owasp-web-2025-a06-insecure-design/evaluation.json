@@ -115,6 +115,12 @@
     "failed": 0,
     "pending": 0
   },
-  "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "disposition": "EXECUTED_REVIEW_REQUIRED",
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION",
+  "operational_readback": {
+    "path": "specialist-blocks/registry/owasp-web-2025-a06-insecure-design-operational-readback.v1.json",
+    "required": true,
+    "file_sha256": "f07827013bf6e9c1f97f7ceb1176628c7d7d8e266d8915b7a7c72528c1f5f1e6",
+    "readback_sha256": "e14762c0556105086632e035c882ece83b366deac9d91a7c8fa107db28ed2d4d"
+  }
 }
