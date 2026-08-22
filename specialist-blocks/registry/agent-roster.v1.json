@@ -15578,7 +15578,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/oidc-core/handoff.json",
-        "handoff_file_sha256": "39b99d7fde1ce58fb47a0f1bd3a267d9711b8356082fc4f0493744f64953c917",
+        "handoff_file_sha256": "6f21e90f4135b4ac8321b48e8f79a519efd99761caa8225a52c39744d90bb201",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.oidc-core.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "73f9485fcda15f68ded02f3baf3a06cd5c24a62aceb6ba4cff4aecd09b57f9f9"
+  "roster_sha256": "fff5be8280066f0f6c1185f3f2ae61c9d89f9273e22d79724818dc06c8144594"
 }

@@ -5,8 +5,8 @@
   "block_id": "specialist.security.oidc-core",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66",
-  "source_commit": "fc3c9334502eb591485e65d09a8f5abe4a6d22a4",
-  "source_tree": "511c356a562209991ea6fef0809385439f4ca6d2",
+  "source_commit": "cfe78413b51005569fd09ec522693646c9233b6c",
+  "source_tree": "52ae39c42570d6324af3d122cb6f176d62d981e2",
   "changed_paths": [
     "specialist-blocks/wave-02/oidc-core/block.json",
     "specialist-blocks/wave-02/oidc-core/evaluation.json",
