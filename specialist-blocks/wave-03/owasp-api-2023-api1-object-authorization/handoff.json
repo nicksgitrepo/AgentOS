@@ -48,16 +48,16 @@
   "evidence_receipts": {
     "candidate_freeze_package_root_sha256": "858727b6d0a892b8e1915feada017c32d568c139007317c5686a7a816faf4730",
     "source_manifest_sha256": "a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
-    "model_snapshot_sha256": "d64c3dd7ad0a8d8068b5d999e386fd9915a6b5ba777fe17de83f8ee10396b7b7",
-    "model_route_sha256": "874fcae1dbbfaafc1233148812a9fa8add93b46321b4a6bb09fd8d47b556e30a",
-    "context_receipt_sha256": "05adfbe4f3fcd30b41984760b9d7208f05ed451f4ef1ab6de17d94cbb19b0dd3",
+    "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+    "model_route_sha256": "9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
+    "context_receipt_sha256": "c84da0a15098d1481a13968179b95b44f78825dac6b9a7ac780fa29ae1b6ccb0",
     "upstream_router_result_sha256": "bdcaecf4461b3938c5cd82b8d22b636e08f2165d70be7c4909d7b80383f69efa",
     "gate_semantic_inventory_sha256": "e707f1f82ed5c9cdf57c1378c33a0e25b7bb168b71ab7b7b1785cac7023e3ea6",
     "focused_verifier": "tests/verify-owasp-api-2023-api1-object-authorization-boundary.mjs"
   },
   "residuals": [
     "applicability and project context remain external",
-    "global model-policy snapshot is PREPARED_INACTIVE and expired; governance owner must refresh and rebind it before qualification",
+    "global model-policy snapshot is PREPARED_INACTIVE; explicit independent qualification remains required before activation",
     "candidate is not admitted or activated",
     "no backend evidence or consumer functionality is inferred",
     "independent utility/harm evaluation has not run",
@@ -69,6 +69,6 @@
     "audited_tree": "7024df37b4ba65a60ff87e6ee8e05422d7c445ef",
     "disposition": "REPAIR_REQUIRED_WITH_MODEL_REFRESH_BLOCKER"
   },
-  "next_action": "Route the immutable candidate through its upstream router and independent read-only auditor; refresh and explicitly rebind the expired model-policy snapshot before qualification; preserve activation OFF.",
+  "next_action": "Route the immutable candidate through its upstream router and independent read-only auditor; preserve activation OFF until independent qualification and explicit owner approval.",
   "authority": "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION"
 }

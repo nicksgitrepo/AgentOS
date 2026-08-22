@@ -15962,7 +15962,7 @@
           "mutation_sensitivity"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/handoff.json",
-        "handoff_file_sha256": "fad48caf09020082937aadec432b6a3eafa6cee24fe15590833a02d4e5175aaf",
+        "handoff_file_sha256": "610b0ead80030ead5568a856807c4a268a5d3a610decb4a564437575ff69d3be",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v2"
       },
@@ -40586,5 +40586,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "bed9a4c272302f28bbc3bf87c886d388c934c182baf6a5433d1bdd930ecf1847"
+  "roster_sha256": "15837a8fc061b81773638024596a9ab1f401cd005118868304c1243a6f51ee26"
 }
