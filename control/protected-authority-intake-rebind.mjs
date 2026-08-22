@@ -493,6 +493,13 @@ function queueReceiptPath(custody) {
   return path.join(custody.gitCommonDirectory, "agentos-spawner-queues", "protected-authority", `${custody.candidate.commit}.json`);
 }
 
+function queueStateDigest(receipt) {
+  const projection = structuredClone(receipt);
+  projection.source_result_sha256 = null;
+  projection.queue_sha256 = null;
+  return canonicalDigest(projection);
+}
+
 export function writeProtectedAuthorityQueueReceipt({sealedAuthority, receipt} = {}) {
   assertSealedCanonicalAuthority(sealedAuthority);
   validateProtectedAuthorityQueueReceipt(receipt);
@@ -503,7 +510,7 @@ export function writeProtectedAuthorityQueueReceipt({sealedAuthority, receipt} =
   if (fs.existsSync(target)) {
     const readback = JSON.parse(fs.readFileSync(target, "utf8"));
     validateProtectedAuthorityQueueReceipt(readback);
-    assert(readback.queue_sha256 === receipt.queue_sha256, "existing protected-authority queue receipt is a divergent replay", "PROTECTED_AUTHORITY_QUEUE_REPLAY");
+    assert(queueStateDigest(readback) === queueStateDigest(receipt), "existing protected-authority queue receipt is a divergent replay", "PROTECTED_AUTHORITY_QUEUE_REPLAY");
     return Object.freeze({status: "IDEMPOTENT_REPLAY", path: target, queue_sha256: readback.queue_sha256});
   }
   const descriptor = fs.openSync(target, "wx", 0o600);

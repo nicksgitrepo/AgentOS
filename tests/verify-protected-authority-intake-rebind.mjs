@@ -49,6 +49,12 @@ assert.deepEqual(
 assert.equal(queue.queue_sha256, queue.queue_sha256.toLowerCase());
 assert.equal(queue.queue_sha256.length, 64);
 
+const firstQueueWrite = runProtectedAuthorityIntakeRebind({writeQueueReceipt: true});
+assert(firstQueueWrite.queue_receipt.status === "WRITTEN" || firstQueueWrite.queue_receipt.status === "IDEMPOTENT_REPLAY");
+const replayQueueWrite = runProtectedAuthorityIntakeRebind({writeQueueReceipt: true});
+assert.equal(replayQueueWrite.queue_receipt.status, "IDEMPOTENT_REPLAY", "replaying the same exact blocked candidate must be idempotent");
+assert.equal(replayQueueWrite.queue_receipt.queue_sha256, firstQueueWrite.queue_receipt.queue_sha256);
+
 const deterministicRosterA = compileProtectedAuthorityRosterForCurrentCandidate();
 const deterministicRosterB = compileProtectedAuthorityRosterForCurrentCandidate();
 assert.equal(deterministicRosterA.status, "PASS");

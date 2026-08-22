@@ -3309,11 +3309,11 @@
     },
     "protected_authority_intake_rebind_controller": {
       "path": "control/protected-authority-intake-rebind.mjs",
-      "sha256": "4ef29fc8c9eb448294c430330f0d13e46fbe72879751b80017ff3066e4901efe"
+      "sha256": "f00ca99a434f32f99698862a4647251ce5cccb4125f1ba371786bd5b322b6495"
     },
     "protected_authority_intake_rebind_verifier": {
       "path": "tests/verify-protected-authority-intake-rebind.mjs",
-      "sha256": "7c9083af73873893dfd798b4c03618649e547cb669d340b382550a87335bd3ec"
+      "sha256": "44d89a1cad8c4213d62713acf7a680fdd33795bf0385091f024052cc9e008b00"
     },
     "provider_edge_router_boundary_gate": {
       "path": "control/provider-edge-router-boundary-gate.mjs",
