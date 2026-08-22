@@ -6,6 +6,13 @@
   "candidate_digest": "739cebe10ca46d6dfb1b0e5faed961a69986cb84b38f8aa9df0cb732ed8b7d6e",
   "source_commit": "1596faf4675ef2ad46e49714fd33574fd659d780",
   "source_tree": "eb1a606a2c8d4dac3d48ea374e9f010ec33a45a0",
+  "changed_paths": [
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/block.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/evaluation.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/gates/execution.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/handoff.json",
+    "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/sources.lock"
+  ],
   "disposition": "WAITING_WITH_RECEIPT",
   "scope": {
     "authority_scope": "OWASP_API_2023_API1_OBJECT_AUTHORIZATION",
