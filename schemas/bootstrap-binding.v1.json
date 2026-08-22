@@ -3845,7 +3845,7 @@
     },
     "spawner_roster_hostile_verifier": {
       "path": "tests/verify-spawner-roster-hostile.mjs",
-      "sha256": "0d9548e891c0d6217aa9116440f5b35ed047fc8a3fff6745bea6fb027114f2f6"
+      "sha256": "33210ef77654241cab094539dd23fa97454a3dfef0ab42ea9beea4b8c3775000"
     },
     "roadmap11_workflow_distillation_audit": {
       "path": "docs/feature-audits/ROADMAP_11_WORKFLOW_DISTILLATION/auditreport.md",

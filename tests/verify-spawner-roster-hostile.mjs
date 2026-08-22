@@ -25,6 +25,8 @@ try {
     assert.equal(compiled.build_queue.some((item) => item.eligible), false, "stale model policy left a roster item eligible");
     assert.match(compiled.build_queue[0]?.reason ?? "", /model-policy snapshot.*fresh/u);
   }
+  assert.equal(compiled.entries.some((entry) => ["INCOMPLETE", "MISSING_GATE_MANIFEST"].includes(entry.deterministic_gates?.status)), false, "incomplete gate inventory was projected as a complete roster");
+  assert.equal(compiled.entries.some((entry) => entry.hostile_fixtures?.status === "INCOMPLETE"), false, "incomplete hostile-fixture inventory was projected as a complete roster");
 
   fs.mkdirSync(path.join(root, "specialist-blocks/fixture"), {recursive: true});
   fs.writeFileSync(path.join(root, "specialist-blocks/fixture/block.json"), "{}\n");
