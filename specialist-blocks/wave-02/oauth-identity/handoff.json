@@ -5,8 +5,8 @@
   "block_id": "specialist.security.oauth-identity",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8",
-  "source_commit": "be0ece3c1833aeddd815013efecd5fd23b5570a1",
-  "source_tree": "02699db22d084c8eef11bbf2b829c02febfbbf9f",
+  "source_commit": "81666658e5e366838eb8ec447f6d816cfd403b6d",
+  "source_tree": "af5a1c20e276fb31e215ee726d9a9df8c699afab",
   "changed_paths": [
     "specialist-blocks/wave-02/oauth-identity/block.json",
     "specialist-blocks/wave-02/oauth-identity/evaluation.json",

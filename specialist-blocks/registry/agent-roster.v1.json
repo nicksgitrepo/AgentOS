@@ -14958,7 +14958,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/oauth-identity/handoff.json",
-        "handoff_file_sha256": "b69f45c415db7a5eb0da4a17a575964c10d228c54042fda5c26acf45a7ac54e1",
+        "handoff_file_sha256": "c09e29d0e1b9275fa51272fe665c7abdfb9ee8a272e14affc4197c9a971c7e8b",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.oauth-identity.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "13829d7143d1e4a6f2950a6a4f79793d1d31e1e256998b15d174c2a7af2123cd"
+  "roster_sha256": "fbe06429458500ef7e212e7accffa7981538bd54ba4bf3357f03327d115fea85"
 }
