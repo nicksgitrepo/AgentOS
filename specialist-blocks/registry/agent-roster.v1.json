@@ -27708,7 +27708,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/typescript-language/handoff.json",
-        "handoff_file_sha256": "018e9149d33912d19d9bcd845f8f94ebab74edc972a52b291fc59873271418fe",
+        "handoff_file_sha256": "dbc857d56fe60ee5da97828442e032f8b4ea0e8187cf5cd050f9a27eccade382",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.typescript-language.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "0beb127badada860fa454dc0008f58a181244ba499158840c85490c23a8c16e0"
+  "roster_sha256": "cb4cade745e756fc3db63a76bb8e146a198e60509718891849390ceea6ef580c"
 }

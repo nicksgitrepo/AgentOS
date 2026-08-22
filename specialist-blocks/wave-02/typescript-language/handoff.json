@@ -5,8 +5,8 @@
   "block_id": "specialist.software-language-runtime.typescript-language",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5",
-  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
-  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
+  "source_commit": "7fbe6aaccf794a03998d4a852f30765e18b82ce0",
+  "source_tree": "ab73eb648c72b09a7810ce0f61c6ba2f9e7e891c",
   "changed_paths": [
     "specialist-blocks/wave-02/typescript-language/block.json",
     "specialist-blocks/wave-02/typescript-language/evaluation.json",
