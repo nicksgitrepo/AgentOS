@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.ai.search-rag",
-  "class": "umbrella_authority",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.ai.search-rag","fixture_id":"specialist.ai.search-rag.UMBRELLA_AUTHORITY","class":"umbrella_authority","hostile":true,"vector":{"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"schema":"agentos.ai_search_rag_boundary_input.v1","version":1,"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"broad_claim":true}}},"expected_readback":{"disposition":"DENY","route":"NARROW_SCOPE_REQUIRED","error_code":"AI_SEARCH_RAG_SCOPE_EXPANSION_FORBIDDEN"}}}

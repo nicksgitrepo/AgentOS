@@ -314,103 +314,103 @@
           {
             "fixture_id": "specialist.ai.search-rag.AUTHORITY_CONFLICT",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/authority_conflict.json",
-            "file_sha256": "3264119df109e048d35855527ac37ed0c6751e9cb6c0ad803d29f739ebadc044",
+            "file_sha256": "a1a68234b3d5efa314af74be7efe54582094b96f2b09487cd07e1449feaa2b79",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.BROAD_WHEN_NARROW_EXISTS",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "0fe1e4efe052b255ee4499243a616fa556eceed89a2ec02781c34760df20aec7",
+            "file_sha256": "ebddd8cf20b3e9e4f098619a3acebd941d2a07f5131720cb8339e7d2f843efbd",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.CROSS_PROVIDER_VERSION_CLAIM",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "94d4bae22b455752a2317785ab04ed90dc1209e049d6c42c5f072d0959b9601a",
+            "file_sha256": "b4740f66417728a74844916262fc79528f9b5b9b0feb4cc8f13603ad2e2129f3",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.DATA_LIMIT",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/data_limit.json",
-            "file_sha256": "9a8c3a63d99104ad73d7aba422b1c521f3ecb0345208362bb43bf9611fb03f5c",
+            "file_sha256": "b083c0f5bebf22c5a76ad935f9f3ebe89bd8ca55e59d2d85fbaac7c803746ef4",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.ai.search-rag.DUPLICATE_SIBLING_AUTHORITY",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "be9d7cecc2bbcf0ae73de2a6624694f0f1aa9e3fd2c5d0c9ae0515f8f6d55d61",
+            "file_sha256": "394af600fb78d5780efa3580049de27b88a04b1e1f4df92672412a664de2dd06",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.FALSE_POSITIVE",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/false_positive.json",
-            "file_sha256": "d41ff605d3e00282ae135db22756b80f2cfac390b1f301039418518979513f61",
+            "file_sha256": "f24baac39fa65a6e46f99c05e5cbb7ffc173624f40ec69f3ff46296fea45c9aa",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.HANDOFF",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/handoff.json",
-            "file_sha256": "ba8cdb2c1315ab17187e81874017a203c124db1a89fd45be857e0304a74aa9f4",
+            "file_sha256": "db21c82a937b735928f703788cc4f306cc2ef5f45df10a212af956c1eba5749c",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.ai.search-rag.MISSING_CONTEXT",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/missing_context.json",
-            "file_sha256": "9b1da07935baf4aca3ca889ae7a995ea3bf4cd581863c3212880514ce496e715",
+            "file_sha256": "83e3e96b0da831810683c920c68f7e6ba856092a020edc238bba2395c8a199aa",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.NARROWNESS",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/narrowness.json",
-            "file_sha256": "b03b2790187c2ab8040fd2dbcf76c02586d96bee4a9ed5af15dfdff6828f9543",
+            "file_sha256": "ce0896ce0525fc49b7a895302512510ef122a49905bd45c11dc5809b0376a94e",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.ai.search-rag.ROUTER_SELF_ACCEPT",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/router_self_accept.json",
-            "file_sha256": "a8675fc8740e7854a7bded40e5186a90daa600ec007fa467dc805770bd3f5694",
+            "file_sha256": "b28b08b3a3bb19a082f014cbe7720f9a13120d0f2947bbf0975f9ffb47b2ff3c",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.ROUTING",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/routing.json",
-            "file_sha256": "f4046a4c666a353e83ab7f7578943ebc04966b23e1503271e148d3b43bc11c04",
+            "file_sha256": "1f8091d4a9e48632c2ba4998fa5bc6ddab542c886c1835c567b9731e00f1ca00",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.ai.search-rag.SILENT_SCOPE_EXPANSION",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/silent_scope_expansion.json",
-            "file_sha256": "96fba7c3834adc030ab8dd23656c612cbf3aa967b0efe2d79e88b03dfa6fd4a1",
+            "file_sha256": "4da0dad881cbe6ffbc0aa0bf16673a868d7d876a00bbc167ea5ae811b5e9805b",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.STALE_SOURCE",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/stale_source.json",
-            "file_sha256": "ff4cace14c5f54efbb8b4da7eed7840d4ed182c34377773c73c9670ba516d1cb",
+            "file_sha256": "6f50566d6f67a4ce2db3853a81084c199e2add40e9e11bdd24fc0705e9c26223",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.TOOL_LIMIT",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/tool_limit.json",
-            "file_sha256": "bdb78fc67dd2304d1b816710e7f578125aadde7ac9d39d760b05037eba44d805",
+            "file_sha256": "36ed5881ec04939334ed8e5347e86cc38cea3ac244848b48723305318c857d32",
             "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "specialist.ai.search-rag.UMBRELLA_AUTHORITY",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/umbrella_authority.json",
-            "file_sha256": "92d4fa926599056b2c733d8c6bc9e3b762082c9cee38e371902acde1bc15cf6c",
+            "file_sha256": "28911bd7cfaed8c6dee0a45e72d78f22f702d08d232b6de8bd4e3e131fc32e8e",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.UNRELATED_SCOPE",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/unrelated_scope.json",
-            "file_sha256": "389664657ea13c42be3aa46590b6b4f6a3eb1ad8c860043c0784aae7848555d4",
+            "file_sha256": "7e60e79b868813fcbb5dda86ab607da8ffd333d409e4bfbb57ae75e605d561c1",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "specialist.ai.search-rag.UNSAFE_ACTION",
             "path": "specialist-blocks/wave-06/search-rag/fixtures/unsafe_action.json",
-            "file_sha256": "b5c84a9e0eb06912bda4db7a374e8f22e850b9f805c5500a0e413b0ce5f4b37a",
+            "file_sha256": "f114dd7d662019088f72435ca49feaa58cdbc1bd8b64e7b7c5177611fd05ae9b",
             "expected_outcome": "DENY"
           }
         ]
@@ -423,7 +423,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-06/search-rag/handoff.json",
-        "handoff_file_sha256": "40c029ee4ba1247ba55a76203018c8811e4a4366f8049ef57ebe24890bd8a675",
+        "handoff_file_sha256": "a9c0ecd9a8fa58b9c2be97b30140f1a797d5047d64c53e089b763337df5c92ec",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.search-rag.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "a6743f807eb7ec768c34b4bafbd644d3efd01f83d162c2863fe9139ebe3acbb3"
 }

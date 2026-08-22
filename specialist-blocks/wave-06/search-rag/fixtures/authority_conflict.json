@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.ai.search-rag",
-  "class": "authority_conflict",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for authority_conflict; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.ai.search-rag","fixture_id":"specialist.ai.search-rag.AUTHORITY_CONFLICT","class":"authority_conflict","hostile":true,"vector":{"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"schema":"agentos.ai_search_rag_boundary_input.v1","version":1,"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"authority_conflict":true}}},"expected_readback":{"disposition":"DENY","route":"CONTROLLER_ESCALATION","error_code":"AI_SEARCH_RAG_AUTHORITY_CONFLICT"}}}

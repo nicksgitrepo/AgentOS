@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.ai.search-rag",
-  "class": "narrowness",
-  "expected": "ROUTE",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for narrowness; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.ai.search-rag","fixture_id":"specialist.ai.search-rag.NARROWNESS","class":"narrowness","hostile":true,"vector":{"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"schema":"agentos.ai_search_rag_boundary_input.v1","version":1,"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{}},"expected_readback":{"disposition":"ROUTE","route":"AI_SEARCH_RAG_ANALYSIS_HANDOFF","error_code":"AI_SEARCH_RAG_ROUTE_READY"}}}

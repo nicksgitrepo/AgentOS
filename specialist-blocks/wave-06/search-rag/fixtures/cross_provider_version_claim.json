@@ -1,9 +1,1 @@
-{
-  "schema": "agentos.specialist_fixture.v1",
-  "version": 1,
-  "block_id": "specialist.ai.search-rag",
-  "class": "cross_provider_version_claim",
-  "expected": "DENY",
-  "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
-}
+{"schema":"agentos.specialist_fixture.v1","version":1,"block_id":"specialist.ai.search-rag","fixture_id":"specialist.ai.search-rag.CROSS_PROVIDER_VERSION_CLAIM","class":"cross_provider_version_claim","hostile":true,"vector":{"entrypoint":"control/ai-search-rag-boundary-gate.mjs#evaluateAiSearchRagBoundary","input":{"schema":"agentos.ai_search_rag_boundary_input.v1","version":1,"request_kind":"ANALYZE_SEARCH_RAG","evidence_overrides":{"adversarial_flags":{"cross_provider":true}}},"expected_readback":{"disposition":"DENY","route":"SOURCE_REFRESH_REQUIRED","error_code":"AI_SEARCH_RAG_SOURCE_IDENTITY_INVALID"}}}

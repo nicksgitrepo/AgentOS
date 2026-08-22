@@ -8,11 +8,18 @@
   "source_commit": "7ba72b318dd7ee48fa64f7ee8bbb6e412524496e",
   "source_tree": "050a8eea7c8e63cf97a164519d925943bc9eeba5",
   "changed_paths": [
+    "control/ai-search-rag-authority-binding.mjs",
+    "control/ai-search-rag-boundary-gate.mjs",
+    "control/ai-search-rag-package-evaluator.mjs",
+    "schemas/ai-search-rag-gate-execution.v1.json",
     "specialist-blocks/wave-06/search-rag/block.json",
     "specialist-blocks/wave-06/search-rag/evaluation.json",
+    "specialist-blocks/wave-06/search-rag/gates/execution.json",
     "specialist-blocks/wave-06/search-rag/gates/manifest.json",
     "specialist-blocks/wave-06/search-rag/handoff.json",
-    "specialist-blocks/wave-06/search-rag/sources.lock"
+    "specialist-blocks/wave-06/search-rag/hostile-fixtures.manifest.json",
+    "specialist-blocks/wave-06/search-rag/sources.lock",
+    "tests/verify-ai-search-rag-boundary.mjs"
   ],
   "proof": [
     "12-gate-pack-digests",
