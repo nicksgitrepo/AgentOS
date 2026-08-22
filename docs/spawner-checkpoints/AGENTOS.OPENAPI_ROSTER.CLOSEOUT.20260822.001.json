@@ -1,0 +1,104 @@
+{
+  "schema": "agentos.spawner_terminal_checkpoint.v1",
+  "version": 1,
+  "checkpoint_id": "AGENTOS.OPENAPI_ROSTER.CLOSEOUT.20260822.001",
+  "lifecycle_id": "OPENAPI_ROSTER_CONTINUE_20260822",
+  "phase": "OPENAPI_ROSTER_TERMINAL_CLOSEOUT",
+  "phase_index": 13,
+  "phase_window_seconds": 30,
+  "started_at_utc": "2026-08-22T20:29:11.000Z",
+  "observed_at_utc": "2026-08-22T20:31:20.000Z",
+  "window_status": "COMPLETED",
+  "meaningful_progress": true,
+  "typed_result_status": "PRESENT",
+  "status": "BLOCKED_EXACT",
+  "safe_stop": true,
+  "terminal": true,
+  "lane_scope": "AGENTOS_ONLY",
+  "custody": {
+    "workspace_root_source": "ACTIVE_GIT_WORKTREE_ROOT",
+    "worktree_name": "AgentOS-product-client-openapi-contracts-spawner-lane-20260822-web-a10-01",
+    "branch": "codex/product-client-openapi-contracts-spawner-lane-20260822-web-a10-01",
+    "resolved_custody_path_sha256": "c5d926305d4efeb7677f11c18235c6e3398fee7f0f4dd614852a1614ffaaed46",
+    "project_root_contained": true,
+    "task_checkout_contained": true,
+    "task_worktree_contained": true,
+    "persisted_absolute_paths": false
+  },
+  "candidate": {
+    "block_id": "specialist.security.owasp-web-2025-a10-mishandling-exceptional-conditions",
+    "candidate_digest": "9a0aaf895edf65ec0545d876e5c94c2ee6239e8bb2e4de098c625854612eb948",
+    "commit": "7e063fdafa60fb1f6041afacd68cabf7bd7509be",
+    "tree": "40b45b5d7443407c42ecc57c1e13dd002d5a2205",
+    "parent_commit": "5eef29cce9cda4075c5a7763f3bd71baff14f80e",
+    "parent_tree": "b3d304ca85e4fa7a93e3052273d17dbdc460ae82",
+    "status": "FROZEN_SUCCESSOR",
+    "clean": true
+  },
+  "rollback": {
+    "available": true,
+    "target_commit": "5eef29cce9cda4075c5a7763f3bd71baff14f80e",
+    "target_tree": "b3d304ca85e4fa7a93e3052273d17dbdc460ae82",
+    "execution": "NOT_PERFORMED",
+    "destructive_action": "NONE",
+    "source_preserved": true
+  },
+  "remote": {
+    "remote_name": "origin",
+    "origin_configured": true,
+    "upstream_configured": false,
+    "remote_readback": "LOCAL_CONFIG_ONLY",
+    "remote_equality": "UNVERIFIED_NO_UPSTREAM",
+    "push_performed": false,
+    "push_status": "NOT_ATTEMPTED",
+    "push_deferred": true,
+    "push_authority": "NOT_GRANTED",
+    "remote_url_persisted": false
+  },
+  "checks": {
+    "a10_boundary": "PASS",
+    "a10_evaluator": "PASS",
+    "bootstrap_bindings": "PASS",
+    "roster": "PASS",
+    "gate_catalog": "PASS",
+    "specialist_library": "PASS",
+    "independent_evaluator": "PASS",
+    "liveness_digest": "PASS",
+    "owasp_web_top10_router": "PASS",
+    "portability": "PASS:6401_FILES_SCANNED:1208_BOUND_PATHS",
+    "diff_check": "PASS",
+    "bootstrap_alignment": {
+      "status": "PRESERVED_EXACT_MISMATCH",
+      "exit_code": 1,
+      "error_code": "LEGACY_BOOTSTRAP_EXECUTION_RETIRED",
+      "error_message_sha256": "a3c69ecd5234be73303f55012ffc8390525ada6a7ee2d1241cec5e0711b9e689"
+    }
+  },
+  "authority": {
+    "policy_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+    "policy_snapshot_status": "CURRENT",
+    "external_admission": "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+    "external_message_sha256": "bade8e2732d6331542a220f5bdc4aab817ce97891e59c1cea62c68a78baa1c37",
+    "distinct_luna_max_audit": "UNAVAILABLE_NOT_LAUNCHED",
+    "activation": "OFF",
+    "ready_claim": "FORBIDDEN"
+  },
+  "prior_exact_refs": {
+    "candidate_receipt_sha256": "74336eff1325780505fb4ca32c9cca1d81b99e456bc5f160a565889257611921",
+    "candidate_checkpoint_sha256": "8a12fd809cdf0c9b18d7332e86d6046e717797a2ed901af2a0d5b8778a4a917c"
+  },
+  "queue": {
+    "next_eligible": "AGENT.SECURITY_PATCH_REMEDIATION",
+    "successor_started": false,
+    "successor_created": false,
+    "reason": "CLOSEOUT_FOR_REBOOT"
+  },
+  "external_actions": {
+    "owner_or_consumer_messaging": false,
+    "credential_use": false,
+    "publish_or_deploy": false,
+    "merge_or_protected_branch": false
+  },
+  "next_action": "RESTART_AFTER_PROTECTED_REVIEW_PROVISIONING_AND_FRESH_LUNA_MAX_AUDIT",
+  "checkpoint_sha256": "9e653325107da69715612a9704983c3371aa916949f63d5f57c847c2056d5cf2"
+}
