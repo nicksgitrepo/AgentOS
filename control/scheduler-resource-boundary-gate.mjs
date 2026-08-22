@@ -27,6 +27,12 @@ const EVIDENCE_KEYS = new Set([
   "authority", "custody", "resource", "source_lock", "requested_action", "signals", "scope",
   "provider_claim", "data_class", "authority_scope", "sibling_authorities", "self_acceptance", "scope_expanded",
   "authority_conflict", "tool_mode", "requested_tools",
+  "authority_status", "owner_role", "owner_identity", "owner_intent_status", "owner_intent_digest",
+  "intent_provenance_status", "candidate_status", "candidate_digest", "source_status", "source_manifest_sha256",
+  "source_lock_sha256", "source_identities", "source_versions", "signal", "signal_status", "task_status",
+  "context_status", "context_complete", "model_policy_status", "model_route_status", "model", "reasoning_effort",
+  "model_route_sha256", "context_receipt_sha256", "route_receipt_sha256", "custody_status", "custody_owner",
+  "custody_ref", "project_data_present", "secret_data_present",
 ]);
 
 function fail(message, code = "SCHEDULER_RESOURCE_BOUNDARY_INVALID") { const error = new Error(message); error.code = code; throw error; }
@@ -103,6 +109,20 @@ function validateInput(input) {
     assert(Array.isArray(evidence.requested_tools) && evidence.requested_tools.length <= 8, "requested tools must be bounded", "SCHEDULER_TOOL_LIST_INVALID");
     for (const tool of evidence.requested_tools) bounded(tool, "requested tool");
   }
+  for (const key of [
+    "authority_status", "owner_role", "owner_identity", "owner_intent_status", "intent_provenance_status", "candidate_status",
+    "source_status", "signal", "signal_status", "task_status", "context_status", "model_policy_status", "model_route_status",
+    "model", "reasoning_effort", "custody_status", "custody_owner",
+  ]) if (evidence[key] !== undefined) bounded(evidence[key], `evidence.${key}`);
+  for (const key of ["owner_intent_digest", "candidate_digest", "source_manifest_sha256", "source_lock_sha256", "model_route_sha256", "context_receipt_sha256", "route_receipt_sha256"]) if (evidence[key] !== undefined) {
+    assert(typeof evidence[key] === "string" && SHA256.test(evidence[key]), `evidence.${key} is not a SHA-256`, "SCHEDULER_RESOURCE_DIGEST_INVALID");
+  }
+  for (const key of ["source_identities", "source_versions"]) if (evidence[key] !== undefined) {
+    assert(Array.isArray(evidence[key]) && evidence[key].length <= 16, `evidence.${key} must be bounded`, "SCHEDULER_RESOURCE_SOURCE_LIST_INVALID");
+    for (const value of evidence[key]) bounded(value, `evidence.${key} entry`);
+  }
+  if (evidence.custody_ref !== undefined) assert(OPAQUE_REF.test(evidence.custody_ref), "canonical custody reference is not opaque", "SCHEDULER_CUSTODY_REF_INVALID");
+  for (const key of ["context_complete", "project_data_present", "secret_data_present"]) if (evidence[key] !== undefined) assert(typeof evidence[key] === "boolean", `evidence.${key} must be boolean`, "SCHEDULER_BOOLEAN_INVALID");
   for (const key of ["self_acceptance", "scope_expanded", "authority_conflict"]) if (evidence[key] !== undefined) assert(typeof evidence[key] === "boolean", `${key} must be boolean`, "SCHEDULER_BOOLEAN_INVALID");
   const privacy = scanPersistedRecord(input);
   assert(privacy.safe, "scheduler evidence contains protected or secret-like data", "SCHEDULER_RESOURCE_PRIVACY_DENIED");

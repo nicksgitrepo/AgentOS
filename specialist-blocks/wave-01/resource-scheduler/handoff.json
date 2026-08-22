@@ -5,8 +5,8 @@
   "block_id": "specialist.control.resource-scheduler",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87",
-  "source_commit": "373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
-  "source_tree": "9bd8881ca7ef4fb6cffc795bdf352b655f050423",
+  "source_commit": "3433edd907004dcda5b007fed354f44599749d04",
+  "source_tree": "387f93b65b057f503d6f6703e155489335cd4cea",
   "changed_paths": [
     "specialist-blocks/wave-01/resource-scheduler/block.json",
     "specialist-blocks/wave-01/resource-scheduler/evaluation.json",
@@ -40,7 +40,9 @@
     "specialist-blocks/wave-01/resource-scheduler/gates/10-proof-acceptance.gate",
     "specialist-blocks/wave-01/resource-scheduler/gates/11-lifecycle-recovery-archive.gate",
     "specialist-blocks/wave-01/resource-scheduler/gates/manifest.json",
+    "specialist-blocks/wave-01/resource-scheduler/gates/execution.json",
     "specialist-blocks/wave-01/resource-scheduler/handoff.json",
+    "specialist-blocks/wave-01/resource-scheduler/rollback.json",
     "specialist-blocks/wave-01/resource-scheduler/sources.lock"
   ],
   "proof": [
@@ -52,7 +54,21 @@
     "mutation-sensitivity-proof",
     "independent-reviewer-required",
     "reuse-contract",
-    "source-lock-digest"
+    "source-lock-digest",
+    "evaluation_file_sha256:20bd21cf85487156fadc9dfe254f80d07d2c9fa314be7eabfb83a6fd4ae4bae2",
+    "candidate_block_file_sha256:d7e8cb57a98a468be968ee9c47c0a93264db7e9cbf1a998bc0a37547f5774267",
+    "block_file_sha256:d7e8cb57a98a468be968ee9c47c0a93264db7e9cbf1a998bc0a37547f5774267",
+    "source_lock_file_sha256:02d7f76e2e308e70053625cc2fb72ab9891ffece24c7866bc2c90c62c8ab6e10",
+    "gate_manifest_file_sha256:2272760295daed250c2862eddad8aa27b8a921a004bef79b27e06e462b73f937",
+    "gate_execution_file_sha256:53476113e402293ab204309192231e4fc1642d55b5685f3c862a62fbfd03fbd6",
+    "gate_semantic_inventory_sha256:b8b8cdeca9ad5e5c54b5d1a330d4223cabc144c345c8b742fdba27ee25cde71a",
+    "boundary_file_sha256:de3497baee48f7f687a2d75f3b3295029ca60d50166085c675aea445dbf5c1fb",
+    "evaluator_file_sha256:c459cd8a4933a0804848ae80678abdb064b4cd4df1cc2c3d347cf0d6bf462d88",
+    "model_route_sha256:0cb225e57e95ddb7a819a090593a67b7a4a98a84cdece4b51035d86fedfc4c40",
+    "context_receipt_sha256:3b3806a3d9b546fcecfe472aefb7ecdc855389863b2f136aa9d5cd50dec156d7",
+    "route_receipt_sha256:88c27531cc1115825e0c4f6787bf62ad9be4ca2f72301a57e413a631a752a393",
+    "rollback_file_sha256:6fd77542d5ff20d91cef4fa0ea78b1047c715acc9d146421fdd4f4db12263047",
+    "rollback_receipt_sha256:4083b292220836390c83b089df52168a75c7ad924a06f8a46c45fb6f75167463"
   ],
   "residuals": [
     "candidate is not admitted or activated",
