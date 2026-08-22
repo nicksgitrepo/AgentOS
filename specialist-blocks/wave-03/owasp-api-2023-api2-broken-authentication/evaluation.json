@@ -120,7 +120,7 @@
   "operational_readback": {
     "path": "specialist-blocks/registry/owasp-api-2023-api2-broken-authentication-operational-readback.v1.json",
     "required": true,
-    "file_sha256": "f8ed5b2037f27f076bd015a74f9e365f5af8c6fb2137f29d46970ef5a9ec5adf",
-    "readback_sha256": "bc491fa718c586a531830d8f950021a4cb5843962ecc2dafd5541905d63ff956"
+    "file_sha256": "57aeaceff6fc256317cd325a6f0c51007c057489148ad6b30eb9d06953f5be05",
+    "readback_sha256": "c3c1a11f0140f8bc15af3d081404fcdab68579440ea72f3e783ae440cbc6c574"
   }
 }

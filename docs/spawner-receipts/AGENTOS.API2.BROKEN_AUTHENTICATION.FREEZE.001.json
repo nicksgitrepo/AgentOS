@@ -1,0 +1,39 @@
+{
+  "status": "BLOCKED_EXACT",
+  "block_id": "specialist.security.owasp-api-2023-api2-broken-authentication",
+  "candidate_digest": "489cedb2abe9e3238d8f218c68dbae0c25ad37bba9eaba68e48ab2a1f162b52a",
+  "local_status": "PASS",
+  "local_proof": {
+    "fixture_count": 17,
+    "gate_count": 12,
+    "mutation_detected": true,
+    "canonical_binding_regression": "PASS",
+    "shared_registry_verdict": "ALIGNED",
+    "hostile_shared_registry_regression": "BLOCKED_EXACT:SHARED_REGISTRY_SPAWNER_INTEGRATION_DRIFT",
+    "workspace_custody_status": "MATCHED",
+    "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+    "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+    "context_sha256": "20cc49856bffa6e0994c7fb44ef368b0b34681fe72c19111c6e2fedb2124ee1f",
+    "gate_execution_sha256": "ff743a00e9d4079f7a8e5023d8dc2123fbe99600a9815f5a2a5a66e450a3f74b",
+    "readback_sha256": "c3c1a11f0140f8bc15af3d081404fcdab68579440ea72f3e783ae440cbc6c574",
+    "readback_file_sha256": "57aeaceff6fc256317cd325a6f0c51007c057489148ad6b30eb9d06953f5be05",
+    "roster_sha256": "5a5d34dad03b61c9bd03e99b5dfc2e014fb628a9d53522a9431c1d63e95048ed",
+    "next_eligible": "AGENT.SECURITY_OWASP_API_2023_API3_PROPERTY_AUTHORIZATION"
+  },
+  "external_admission": "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+  "error": {
+    "error_name": "Error",
+    "error_code": "SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+    "error_message_sha256": "bade8e2732d6331542a220f5bdc4aab817ce97891e59c1cea62c68a78baa1c37"
+  },
+  "runtime_custody": {
+    "workspace_root_source": "ACTIVE_GIT_WORKTREE_ROOT",
+    "worktree_name": "AgentOS-product-client-openapi-contracts-spawner-lane-20260822-api2-01",
+    "branch": "codex/product-client-openapi-contracts-spawner-lane-20260822-api2-01",
+    "resolved_custody_path_sha256": "359004751da51675ed9c5d7362c837e789865c2bb0f1e9265b57296686043fee",
+    "project_root_contained": true,
+    "task_checkout_contained": true,
+    "task_worktree_contained": true
+  },
+  "observed_at_utc": "2026-08-22T18:33:02.000Z"
+}

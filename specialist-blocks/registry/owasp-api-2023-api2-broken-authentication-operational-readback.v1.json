@@ -15,6 +15,6 @@
   "invalidation_status": "PASS",
   "shared_registry_verdict": "ALIGNED",
   "workspace_custody_status": "MATCHED",
-  "observed_at_utc": "2026-08-22T18:23:24.297Z",
-  "readback_sha256": "bc491fa718c586a531830d8f950021a4cb5843962ecc2dafd5541905d63ff956"
+  "observed_at_utc": "2026-08-22T18:27:54.627Z",
+  "readback_sha256": "c3c1a11f0140f8bc15af3d081404fcdab68579440ea72f3e783ae440cbc6c574"
 }
