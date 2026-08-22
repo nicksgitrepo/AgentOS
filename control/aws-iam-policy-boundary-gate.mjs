@@ -113,6 +113,7 @@ export function evaluateAwsIamPolicyBoundary(input) {
   if (f.unsafe_action) return result("DENY", "NO_AWS_IAM_POLICY_SIDE_EFFECT", "AWS_IAM_POLICY_OPERATION_FORBIDDEN", input);
   if (e.authority_status !== "CURRENT" || e.custody_status !== "BOUND" || e.custody_owner !== "AGENT.PLATFORM_AWS_IAM_POLICY") return result("DENY", "AUTHORITY_REFRESH_REQUIRED", "AWS_IAM_POLICY_AUTHORITY_UNVERIFIED", input);
   if (e.source_identity !== "SOURCE.ATOMIC_SPECIALIZATION_LAW" || e.source_version !== "1") return result("DENY", "SOURCE_REFRESH_REQUIRED", "AWS_IAM_POLICY_SOURCE_IDENTITY_INVALID", input);
+  if (e.candidate_status !== "CURRENT_CANDIDATE") return result("DENY", "CANDIDATE_REFRESH_REQUIRED", "AWS_IAM_POLICY_CANDIDATE_BINDING_INVALID", input);
   if (e.provider_identity !== "AWS" || e.provider_version !== "CURRENT" || e.policy_identity !== "IAM_POLICY_ELEMENTS" || e.policy_status !== "BOUND" || e.policy_scope !== "IAM_POLICY_ELEMENTS") return result("DENY", "TYPED_CONTEXT_REQUIRED", "AWS_IAM_POLICY_CONTEXT_BINDING_INVALID", input);
   if (e.signal !== "CLOUD.AWS_IAM" || e.signal_status !== "BOUND" || e.context_status !== "AWS_IAM_POLICY_CONTEXT") return result("DENY", "TYPED_CONTEXT_REQUIRED", "AWS_IAM_POLICY_CONTEXT_BINDING_INVALID", input);
   if (e.model_route_status !== "BOUND") return result("DENY", "MODEL_POLICY_REFRESH_REQUIRED", "AWS_IAM_POLICY_MODEL_ROUTE_UNBOUND", input);
