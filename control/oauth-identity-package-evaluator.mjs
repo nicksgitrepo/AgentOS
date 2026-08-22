@@ -154,7 +154,7 @@ async function mutationProof(fixture) {
     fs.writeFileSync(targetPath, source, {flag: "wx"});
     assert(fs.lstatSync(targetPath).isFile() && !fs.lstatSync(targetPath).isSymbolicLink(), "OAuth mutation target is not an isolated regular file", "OAUTH_IDENTITY_MUTATION_TARGET_INVALID");
     const mutated = await import(`${pathToFileURL(targetPath).href}?mutation=${Date.now()}`);
-    const observed = mutated.evaluateOAuthIdentityBoundary(fixture.fixture.vector.input);
+    const observed = mutated.evaluateOAuthIdentityBoundary(fixture.vector.input);
     return {status: observed.disposition === "ROUTE" ? "WEAKENED" : "INTACT", mutation_detected: observed.disposition === "ROUTE", expected_disposition: "DENY", observed_disposition: observed.disposition, result_sha256: canonicalDigest(observed)};
   } finally {
     fs.rmSync(mutationRoot, {recursive: true, force: true});

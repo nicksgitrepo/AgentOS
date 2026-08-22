@@ -116,5 +116,6 @@
     "pending": 0
   },
   "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+  "independent_reviewer_required": true,
   "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
 }

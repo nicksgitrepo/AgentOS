@@ -5,8 +5,8 @@
   "block_id": "specialist.security.oauth-identity",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8",
-  "source_commit": "3c6cf8b420c7d4f54ba4c551266a4e27e3cdd913",
-  "source_tree": "a77308b8a879200cb2d0053fabc5c3284f1ba3a4",
+  "source_commit": "be0ece3c1833aeddd815013efecd5fd23b5570a1",
+  "source_tree": "02699db22d084c8eef11bbf2b829c02febfbbf9f",
   "changed_paths": [
     "specialist-blocks/wave-02/oauth-identity/block.json",
     "specialist-blocks/wave-02/oauth-identity/evaluation.json",
@@ -42,13 +42,7 @@
     "specialist-blocks/wave-02/oauth-identity/fixtures/tool_limit.json",
     "specialist-blocks/wave-02/oauth-identity/fixtures/umbrella_authority.json",
     "specialist-blocks/wave-02/oauth-identity/fixtures/unrelated_scope.json",
-    "specialist-blocks/wave-02/oauth-identity/fixtures/unsafe_action.json",
-    "control/oauth-identity-authority-binding.mjs",
-    "control/oauth-identity-boundary-gate.mjs",
-    "control/oauth-identity-package-evaluator.mjs",
-    "schemas/oauth-identity-gate-execution.v1.json",
-    "specialist-blocks/registry/agent-roster.v1.json",
-    "tests/verify-oauth-identity-package.mjs"
+    "specialist-blocks/wave-02/oauth-identity/fixtures/unsafe_action.json"
   ],
   "proof": [
     "12-gate-pack-digests",

@@ -14847,105 +14847,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.oauth-identity.AUTHORITY_CONFLICT",
+            "fixture_id": "oauth-identity-authority_conflict",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/authority_conflict.json",
-            "file_sha256": "94852183b42c6551169fea5a97bdeb6167704621c6c73fba25d3d210cd0bfea1",
-            "expected_outcome": "DENY"
+            "file_sha256": "686e11da81911858c026e910ec1362a86daf186ffadd6ae0772cbee79a868920",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "oauth-identity-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "6ec202e2db077152615143e9b0ae3f1326372e385cfa2d6521381ba8843f2f47",
+            "file_sha256": "5ba88e98a9ebd6391a41c20bf5a33064f38abe9eb30e7ae8fab5c182f70daf8b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "oauth-identity-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "df06e211d7cabe88e6e30457054a807822afe8e6c6697b3da793d081b382f0be",
+            "file_sha256": "f331d9eae8c83fbf3e01fed012754d391b7a788a65bb02cccdf7a6ac6a76e7bc",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.DATA_LIMIT",
+            "fixture_id": "oauth-identity-data_limit",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/data_limit.json",
-            "file_sha256": "ea969b204af450ba490486784b1ef7a166de37058b550284cf2138b9209d6250",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "f7bd301c44febc1ca521f10e98b92baaf9551c3c7385331db458a79c5db749e1",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "oauth-identity-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "6c3c1cddb7bbebe5e13573dfe62cf9e432f52da01807e53c0afbe778ff497cf4",
+            "file_sha256": "4f7462518292977ad893525e1748cac46c93ccc532eefaa8a3956c3d8442f959",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.FALSE_POSITIVE",
+            "fixture_id": "oauth-identity-false_positive",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/false_positive.json",
-            "file_sha256": "fdd40645391c85a8384453dc5b976c2e5f6ecdafbf21e1d3ce7f6adb268fd851",
+            "file_sha256": "6abba9bbff338c7509d69296a52928bc3cb14a794a48230784ad4c6fb45123f6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.HANDOFF",
+            "fixture_id": "oauth-identity-handoff",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/handoff.json",
-            "file_sha256": "f5f69334bb05f86b59fa69bafd33a2fb38916ba4b74841d662a08ae0725b5e6e",
+            "file_sha256": "e28158cddb30beddaf306b6f752f4a775b680ad34d0efa62c852e5b3b6257984",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.MISSING_CONTEXT",
+            "fixture_id": "oauth-identity-missing_context",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/missing_context.json",
-            "file_sha256": "dce85ba6cefc9d6b8139beea7f0ee5be4a235883b1bdc66b47dce4f652ad4ca6",
+            "file_sha256": "fd6158091bc20215ca966ffc4ec414c123834a6e0ef1a0282f5d3ddf96961f21",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.NARROWNESS",
+            "fixture_id": "oauth-identity-narrowness",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/narrowness.json",
-            "file_sha256": "a56ffdd2e5fda05fc2b4c5e8175c2bf26e537296ce544edaa1afff98053e65fa",
+            "file_sha256": "6667b3d45ecacbc748f1d29e5de419b313065ae7317aea7126a5bb43d8f828c7",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.ROUTER_SELF_ACCEPT",
+            "fixture_id": "oauth-identity-router_self_accept",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/router_self_accept.json",
-            "file_sha256": "c83cf9f00dea0040e08fb1f1ceb125f99d2d7773753d6b0174b8c90f36f37a8b",
+            "file_sha256": "750c96b1eda168fd2c8b4dba8171e1fa5b0cbacedd945484adb10730782235ce",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.ROUTING",
+            "fixture_id": "oauth-identity-routing",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/routing.json",
-            "file_sha256": "10dbe17e6b5418857c0d4575fe14d320748da7b915c0f7a4bb65013740aec2f1",
+            "file_sha256": "6d952aba619a2950e8fa50e47c3b192aba69b3c848fbe1f530f34f81085d6b51",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "oauth-identity-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/silent_scope_expansion.json",
-            "file_sha256": "cea977ec1446e730050cfa4f0a4886aab63995620bb5c2085323972d00364e16",
+            "file_sha256": "868f0967799277be1a6d55b7c4b588746b9e1dbace4ea639ceb54caae1351ed6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.STALE_SOURCE",
+            "fixture_id": "oauth-identity-stale_source",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/stale_source.json",
-            "file_sha256": "ff1f3d9bb28eaf2778c640ec79e5d0fcc4ca16385c0b2d4211382de67a6e77aa",
+            "file_sha256": "588762f9552af1f71def9ce3fe53636dba97e73741233ce61a47bf93113dd852",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.TOOL_LIMIT",
+            "fixture_id": "oauth-identity-tool_limit",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/tool_limit.json",
-            "file_sha256": "6808dc2120a3cd70e3f335e5c6f9dabf745351b9d0e910672ad79c8b18277ca1",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "0c5e28d718334ca7ddf92d16a778dcb0673f82592fab1402b5d61ee78589b58e",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.UMBRELLA_AUTHORITY",
+            "fixture_id": "oauth-identity-umbrella_authority",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/umbrella_authority.json",
-            "file_sha256": "12013accd3e0344fbf8ab56705c5920bb27481c9816a726e5d583f470f013b4c",
+            "file_sha256": "9b7663cdf696caee1f85a03341d9c68a437edc8dedd1ec2dd21381a35e157e9f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.UNRELATED_SCOPE",
+            "fixture_id": "oauth-identity-unrelated_scope",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/unrelated_scope.json",
-            "file_sha256": "845481a876f2cb6bc505de540e180f3a201bb68d97188a786f2f210f6c4f04e5",
+            "file_sha256": "492bb4db965a48bec4c40352468aa858a7a9cdb8cdc8ef87b8e48c25a2ca27c6",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oauth-identity.UNSAFE_ACTION",
+            "fixture_id": "oauth-identity-unsafe_action",
             "path": "specialist-blocks/wave-02/oauth-identity/fixtures/unsafe_action.json",
-            "file_sha256": "09f5c5f0be0465cf323b2c59be147fe8c446f67ca69888aa7c73fbedcd2f5ce4",
+            "file_sha256": "4a6780d41fd44259a1a922043c27ea94f5e14460e0f802be9afe040f46834141",
             "expected_outcome": "DENY"
           }
         ]
@@ -14958,7 +14958,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/oauth-identity/handoff.json",
-        "handoff_file_sha256": "b3032c2893b992198513ece0d68ddd08aa33dc4d98e3f946d65cb6f767b8239f",
+        "handoff_file_sha256": "b69f45c415db7a5eb0da4a17a575964c10d228c54042fda5c26acf45a7ac54e1",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.oauth-identity.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "13829d7143d1e4a6f2950a6a4f79793d1d31e1e256998b15d174c2a7af2123cd"
 }
