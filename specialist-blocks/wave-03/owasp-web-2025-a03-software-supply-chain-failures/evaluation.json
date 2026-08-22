@@ -115,6 +115,12 @@
     "failed": 0,
     "pending": 0
   },
-  "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "disposition": "EXECUTED_REVIEW_REQUIRED",
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION",
+  "operational_readback": {
+    "path": "specialist-blocks/registry/owasp-web-2025-a03-software-supply-chain-failures-operational-readback.v1.json",
+    "required": true,
+    "file_sha256": "bae00264eb16c611af90849394f82e9c6ff4d95e35986b396897c208ec79096a",
+    "readback_sha256": "5e57edd84f645d8c78b62f0d2f02e7f5675d5c9bb16e2db80ce710e5ccca124f"
+  }
 }
