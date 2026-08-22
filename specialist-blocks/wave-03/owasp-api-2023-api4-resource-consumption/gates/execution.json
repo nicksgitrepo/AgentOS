@@ -1,0 +1,131 @@
+{
+  "schema": "agentos.owasp_api4_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.security.owasp-api-2023-api4-resource-consumption",
+  "evaluator_entrypoint": "control/owasp-api-2023-api4-resource-consumption-package-evaluator.mjs#evaluateOwaspApi4Package",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {
+      "gate_id": "00-intake",
+      "fixture_class": "routing",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OWASP_API4_ANALYSIS_HANDOFF",
+        "error_code": "OWASP_API4_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "01-applicability",
+      "fixture_class": "unrelated_scope",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_OWASP_API4_SCOPE",
+        "error_code": "OWASP_API4_SCOPE_NOT_APPLICABLE"
+      }
+    },
+    {
+      "gate_id": "02-authority-precedence",
+      "fixture_class": "authority_conflict",
+      "expected": {
+        "disposition": "DENY",
+        "route": "CONTROL_PLANE_ESCALATION",
+        "error_code": "OWASP_API4_AUTHORITY_CONFLICT"
+      }
+    },
+    {
+      "gate_id": "03-scope-nongoals",
+      "fixture_class": "broad_when_narrow_exists",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SCOPE_REQUIRED",
+        "error_code": "OWASP_API4_SCOPE_EXPANSION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "04-source-evidence-freshness",
+      "fixture_class": "stale_source",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "OWASP_API4_SOURCE_STALE_OR_UNVERIFIED"
+      }
+    },
+    {
+      "gate_id": "05-context-completeness",
+      "fixture_class": "missing_context",
+      "expected": {
+        "disposition": "DENY",
+        "route": "TYPED_CONTEXT_REQUIRED",
+        "error_code": "OWASP_API4_CONTEXT_INCOMPLETE"
+      }
+    },
+    {
+      "gate_id": "06-tool-resource-custody",
+      "fixture_class": "tool_limit",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OWASP_API4_TOOL_CUSTODY_REVIEW",
+        "error_code": "OWASP_API4_TOOL_REVIEW_REQUIRED"
+      }
+    },
+    {
+      "gate_id": "07-data-secret-privacy",
+      "fixture_class": "data_limit",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OWASP_API4_DATA_CUSTODY_REVIEW",
+        "error_code": "OWASP_API4_DATA_LIMIT_REVIEW_REQUIRED"
+      }
+    },
+    {
+      "gate_id": "08-build-browser-runtime",
+      "fixture_class": "unsafe_action",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_OWASP_API4_SIDE_EFFECT",
+        "error_code": "OWASP_API4_OPERATION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "09-output-handoff",
+      "fixture_class": "handoff",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OWASP_API4_ANALYSIS_HANDOFF",
+        "error_code": "OWASP_API4_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "10-proof-acceptance",
+      "fixture_class": "router_self_accept",
+      "expected": {
+        "disposition": "DENY",
+        "route": "INDEPENDENT_REVIEW_REQUIRED",
+        "error_code": "OWASP_API4_SELF_ACCEPTANCE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "11-lifecycle-recovery-archive",
+      "fixture_class": "cross_provider_version_claim",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "OWASP_API4_SOURCE_STALE_OR_UNVERIFIED"
+      }
+    }
+  ],
+  "execution_sha256": "91fc84c0a281183b3f37be0d8871c9a1cafe414c763838775b11095714aeb7db"
+}
