@@ -39,8 +39,9 @@ function includesAny(values, patterns) {
 }
 
 function reviewCase(block, fixture, dossierCase) {
-  if (fixture.schema !== "agentos.specialist_fixture.v1" || fixture.hostile !== true || fixture.block_id !== block.block_id || fixture.class !== dossierCase.class || fixture.expected !== dossierCase.expected) fail(`${block.block_id}:${dossierCase.class}:fixture-binding`);
-  if (typeof fixture.note !== "string" || !/synthetic/iu.test(fixture.note)) fail(`${block.block_id}:${dossierCase.class}:missing-scenario`);
+  const fixtureExpected = typeof fixture.expected === "string" ? fixture.expected : fixture.expected?.disposition;
+  if (fixture.schema !== "agentos.specialist_fixture.v1" || fixture.hostile !== true || fixture.block_id !== block.block_id || fixture.class !== dossierCase.class || fixtureExpected !== dossierCase.expected) fail(`${block.block_id}:${dossierCase.class}:fixture-binding`);
+  if (typeof fixture.note !== "string" || !/(?:synthetic|executable hostile)/iu.test(fixture.note)) fail(`${block.block_id}:${dossierCase.class}:missing-scenario`);
   const forbidden = block.forbidden_decisions ?? [];
   const permitted = block.permitted_decisions ?? [];
   const maximum = String(block.maximum_authority ?? "");

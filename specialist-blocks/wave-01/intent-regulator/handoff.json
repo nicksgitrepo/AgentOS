@@ -61,7 +61,7 @@
     "route_receipt_sha256:b46e44a7a644e4210b6d1636a3393577f499662b1ac53505f91e5cce1e928f53",
     "rollback_file_sha256:07146f5e777ca0af2d524117e247ea8ae8e2bde12c44535b326f9f699ece9268",
     "rollback_receipt_sha256:63d53ca0673844e2191492f9f392ab8fc5d3722384a9aa992eb071e89008e5d4",
-    "evaluation_file_sha256:52e4f6926ae4eaa37817036ea20fb409b7d7b5436e15aff8413443f359e3c8ac"
+    "evaluation_file_sha256:ecb1a60661743e67ecc33785ebba4d2f03e82dc9b913d1bae6c3732cf7413aad"
   ],
   "residuals": [
     "candidate is not admitted or activated",
