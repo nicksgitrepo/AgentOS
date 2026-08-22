@@ -2957,7 +2957,7 @@
     },
     "portability_verifier": {
       "path": "tests/verify-portability.mjs",
-      "sha256": "06215c3398696dfa752d3169ada99385d7c5c9a9647d9383b69e29273dd5d950"
+      "sha256": "3d80f3cf423f1cce1ca1a01f1790f128abd8485af303673b4166ccf7c161eb56"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
@@ -3825,11 +3825,11 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "20e9edd9f5028b2d16fcd05b095c94879ed33d21923765a89b7bc2c0153cca67"
+      "sha256": "8425913d3239966fdca805202e57b19045cdd7a920362d8b848686168d100f0c"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
-      "sha256": "20f5f8ca63f99797f176c4919c86aee2deb1d9b3a6b2db5e0a698e84c72fcd34"
+      "sha256": "278cd3e60980a62d9107fbe72a0ca14568b54968322dc645737afe463e63f9fd"
     },
     "spawner_roster_hostile_verifier": {
       "path": "tests/verify-spawner-roster-hostile.mjs",
