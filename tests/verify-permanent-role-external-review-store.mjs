@@ -17,6 +17,7 @@ const consumer = path.join(repositoryRoot, "tests/fixtures/permanent-role-extern
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-external-review-"));
 const governanceRoot = path.join(temporary, "governance"); fs.mkdirSync(governanceRoot);
 const reviewRoot = path.join(temporary, "external-review"); fs.mkdirSync(path.join(reviewRoot, "reviews"), {recursive: true});
+const TEST_NOW = "2026-08-21T04:09:00.000Z";
 
 function without(record, fields) { const copy = structuredClone(record); for (const field of fields) copy[field] = null; return copy; }
 function pem(key, type) { return key.export({type, format: "pem"}).toString(); }
@@ -27,7 +28,7 @@ function runConsumer(provisioningPath, receiptRef, environment = process.env, mo
   finally { fs.closeSync(descriptor); }
 }
 try {
-  const governance = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot, nowUtc: "2026-08-20T04:15:00.000Z"});
+  const governance = materializeTestGlobalGovernanceStore({authorityRoot: governanceRoot, nowUtc: TEST_NOW});
   const contexts = compileAllOperationalGlobalGovernanceContexts({authorityStore: governance.authorityStore});
   const candidate = inspectCanonicalPermanentRoleCandidate({roleId: "AGENTOS.PRODUCT_OWNER"});
   const rootKeys = generateKeyPairSync("ed25519"), evaluatorKeys = generateKeyPairSync("ed25519");

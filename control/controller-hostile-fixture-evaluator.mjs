@@ -34,7 +34,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, "specialist-blocks/wave-01/project-controller");
 const EVENT_FIXTURE = path.join(ROOT, "tests/fixtures/controller-events/canonical-signed-sequence.v1.json");
 const PROVISIONING_CEILING = "CONTROLLER_OPERATIONAL_STORE_INACTIVE";
-const CURRENT_MODEL_POLICY_TEST_TIME = "2026-08-20T04:15:00.000Z";
+const CURRENT_MODEL_POLICY_TEST_TIME = new Date().toISOString();
 
 function typedRejection(code, message) { const error = new Error(message); error.code = code; throw error; }
 function sha256(bytes) { return crypto.createHash("sha256").update(bytes).digest("hex"); }
