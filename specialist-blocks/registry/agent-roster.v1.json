@@ -18420,7 +18420,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-api-2023-api8-misconfiguration/handoff.json",
-        "handoff_file_sha256": "0e67b84487260761fad3bba98c81c44d40875627e85bfaccffca9965b3f23847",
+        "handoff_file_sha256": "ca3120095d30939a63645dfc90290c7ff84fdcd17c4ccac30b720c17aaaa11a8",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-api-2023-api8-misconfiguration.v1"
       },
@@ -18475,11 +18475,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-03/owasp-api-2023-api8-misconfiguration/evaluation.json"
+          "specialist-blocks/wave-03/owasp-api-2023-api8-misconfiguration/evaluation.json",
+          "specialist-blocks/registry/owasp-api-2023-api8-misconfiguration-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40131,17 +40132,17 @@
       "rank": 59,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API8_MISCONFIGURATION",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Frozen after local execution; waits for fresh external authority and read-only Luna audit."
     },
     {
       "rank": 60,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API9_INVENTORY",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 61,
@@ -40440,5 +40441,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "366906d07ecc821691a75761ed2258ece0add445225c7799b87f886dabf2ac07"
+  "roster_sha256": "5e0c422b02a2ea13ba9c267b93ca5317eb5a5ae04c220e6ef3a278481cc9819a"
 }
