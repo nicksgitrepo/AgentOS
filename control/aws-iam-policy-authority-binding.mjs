@@ -23,10 +23,10 @@ export const AWS_IAM_POLICY_CUSTODY_REF = "opaque:AWS_IAM_POLICY.CUSTODY";
 export const AWS_IAM_POLICY_MODEL_TASK_CLASS = "NARROW_CODING";
 export const AWS_IAM_POLICY_MODEL_CAPABILITY_FLOOR = 49;
 export const AWS_IAM_POLICY_MODEL_CAPABILITIES = Object.freeze(["CODE", "TOOLS"]);
-export const AWS_IAM_POLICY_MODEL_SNAPSHOT_SHA256 = "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27";
+export const AWS_IAM_POLICY_MODEL_SNAPSHOT_SHA256 = "d32ac8d3a0d4ba03f0762309f7833dd57b9cf1a9d80d03630c593f8d5bdd197d";
 export const AWS_IAM_POLICY_STANDARD_BLOCK_SHA256 = "b3ef939cb57279f6a88bbd416226829e2e6bb20e6aa5b2613fa9fe6d6dd3ec48";
 export const AWS_IAM_POLICY_STANDARD_SOURCE_MANIFEST_SHA256 = "e87e366370301b597f9f6476f048a7d0e5d849f416dae325ef0f4f3cbfeb9c90";
-export const AWS_IAM_POLICY_ROSTER_FILE_SHA256 = "7aebae94ecc4cd9280b95995e384e272fbe27b21ecb68d8c3fc6a9a52f0385ee";
+export const AWS_IAM_POLICY_ROSTER_FILE_SHA256 = "339e7bb2e91bac0a4d35cfba9c85b2cea77019542214d99044298f419438a4fd";
 export const AWS_IAM_POLICY_UPSTREAM_ROUTER_FILE_SHA256 = "1e7cbe3898ba80c6dbf10dd09a8c1b687c097134992c1da78a3c904066a23b8b";
 
 /* Filled with the final candidate bytes before the lane is frozen. */
@@ -36,8 +36,8 @@ export const AWS_IAM_POLICY_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   gate_manifest: "56c44f0c27748a5c8356b2fb6a3036b5526d9314ba5ee840b249d77583a8ddb0",
   gate_execution: "4114eb6794102692bfb8ae844051e9868f2aaf54889e0b4e8333e10ff386b9ec",
   evaluation: "cf1477dbade222808f83c5b02d3f0f57bd09a8e3c123b904c6a80a3ae1036d55",
-  handoff: "fb4ded1e5ee85263bfccd22f82a2ad7a5d81e97d7510e1456c50268aef780aa0",
-  model_snapshot: "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d",
+  handoff: "ef863ce94363bd172f688d22978ee021a03fc517c3bd4e05817e37d42fea47dd",
+  model_snapshot: "5a7f4acc237a8d4a2b0d7df0044dc7f2a60921ee07be7d7ff63bb970f44e328c",
 });
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");

@@ -68,7 +68,7 @@
         "standard_version": "5.0.0",
         "standard_block_sha256": "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f",
         "standard_source_manifest_sha256": "505595765deaa25206fd59936a4b7e415688c640373a83a68e76a9788ed587d6",
-        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "model_snapshot_sha256": "d32ac8d3a0d4ba03f0762309f7833dd57b9cf1a9d80d03630c593f8d5bdd197d",
         "model_task_class": "SECURITY_REVIEW",
         "model_capability_floor": 59,
         "model_required_capabilities": [
@@ -76,10 +76,10 @@
           "SECURITY",
           "TOOLS"
         ],
-        "model_route_sha256": "9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
-        "context_receipt_sha256": "2241383254f960ed2bf5dad6101adb0aa1b9b2d04fd01b56609616bb73d0d8f0",
+        "model_route_sha256": "02451d11a2b8a9867f6c80290040b4e751150b94c2903e1f42ddd446c3966c07",
+        "context_receipt_sha256": "244060d012b8f834f3e1ab4643c4778424c549c60e9cd32d907192c3c96f4e8f",
         "upstream_router_result_sha256": "3d5710f95d685f2c441aa62a73c20e4c8f1e4361fc40bb4aca22a5b39d5ffb46",
-        "operation_context_sha256": "8796abf96fb012129fc71d36e96e36f3bd61545fbbada928299ce0bb2359bf9b",
+        "operation_context_sha256": "d5a3ae1be2f485bb969e60cfb29570b21dbc45e6fa41bc06b9bfefb7313fdad3",
         "project_data_present": false,
         "secret_data_present": false,
         "policy_status": "CURRENT",

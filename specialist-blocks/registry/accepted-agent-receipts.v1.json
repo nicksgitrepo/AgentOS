@@ -341,36 +341,6 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
-      "stable_agent_id": "AGENT.SECURITY_FUNCTION_SCOPE",
-      "package_path": "specialist-blocks/wave-03/function-scope",
-      "candidate_commit": "a86fff381f9ee631bd2a63635d436c38e9dd928c",
-      "candidate_tree": "f73386abb287613ae102fe6ae51944ff8a548c50",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/a86fff381f9ee631bd2a63635d436c38e9dd928c",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENT.SECURITY_IDEMPOTENCY",
-      "package_path": "specialist-blocks/wave-03/idempotency",
-      "candidate_commit": "908d7846e290eda8031a1f56b505ca6f52e2a2e6",
-      "candidate_tree": "1c66db99abc83a1b92bc526ba3e12d2f5f9e4b51",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/908d7846e290eda8031a1f56b505ca6f52e2a2e6",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENT.SECURITY_OBJECT_SCOPE",
-      "package_path": "specialist-blocks/wave-03/object-scope",
-      "candidate_commit": "6deb2a3dc2d6f9b449487b601d0a385ab82d8a8b",
-      "candidate_tree": "8a1a6f9cac004e2dd94091dba9fd2b4833de8a5e",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/6deb2a3dc2d6f9b449487b601d0a385ab82d8a8b",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
       "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
@@ -501,5 +471,5 @@
       "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "ad009d802f196334c9709e416257742f988c125e827823dde7b4fe3c3b4a5b17"
+  "ledger_sha256": "c2731e1af3a0630d111c8b58681750ec87c61fdb75cd8bbaa099fd78967937d2"
 }
