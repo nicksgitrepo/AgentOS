@@ -5,8 +5,8 @@
   "block_id": "specialist.software-language-runtime.rust-backend",
   "disposition": "WAITING_WITH_RECEIPT",
   "candidate_digest": "a52204f7a2a7e00ce5f7ca5120333a4d3d7ea2956194bdf03eea32d96199d877",
-  "source_commit": "ac1733095db2fbae8b3e2748d7000be7054fd2e0",
-  "source_tree": "50d43e2eaa767e982fab029353938d1aeff57155",
+  "source_commit": "9dd1fd2f8bcfd328c79d33644d756449071afcee",
+  "source_tree": "d44cc71b1a2df833bb34f4c66da6b74c7fcd2fd0",
   "changed_paths": [
     "specialist-blocks/wave-02/rust-backend/block.json",
     "specialist-blocks/wave-02/rust-backend/evaluation.json",

@@ -27401,7 +27401,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/rust-backend/handoff.json",
-        "handoff_file_sha256": "6871707507923489e0dc2fc979435f712bf1babdd44ca13979f7e4491bb3783b",
+        "handoff_file_sha256": "d43976ddde88fed9cb53334e8fc17293d95eb92028c133c41863a5d1c70bc818",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.rust-backend.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "446181e82c9c460f0e9e4044c4a4e9607eeec6e46cfbf0fea77334b8ac257266"
+  "roster_sha256": "b4dcecb820eb26e3b5016cd68aa991e8b99e99f4e67ec27f994862b903e6e30e"
 }
