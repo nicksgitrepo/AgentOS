@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.spawner_liveness_checkpoint.v1",
+  "version": 1,
+  "checkpoint_id": "AGENTOS.WEB_A04.CRYPTOGRAPHIC_FAILURES.FREEZE.001",
+  "lifecycle_id": "OPENAPI_ROSTER_CONTINUE_20260822",
+  "phase": "WEB_A04_CRYPTOGRAPHIC_FAILURES_CANDIDATE_FREEZE",
+  "phase_index": 12,
+  "phase_window_seconds": 30,
+  "started_at_utc": "2026-08-22T19:56:08.000Z",
+  "observed_at_utc": "2026-08-22T19:56:38.000Z",
+  "elapsed_seconds": 30,
+  "window_status": "EXHAUSTED",
+  "meaningful_progress": true,
+  "typed_result_status": "PRESENT",
+  "exact_receipt_status": "EXACT",
+  "exact_receipt_ref": "opaque:AGENTOS.WEB_A04.CRYPTOGRAPHIC_FAILURES.FREEZE.001",
+  "exact_receipt_sha256": "5672cc5ad9ac34f88f5ef53813b32f2653bb96d8bd43194829fd2a741b551fca",
+  "persistence": {
+    "status": "CHECKPOINT_PERSISTED",
+    "receipt_ref": "opaque:AGENTOS.WEB_A04.CRYPTOGRAPHIC_FAILURES.FREEZE.001",
+    "receipt_sha256": "5672cc5ad9ac34f88f5ef53813b32f2653bb96d8bd43194829fd2a741b551fca",
+    "atomic": true,
+    "same_turn": true,
+    "write_scope": "CONTROL_PLANE_ONLY"
+  },
+  "status": "BLOCKED_EXACT",
+  "safe_stop": true,
+  "next_action": "CONTINUE_WITH_NEXT_ELIGIBLE_BLOCK",
+  "checkpoint_sha256": "4f1cd55ac2d6ed04d758961b5d3c12831833f695a78925cd928254947650ba30"
+}
