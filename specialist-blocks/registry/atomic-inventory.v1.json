@@ -1041,7 +1041,7 @@
       "router": "specialist.security.owasp-web-top10-router",
       "block_id": "specialist.security.owasp-web-2025-a10-mishandling-exceptional-conditions",
       "package_status": "COMPILED_CANDIDATE",
-      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_status": "EXECUTED_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.owasp-web-2025-a10-mishandling-exceptional-conditions.v1"
     },
     {

@@ -22508,7 +22508,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-web-2025-a10-mishandling-exceptional-conditions/handoff.json",
-        "handoff_file_sha256": "b9507d98cde4bfba2caa6fad216cadca3db5fc9b92fd40f153d5540263aee340",
+        "handoff_file_sha256": "b4f9273146c8c72db09fba055ba515fe75adcfe72fee45d306b8071bcee28172",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-web-2025-a10-mishandling-exceptional-conditions.v1"
       },
@@ -22563,11 +22563,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-03/owasp-web-2025-a10-mishandling-exceptional-conditions/evaluation.json"
+          "specialist-blocks/wave-03/owasp-web-2025-a10-mishandling-exceptional-conditions/evaluation.json",
+          "specialist-blocks/registry/owasp-web-2025-a10-mishandling-exceptional-conditions-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40230,17 +40231,17 @@
       "rank": 70,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A10_MISHANDLING_EXCEPTIONAL_CONDITIONS",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Frozen after local execution; waits for fresh external authority and read-only Luna audit."
     },
     {
       "rank": 71,
       "stable_agent_id": "AGENT.SECURITY_PATCH_REMEDIATION",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 72,
@@ -40451,5 +40452,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "1528f8c078e3fb4a960bb0a4babe3ed810fcace64d6780b5f0c886075e896e7f"
+  "roster_sha256": "b830daded32d5dbb6e66224390ad9cc467a3514b782ba7e656a11ccede0e3c60"
 }

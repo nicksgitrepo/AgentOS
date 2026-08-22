@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_web_a10_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-web-2025-a10-mishandling-exceptional-conditions",
+  "candidate_digest": "9a0aaf895edf65ec0545d876e5c94c2ee6239e8bb2e4de098c625854612eb948",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "ad3cb73f0c7318a5e041430b795226493b366bb2834d8b48067496209de85db9",
+  "upstream_router_result_sha256": "5c4ea33d6d32b5b7462ce56cbe1ad96bbdf284dcb0bf61b71552e93070a98fd2",
+  "gate_execution_sha256": "be3454d473edc0a155a53d4053d4bc795383ca1546e11c4b97650861e45fc6f3",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T20:19:50.858Z",
+  "readback_sha256": "5e8fc081c5765556bbd3f97ed034969e56cfbbff659ab12385045d4dd555e281"
+}
