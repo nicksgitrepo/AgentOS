@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest} from "../control/content-addressing.mjs";
+import {compileReusableAgentRoster} from "../control/reusable-agent-roster-compiler.mjs";
 
 const root = path.resolve(new URL("..", import.meta.url).pathname);
 const registryPath = path.join(root, "specialist-blocks/registry/agent-roster.v1.json");
@@ -14,6 +15,8 @@ assert.equal(roster.schema, "agentos.reusable_agent_roster.v1");
 assert.equal(roster.version, 1);
 assert.equal(roster.project_agnostic, true);
 assert.equal(roster.roster_sha256, canonicalDigest({...roster, roster_sha256: null}));
+const compiled = compileReusableAgentRoster({repositoryRoot: root, writeGenerated: false});
+assert.equal(compiled.roster_sha256, roster.roster_sha256, "tracked roster projection differs from the canonical compiler");
 assert.equal(roster.policy.one_package_at_a_time, true);
 assert.equal(roster.policy.permanent_before_platform, true);
 assert.equal(roster.policy.platform_before_auditor, true);
@@ -44,12 +47,21 @@ assert.deepEqual(roster.tiers.map((tier) => tier.tier), ["PERMANENT_AGENTOS_ROLE
 assert.equal(roster.tiers[0].order[0], "AGENTOS.SPAWNER");
 assert.equal(roster.tiers[0].order.includes("AGENTOS_CONTROLLER"), true);
 assert.equal(roster.tiers[0].order.includes("AGENTOS.PRODUCT_OWNER"), true);
-const acceptedPermanentIds = ["AGENTOS.SPAWNER", "AGENTOS_CONTROLLER", "AGENTOS.PRODUCT_OWNER", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS.ORCHESTRATOR"];
-for (const id of acceptedPermanentIds) {
-  const entry = roster.entries.find((candidate) => candidate.stable_agent_id === id);
-  assert(entry, `${id} missing from roster`);
-  assert.match(entry.build_state, /^ACCEPTED_/u, `${id} is not marked accepted in the readback index`);
+const policyExpired = Date.parse(roster.model_policy.expires_at_utc) <= Date.now();
+if (policyExpired) {
+  assert.equal(roster.build_queue.some((item) => item.eligible), false, "stale model policy left a roster item eligible");
+  assert.match(roster.build_queue[0]?.reason ?? "", /model-policy snapshot.*fresh/u);
+  assert.deepEqual(roster.entries.filter((entry) => entry.build_state.startsWith("ACCEPTED_"))
+    .map((entry) => entry.stable_agent_id), ["AGENTOS.SPAWNER"]);
+} else {
+  const acceptedPermanentIds = ["AGENTOS.SPAWNER", "AGENTOS_CONTROLLER", "AGENTOS.PRODUCT_OWNER", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS.ORCHESTRATOR"];
+  for (const id of acceptedPermanentIds) {
+    const entry = roster.entries.find((candidate) => candidate.stable_agent_id === id);
+    assert(entry, `${id} missing from roster`);
+    assert.match(entry.build_state, /^ACCEPTED_/u, `${id} is not marked accepted in the readback index`);
+  }
 }
+if (!policyExpired) {
 const acceptedSecurity = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.SECURITY_ROUTER");
 assert(acceptedSecurity, "Security Router missing from roster");
 assert.match(acceptedSecurity.build_state, /^ACCEPTED_/u, "Security Router is not marked accepted in the readback index");
@@ -86,6 +98,7 @@ assert.match(acceptedWorktreeCustody.build_state, /^ACCEPTED_/u, "Worktree/Custo
 const acceptedAssurance = roster.entries.find((candidate) => candidate.stable_agent_id === "AGENT.ASSURANCE_ENTERPRISE_ROUTER");
 assert(acceptedAssurance, "Assurance and Enterprise Router missing from roster");
 assert.match(acceptedAssurance.build_state, /^ACCEPTED_/u, "Assurance and Enterprise Router is not marked accepted in the readback index");
+}
 assert.notEqual(roster.build_queue.find((item) => item.eligible)?.stable_agent_id, "AGENT.DELIVERY_OPERATIONS_OBSERVABILITY_INCIDENT");
 assert(!JSON.stringify(roster).match(/Sociuna|ACME|\/Users\/|\/home\/|private[_ -]?path/iu), "project or private trace leaked into roster");
 console.log(`PASS reusable AgentOS roster: ${roster.entries.length} entries, ${roster.build_queue.length} ordered package actions, project-agnostic, content-addressed gates and hostile fixtures`);

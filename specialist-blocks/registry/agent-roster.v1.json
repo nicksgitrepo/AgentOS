@@ -785,9 +785,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers ai-search; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/search-router/evaluation.json"
@@ -1076,9 +1076,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers assurance-enterprise; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/assurance-enterprise-router/evaluation.json"
@@ -1680,9 +1680,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers foundation; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/agent-bootstrap/evaluation.json"
@@ -1997,9 +1997,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/central-integrator/evaluation.json"
@@ -2300,9 +2300,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers foundation; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/independent-auditor/evaluation.json"
@@ -2623,9 +2623,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/release-manager/evaluation.json"
@@ -2936,9 +2936,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/worktree-custody/evaluation.json"
@@ -3254,9 +3254,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers data; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/migration-rollback/evaluation.json"
@@ -3856,9 +3856,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers data; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/data-router/evaluation.json"
@@ -4171,9 +4171,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers delivery-operations; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/observability-incident/evaluation.json"
@@ -4477,9 +4477,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers delivery-operations; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-04/observability-router/evaluation.json"
@@ -5411,9 +5411,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers domain; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/workflow-router/evaluation.json"
@@ -5722,9 +5722,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers finance; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/accounting-router/evaluation.json"
@@ -6668,9 +6668,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers graphics; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/industrial-3d-router/evaluation.json"
@@ -7888,9 +7888,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers delivery-operations; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/provider-edge-router/evaluation.json"
@@ -8196,9 +8196,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers privacy; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/data-lifecycle-router/evaluation.json"
@@ -8509,9 +8509,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/accessibility-wcag/evaluation.json"
@@ -8820,9 +8820,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/android-kotlin/evaluation.json"
@@ -9127,9 +9127,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/desktop-offline-realtime-router/evaluation.json"
@@ -9437,9 +9437,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/ios-swiftui/evaluation.json"
@@ -9694,7 +9694,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/openapi-contracts/handoff.json",
-        "handoff_file_sha256": "0121f97481ff54a36c3823d64d01b39fe07ec633d3aefd3dcc6d6f4425e97782",
+        "handoff_file_sha256": "2653df698668276b1bb291b065a1b0d25069837a1fe03c117bd80650868ced5c",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.openapi-contracts.v1"
       },
@@ -10054,9 +10054,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/product-interaction/evaluation.json"
@@ -10365,9 +10365,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-05/responsive-web/evaluation.json"
@@ -10658,9 +10658,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers product-client; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/product-client-router/evaluation.json"
@@ -10967,9 +10967,9 @@
         "criticality": "HIGH",
         "reason": "SPECIALIST_AUDITORS entry covers regulatory; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-06/regulatory-applicability-router/evaluation.json"
@@ -11596,9 +11596,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/abac/evaluation.json"
@@ -11904,9 +11904,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/access-control-router/evaluation.json"
@@ -12213,9 +12213,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/cache-residue/evaluation.json"
@@ -12522,9 +12522,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/concurrent-authorization/evaluation.json"
@@ -12834,9 +12834,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/cve-applicability/evaluation.json"
@@ -13146,9 +13146,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/cve-inventory/evaluation.json"
@@ -13455,9 +13455,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/deadlock/evaluation.json"
@@ -13767,9 +13767,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/dependency-vulnerability/evaluation.json"
@@ -14076,9 +14076,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/double-submission/evaluation.json"
@@ -14388,9 +14388,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/function-scope/evaluation.json"
@@ -14699,9 +14699,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/idempotency/evaluation.json"
@@ -15320,9 +15320,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/object-scope/evaluation.json"
@@ -19080,9 +19080,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/owasp-api-top10-router/evaluation.json"
@@ -19387,9 +19387,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/owasp-asvs-router/evaluation.json"
@@ -22843,9 +22843,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/owasp-web-top10-router/evaluation.json"
@@ -24994,9 +24994,9 @@
         "criticality": "CRITICAL",
         "reason": "PLATFORM_AGENTS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/security-router/evaluation.json"
@@ -25926,9 +25926,9 @@
         "criticality": "CRITICAL",
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-03/supply-chain-router/evaluation.json"
@@ -27145,9 +27145,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers software-language-runtime; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/software-language-runtime-router/evaluation.json"
@@ -28068,9 +28068,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/project-controller/evaluation.json"
@@ -28390,9 +28390,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers memory; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/memory/evaluation.json"
@@ -28708,9 +28708,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers plan-coordination; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/orchestrator/evaluation.json"
@@ -29012,9 +29012,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers permanent-governance-control; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/product-owner/evaluation.json"
@@ -29334,9 +29334,9 @@
         "criticality": "HIGH",
         "reason": "PLATFORM_AGENTS entry covers control-plane-repair; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-07/repair/evaluation.json"
@@ -29674,9 +29674,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers delivery-operations; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/runtime-deployment-operator/evaluation.json"
@@ -29994,9 +29994,9 @@
         "criticality": "CRITICAL",
         "reason": "PERMANENT_AGENTOS_ROLES entry covers resource-scheduling; impact is bounded by its narrow authority and independent admission requirement."
       },
-      "build_state": "ACCEPTED_QUALIFIED",
-      "qa_state": "COMPLETE_QA_PASS",
-      "independent_evaluation_state": "INDEPENDENT_PASS_READBACK",
+      "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
+      "qa_state": "UTILITY_HARM_PENDING",
+      "independent_evaluation_state": "UTILITY_HARM_PENDING",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-01/resource-scheduler/evaluation.json"
@@ -39653,7 +39653,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 95.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 2,
@@ -39661,7 +39661,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 3,
@@ -39669,7 +39669,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 4,
@@ -39677,7 +39677,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 5,
@@ -39685,7 +39685,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 6,
@@ -39693,7 +39693,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 7,
@@ -39701,7 +39701,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 8,
@@ -39709,7 +39709,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 82.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 9,
@@ -39717,7 +39717,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 82.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 10,
@@ -39725,7 +39725,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 11,
@@ -39733,7 +39733,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 12,
@@ -39741,7 +39741,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 13,
@@ -39749,7 +39749,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 14,
@@ -39757,7 +39757,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 15,
@@ -39765,7 +39765,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 16,
@@ -39773,7 +39773,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 17,
@@ -39781,7 +39781,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 18,
@@ -39789,7 +39789,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 19,
@@ -39797,7 +39797,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 20,
@@ -39805,7 +39805,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 21,
@@ -39813,7 +39813,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.85,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 22,
@@ -39821,7 +39821,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 23,
@@ -39829,7 +39829,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 24,
@@ -39837,7 +39837,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 25,
@@ -39845,7 +39845,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 26,
@@ -39853,7 +39853,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 27,
@@ -39861,7 +39861,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 28,
@@ -39869,7 +39869,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 29,
@@ -39877,7 +39877,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 30,
@@ -39885,7 +39885,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 31,
@@ -39893,7 +39893,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 32,
@@ -39901,7 +39901,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 33,
@@ -39909,7 +39909,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 34,
@@ -39917,7 +39917,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 35,
@@ -39925,7 +39925,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 36,
@@ -39933,7 +39933,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 37,
@@ -39941,7 +39941,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 38,
@@ -39949,7 +39949,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 39,
@@ -39957,7 +39957,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 40,
@@ -39965,7 +39965,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 41,
@@ -39973,7 +39973,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 42,
@@ -39981,7 +39981,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 43,
@@ -39989,7 +39989,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 44,
@@ -39997,7 +39997,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 45,
@@ -40005,7 +40005,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 46,
@@ -40013,7 +40013,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 47,
@@ -40021,7 +40021,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 48,
@@ -40029,7 +40029,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 49,
@@ -40037,7 +40037,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 50,
@@ -40045,15 +40045,15 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 51,
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_2023_API1_OBJECT_AUTHORIZATION",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 52,
@@ -40061,7 +40061,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 53,
@@ -40069,7 +40069,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 54,
@@ -40077,7 +40077,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 55,
@@ -40085,7 +40085,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 56,
@@ -40093,7 +40093,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 57,
@@ -40101,7 +40101,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 58,
@@ -40109,7 +40109,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 59,
@@ -40117,7 +40117,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 60,
@@ -40125,7 +40125,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 61,
@@ -40133,7 +40133,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 62,
@@ -40141,7 +40141,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 63,
@@ -40149,7 +40149,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 64,
@@ -40157,7 +40157,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 65,
@@ -40165,7 +40165,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 66,
@@ -40173,7 +40173,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 67,
@@ -40181,7 +40181,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 68,
@@ -40189,7 +40189,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 69,
@@ -40197,7 +40197,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 70,
@@ -40205,7 +40205,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 71,
@@ -40213,7 +40213,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 72,
@@ -40221,7 +40221,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 73,
@@ -40229,7 +40229,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 74,
@@ -40237,7 +40237,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 75,
@@ -40245,7 +40245,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 76,
@@ -40253,7 +40253,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 77,
@@ -40261,7 +40261,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 78,
@@ -40269,7 +40269,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 79,
@@ -40277,7 +40277,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 80,
@@ -40285,7 +40285,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 81,
@@ -40293,7 +40293,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 82,
@@ -40301,7 +40301,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 83,
@@ -40309,7 +40309,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 84,
@@ -40317,7 +40317,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 85,
@@ -40325,7 +40325,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 86,
@@ -40333,7 +40333,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 87,
@@ -40341,7 +40341,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 88,
@@ -40349,7 +40349,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 89,
@@ -40357,7 +40357,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 90,
@@ -40365,7 +40365,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 91,
@@ -40373,7 +40373,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 92,
@@ -40381,7 +40381,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 93,
@@ -40389,7 +40389,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 94,
@@ -40397,7 +40397,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 95,
@@ -40405,7 +40405,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 96,
@@ -40413,7 +40413,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     },
     {
       "rank": 97,
@@ -40421,8 +40421,8 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "b3501dc1b5ecc0183a8e4f6ab9af44673088e8ba71f95b2b0dd1d7f5278e7c15"
 }

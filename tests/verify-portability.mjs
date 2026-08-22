@@ -13,6 +13,7 @@ import {
   compileCorpusPlan,
   validateCorpusInputs,
 } from "../control/authority-corpus.mjs";
+import {compileReusableAgentRoster} from "../control/reusable-agent-roster-compiler.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -78,6 +79,27 @@ function bindPortableDigest(value) {
 
 function canonicalPretty(value) {
   return `${JSON.stringify(JSON.parse(canonicalCompactJson(value)), null, 2)}\n`;
+}
+
+function verifyRosterProjectionPortability() {
+  const tracked = readJson("specialist-blocks/registry/agent-roster.v1.json");
+  const compiled = compileReusableAgentRoster({repositoryRoot: root, writeGenerated: false});
+  if (canonicalCompactJson(tracked) !== canonicalCompactJson(compiled)) {
+    fail("tracked reusable-agent roster diverges from the canonical runtime compiler");
+  }
+  const inspect = (value, key = "roster") => {
+    if (typeof value === "string") {
+      const pathField = key === "path" || key.endsWith("_path") || key === "gate_execution";
+      if (pathField && (path.isAbsolute(value) || /^[A-Za-z]:[\\/]/u.test(value) || value.includes("\\") || value.split("/").includes(".."))) {
+        fail(`roster projection contains a non-portable path in ${key}`);
+      }
+      if (personalAbsolutePath.test(value)) fail(`roster projection contains a host-specific path in ${key}`);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    for (const [childKey, child] of Object.entries(value)) inspect(child, childKey);
+  };
+  inspect(tracked);
 }
 
 const files = listFiles(root);
@@ -189,6 +211,8 @@ const syntheticPersonalPath = ["/", "Users", "/", "example", "/", "task"].join("
 if (!personalAbsolutePath.test(syntheticPersonalPath)) fail("portability regression does not detect a personal absolute path");
 const syntheticPortableSource = `const taskRoot = ${JSON.stringify(syntheticPersonalPath)};`;
 if (!personalAbsolutePath.test(syntheticPortableSource)) fail("portability regression does not inspect portable source text");
+
+verifyRosterProjectionPortability();
 
 const binding = readJson("schemas/bootstrap-binding.v1.json");
 const boundPaths = collectBoundPaths(binding);

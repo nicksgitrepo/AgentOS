@@ -21,8 +21,8 @@ const statusBefore = execFileSync("git", ["status", "--porcelain=v1", "--branch"
 assert.equal(statusBefore, `## ${binding.custody.builder_branch}`);
 const identity = JSON.parse(execFileSync(process.execPath, ["control/bootstrap-authority-loader.mjs", "identity"], {cwd: root, encoding: "utf8", maxBuffer: 8 * 1024 * 1024}));
 assert.equal(identity.root, root);
-assert.equal(identity.binding_sha256, "54f89ce8692c5502a293ca6a3ea368ed4747b481f7ce5b1091f0ae60f141370d");
-assert.equal(identity.entries.length, 1198);
+assert.equal(identity.binding_sha256, "2d2a70e415ad181d614e4120f486f4a1c2c3e56c4eba6a7c41c129838bf15402");
+assert.equal(identity.entries.length, 1199);
 const roster = identity.entries.find((entry) => entry.binding_id === "specialist_roster_registry");
 assert.deepEqual(roster, {
   binding_id: "specialist_roster_registry",
