@@ -13,6 +13,7 @@ import {
   compileCorpusPlan,
   validateCorpusInputs,
 } from "../control/authority-corpus.mjs";
+import {compileReusableAgentRoster} from "../control/reusable-agent-roster-compiler.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -76,11 +77,27 @@ function bindPortableDigest(value) {
   return value;
 }
 
+function verifyRosterProjectionPortability() {
+  const tracked = readJson("specialist-blocks/registry/agent-roster.v1.json");
+  const runtime = compileReusableAgentRoster({repositoryRoot: root, writeGenerated: false});
+  const trackedBody = structuredClone(tracked);
+  const runtimeBody = structuredClone(runtime);
+  delete trackedBody.roster_sha256;
+  delete runtimeBody.roster_sha256;
+  if (canonicalCompactJson(trackedBody) !== canonicalCompactJson(runtimeBody)) {
+    fail("tracked reusable-agent roster projection differs from the current runtime compiler projection");
+  }
+  if (JSON.stringify(tracked).match(/\/Users\/|\/home\/|private[_ -]?path/iu)) {
+    fail("reusable-agent roster projection contains host-specific custody text");
+  }
+}
+
 function canonicalPretty(value) {
   return `${JSON.stringify(JSON.parse(canonicalCompactJson(value)), null, 2)}\n`;
 }
 
 const files = listFiles(root);
+verifyRosterProjectionPortability();
 const historicalCompatibility = readJson("docs/portability-historical-compatibility.v1.json");
 const historicalCompatibilityBody = structuredClone(historicalCompatibility);
 delete historicalCompatibilityBody.digest;

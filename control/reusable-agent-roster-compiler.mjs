@@ -5,6 +5,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {canonicalDigest} from "./content-addressing.mjs";
+import {auditModelPolicyEvidenceStore} from "./eco-model-policy.mjs";
+import {assertSpawnerPortableInputs, resolveSpawnerWorkspaceCustody} from "./spawner-workspace-custody.mjs";
 
 const MODEL_TASKS = Object.freeze({
   SIMPLE_EXTRACTION: {minimum_capability: 35, required_capabilities: ["TEXT"]},
@@ -37,6 +39,7 @@ const CAMPAIGN_ROLES = Object.freeze({
 const GATE_IDS = Object.freeze(["00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff", "10-proof-acceptance", "11-lifecycle-recovery-archive"]);
 const PRIORITY_SCORE = Object.freeze({P0: 98, P1: 86, P2: 74, P3: 62, P4: 50, P5: 36, P6: 24});
 const ACCEPTANCE_LEDGER_PATH = "specialist-blocks/registry/accepted-agent-receipts.v1.json";
+const SHA256 = /^[0-9a-f]{64}$/u;
 
 function readJson(root, relativePath) { return JSON.parse(fs.readFileSync(path.join(root, relativePath), "utf8")); }
 function exists(root, relativePath) { return fs.existsSync(path.join(root, relativePath)); }
@@ -46,8 +49,15 @@ function loadAcceptanceLedger(root) {
   const ledger = readJson(root, ACCEPTANCE_LEDGER_PATH);
   if (ledger.schema !== "agentos.reusable_agent_acceptance_ledger.v1" || ledger.version !== 1 || ledger.status !== "READ_ONLY_INDEPENDENT_EVALUATION_INDEX" || ledger.project_agnostic !== true) return new Map();
   if (ledger.provenance?.evaluator_identity !== "AGENTOS.INDEPENDENT_EVALUATOR" || ledger.provenance?.activation_allowed !== false || ledger.provenance?.spawn_authority !== "SEALED_SPAWNER_ONLY") return new Map();
+  if (ledger.ledger_sha256 !== canonicalDigest({...ledger, ledger_sha256: null})) return new Map();
   return new Map((ledger.entries ?? [])
-    .filter((entry) => entry.independent_status === "PASS" && typeof entry.stable_agent_id === "string" && typeof entry.package_path === "string")
+    .filter((entry) => entry.independent_status === "PASS"
+      && typeof entry.stable_agent_id === "string"
+      && typeof entry.package_path === "string"
+      && /^specialist-blocks\/[A-Za-z0-9._/-]+$/u.test(entry.package_path)
+      && entry.receipt_ref === `INDEPENDENT_EVALUATOR_HANDOFF/${entry.candidate_commit}`
+      && ((entry.readback_scope === "EXACT_RECEIPT_RETAINED" && /^[0-9a-f]{64}$/u.test(entry.receipt_sha256 ?? ""))
+        || (entry.readback_scope === "READBACK_SUMMARY_ONLY" && entry.receipt_sha256 === null)))
     .map((entry) => [entry.stable_agent_id, entry]));
 }
 function acceptanceMatchesCurrentAuthority(root, acceptance) {
@@ -55,14 +65,18 @@ function acceptanceMatchesCurrentAuthority(root, acceptance) {
   try {
     const tree = execFileSync("git", ["rev-parse", `${acceptance.candidate_commit}^{tree}`], {cwd: root, encoding: "utf8"}).trim();
     if (tree !== acceptance.candidate_tree) return false;
-    // Accepted packages may have been qualified on a clean continuation branch
-    // rather than on this branch's ancestry.  Reuse is safe only when the
-    // exact candidate commit exists and every byte under its package path is
-    // identical to the current canonical worktree.  The commit/tree check
-    // above prevents a caller from substituting an arbitrary digest.
+    if (acceptance.receipt_ref !== `INDEPENDENT_EVALUATOR_HANDOFF/${acceptance.candidate_commit}`) return false;
+    if (path.isAbsolute(acceptance.package_path) || acceptance.package_path.split("/").some((part) => part === ".." || part === "")) return false;
+    // A reusable acceptance pin must still belong to the current authority
+    // chain.  Exact package bytes alone are insufficient: an old continuation
+    // commit can otherwise survive a rebind as a stale pin.
+    execFileSync("git", ["merge-base", "--is-ancestor", acceptance.candidate_commit, "HEAD"], {cwd: root, stdio: "ignore"});
     execFileSync("git", ["diff", "--quiet", acceptance.candidate_commit, "--", acceptance.package_path], {cwd: root, stdio: "ignore"});
     return true;
   } catch { return false; }
+}
+export function validateReusableAgentAcceptancePin({repositoryRoot = process.cwd(), acceptance} = {}) {
+  return acceptanceMatchesCurrentAuthority(repositoryRoot, acceptance);
 }
 function asArray(value) { return value === undefined || value === null ? [] : Array.isArray(value) ? value : [value]; }
 function text(value) { if (value === undefined || value === null) return ""; if (typeof value === "string") return value; if (Array.isArray(value)) return value.map(text).filter(Boolean).join(" "); return JSON.stringify(value); }
@@ -100,27 +114,50 @@ function entryType(relativePath, block, role) {
   return relativePath.includes("/standards/") ? "REUSABLE_STANDARD_BLOCK" : "REUSABLE_GOVERNANCE_BLOCK";
 }
 function familyFor(block, role) { return String(role?.family ?? block.family ?? block.block_id.split(".")[1] ?? "unclassified"); }
+function resolveManifestGatePath(relativePath, manifestPath, declaredPath) {
+  if (typeof declaredPath !== "string" || declaredPath.length === 0 || declaredPath.includes("\\") || path.posix.isAbsolute(declaredPath)) return null;
+  const segments = declaredPath.split("/");
+  if (segments.some((segment) => segment.length === 0 || segment === "." || segment === "..")) return null;
+  const candidate = (declaredPath.startsWith("gates/")
+    ? path.posix.join(relativePath, declaredPath)
+    : path.posix.join(path.posix.dirname(manifestPath), declaredPath));
+  return candidate === relativePath || candidate.startsWith(`${relativePath}/`) ? candidate : null;
+}
 function gateInventory(root, relativePath, block) {
   const manifestPath = path.join(relativePath, block.gate_pack?.manifest_path ?? "gates/manifest.json").split(path.sep).join("/");
   if (!exists(root, manifestPath)) return {status: "MISSING_GATE_MANIFEST", manifest_path: manifestPath, gates: []};
   const manifest = readJson(root, manifestPath);
-  const ids = manifest.ordered_gate_ids ?? manifest.gate_ids ?? GATE_IDS;
-  const paths = manifest.gate_paths ?? [];
-  const gates = ids.flatMap((gateId) => {
-    const declared = paths.find((candidate) => candidate.endsWith(`${gateId}.gate`)) ?? `gates/${gateId}.gate`;
-    const gatePath = (declared.startsWith("gates/") ? path.join(relativePath, declared) : path.join(path.dirname(manifestPath), declared)).split(path.sep).join("/");
-    return exists(root, gatePath) ? [{gate_id: gateId, path: gatePath, file_sha256: fileSha(root, gatePath)}] : [];
+  const hasCanonicalEntries = Object.prototype.hasOwnProperty.call(manifest, "entries");
+  const declaredEntries = hasCanonicalEntries
+    ? (Array.isArray(manifest.entries) ? manifest.entries.map((entry) => ({gate_id: entry?.gate_id, path: entry?.path, file_sha256: entry?.file_sha256})) : [])
+    : (manifest.ordered_gate_ids ?? manifest.gate_ids ?? GATE_IDS).map((gateId) => ({
+      gate_id: gateId,
+      path: (manifest.gate_paths ?? []).find((candidate) => candidate.endsWith(`${gateId}.gate`)) ?? `gates/${gateId}.gate`,
+      file_sha256: null,
+    }));
+  const gateIds = declaredEntries.map((entry) => entry.gate_id);
+  const uniqueGateIds = new Set(gateIds);
+  const gates = declaredEntries.flatMap((entry) => {
+    if (typeof entry.gate_id !== "string" || entry.gate_id.length === 0 || (entry.file_sha256 !== null && !SHA256.test(entry.file_sha256))) return [];
+    const gatePath = resolveManifestGatePath(relativePath, manifestPath, entry.path);
+    if (gatePath === null || !exists(root, gatePath)) return [];
+    const actualSha256 = fileSha(root, gatePath);
+    if (entry.file_sha256 !== null && entry.file_sha256 !== actualSha256) return [];
+    return [{gate_id: entry.gate_id, path: gatePath, file_sha256: actualSha256}];
   });
-  return {status: gates.length === ids.length ? "BOUND" : "INCOMPLETE", manifest_path: manifestPath, gates};
+  const complete = declaredEntries.length > 0 && uniqueGateIds.size === declaredEntries.length && gates.length === declaredEntries.length;
+  return {status: complete ? "BOUND" : "INCOMPLETE", manifest_path: manifestPath, gates};
 }
 function fixtureInventory(root, relativePath, block) {
   const manifestPath = path.join(relativePath, "hostile-fixtures.manifest.json").split(path.sep).join("/");
   if (exists(root, manifestPath)) {
     const manifest = readJson(root, manifestPath);
-    return {status: "BOUND", fixtures: (manifest.entries ?? []).flatMap((entry) => {
+    const declared = manifest.entries ?? [];
+    const fixtures = declared.flatMap((entry) => {
       const fixturePath = path.join(relativePath, entry.path).split(path.sep).join("/");
       return exists(root, fixturePath) ? [{fixture_id: entry.fixture_id, path: fixturePath, file_sha256: fileSha(root, fixturePath), expected_outcome: entry.expected_outcome ?? entry.expected ?? "DENY"}] : [];
-    })};
+    });
+    return {status: fixtures.length === declared.length ? "BOUND" : "INCOMPLETE", fixtures};
   }
   const fixtureDirectory = path.join(root, relativePath, "fixtures");
   if (!fs.existsSync(fixtureDirectory)) return {status: "NO_DIRECT_FIXTURES;_EVALUATOR_MUST_BIND_EXACT_NEGATIVE_VECTORS", fixtures: []};
@@ -168,7 +205,7 @@ function score(block, tier, role) {
   const total = Number((frequency * .25 + centrality * .2 + reuse * .2 + risk * .2 + coverage * .1 + (100 - finishCost) * .05).toFixed(2));
   return {total, expected_frequency: frequency, dependency_centrality: centrality, cross_project_reuse: reuse, risk_reduction: risk, architecture_coverage: coverage, finish_cost: finishCost, rationale: `${priority} priority combines ${tier.toLowerCase()} centrality, cross-project reuse, risk reduction, and completion cost; ${role?.reason ?? `the ${familyFor(block, role)} dependency graph determines the score`}.`};
 }
-function compileEntry(root, relativePath, acceptanceById = new Map()) {
+function compileEntry(root, relativePath, acceptanceById = new Map(), reuseAllowed = true) {
   const block = readJson(root, `${relativePath}/block.json`); const role = packageRole(relativePath, block); const tier = tierFor(relativePath, block, role); const type = entryType(relativePath, block, role); const archived = block.lifecycle === "ARCHIVED";
   const family = familyFor(block, role); const stableId = role?.id ?? (archived ? "LEGACY.INTENT_REGULATOR" : `${type === "AGENT_ROLE" ? "AGENT" : "BLOCK"}.${normalize(block.block_id.replace(/^specialist\./u, ""))}`);
   const sourcePath = exists(root, `${relativePath}/sources.lock`) ? `${relativePath}/sources.lock` : null; const sourceIds = sourcePath ? asArray(readJson(root, sourcePath).sources).map((source) => source.source_id ?? source.identity ?? source.id).filter(Boolean) : [];
@@ -179,7 +216,7 @@ function compileEntry(root, relativePath, acceptanceById = new Map()) {
   const forbidden = [...asArray(block.forbidden_decisions), ...asArray(block.authority?.forbidden)].map(text).filter(Boolean); if (!forbidden.length) forbidden.push("Do not self-admit, widen scope, mutate consumer state, or cross the declared authority boundary.");
   const purpose = text(block.purpose) || `Narrow ${block.block_id} governance or evidence role.`; const authority = [text(block.maximum_authority), text(block.authority)].filter(Boolean); const missing = role && !exists(root, `${role.package_path}/block.json`);
   const acceptance = acceptanceById.get(stableId) ?? null;
-  const acceptedReadback = Boolean(acceptance && acceptance.package_path === relativePath && acceptanceMatchesCurrentAuthority(root, acceptance));
+  const acceptedReadback = Boolean(reuseAllowed && acceptance && acceptance.package_path === relativePath && acceptanceMatchesCurrentAuthority(root, acceptance));
   const buildState = role?.id === "AGENTOS.SPAWNER" ? "ACCEPTED_ADMITTED" : acceptedReadback ? "ACCEPTED_QUALIFIED" : archived ? "ARCHIVED_LEGACY" : missing ? "PLANNED_MISSING_PACKAGE" : type === "REUSABLE_GOVERNANCE_BLOCK" || type === "REUSABLE_STANDARD_BLOCK" ? "REUSABLE_BLOCK_READY" : "CANDIDATE_READY_FOR_QUALIFICATION";
   const qaState = role?.id === "AGENTOS.SPAWNER" || acceptedReadback ? "COMPLETE_QA_PASS" : missing ? "MISSING_PACKAGE" : evaluation?.disposition ?? "STATIC_PASS_REVIEW_REQUIRED"; const independentState = role?.id === "AGENTOS.SPAWNER" ? "ACCEPTED_CLEARANCE_BOUND" : acceptedReadback ? "INDEPENDENT_PASS_READBACK" : archived ? "RETIRED_READ_ONLY" : evaluation?.disposition ?? "PENDING_EXTERNAL_REVIEW";
   const links = ["supersession.json", "compatibility.json", "evaluation.json"].filter((file) => exists(root, `${relativePath}/${file}`)).map((file) => `${relativePath}/${file}`);
@@ -189,8 +226,23 @@ function missingPermanentEntry(id, role) {
   const task = MODEL_TASKS[role.task_class]; return {stable_agent_id: id, display_name: role.display_name, entry_type: "AGENT_ROLE", tier: "PERMANENT_AGENTOS_ROLES", canonical_block_id: `AGENTOS.${id}.PACKAGE`, package_path: role.package_path, family: role.family, exact_narrow_purpose: `Permanent ${role.display_name} role: ${role.reason}`, applicability_triggers: ["Bootstrap resolves this role from the sealed permanent-role registry."], authority: ["Only the narrowly declared permanent role responsibility; Agent Spawner retains lifecycle authority."], forbidden_actions: ["Do not spawn, admit, archive, despawn, or mutate another role unless sealed governance explicitly assigns it.", "Do not self-admit, self-review, or write consumer state."], stop_conditions: ["Stop when the package, required gate tree, current model route, or independent review is missing.", "Return a typed defect to Agent Spawner for contradictions, stale evidence, or invalid handoffs."], required_blocks: ["specialist.foundation.authority-jurisdiction-gate", "specialist.foundation.evaluation-admission-gate", "specialist.foundation.evidence-freshness-gate", "specialist.foundation.role-intake-classifier", "specialist.foundation.scope-non-goal-gate", "specialist.foundation.tool-custody-gate"], knowledge_context_inputs: ["sealed permanent-role registry", `canonical package path: ${role.package_path}`, "current global model-policy snapshot", "project-scoped typed context only"], deterministic_gates: {status: "MISSING_PACKAGE", manifest_path: null, gates: []}, hostile_fixtures: {status: "MISSING_PACKAGE", fixtures: []}, required_evidence_handoff: {evidence_fields: ["complete canonical package", "executed deterministic gates", "hostile fixtures", "independent review and one-use admission"], handoff_path: null, handoff_file_sha256: null, independent_review_required: true, receipt_id: null}, lifecycle: {kind: "PERMANENT_ROLE", build_rules: ["Build and qualify exactly one permanent role package at a time."], seed_rule: "Permanent roles use governed admission and never perform work from an inert seed.", worker_rule: "Permanent work begins only after Spawner admission and current context readback.", permanent_rule: "The sealed registry owns the canonical permanent identity.", archive_rule: "Only Spawner may archive or supersede the role after durable handoff and zero references."}, model_route: {task_class: role.task_class, ...task, route_source: "GLOBAL_MODEL_POLICY_SNAPSHOT"}, dependency_predecessors: id === "AGENTOS_CONTROLLER" ? ["AGENTOS.SPAWNER"] : ["AGENTOS.SPAWNER", "AGENTOS_CONTROLLER"], likely_consumers: ["AgentOS bootstrap", "Agent Spawner", "project workflow"], reuse_likelihood: score({priority: "P0", role_kind: "CONTROL_PLANE", family: role.family}, "PERMANENT_AGENTOS_ROLES", role), risk: {criticality: "CRITICAL", reason: "Permanent role authority affects every later project workflow and requires independent admission."}, build_state: "PLANNED_MISSING_PACKAGE", qa_state: "MISSING_PACKAGE", independent_evaluation_state: "PENDING_PACKAGE_BUILD", supersession_invalidation: {links: [], invalidate_when: ["permanent-role registry changes", "package or gate bytes change", "global model-policy snapshot changes"], rebuild_rule: "Spawner must create the package, bind exact files, execute gates and fixtures, then obtain independent acceptance before admission."}};
 }
 
+export function rosterCompileIsComplete(entries) {
+  return Array.isArray(entries) && entries.length > 0 && entries.every((entry) =>
+    !["INCOMPLETE", "MISSING_GATE_MANIFEST"].includes(entry?.deterministic_gates?.status)
+    && entry?.hostile_fixtures?.status !== "INCOMPLETE");
+}
+
 export function compileReusableAgentRoster({repositoryRoot = process.cwd(), writeGenerated = false} = {}) {
-  const acceptanceById = loadAcceptanceLedger(repositoryRoot); const packagePaths = walkPackages(repositoryRoot); const entries = packagePaths.map((relativePath) => compileEntry(repositoryRoot, relativePath, acceptanceById));
+  resolveSpawnerWorkspaceCustody({taskRoot: repositoryRoot, taskLabel: "reusable roster compiler checkout"});
+  assertSpawnerPortableInputs({repositoryRoot});
+  const snapshot = readJson(repositoryRoot, "fixtures/model-policy-snapshot.initial.v1.json");
+  let modelPolicyFresh = true;
+  try {
+    auditModelPolicyEvidenceStore(snapshot, {authorityRoot: repositoryRoot, evidenceManifestPath: "fixtures/model-policy-evidence/manifest.json", nowUtc: new Date().toISOString(), requireActive: false});
+  } catch {
+    modelPolicyFresh = false;
+  }
+  const acceptanceById = loadAcceptanceLedger(repositoryRoot); const packagePaths = walkPackages(repositoryRoot); const entries = packagePaths.map((relativePath) => compileEntry(repositoryRoot, relativePath, acceptanceById, modelPolicyFresh));
   for (const [id, role] of Object.entries(PERMANENT_ROLES)) if (!entries.some((entry) => entry.stable_agent_id === id)) entries.push(missingPermanentEntry(id, role));
   const aliases = entries.flatMap((entry) => {
     if (!entry.package_path || !exists(repositoryRoot, `${entry.package_path}/block.json`)) return [];
@@ -209,7 +261,8 @@ export function compileReusableAgentRoster({repositoryRoot = process.cwd(), writ
   ];
   const acceptedIds = new Set(orderedAgents.filter((entry) => entry.build_state === "ACCEPTED_ADMITTED" || entry.build_state === "ACCEPTED_QUALIFIED").map((entry) => entry.stable_agent_id));
   const permanentReady = permanentOrder.every((id) => id === "AGENTOS.SPAWNER" || acceptedIds.has(id));
-  const nextEligible = orderedAgents.find((entry) => {
+  const completeCompile = rosterCompileIsComplete(entries);
+  const nextEligible = modelPolicyFresh && completeCompile ? orderedAgents.find((entry) => {
     if (entry.build_state !== "CANDIDATE_READY_FOR_QUALIFICATION") return false;
     if (entry.tier === "PERMANENT_AGENTOS_ROLES") {
       const index = permanentOrder.indexOf(entry.stable_agent_id);
@@ -217,9 +270,9 @@ export function compileReusableAgentRoster({repositoryRoot = process.cwd(), writ
     }
     if (campaignOrder.includes(entry.stable_agent_id)) return permanentReady;
     return permanentReady;
-  })?.stable_agent_id ?? null;
-  const build_queue = orderedAgents.map((entry, index) => ({rank: index + 1, stable_agent_id: entry.stable_agent_id, tier: entry.tier, eligible: entry.stable_agent_id === nextEligible, priority_score: entry.reuse_likelihood.total, reason: entry.build_state === "ACCEPTED_ADMITTED" || entry.build_state === "ACCEPTED_QUALIFIED" ? "Already independently accepted; reuse its exact receipt until invalidated." : entry.stable_agent_id === nextEligible ? "Highest eligible unaccepted package after dependency-safe predecessors." : entry.build_state === "PLANNED_MISSING_PACKAGE" ? "Blocked until the canonical package is built and qualified." : entry.tier === "PERMANENT_AGENTOS_ROLES" ? "Waits for dependency-safe permanent-role predecessors." : "Queued after permanent roles and platform prerequisites."}));
-  const snapshot = readJson(repositoryRoot, "fixtures/model-policy-snapshot.initial.v1.json"); const counts = Object.fromEntries([...new Set(entries.map((entry) => entry.entry_type))].map((type) => [type, entries.filter((entry) => entry.entry_type === type).length]));
+  })?.stable_agent_id ?? null : null;
+  const build_queue = orderedAgents.map((entry, index) => ({rank: index + 1, stable_agent_id: entry.stable_agent_id, tier: entry.tier, eligible: entry.stable_agent_id === nextEligible, priority_score: entry.reuse_likelihood.total, reason: !modelPolicyFresh ? "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance." : !completeCompile ? "Blocked until every compiled package gate and declared hostile fixture is present." : entry.build_state === "ACCEPTED_ADMITTED" || entry.build_state === "ACCEPTED_QUALIFIED" ? "Already independently accepted; reuse its exact receipt until invalidated." : entry.stable_agent_id === nextEligible ? "Highest eligible unaccepted package after dependency-safe predecessors." : entry.build_state === "PLANNED_MISSING_PACKAGE" ? "Blocked until the canonical package is built and qualified." : entry.tier === "PERMANENT_AGENTOS_ROLES" ? "Waits for dependency-safe permanent-role predecessors." : "Queued after permanent roles and platform prerequisites."}));
+  const counts = Object.fromEntries([...new Set(entries.map((entry) => entry.entry_type))].map((type) => [type, entries.filter((entry) => entry.entry_type === type).length]));
   const registry = {schema: "agentos.reusable_agent_roster.v1", version: 1, status: "COMPILED_CANDIDATE", governance_version: "2.1rc", project_agnostic: true, source_inventory: {canonical_library_roster: "specialist-blocks/registry/roster.v1.json", master_inventory: "specialist-blocks/registry/master-inventory.v1.json", permanent_role_registry: "specialist-blocks/registry/permanent-role-registry.v1.json", package_count: packagePaths.length, current_package_count: packagePaths.filter((relativePath) => readJson(repositoryRoot, `${relativePath}/block.json`).lifecycle !== "ARCHIVED").length, archived_package_count: packagePaths.filter((relativePath) => readJson(repositoryRoot, `${relativePath}/block.json`).lifecycle === "ARCHIVED").length, entry_type_counts: counts}, policy: {one_package_at_a_time: true, permanent_before_platform: true, platform_before_auditor: true, seed_is_inert: true, auditor_closeout: "Spawner despawns temporary auditors only after accepted handoff, closed scope, preserved evidence, and zero worktree or custody references.", acceptance_rule: "A package is built only after exact blocks, gates, hostile fixtures, model route, lifecycle, handoff, deterministic QA, and one independent evaluation are current and consumed through sealed admission.", model_names_are_advisory: true}, model_policy: {snapshot_path: "fixtures/model-policy-snapshot.initial.v1.json", snapshot_sha256: snapshot.snapshot_sha256, observed_at_utc: snapshot.observed_at_utc, expires_at_utc: snapshot.expires_at_utc, task_classes: snapshot.task_classes.map((task) => task.task_class)}, tiers: [{tier: "PERMANENT_AGENTOS_ROLES", rule: "Spawner first; then Controller, Product Owner, Memory, Runtime, Scheduler, and Orchestrator in dependency-safe canonical order. Only one package may be active.", order: permanentOrder}, {tier: "PLATFORM_AGENTS", rule: "Reusable integration and ownership roles follow accepted permanent foundations and cover client, backend/API, data, infrastructure/cloud, release, assurance, and delivery.", order: entries.filter((entry) => entry.tier === "PLATFORM_AGENTS").map((entry) => entry.stable_agent_id)}, {tier: "SPECIALIST_AUDITORS", rule: "Narrow standards, security, quality, regulatory, scientific, operational, and domain auditors follow platform prerequisites and one-at-a-time qualification.", order: entries.filter((entry) => entry.tier === "SPECIALIST_AUDITORS").map((entry) => entry.stable_agent_id)}], aliases, entries, build_queue, roster_sha256: null};
   registry.roster_sha256 = canonicalDigest({...registry, roster_sha256: null});
   if (writeGenerated) fs.writeFileSync(path.join(repositoryRoot, "specialist-blocks/registry/agent-roster.v1.json"), `${JSON.stringify(registry, null, 2)}\n`);
