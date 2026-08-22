@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.protected_authority_intake_rebind.v1",
+  "title": "Portable protected-authority intake and rebind result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "observed_at_utc",
+    "status",
+    "readiness_claimed",
+    "candidate",
+    "custody",
+    "authority",
+    "intake",
+    "blockers",
+    "blocked_prerequisite_queue",
+    "invalidation",
+    "roster",
+    "external_side_effects",
+    "queue_receipt",
+    "result_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.protected_authority_intake_rebind.v1"},
+    "version": {"const": 1},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["BLOCKED_EXACT", "REBOUND_CANDIDATE_NOT_ADMITTED"]},
+    "readiness_claimed": {"const": false},
+    "candidate": {"$ref": "#/$defs/candidate"},
+    "custody": {"$ref": "#/$defs/custody"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "binding_sha256", "authority_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.sealed_authority_identity.v1"},
+        "binding_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "intake": {"type": "object"},
+    "blockers": {"type": "array"},
+    "blocked_prerequisite_queue": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/prerequisiteQueueEntry"}
+    },
+    "invalidation": {"type": ["object", "null"]},
+    "roster": {"type": ["object", "null"]},
+    "external_side_effects": {"type": "object"},
+    "queue_receipt": {"type": ["object", "null"]},
+    "result_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitObject": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "commit", "tree", "rollback", "clean"],
+      "properties": {
+        "branch": {"type": "string", "minLength": 1},
+        "commit": {"$ref": "#/$defs/gitObject"},
+        "tree": {"$ref": "#/$defs/gitObject"},
+        "rollback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commit", "tree"],
+          "properties": {"commit": {"$ref": "#/$defs/gitObject"}, "tree": {"$ref": "#/$defs/gitObject"}}
+        },
+        "clean": {"type": "boolean"}
+      }
+    },
+    "custody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projects_root_resolution", "projects_root_descendant", "projects_root_sha256", "candidate_root_sha256", "canonical_repository_root_sha256", "git_common_directory_sha256"],
+      "properties": {
+        "projects_root_resolution": {"const": "PARENT_OF_RUNTIME_GIT_COMMON_REPOSITORY_ROOT"},
+        "projects_root_descendant": {"const": true},
+        "projects_root_sha256": {"$ref": "#/$defs/sha256"},
+        "candidate_root_sha256": {"$ref": "#/$defs/sha256"},
+        "canonical_repository_root_sha256": {"$ref": "#/$defs/sha256"},
+        "git_common_directory_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "prerequisiteQueueEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prerequisite_id", "status", "owner_role", "code", "action"],
+      "properties": {
+        "prerequisite_id": {
+          "enum": [
+            "HOST.CODEX_MODEL_CATALOG_CURRENT",
+            "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
+            "EVALUATOR_REVIEWER_HANDOFF_EXACT",
+            "DEPENDENT_INVALIDATION_REBIND",
+            "REUSABLE_AGENT_ROSTER_PROJECTION"
+          ]
+        },
+        "status": {"enum": ["BLOCKED_EXACT", "DEFERRED_PROTECTED_BLOCK"]},
+        "owner_role": {"const": "Spawner/root"},
+        "code": {"type": "string", "minLength": 1},
+        "action": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

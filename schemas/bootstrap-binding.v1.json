@@ -3303,6 +3303,18 @@
       "path": "control/protected-spawner-review-provisioning.mjs",
       "sha256": "070642374cae0bbcb9b26a0e156ed6465725c5fe128e179e93590198c0e37208"
     },
+    "protected_authority_intake_rebind_contract": {
+      "path": "schemas/protected-authority-intake-rebind.v1.json",
+      "sha256": "d7d1cbc6fb03ca8ac2abffa5958b255ee28d6cfeb8132bae96a3299e3cdbf5e1"
+    },
+    "protected_authority_intake_rebind_controller": {
+      "path": "control/protected-authority-intake-rebind.mjs",
+      "sha256": "4ef29fc8c9eb448294c430330f0d13e46fbe72879751b80017ff3066e4901efe"
+    },
+    "protected_authority_intake_rebind_verifier": {
+      "path": "tests/verify-protected-authority-intake-rebind.mjs",
+      "sha256": "7c9083af73873893dfd798b4c03618649e547cb669d340b382550a87335bd3ec"
+    },
     "provider_edge_router_boundary_gate": {
       "path": "control/provider-edge-router-boundary-gate.mjs",
       "sha256": "1e7cbe3898ba80c6dbf10dd09a8c1b687c097134992c1da78a3c904066a23b8b"
