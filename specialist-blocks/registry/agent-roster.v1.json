@@ -6719,7 +6719,7 @@
         "write Product or consumer state"
       ],
       "stop_conditions": [
-        "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+        "{\"candidate_entry\":\"Block, source lock, twelve gates, executable gate readback, hostile fixtures, evaluation dossier, typed handoff, model route, and context receipt have matching digests.\",\"evaluation_entry\":\"Independent evaluator executes the public boundary with every declared fixture, reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, memory, and handoff cases, and proves mutation sensitivity.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
       ],
       "required_blocks": [
         "specialist.foundation.authority-jurisdiction-gate",
@@ -6733,6 +6733,7 @@
       "knowledge_context_inputs": [
         "action/resource/condition semantics",
         "provider version and account evidence",
+        "source.atomic-specialization-law",
         "specialist.standard.aws-iam-current",
         "authority",
         "candidate.identity",
@@ -6743,7 +6744,7 @@
         "request",
         "signals",
         "source_lock",
-        "source.atomic-specialization-law"
+        "source.aws-iam-policy-elements"
       ],
       "deterministic_gates": {
         "status": "BOUND",
@@ -6824,14 +6825,14 @@
         "memory_rule": "TYPED_HANDOFF_ONLY_NO_MEMORY_WRITE",
         "rebuild_on_change": true,
         "invalidate_on": [
-          "block semantic digest change",
-          "source lock or freshness change",
+          "block digest change",
+          "source lock change or freshness expiry",
           "standard block or source manifest change",
           "upstream router bytes or result change",
           "model-policy snapshot or route change",
-          "registry, gate, fixture, evaluation, or handoff change"
+          "registry, gates, fixtures, evaluation, or handoff change"
         ],
-        "rebuild_rule": "Invalidate dependent context and handoff receipts, preserve the prior receipt, and require a fresh independent evaluation before reuse."
+        "rebuild_rule": "Invalidate dependent contexts, handoffs, model routes, gate readbacks, and acceptance proposals; preserve the old receipt and rebuild from exact current bytes before reuse."
       },
       "hostile_fixtures": {
         "status": "BOUND",
@@ -6948,14 +6949,14 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/aws-iam-policy/handoff.json",
-        "handoff_file_sha256": "8587378173ca212762e1eed1b89e67f7a251a719fcc036f8395f1aa6c2ea8e81",
+        "handoff_file_sha256": "fb4ded1e5ee85263bfccd22f82a2ad7a5d81e97d7510e1456c50268aef780aa0",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.aws-iam-policy.v1"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
         "build_rules": [
-          "{\"candidate_entry\":\"Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.\",\"evaluation_entry\":\"Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
+          "{\"candidate_entry\":\"Block, source lock, twelve gates, executable gate readback, hostile fixtures, evaluation dossier, typed handoff, model route, and context receipt have matching digests.\",\"evaluation_entry\":\"Independent evaluator executes the public boundary with every declared fixture, reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, memory, and handoff cases, and proves mutation sensitivity.\",\"suspension\":\"Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.\",\"archive\":\"Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.\",\"reactivation\":\"Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest.\"}"
         ],
         "seed_rule": "Only the sealed Spawner may create an immutable inert seed; the seed never performs work.",
         "worker_rule": "Clone to a worker only after current admission, model projection, custody, and handoff checks pass; workers return typed defects to Spawner.",
@@ -7000,8 +7001,8 @@
         "reason": "PLATFORM_AGENTS entry covers platform; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTABLE_PASS_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTABLE_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
           "specialist-blocks/wave-02/aws-iam-policy/evaluation.json"
@@ -40446,5 +40447,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "5d24ea2b8ac7348ad8b236e1b35b982e472e2331ca2c3b9569c0135d242ce020"
+  "roster_sha256": "b5bb384a1fbb2d5d4a0b8d8046e2e45fb0b65552977e569a036e1d91d315ee13"
 }
