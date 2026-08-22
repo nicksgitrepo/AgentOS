@@ -30066,9 +30066,55 @@
         "Seed, roster, defect, dependency, invalidation, handoff, memory, and Git custody contracts."
       ],
       "deterministic_gates": {
-        "status": "INCOMPLETE",
+        "status": "BOUND",
         "manifest_path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
-        "gates": []
+        "gates": [
+          {
+            "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/ownership-classification.gate",
+            "file_sha256": "c7a02b4886d777bea05ab8fca7997b90b517996ae359f9c74edd92c33dc3f987"
+          },
+          {
+            "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/controller-authority.gate",
+            "file_sha256": "0b5976cb74f0835f6dac395b4545d0402a56c53c482c6473ece32208a0f104c2"
+          },
+          {
+            "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/exact-block-qa.gate",
+            "file_sha256": "ad8cc25928bb3d61b7f98bdbb399f15f0f31c09425ab1ad6c890a8adf98d128d"
+          },
+          {
+            "gate_id": "SPAWNER.SEED_INERTNESS",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/seed-inertness.gate",
+            "file_sha256": "8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff"
+          },
+          {
+            "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/model-policy.gate",
+            "file_sha256": "cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58"
+          },
+          {
+            "gate_id": "SPAWNER.GLOBAL_MEMORY",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/memory-readback.gate",
+            "file_sha256": "0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3"
+          },
+          {
+            "gate_id": "SPAWNER.TURN_CONTINUATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
+            "file_sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234"
+          },
+          {
+            "gate_id": "SPAWNER.GIT_INTEGRATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/git-integration.gate",
+            "file_sha256": "43e1f1e57b5a4a5fa1fab5535c11283b7811c271bdc9afc6ed5993160ef07d9e"
+          },
+          {
+            "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/feature-implementation-loop.gate",
+            "file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0"
+          }
+        ]
       },
       "hostile_fixtures": {
         "status": "BOUND",
@@ -39677,7 +39723,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 95.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 2,
@@ -39685,7 +39731,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 3,
@@ -39693,7 +39739,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 4,
@@ -39701,7 +39747,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 5,
@@ -39709,7 +39755,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 6,
@@ -39717,7 +39763,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 7,
@@ -39725,7 +39771,7 @@
       "tier": "PERMANENT_AGENTOS_ROLES",
       "eligible": false,
       "priority_score": 94.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 8,
@@ -39733,7 +39779,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 82.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 9,
@@ -39741,7 +39787,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 82.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 10,
@@ -39749,7 +39795,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 11,
@@ -39757,7 +39803,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 12,
@@ -39765,7 +39811,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 13,
@@ -39773,7 +39819,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 14,
@@ -39781,7 +39827,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 15,
@@ -39789,7 +39835,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 80.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 16,
@@ -39797,7 +39843,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 17,
@@ -39805,7 +39851,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 18,
@@ -39813,7 +39859,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 19,
@@ -39821,7 +39867,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 20,
@@ -39829,7 +39875,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 79.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 21,
@@ -39837,7 +39883,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.85,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 22,
@@ -39845,7 +39891,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 23,
@@ -39853,7 +39899,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 24,
@@ -39861,7 +39907,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 25,
@@ -39869,7 +39915,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 26,
@@ -39877,7 +39923,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 27,
@@ -39885,7 +39931,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 28,
@@ -39893,7 +39939,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 29,
@@ -39901,7 +39947,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 30,
@@ -39909,7 +39955,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 31,
@@ -39917,7 +39963,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 32,
@@ -39925,7 +39971,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 77.05,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 33,
@@ -39933,7 +39979,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 34,
@@ -39941,7 +39987,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 35,
@@ -39949,7 +39995,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 36,
@@ -39957,7 +40003,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 37,
@@ -39965,7 +40011,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 38,
@@ -39973,7 +40019,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 39,
@@ -39981,7 +40027,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 40,
@@ -39989,7 +40035,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 41,
@@ -39997,7 +40043,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 42,
@@ -40005,7 +40051,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 43,
@@ -40013,7 +40059,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 44,
@@ -40021,7 +40067,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 45,
@@ -40029,7 +40075,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 46,
@@ -40037,7 +40083,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 47,
@@ -40045,15 +40091,15 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Already independently accepted; reuse its exact receipt until invalidated."
     },
     {
       "rank": 48,
       "stable_agent_id": "AGENT.SECURITY_FUNCTION_SCOPE",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 49,
@@ -40061,7 +40107,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 50,
@@ -40069,7 +40115,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 51,
@@ -40077,7 +40123,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 52,
@@ -40085,7 +40131,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 53,
@@ -40093,7 +40139,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 54,
@@ -40101,7 +40147,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 55,
@@ -40109,7 +40155,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 56,
@@ -40117,7 +40163,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 57,
@@ -40125,7 +40171,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 58,
@@ -40133,7 +40179,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 59,
@@ -40141,7 +40187,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 60,
@@ -40149,7 +40195,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 61,
@@ -40157,7 +40203,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 62,
@@ -40165,7 +40211,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 63,
@@ -40173,7 +40219,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 64,
@@ -40181,7 +40227,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 65,
@@ -40189,7 +40235,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 66,
@@ -40197,7 +40243,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 67,
@@ -40205,7 +40251,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 68,
@@ -40213,7 +40259,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 69,
@@ -40221,7 +40267,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 70,
@@ -40229,7 +40275,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 71,
@@ -40237,7 +40283,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 72,
@@ -40245,7 +40291,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 73,
@@ -40253,7 +40299,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 74,
@@ -40261,7 +40307,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 75,
@@ -40269,7 +40315,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 76,
@@ -40277,7 +40323,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 77,
@@ -40285,7 +40331,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 78,
@@ -40293,7 +40339,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 79,
@@ -40301,7 +40347,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 80,
@@ -40309,7 +40355,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 76.25,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 81,
@@ -40317,7 +40363,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 82,
@@ -40325,7 +40371,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 83,
@@ -40333,7 +40379,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 84,
@@ -40341,7 +40387,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 85,
@@ -40349,7 +40395,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 86,
@@ -40357,7 +40403,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 87,
@@ -40365,7 +40411,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 88,
@@ -40373,7 +40419,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 89,
@@ -40381,7 +40427,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 90,
@@ -40389,7 +40435,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 91,
@@ -40397,7 +40443,7 @@
       "tier": "PLATFORM_AGENTS",
       "eligible": false,
       "priority_score": 74.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 92,
@@ -40405,7 +40451,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 93,
@@ -40413,7 +40459,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 94,
@@ -40421,7 +40467,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 95,
@@ -40429,7 +40475,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 96,
@@ -40437,7 +40483,7 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     },
     {
       "rank": 97,
@@ -40445,8 +40491,8 @@
       "tier": "SPECIALIST_AUDITORS",
       "eligible": false,
       "priority_score": 72.45,
-      "reason": "Blocked until every compiled package gate and declared hostile fixture is present."
+      "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "a09cb30a188a87eeabfe5af4cf1c1611950c708f482d3a0e16cc63205f3902b7"
+  "roster_sha256": "8c56a55ce009b85bd18b9a8525a535707319acf24877bff7ed2f409c5205e439"
 }

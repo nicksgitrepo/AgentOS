@@ -117,10 +117,13 @@ function gateInventory(root, relativePath, block) {
   const manifestPath = path.join(relativePath, block.gate_pack?.manifest_path ?? "gates/manifest.json").split(path.sep).join("/");
   if (!exists(root, manifestPath)) return {status: "MISSING_GATE_MANIFEST", manifest_path: manifestPath, gates: []};
   const manifest = readJson(root, manifestPath);
-  const ids = manifest.ordered_gate_ids ?? manifest.gate_ids ?? GATE_IDS;
+  const declaredEntries = Array.isArray(manifest.entries) ? manifest.entries : [];
+  const ids = manifest.ordered_gate_ids ?? manifest.gate_ids ?? (declaredEntries.length ? declaredEntries.map((entry) => entry.gate_id) : GATE_IDS);
   const paths = manifest.gate_paths ?? [];
   const gates = ids.flatMap((gateId) => {
-    const declared = paths.find((candidate) => candidate.endsWith(`${gateId}.gate`)) ?? `gates/${gateId}.gate`;
+    const declared = declaredEntries.find((entry) => entry.gate_id === gateId)?.path
+      ?? paths.find((candidate) => candidate.endsWith(`${gateId}.gate`))
+      ?? `gates/${gateId}.gate`;
     const gatePath = (declared.startsWith("gates/") ? path.join(relativePath, declared) : path.join(path.dirname(manifestPath), declared)).split(path.sep).join("/");
     return exists(root, gatePath) ? [{gate_id: gateId, path: gatePath, file_sha256: fileSha(root, gatePath)}] : [];
   });
