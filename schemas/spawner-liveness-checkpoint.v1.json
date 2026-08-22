@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/spawner-liveness-checkpoint.v1.json",
+  "title": "AgentOS Spawner bounded-phase liveness checkpoint",
+  "description": "A compact durable checkpoint emitted for every bounded Spawner phase. Exhausted phases without meaningful progress or a typed result stop safely and request rehome/restart.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "checkpoint_id", "lifecycle_id", "phase", "phase_index", "phase_window_seconds",
+    "started_at_utc", "observed_at_utc", "elapsed_seconds", "window_status", "meaningful_progress",
+    "typed_result_status", "exact_receipt_status", "exact_receipt_ref", "exact_receipt_sha256", "persistence",
+    "status", "safe_stop", "next_action", "checkpoint_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.spawner_liveness_checkpoint.v1"},
+    "version": {"const": 1},
+    "checkpoint_id": {"$ref": "#/$defs/identifier"},
+    "lifecycle_id": {"$ref": "#/$defs/identifier"},
+    "phase": {"$ref": "#/$defs/identifier"},
+    "phase_index": {"type": "integer", "minimum": 0},
+    "phase_window_seconds": {"type": "integer", "minimum": 1},
+    "started_at_utc": {"$ref": "#/$defs/utc"},
+    "observed_at_utc": {"$ref": "#/$defs/utc"},
+    "elapsed_seconds": {"type": "integer", "minimum": 0},
+    "window_status": {"enum": ["WITHIN_BOUND", "EXHAUSTED"]},
+    "meaningful_progress": {"type": "boolean"},
+    "typed_result_status": {"enum": ["PRESENT", "ABSENT", "UNKNOWN"]},
+    "exact_receipt_status": {"enum": ["EXACT", "UNKNOWN"]},
+    "exact_receipt_ref": {"$ref": "#/$defs/reference"},
+    "exact_receipt_sha256": {"$ref": "#/$defs/sha256"},
+    "persistence": {"$ref": "#/$defs/persistence"},
+    "status": {"enum": ["PROGRESS", "TYPED_RESULT", "WAITING_WITHIN_BOUND", "BLOCKED_EXACT", "UNKNOWN"]},
+    "safe_stop": {"type": "boolean"},
+    "next_action": {"enum": ["CONTINUE_PHASE", "REHOME_OR_RESTART"]},
+    "checkpoint_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"},
+    "persistence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "receipt_ref", "receipt_sha256", "atomic", "same_turn", "write_scope"],
+      "properties": {
+        "status": {"const": "CHECKPOINT_PERSISTED"},
+        "receipt_ref": {"$ref": "#/$defs/reference"},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "atomic": {"const": true},
+        "same_turn": {"const": true},
+        "write_scope": {"const": "CONTROL_PLANE_ONLY"}
+      }
+    }
+  },
+  "state_rules": {
+    "bounded_window": "A phase may continue only while its window is within bound or a meaningful progress/typed-result checkpoint exists.",
+    "safe_stop": "An exhausted phase without meaningful progress or a typed result is BLOCKED_EXACT; an uncertain observation is UNKNOWN. Both stop and request REHOME_OR_RESTART.",
+    "custody": "Only opaque receipt references are persisted here. Runtime custody paths belong in runtime receipts and must be resolved from the active project/worktree context."
+  }
+}

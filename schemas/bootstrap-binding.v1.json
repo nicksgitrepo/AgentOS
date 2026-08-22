@@ -692,7 +692,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "c5af0e65aa5194a186942a33f059d6e1cd81f3ebd271db5a8ec93e3d65c5c799"
+      "sha256": "2003dec6488f9524de1599e24277c397e94bfe458f5c5c11cc0c3489e09a7b44"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
@@ -2957,7 +2957,7 @@
     },
     "portability_verifier": {
       "path": "tests/verify-portability.mjs",
-      "sha256": "06215c3398696dfa752d3169ada99385d7c5c9a9647d9383b69e29273dd5d950"
+      "sha256": "25fceb0db9c2f6799f7dc14dbd19e11748bf34e549c66265cac49d9dd335c1e1"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
@@ -3333,11 +3333,11 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "56eeeb60957b780af9e3f948db6a415a3489e6d7f68c0196a2a8ae2128285330"
+      "sha256": "021c2f6a5d6a960944e21d55204f73410aa5fa5799dc1da99be643e15daf9b3a"
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
-      "sha256": "6d5e24b2bdde1e145426fe15a987833ec17ae34cdee78f8a9ef6f39ccf350aaa"
+      "sha256": "002feeccbad685c8c643c3640c74d3d676b1fa23e8e4cadf4de36916fe2a3a2a"
     },
     "pyramid_campaign_governance_contract": {
       "path": "schemas/pyramid-campaign-governance.v1.json",
@@ -4229,11 +4229,27 @@
     },
     "spawner_git_ancestry_controller": {
       "path": "control/spawner-git-ancestry.mjs",
-      "sha256": "e7e2a8bbca7d23d294861fc61caf7cdc1d955f19b4ef18bbf8e0cb5c579f054f"
+      "sha256": "55eb1c9f508e1f21ea2f885b0880277ff562731b370d1d54094cf6882ab31f8d"
     },
     "spawner_git_ancestry_verifier": {
       "path": "tests/verify-spawner-git-ancestry.mjs",
-      "sha256": "ea403fbd92a71c9ea4fac47f3b61f331c0a37a0130f5d2cc71703c2e8f25feb2"
+      "sha256": "f63894d7f9f5718605318facbea93c979ae5404fb93c7820506d13aaff78ae42"
+    },
+    "spawner_liveness_checkpoint_contract": {
+      "path": "schemas/spawner-liveness-checkpoint.v1.json",
+      "sha256": "f88f7267cd967ae8f838359b904a04fdded2bda77153d68a3480065c9b0d7d7f"
+    },
+    "spawner_liveness_checkpoint_controller": {
+      "path": "control/spawner-liveness-checkpoint.mjs",
+      "sha256": "4486de653fd476258a05c4cd857f326779e62978bac13150f0705437fe077e70"
+    },
+    "spawner_liveness_checkpoint_verifier": {
+      "path": "tests/verify-spawner-liveness-checkpoint.mjs",
+      "sha256": "657582b4024afbe04552e9402c912a589ec54d8c1b593d58ff6f68405661b829"
+    },
+    "spawner_runtime_custody_contract": {
+      "path": "schemas/spawner-runtime-custody.v1.json",
+      "sha256": "1bd0ea67c5bbebda9cc25e12220b9e27078dec7a7455b227bf647cf8a21568d8"
     },
     "spawner_hostile_evaluation_receipt": {
       "path": "specialist-blocks/control-plane/agent-spawner/hostile-evaluation.v1.json",
@@ -4270,6 +4286,18 @@
     "spawner_lifecycle_transition_receipt_contract": {
       "path": "schemas/spawner-lifecycle-transition-receipt.v1.json",
       "sha256": "671b1fd1d6dd4a2ad98d09d6e65fda2830a77af5a2133c80119e87b371c416fe"
+    },
+    "openapi_contracts_candidate_binding_contract": {
+      "path": "schemas/openapi-contracts-candidate-binding.v1.json",
+      "sha256": "99df8fe24d07483eeca89b5071696419be069d81b8b87fa109643c1dc5a38ebd"
+    },
+    "openapi_contracts_candidate_freeze_controller": {
+      "path": "control/openapi-contracts-candidate-freeze.mjs",
+      "sha256": "7924987682f5ffd038ddee1dc8f430149c16f0470a6f3163956c66942f9b95e5"
+    },
+    "openapi_contracts_candidate_package_verifier": {
+      "path": "tests/verify-openapi-contracts-package.mjs",
+      "sha256": "9c42a4b034b5f54f8663bd59608002756ba4792123504696f1e123d8809fbed3"
     },
     "exit_governance_review_controller": {
       "path": "control/exit-governance-review.mjs",

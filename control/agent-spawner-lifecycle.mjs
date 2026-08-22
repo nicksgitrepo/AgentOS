@@ -12,6 +12,8 @@
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 
+export {compileSpawnerLivenessCheckpoint, validateSpawnerLivenessCheckpoint, runSpawnerBoundedPhase} from "./spawner-liveness-checkpoint.mjs";
+
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
 export const AGENT_SPAWNER_LIFECYCLE_VERSION = 1;
 export const AGENT_SPAWNER_ROLE_ID = "AGENT.SPAWNER_COMPILER";

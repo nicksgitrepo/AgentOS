@@ -16,6 +16,9 @@ for (const name of [
   "compileReleasePromotionGate",
   "compileAutonomousLaneHandoff",
   "validateAutonomousLaneHandoff",
+  "compileSpawnerLivenessCheckpoint",
+  "validateSpawnerLivenessCheckpoint",
+  "runSpawnerBoundedPhase",
   "compileControllerNextLifecycleHandoff",
   "validateControllerNextLifecycleHandoff",
 ]) {

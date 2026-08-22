@@ -6,12 +6,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
-import {fileURLToPath} from "node:url";
 import {canonicalDigest, compareUtf8, scanPersistedRecord} from "./content-addressing.mjs";
 import {compileOpenApiContractsContext, resolveOpenApiContractsCanonicalAuthority, validateOpenApiContractsContext} from "./openapi-contracts-authority-binding.mjs";
+import {resolveSpawnerRuntimeCustody} from "./spawner-git-ancestry.mjs";
 
 export const OPENAPI_CONTRACTS_CANDIDATE_BINDING_SCHEMA = "agentos.openapi_contracts_candidate_binding.v1";
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE = "specialist-blocks/wave-02/openapi-contracts";
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -50,8 +49,14 @@ function assertClean(root) {
   assert(git(root, ["status", "--porcelain=v1"]) === "", "builder worktree is not clean at freeze", "OPENAPI_CONTRACTS_CUSTODY_DIRTY");
 }
 
-export function freezeOpenApiContractsCandidate({repositoryRoot = ROOT, candidateCommit, baseCommit, custodyOwner = "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS"} = {}) {
-  const root = path.resolve(repositoryRoot);
+export function freezeOpenApiContractsCandidate({repositoryRoot = null, workspaceRoot = null, taskWorktreePath = null, candidateCommit, baseCommit, custodyOwner = "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS"} = {}) {
+  const runtimeCustody = resolveSpawnerRuntimeCustody({
+    projectRoot: repositoryRoot ?? taskWorktreePath ?? process.cwd(),
+    repositoryRoot: repositoryRoot ?? null,
+    taskWorktreePath: taskWorktreePath ?? null,
+    workspaceRoot,
+  });
+  const root = runtimeCustody.repository_root;
   assert(git(root, ["rev-parse", "--show-toplevel"]) === root, "candidate freeze root is not the assigned Git root", "OPENAPI_CONTRACTS_CUSTODY_ROOT_INVALID");
   assert(custodyOwner === "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS", "candidate freeze custody owner is out of lane", "OPENAPI_CONTRACTS_CUSTODY_OWNER_INVALID");
   assertClean(root);
@@ -123,7 +128,10 @@ export function freezeOpenApiContractsCandidate({repositoryRoot = ROOT, candidat
     },
     custody: {
       owner: custodyOwner,
-      builder_worktree: root,
+      workspace_root_ref: "ref:OPENAPI_CONTRACTS.WORKSPACE_ROOT",
+      repository_root_ref: "ref:OPENAPI_CONTRACTS.REPOSITORY_ROOT",
+      task_worktree_ref: "ref:OPENAPI_CONTRACTS.TASK_WORKTREE",
+      runtime_custody_receipt_sha256: runtimeCustody.custody_sha256,
       builder_branch: git(root, ["branch", "--show-current"]),
       builder_worktree_clean: true,
       auditor_read_only: true,
@@ -154,24 +162,23 @@ export function freezeOpenApiContractsCandidate({repositoryRoot = ROOT, candidat
     activation: "OFF",
     binding_sha256: null,
   };
-  // The exact local builder path is required custody evidence. Redact only that
-  // machine-local locator for the persisted-record privacy scan; do not weaken
-  // the binding or replace the locator with an invented projection.
-  const privacyProjection = {
-    ...binding,
-    custody: {...binding.custody, builder_worktree: "ASSIGNED_BUILDER_WORKTREE"},
-  };
-  assert(scanPersistedRecord(privacyProjection).safe, "candidate binding contains protected data", "OPENAPI_CONTRACTS_CANDIDATE_PRIVACY_DENIED");
+  assert(scanPersistedRecord(binding).safe, "candidate binding contains protected data", "OPENAPI_CONTRACTS_CANDIDATE_PRIVACY_DENIED");
   binding.binding_sha256 = canonicalDigest({...binding, binding_sha256: null});
   return Object.freeze(binding);
 }
 
-export function validateOpenApiContractsCandidateBinding(binding, {repositoryRoot = ROOT} = {}) {
+export function validateOpenApiContractsCandidateBinding(binding, {repositoryRoot = null, workspaceRoot = null, taskWorktreePath = null} = {}) {
   assert(binding?.schema === OPENAPI_CONTRACTS_CANDIDATE_BINDING_SCHEMA && binding.version === 1, "candidate binding schema is invalid", "OPENAPI_CONTRACTS_CANDIDATE_SCHEMA_INVALID");
   requireSha(binding.binding_sha256, "candidate binding");
   assert(binding.binding_sha256 === canonicalDigest({...binding, binding_sha256: null}), "candidate binding digest is invalid", "OPENAPI_CONTRACTS_CANDIDATE_DIGEST_INVALID");
   assert(binding.status === "FROZEN_FOR_INDEPENDENT_REVIEW" && binding.admission_allowed === false && binding.activation === "OFF", "candidate binding is not frozen inactive custody", "OPENAPI_CONTRACTS_CANDIDATE_STATE_INVALID");
-  const root = path.resolve(repositoryRoot);
+  const runtimeCustody = resolveSpawnerRuntimeCustody({
+    projectRoot: repositoryRoot ?? taskWorktreePath ?? process.cwd(),
+    repositoryRoot: repositoryRoot ?? null,
+    taskWorktreePath: taskWorktreePath ?? null,
+    workspaceRoot,
+  });
+  const root = runtimeCustody.repository_root;
   assertClean(root);
   const actualHead = gitObject(root, "HEAD", "candidate commit");
   const actualTree = gitObject(root, `${actualHead}^{tree}`, "candidate tree");
@@ -179,17 +186,19 @@ export function validateOpenApiContractsCandidateBinding(binding, {repositoryRoo
   const files = packageInventory(root);
   assert(canonicalDigest(files) === binding.package_root_sha256 && JSON.stringify(files) === JSON.stringify(binding.package_files), "candidate package bytes differ from frozen bytes", "OPENAPI_CONTRACTS_CANDIDATE_BYTES_CHANGED");
   assert(binding.custody.builder_worktree_clean === true && binding.custody.auditor_read_only === true && binding.custody.auditor_can_edit === false, "candidate custody is not read-only for the auditor", "OPENAPI_CONTRACTS_CUSTODY_INVALID");
-  assert(binding.custody.builder_worktree === root, "candidate binding worktree differs", "OPENAPI_CONTRACTS_CUSTODY_ROOT_INVALID");
+  assert(binding.custody.runtime_custody_receipt_sha256 === runtimeCustody.custody_sha256, "candidate binding runtime custody differs", "OPENAPI_CONTRACTS_CUSTODY_ROOT_INVALID");
   return binding;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
   const outputIndex = process.argv.indexOf("--output");
   const baseIndex = process.argv.indexOf("--base");
+  const workspaceIndex = process.argv.indexOf("--workspace-root");
   const output = outputIndex >= 0 ? process.argv[outputIndex + 1] : null;
   const base = baseIndex >= 0 ? process.argv[baseIndex + 1] : null;
+  const workspaceRoot = workspaceIndex >= 0 ? process.argv[workspaceIndex + 1] : null;
   if (!base) fail("--base is required for a rollback-bound candidate freeze", "OPENAPI_CONTRACTS_ROLLBACK_REQUIRED");
-  const binding = freezeOpenApiContractsCandidate({repositoryRoot: process.cwd(), baseCommit: base});
+  const binding = freezeOpenApiContractsCandidate({repositoryRoot: process.cwd(), workspaceRoot, baseCommit: base});
   if (output) fs.writeFileSync(path.resolve(process.cwd(), output), `${JSON.stringify(binding, null, 2)}\n`, {flag: "wx"});
   process.stdout.write(`${JSON.stringify(binding, null, 2)}\n`);
 }

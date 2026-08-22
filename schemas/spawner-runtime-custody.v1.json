@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/spawner-runtime-custody.v1.json",
+  "title": "AgentOS runtime-only Spawner workspace custody receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "resolution_source", "workspace_root", "repository_root", "task_worktree", "repository_within_workspace", "task_worktree_within_workspace", "custody_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_runtime_custody.v1"},
+    "version": {"const": 1},
+    "status": {"const": "RUNTIME_CUSTODY_RESOLVED"},
+    "resolution_source": {"enum": ["ACTIVE_GIT_WORKTREE_PARENT", "ACTIVE_RUNTIME_CONTEXT"]},
+    "workspace_root": {"type": "string", "minLength": 1, "description": "Host-only runtime path; never persist this value in portable authority."},
+    "repository_root": {"type": "string", "minLength": 1, "description": "Host-only runtime path; never persist this value in portable authority."},
+    "task_worktree": {"type": "string", "minLength": 1, "description": "Host-only runtime path; never persist this value in portable authority."},
+    "repository_within_workspace": {"const": true},
+    "task_worktree_within_workspace": {"const": true},
+    "custody_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

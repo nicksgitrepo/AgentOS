@@ -160,6 +160,12 @@ const absoluteHostPath = new RegExp(`${["/", "private", "/"].join("")}(?:tmp|var
 const localOrPrivateUrl = new RegExp(`${["https", "://"].join("")}(?:localhost|127\\.0\\.0\\.1|[A-Za-z0-9.-]+\\.(?:internal|local|corp|private))(?:[/:?#]|$)`, "iu");
 const cloudResource = new RegExp(`(?:${["arn", ":", "aws", ":"].join("")}|${["i", "-"].join("")}[0-9a-f]{8,}|${["ocid1", "\\."].join("")})`, "iu");
 const numericBinding = /\b(?:account|subscription|project|tenant|deployment|resource)(?:[_-]?id)?\s*[:=]\s*["']?\d{8,}/iu;
+const personalAbsolutePath = new RegExp([
+  `${["/", "Users", "/"].join("")}[A-Za-z0-9._-]+(?:/|$)`,
+  `${["/", "home", "/"].join("")}[A-Za-z0-9._-]+(?:/|$)`,
+  `${["C:", "\\\\", "Users", "\\\\"].join("")}[A-Za-z0-9._-]+(?:\\\\|$)`,
+].join("|"), "u");
+const portableSurface = /^(?:control|schemas|governance|bootstrap|templates|specialist-blocks)\//u;
 for (const absolute of files) {
   const text = fs.readFileSync(absolute, "utf8");
   const relative = path.relative(root, absolute);
@@ -173,10 +179,16 @@ for (const absolute of files) {
   if (tokenValue.test(text)) fail(`API token shape in ${relative}`);
   if (taskUuid.test(text)) fail(`task/session UUID in ${relative}`);
   if (absoluteHostPath.test(text)) fail(`host-specific absolute path in ${relative}`);
+  if (portableSurface.test(relative) && personalAbsolutePath.test(text)) fail(`personal absolute path in portable surface ${relative}`);
   if (localOrPrivateUrl.test(text)) fail(`private or local URL in ${relative}`);
   if (cloudResource.test(text)) fail(`cloud resource identity in ${relative}`);
   if (numericBinding.test(text)) fail(`numeric account or deployment identity in ${relative}`);
 }
+
+const syntheticPersonalPath = ["/", "Users", "/", "example", "/", "task"].join("");
+if (!personalAbsolutePath.test(syntheticPersonalPath)) fail("portability regression does not detect a personal absolute path");
+const syntheticPortableSource = `const taskRoot = ${JSON.stringify(syntheticPersonalPath)};`;
+if (!personalAbsolutePath.test(syntheticPortableSource)) fail("portability regression does not inspect portable source text");
 
 const binding = readJson("schemas/bootstrap-binding.v1.json");
 const boundPaths = collectBoundPaths(binding);

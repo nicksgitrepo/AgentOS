@@ -19,6 +19,28 @@
     "block_sha256": {"pattern": "^[0-9a-f]{64}$"},
     "admission_allowed": {"const": false},
     "activation": {"const": "OFF"},
-    "binding_sha256": {"pattern": "^[0-9a-f]{64}$"}
+    "binding_sha256": {"pattern": "^[0-9a-f]{64}$"},
+    "custody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "workspace_root_ref", "repository_root_ref", "task_worktree_ref", "runtime_custody_receipt_sha256", "builder_branch", "builder_worktree_clean", "auditor_read_only", "auditor_can_edit", "auditor_can_merge", "auditor_can_admit", "protected_authority_untouched", "deployment", "publication", "promotion"],
+      "properties": {
+        "owner": {"const": "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS"},
+        "workspace_root_ref": {"pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"},
+        "repository_root_ref": {"pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"},
+        "task_worktree_ref": {"pattern": "^(?:opaque|ref):[A-Z0-9._:/-]{1,180}$"},
+        "runtime_custody_receipt_sha256": {"pattern": "^[0-9a-f]{64}$"},
+        "builder_branch": {"type": "string", "minLength": 1},
+        "builder_worktree_clean": {"const": true},
+        "auditor_read_only": {"const": true},
+        "auditor_can_edit": {"const": false},
+        "auditor_can_merge": {"const": false},
+        "auditor_can_admit": {"const": false},
+        "protected_authority_untouched": {"const": true},
+        "deployment": {"const": false},
+        "publication": {"const": false},
+        "promotion": {"const": false}
+      }
+    }
   }
 }
