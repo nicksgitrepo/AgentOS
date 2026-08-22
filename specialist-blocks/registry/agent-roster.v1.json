@@ -9583,105 +9583,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.AUTHORITY_CONFLICT",
+            "fixture_id": "openapi-contracts-authority_conflict",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/authority_conflict.json",
-            "file_sha256": "6c7b7647002a4a1b964b16a4b78d3b53b360cb1c029276851757b37c8378a07c",
-            "expected_outcome": "DENY"
+            "file_sha256": "c716c5f80c301cfa5725c6d2a132fc3a54efa32db2433884aa1735be4746612d",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "openapi-contracts-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "f3af065cc579dfbe43b383f527f21f575bd41fd65cf3fe6984fd1ad9f0cf6732",
+            "file_sha256": "e5af8a32b47ab7f372be1ed5b914e1ac784e131e385573f3ab749dbff6674039",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "openapi-contracts-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "fc1ddb9be8b73a28c40211f4edd2fd446fdf1b2bff6ddf60fa531544fefb4788",
+            "file_sha256": "19ac351e183bc1117b24e3dca166c7ba02badb27cb2994e49dc4a080c5097ba8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.DATA_LIMIT",
+            "fixture_id": "openapi-contracts-data_limit",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/data_limit.json",
-            "file_sha256": "7062863e07e4caa38cd6869c6d90164cc32acbef78a6577918dfe0a72800a7f9",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "c394dbf9ac86d79880512a2a94c186d6efc46d4c8e1db4426aa4ade0b97d01ad",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "openapi-contracts-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "6054cc6ce64aff8cc3e15b759d07bdaff547dc6accec451207ee358f75edc13a",
+            "file_sha256": "9075e18c8f7de562aea25921d119bd33222d43e5c1dccdfbd3627acb9c839101",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.FALSE_POSITIVE",
+            "fixture_id": "openapi-contracts-false_positive",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/false_positive.json",
-            "file_sha256": "945608053281c2ffe03c78a62b40c8a3e55334c45063ded5076913ee7bc99a54",
+            "file_sha256": "fc541c45b2b8fdba8ca271e713660a248cee2c6051973d2d7a000bcfb8936b6e",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.HANDOFF",
+            "fixture_id": "openapi-contracts-handoff",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/handoff.json",
-            "file_sha256": "48a6ed7ba537eddc7c653f3741f6016574ef5541a1133f98c82ec461c1c052fc",
+            "file_sha256": "7cdf2e20270a20e9e07770c5c82dc123808833e7f6ae6c6c5171de487ba359d6",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.MISSING_CONTEXT",
+            "fixture_id": "openapi-contracts-missing_context",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/missing_context.json",
-            "file_sha256": "c7d148a95598ab1a82478b831a6f4a74cd9ebab1e4aeec02eb2780101b2a1e2a",
+            "file_sha256": "33018c49600c26a476cb7eb0a45c0c5f2efb437bc14c5e2f518ac907ef57d72a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.NARROWNESS",
+            "fixture_id": "openapi-contracts-narrowness",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/narrowness.json",
-            "file_sha256": "0f437610322a354b4a982b1e83427b491bf6099d460e80737442a449e0ab2ec2",
+            "file_sha256": "0a1c453c2aa7842ebd10513dcc33e11266b618f941b91043a98e7da6c054cbe9",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.ROUTER_SELF_ACCEPT",
+            "fixture_id": "openapi-contracts-router_self_accept",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/router_self_accept.json",
-            "file_sha256": "f0aa6d495e6b8ee745c58c9e31ed2d1ea0a3ab8a66cbe9fe580ecea406eb8abe",
+            "file_sha256": "cfbe7080bdf1e86d348b66cb7168477c5a5f3dd5d815d0bb40664f5d4d150dd4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.ROUTING",
+            "fixture_id": "openapi-contracts-routing",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/routing.json",
-            "file_sha256": "a1259a34616c9663497fdf4ea7301ea67785a0d0ec616963c6ca88e87f30894c",
+            "file_sha256": "ec9e64cde28480ad7d815113dbc13635bcec690b5c24ef2fa8c1347537b644f5",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "openapi-contracts-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/silent_scope_expansion.json",
-            "file_sha256": "f1587ae2d4aac72af9b78257326bfada16609a61ae38177009a261c38bb60017",
+            "file_sha256": "6e9409fe55cf0b3362ab589d8b7dd78d805e1422a87429dc3d3e25ef1e43279d",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.STALE_SOURCE",
+            "fixture_id": "openapi-contracts-stale_source",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/stale_source.json",
-            "file_sha256": "9c25578d360835cea889f4d210931db195651956d0f737d3b90edcc78f0f794d",
+            "file_sha256": "18dbbd9890316ea33fc3caef95245ff92d73fe91486f5c7509ef267042edcb6a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.TOOL_LIMIT",
+            "fixture_id": "openapi-contracts-tool_limit",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/tool_limit.json",
-            "file_sha256": "678bd5043d5982a8147f18d6e547ede5d7d00eb5e2a56b5de2104c00505e3654",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "8674c472f54ccdac529d09b7786392589ca0e8971a2968ca86b1e501753fb509",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.UMBRELLA_AUTHORITY",
+            "fixture_id": "openapi-contracts-umbrella_authority",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/umbrella_authority.json",
-            "file_sha256": "af9465cd9e83b8de25205caac1f97665fdafb5126bced064b5d790fa507abfdd",
+            "file_sha256": "95fb0357abccd74648a2b5748c9fb30c6c9630cff92f9698460ff9049edda113",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.UNRELATED_SCOPE",
+            "fixture_id": "openapi-contracts-unrelated_scope",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/unrelated_scope.json",
-            "file_sha256": "89db283e54849fdd7e469223a6f3981bcc9363b8ccc951f718a35f161d8e76b1",
+            "file_sha256": "e2d9128509e7e68edc99f9a0ab34522fea5c389af6cf6732447f53f8eed34fa8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.product-client.openapi-contracts.UNSAFE_ACTION",
+            "fixture_id": "openapi-contracts-unsafe_action",
             "path": "specialist-blocks/wave-02/openapi-contracts/fixtures/unsafe_action.json",
-            "file_sha256": "f035b8806d0f1a9f975203ca1bc9a1807f1d44872519f8d5f8127be7a3ac1a43",
+            "file_sha256": "e140eb29f57bf7051f9334c326ba61e5fe7c8b372007943ceefd7dbdf9337031",
             "expected_outcome": "DENY"
           }
         ]
@@ -9694,7 +9694,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/openapi-contracts/handoff.json",
-        "handoff_file_sha256": "0121f97481ff54a36c3823d64d01b39fe07ec633d3aefd3dcc6d6f4425e97782",
+        "handoff_file_sha256": "bea9e7d5f7177a4a733fc6c9e99bcf89fed39b795baf98fa7ad426b014a12224",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.openapi-contracts.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "1916a24784aea4400bfb7fc90dadae26e1c8c51ef95498f35bc7b83d6c76238b"
 }

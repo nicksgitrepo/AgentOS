@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.openapi_contract_gate_execution.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "block_id",
+    "evaluator_entrypoint",
+    "ordered_gate_ids",
+    "executions",
+    "execution_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.openapi_contract_gate_execution.v1"},
+    "version": {"const": 1},
+    "block_id": {"const": "specialist.product-client.openapi-contracts"},
+    "evaluator_entrypoint": {"const": "control/openapi-contract-package-evaluator.mjs#evaluateOpenApiContractPackage"},
+    "ordered_gate_ids": {
+      "type": "array",
+      "const": [
+        "00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals",
+        "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody",
+        "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff",
+        "10-proof-acceptance", "11-lifecycle-recovery-archive"
+      ]
+    },
+    "executions": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate_id", "fixture_class", "expected"],
+        "properties": {
+          "gate_id": {"type": "string"},
+          "fixture_class": {"type": "string"},
+          "expected": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["disposition", "route", "error_code"],
+            "properties": {
+              "disposition": {"enum": ["ROUTE", "DENY", "ESCALATE", "NOT_APPLICABLE"]},
+              "route": {"type": "string", "minLength": 1},
+              "error_code": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "execution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

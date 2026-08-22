@@ -1,0 +1,131 @@
+{
+  "schema": "agentos.openapi_contract_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.product-client.openapi-contracts",
+  "evaluator_entrypoint": "control/openapi-contract-package-evaluator.mjs#evaluateOpenApiContractPackage",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {
+      "gate_id": "00-intake",
+      "fixture_class": "narrowness",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OPENAPI_CONTRACT_SPECIALIST_HANDOFF",
+        "error_code": "OPENAPI_CONTRACT_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "01-applicability",
+      "fixture_class": "handoff",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OPENAPI_CONTRACT_SPECIALIST_HANDOFF",
+        "error_code": "OPENAPI_CONTRACT_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "02-authority-precedence",
+      "fixture_class": "authority_conflict",
+      "expected": {
+        "disposition": "ESCALATE",
+        "route": "CONTROL_PLANE_ESCALATION",
+        "error_code": "OPENAPI_CONTRACT_AUTHORITY_CONFLICT"
+      }
+    },
+    {
+      "gate_id": "03-scope-nongoals",
+      "fixture_class": "broad_when_narrow_exists",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SCOPE_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_SCOPE_EXPANSION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "04-source-evidence-freshness",
+      "fixture_class": "stale_source",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_SOURCE_STALE_OR_UNVERIFIED"
+      }
+    },
+    {
+      "gate_id": "05-context-completeness",
+      "fixture_class": "missing_context",
+      "expected": {
+        "disposition": "DENY",
+        "route": "TYPED_CONTEXT_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_CONTEXT_INCOMPLETE"
+      }
+    },
+    {
+      "gate_id": "06-tool-resource-custody",
+      "fixture_class": "tool_limit",
+      "expected": {
+        "disposition": "DENY",
+        "route": "READ_ONLY_TOOLS_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_TOOL_SCOPE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "07-data-secret-privacy",
+      "fixture_class": "data_limit",
+      "expected": {
+        "disposition": "DENY",
+        "route": "PRIVACY_BOUNDARY_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_PROTECTED_DATA_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "08-build-browser-runtime",
+      "fixture_class": "unsafe_action",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_CONTRACT_SIDE_EFFECT",
+        "error_code": "OPENAPI_CONTRACT_OPERATION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "09-output-handoff",
+      "fixture_class": "routing",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OPENAPI_CONTRACT_SPECIALIST_HANDOFF",
+        "error_code": "OPENAPI_CONTRACT_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "10-proof-acceptance",
+      "fixture_class": "router_self_accept",
+      "expected": {
+        "disposition": "DENY",
+        "route": "INDEPENDENT_REVIEW_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_SELF_ACCEPTANCE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "11-lifecycle-recovery-archive",
+      "fixture_class": "cross_provider_version_claim",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "OPENAPI_CONTRACT_STANDARD_IDENTITY_INVALID"
+      }
+    }
+  ],
+  "execution_sha256": "704e51c2898ac28a14cd86a5c426edf2d77c1ef1870ca737c1fdcb6d4bce303c"
+}

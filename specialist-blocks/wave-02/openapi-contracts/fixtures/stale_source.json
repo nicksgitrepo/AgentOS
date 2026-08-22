@@ -1,9 +1,110 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "openapi-contracts-stale_source",
   "block_id": "specialist.product-client.openapi-contracts",
   "class": "stale_source",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for stale_source; all provider, project, consumer, and applicability facts remain external."
+  "note": "Synthetic hostile OpenAPI contract vector for stale_source; no consumer, project, credential, or provider state is included.",
+  "vector": {
+    "entrypoint": "control/openapi-contract-boundary-gate.mjs#evaluateOpenApiContractBoundary",
+    "input": {
+      "schema": "agentos.openapi_contract_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_OPENAPI_CONTRACT",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.PRODUCT_CLIENT_OPENAPI_CONTRACTS",
+        "custody_ref": "opaque:OPENAPI.CONTRACT.CUSTODY",
+        "source_status": "STALE",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "standard_identity": "source.openapi-3-1-1",
+        "standard_version": "3.1.1",
+        "standard_effective_date": "2024-10-24",
+        "standard_retrieved_date": "2026-08-11",
+        "publisher_identity": "OPENAPI_INITIATIVE",
+        "contract_identity": "opaque:OPENAPI.CONTRACT.SYNTHETIC",
+        "contract_version": "3.1.1",
+        "openapi_version": "3.1.1",
+        "signal": "ARCH.API_CONTRACTS",
+        "target_ref": "specialist.product-client.openapi-contracts",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_CONTRACT",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": false,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "applicability_status": "EXTERNAL_TYPED",
+        "applicability_complete": true,
+        "contract_evidence": "BOUNDED",
+        "api_contract": {
+          "contract_ref": "opaque:OPENAPI.CONTRACT.SYNTHETIC",
+          "openapi_version": "3.1.1",
+          "server_count": 1,
+          "operation_count": 1,
+          "schema_count": 1,
+          "contract_digest": "99bc944f6f4f013ce77f631a3fc2be66aab5e5f03f3fcd6a8230f9f25b08da0d"
+        },
+        "operations": [
+          {
+            "method": "GET",
+            "path": "/health",
+            "operation_id": "GET_HEALTH",
+            "response_statuses": [
+              "200",
+              "503"
+            ]
+          }
+        ],
+        "schemas": [
+          {
+            "name": "HEALTH_RESPONSE",
+            "type": "object",
+            "required": [
+              "STATUS"
+            ]
+          }
+        ],
+        "candidate_digest": "171b4e51575523b9f16e52dad3092b522d3fcd00c1fcd3ac4d27cebc9b55a43c",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "e5b3cb2d184c0b0a06d8eac625800372cef364713dba68702962fc5a8be8b728",
+        "source_content_sha256": null,
+        "standard_block_sha256": "dd51614d340d8227cd1c6b4e2d9adc6a20468c11a2736ee517326c527ad50695",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "context_receipt_sha256": "1d15be5fcd05cbbe5017cab1d2c57f0879770394fe2b00196bf8de17bf0881f7",
+        "upstream_router_result_sha256": "41a99dff32a58847c281736df5d4aadd078f560e78bc732b143997a8c46161b8",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "cross_provider": false,
+          "duplicate_authority": false,
+          "umbrella_authority": false,
+          "false_positive": false,
+          "stale_source": true,
+          "unsupported_tool": false,
+          "missing_context": false,
+          "unsafe_action": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "SOURCE_REFRESH_REQUIRED",
+      "error_code": "OPENAPI_CONTRACT_SOURCE_STALE_OR_UNVERIFIED",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }
