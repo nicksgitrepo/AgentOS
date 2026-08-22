@@ -25,7 +25,15 @@ for (const entry of roster.entries) {
   assert(entry.forbidden_actions.length > 0 && entry.stop_conditions.length > 0);
   assert(entry.deterministic_gates.status);
   for (const gate of entry.deterministic_gates.gates) { assert(safe(gate.path), `${entry.stable_agent_id} gate path missing`); assert.equal(sha(gate.path), gate.file_sha256); }
-  for (const fixture of entry.hostile_fixtures.fixtures) { assert(safe(fixture.path), `${entry.stable_agent_id} hostile fixture missing`); assert.equal(sha(fixture.path), fixture.file_sha256); }
+  const packageBlock = entry.package_path && safe(`${entry.package_path}/block.json`)
+    ? JSON.parse(fs.readFileSync(path.join(root, `${entry.package_path}/block.json`), "utf8"))
+    : null;
+  const staticSemanticProvenance = packageBlock?.registry_provenance?.mode === "STATIC_SEMANTIC_ONLY";
+  for (const fixture of entry.hostile_fixtures.fixtures) {
+    assert(safe(fixture.path), `${entry.stable_agent_id} hostile fixture missing`);
+    if (staticSemanticProvenance) assert.equal(fixture.file_sha256, undefined, `${entry.stable_agent_id} static-semantic fixture must omit recursive file digest`);
+    else assert.equal(sha(fixture.path), fixture.file_sha256);
+  }
   if (entry.package_path !== null && entry.build_state !== "PLANNED_MISSING_PACKAGE") assert(safe(`${entry.package_path}/block.json`), `${entry.stable_agent_id} package missing`);
   assert(entry.model_route.task_class && Number.isInteger(entry.model_route.minimum_capability));
 }

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
+import {pathToFileURL} from "node:url";
 
 function gitRoot() {
   return fs.realpathSync.native(execFileSync("git", ["rev-parse", "--show-toplevel"], {encoding: "utf8"}).trim());
@@ -51,4 +52,13 @@ const violations = files.flatMap((file) => {
 });
 assert.deepEqual(violations, [], `portable package surface contains user-specific path literals: ${violations.join(", ")}`);
 
-console.log(`PASS Industrial 3D portability: checkout is a descendant of the runtime-resolved Projects root; package surface contains no user/home path literal (${files.length} files checked)`);
+const trackedRoster = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "specialist-blocks/registry/agent-roster.v1.json"), "utf8"));
+const compilerProbe = `
+  const {compileReusableAgentRoster} = await import(${JSON.stringify(pathToFileURL(path.join(repositoryRoot, "control/reusable-agent-roster-compiler.mjs")).href)});
+  const roster = compileReusableAgentRoster({repositoryRoot: process.env.AGENTOS_REPOSITORY_ROOT, writeGenerated: false});
+  process.stdout.write(roster.roster_sha256);
+`;
+const compiledRosterSha = execFileSync(process.execPath, ["--input-type=module", "-e", compilerProbe], {cwd: workspaceRoot, env: {...process.env, AGENTOS_REPOSITORY_ROOT: repositoryRoot}, encoding: "utf8"}).trim();
+assert.equal(compiledRosterSha, trackedRoster.roster_sha256, "shared roster compiler projection diverges when invoked from the Projects workspace root");
+
+console.log(`PASS Industrial 3D portability: checkout is a descendant of the runtime-resolved Projects root; package surface contains no user/home path literal; shared roster compiler projection is portable (${files.length} files checked)`);

@@ -14,6 +14,7 @@ assert.equal(operational.block_id, "specialist.graphics.industrial-3d");
 assert.equal(operational.fixture_results.length, 17);
 assert.equal(operational.gate_execution.length, 12);
 assert.equal(operational.mutation_sensitivity.mutation_detected, true);
+assert.equal(operational.missing_source_sensitivity.mutation_detected, true);
 
 const normal = JSON.parse(fs.readFileSync("specialist-blocks/wave-06/industrial-3d/fixtures/routing.json", "utf8")).vector.input;
 const routed = evaluateIndustrial3dBoundary(structuredClone(normal));
