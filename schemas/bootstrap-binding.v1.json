@@ -5077,7 +5077,7 @@
     },
     "field_job_workflow_workspace_custody_controller": {
       "path": "control/task-workspace-custody.mjs",
-      "sha256": "3d6c7179489aa01284fd69d0b1e28770818b127db2cc1468cb3cb58697b4e0c5"
+      "sha256": "fa85be0818603ca951a50fe077aa057f26c09ccb1d92a75eeeb30a28f50cfa5f"
     },
     "field_job_workflow_workspace_custody_contract": {
       "path": "schemas/task-workspace-custody-receipt.v1.json",
