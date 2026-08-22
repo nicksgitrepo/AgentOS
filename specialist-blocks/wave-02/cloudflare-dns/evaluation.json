@@ -116,5 +116,15 @@
     "pending": 0
   },
   "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION",
+  "operational_evaluator": "control/cloudflare-dns-package-evaluator.mjs#evaluateCloudflareDnsPackage",
+  "gate_execution_manifest": "gates/execution.json",
+  "local_qa_contract": {
+    "status": "PASS_LOCAL_ONLY",
+    "deterministic_gates": 12,
+    "executable_hostile_fixtures": 17,
+    "mutation_proof": "REQUIRED_AND_SENSITIVE",
+    "protected_dependency": "POLICY_SNAPSHOT_STALE",
+    "ready_for_admission": false
+  }
 }

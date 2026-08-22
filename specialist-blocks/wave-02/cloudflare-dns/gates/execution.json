@@ -1,0 +1,131 @@
+{
+  "schema": "agentos.cloudflare_dns_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.platform.cloudflare-dns",
+  "evaluator_entrypoint": "control/cloudflare-dns-package-evaluator.mjs#evaluateCloudflareDnsPackage",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {
+      "gate_id": "00-intake",
+      "fixture_class": "authority_conflict",
+      "expected": {
+        "disposition": "ESCALATE",
+        "route": "CONTROL_PLANE_ESCALATION",
+        "error_code": "CLOUDFLARE_DNS_AUTHORITY_CONFLICT"
+      }
+    },
+    {
+      "gate_id": "01-applicability",
+      "fixture_class": "false_positive",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_CLOUDFLARE_DNS_SCOPE",
+        "error_code": "CLOUDFLARE_DNS_SCOPE_NOT_APPLICABLE"
+      }
+    },
+    {
+      "gate_id": "02-authority-precedence",
+      "fixture_class": "duplicate_sibling_authority",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SPECIALIST_REQUIRED",
+        "error_code": "CLOUDFLARE_DNS_SIBLING_SUBSTITUTION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "03-scope-nongoals",
+      "fixture_class": "broad_when_narrow_exists",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SCOPE_REQUIRED",
+        "error_code": "CLOUDFLARE_DNS_SCOPE_EXPANSION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "04-source-evidence-freshness",
+      "fixture_class": "stale_source",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "CLOUDFLARE_DNS_SOURCE_STALE_OR_UNVERIFIED"
+      }
+    },
+    {
+      "gate_id": "05-context-completeness",
+      "fixture_class": "missing_context",
+      "expected": {
+        "disposition": "DENY",
+        "route": "TYPED_CONTEXT_REQUIRED",
+        "error_code": "CLOUDFLARE_DNS_CONTEXT_INCOMPLETE"
+      }
+    },
+    {
+      "gate_id": "06-tool-resource-custody",
+      "fixture_class": "tool_limit",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "DNS_SPECIALIST_HANDOFF",
+        "error_code": "CLOUDFLARE_DNS_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "07-data-secret-privacy",
+      "fixture_class": "unsafe_action",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_DNS_SIDE_EFFECT",
+        "error_code": "CLOUDFLARE_DNS_OPERATION_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "08-build-browser-runtime",
+      "fixture_class": "routing",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "DNS_SPECIALIST_HANDOFF",
+        "error_code": "CLOUDFLARE_DNS_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "09-output-handoff",
+      "fixture_class": "handoff",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "DNS_SPECIALIST_HANDOFF",
+        "error_code": "CLOUDFLARE_DNS_ROUTE_READY"
+      }
+    },
+    {
+      "gate_id": "10-proof-acceptance",
+      "fixture_class": "router_self_accept",
+      "expected": {
+        "disposition": "DENY",
+        "route": "INDEPENDENT_REVIEW_REQUIRED",
+        "error_code": "CLOUDFLARE_DNS_SELF_ACCEPTANCE_FORBIDDEN"
+      }
+    },
+    {
+      "gate_id": "11-lifecycle-recovery-archive",
+      "fixture_class": "narrowness",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "DNS_SPECIALIST_HANDOFF",
+        "error_code": "CLOUDFLARE_DNS_ROUTE_READY"
+      }
+    }
+  ],
+  "execution_sha256": "7041629f6ed23f34da34a1d49804ad5fdca08d28fed071892d090fb5f04628d2"
+}

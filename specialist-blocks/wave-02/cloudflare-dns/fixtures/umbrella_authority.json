@@ -3,7 +3,95 @@
   "version": 1,
   "block_id": "specialist.platform.cloudflare-dns",
   "class": "umbrella_authority",
-  "expected": "DENY",
+  "fixture_id": "cloudflare-dns-umbrella_authority",
+  "expected": {
+    "disposition": "DENY",
+    "route": "NARROW_SPECIALIST_REQUIRED",
+    "error_code": "CLOUDFLARE_DNS_UMBRELLA_AUTHORITY_FORBIDDEN"
+  },
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; all provider, project, consumer, and applicability facts remain external."
+  "vector": {
+    "entrypoint": "control/cloudflare-dns-boundary-gate.mjs#evaluateCloudflareDnsBoundary",
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NARROW_SPECIALIST_REQUIRED",
+      "error_code": "CLOUDFLARE_DNS_UMBRELLA_AUTHORITY_FORBIDDEN"
+    },
+    "input": {
+      "schema": "agentos.cloudflare_dns_boundary_input.v1",
+      "version": 1,
+      "request_kind": "ANALYZE_DNS_RECORDS",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.PLATFORM_CLOUDFLARE_DNS",
+        "custody_ref": "opaque:CLOUDFLARE.DNS.CUSTODY",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "provider_identity": "CLOUDFLARE",
+        "provider_version": "CURRENT",
+        "signal": "EDGE.CLOUDFLARE_DNS",
+        "target_ref": "specialist.platform.cloudflare-dns",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_DNS_RECORDS",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": false,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "provider_evidence": "BOUNDED",
+        "dns_zone": {
+          "zone_ref": "opaque:DNS.ZONE.SYNTHETIC",
+          "record_count": 2,
+          "records_digest": "af8ea52a0d84d103a0e59066b82a8f3ccaca74bd7306f2b7832f9e0efd99011a"
+        },
+        "dns_records": [
+          {
+            "type": "A",
+            "name": "example.test",
+            "content": "192.0.2.10",
+            "ttl": 300,
+            "proxied": false
+          },
+          {
+            "type": "CNAME",
+            "name": "www.example.test",
+            "content": "example.test",
+            "ttl": 300,
+            "proxied": true
+          }
+        ],
+        "candidate_digest": "1a3bffa788c03d2ee2d20796bc59f0ede08688a321e0b6078d30b3af62cc8298",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "9e2ac665f98ca8bf55ebe4440bf3ec856333e741ea984e9886af2597800dc8d3",
+        "source_content_sha256": null,
+        "standard_block_sha256": "839c7f916eebb81a5766373e326898e9878dce6750edeb79d086c66cb05e13b4",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "context_receipt_sha256": "2b029187e6394b30cce042794f7d2683cec2f008a346187b6ddd85b00d3dfa2e",
+        "upstream_router_result_sha256": "80f3268d1793e72b45f4f29b0e7e78a1b81bb0fe623afc7aac2bc6e88aae7320",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "cross_provider": false,
+          "duplicate_authority": false,
+          "umbrella_authority": true,
+          "false_positive": false,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "missing_context": false,
+          "unsafe_action": false
+        }
+      }
+    }
+  },
+  "note": "Synthetic typed hostile vector; provider, project, consumer, secret, and applicability facts remain external."
 }

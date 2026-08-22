@@ -7433,105 +7433,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.AUTHORITY_CONFLICT",
+            "fixture_id": "cloudflare-dns-authority_conflict",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/authority_conflict.json",
-            "file_sha256": "285f0cef90cf841f8b5b84dfb3ac48b2c94a1a3068b65e89f49a127b61534dd3",
-            "expected_outcome": "DENY"
+            "file_sha256": "dd05daf4c61186115310e910bceb38e1a28b840e29045ae8cc7a4b9de06cae1e",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "cloudflare-dns-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "24b2dc24ca4f5d41988ea6d4355164fba270e0597894254d20312fbce061ef60",
+            "file_sha256": "254fc027b3cb9f1f994d3d4cd8646c3ef7454d0a00f465faff485cba0abc5d50",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "cloudflare-dns-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "54d68455710243093a04a0280eab098d0b2fdc4e57e0bc98bcac73f455fcb76d",
+            "file_sha256": "e33d32e620eae318615eb9afc04977abe645b06c4c8ed00261909e44a82bcc4b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.DATA_LIMIT",
+            "fixture_id": "cloudflare-dns-data_limit",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/data_limit.json",
-            "file_sha256": "65a78f49ef33a7601d3432a82dc10c5f7ea095404f3f159767112ee8e3c3548c",
+            "file_sha256": "9bba2a8c03bacaf2f2a144e28bef9e24b39de35a7d17299c1ff83a1f0a513b8f",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "cloudflare-dns-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "bef8d36b557df91ea0c8cdd286f0bd6d8ec32f6560be6c0cad79c05a18f47d49",
+            "file_sha256": "97f08580bd617f15675c620f8880f5a628d93b77335b71291c36e84fbd893b51",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.FALSE_POSITIVE",
+            "fixture_id": "cloudflare-dns-false_positive",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/false_positive.json",
-            "file_sha256": "a231b38ac4631adbebaf66863397f3155948c9e3cd254715c29e5affdc6ac09f",
+            "file_sha256": "87c23cfe865e29a06eb25d89da595b42c90babc6e8ec50dd79d4ddd713c9514a",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.HANDOFF",
+            "fixture_id": "cloudflare-dns-handoff",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/handoff.json",
-            "file_sha256": "f0afe73fcf3dfc4f58bee422be4684f9dad30854ada03e0f939a159dc1af3156",
+            "file_sha256": "49a87b6c428876c3704aba1f816a95a08ccae60bff43166725b5f5fed0a828d1",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.MISSING_CONTEXT",
+            "fixture_id": "cloudflare-dns-missing_context",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/missing_context.json",
-            "file_sha256": "3d42085e764ef3670442428348744770516496d4321e8bb6bcfb603096601a5c",
+            "file_sha256": "a923aea126c1c8591bae8215615190ece47902629dba5aa05f4c84bbdf4f34ab",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.NARROWNESS",
+            "fixture_id": "cloudflare-dns-narrowness",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/narrowness.json",
-            "file_sha256": "5ebdb99d51c079d2cb432f8f877b4518051b3e738959d18b74eec81a3042d7af",
+            "file_sha256": "ff71e255713830f9c1bf0b85dff1de2b04d43769a769aded53d5b706004a6ec4",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.ROUTER_SELF_ACCEPT",
+            "fixture_id": "cloudflare-dns-router_self_accept",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/router_self_accept.json",
-            "file_sha256": "43a6ef0c039257a1357a5c44c55585ad40086c466ee0a8c4755a6e314fa59b84",
+            "file_sha256": "ff52b9b3faf61b1e998617132f18e889a3a7fc8622a51e92bcbf49af7137ffff",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.ROUTING",
+            "fixture_id": "cloudflare-dns-routing",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/routing.json",
-            "file_sha256": "f133c45d0960282ef4519835e3a6350a36c3e300c1a0474947395e14f2202f4b",
+            "file_sha256": "6794756b77023ab55722dc593cabbd864773d46258a2a5d4703fdfa3494d6743",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "cloudflare-dns-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/silent_scope_expansion.json",
-            "file_sha256": "bca9f4bf9a8ce96f17446ebd9ba9f19ae1e23e93bf52779508c3832b70a5de37",
+            "file_sha256": "f3092d8996274c3bd7b1fadefc69b037e1eee5efce5031ed4f5e6b039beb21ec",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.STALE_SOURCE",
+            "fixture_id": "cloudflare-dns-stale_source",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/stale_source.json",
-            "file_sha256": "498f5db6cfb8a7d85a5e14d20f46b984aaa0245d76926b7e64dce0fa27038516",
+            "file_sha256": "8df3860abcc26716fe7dbdf7318781b33af29b387b794f17b31a38a3edaa18f9",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.TOOL_LIMIT",
+            "fixture_id": "cloudflare-dns-tool_limit",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/tool_limit.json",
-            "file_sha256": "54959a7b04e795b26bfc0dc3109263b85f4682c7f61fdb9007e29539fc7e357a",
+            "file_sha256": "2e6d1aa105f32ead44afeaf25a1aadf87ad8052fc76ac4fab10567c61cc615c2",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.UMBRELLA_AUTHORITY",
+            "fixture_id": "cloudflare-dns-umbrella_authority",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/umbrella_authority.json",
-            "file_sha256": "abfc174a553f3688f52aba706037fd543703d8c8fa3a6f4efe97e49982752b04",
+            "file_sha256": "0f1627b35981a198c12dea063a7e4b085c9b00b22c73974402909ca79acbbfb8",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.UNRELATED_SCOPE",
+            "fixture_id": "cloudflare-dns-unrelated_scope",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/unrelated_scope.json",
-            "file_sha256": "6a6f06350ff4a5eea76ce3abc143946e49e654aa1cbe375e4516310891344010",
+            "file_sha256": "22329579fe847b26be495ab21dca814720a6be13800ecb3cf3141804d90e7eb4",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.platform.cloudflare-dns.UNSAFE_ACTION",
+            "fixture_id": "cloudflare-dns-unsafe_action",
             "path": "specialist-blocks/wave-02/cloudflare-dns/fixtures/unsafe_action.json",
-            "file_sha256": "b0e31698c3fe27cc006875470104ec791af8af9523bbb8f808ae7fd30eea0e1b",
+            "file_sha256": "63452e26bcb4d9d3d617a0d27504da04de2031bb494aa794df0af6b3e5bd1b1d",
             "expected_outcome": "DENY"
           }
         ]
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "e86ec393840fdcf9ba8b25bb468d48d3db4dcaa83f304cff0894b9d5a05b80b5"
 }
