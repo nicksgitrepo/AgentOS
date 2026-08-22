@@ -217,7 +217,7 @@
       "properties": {
         "dossier_path": {"type": "string", "pattern": "^evaluation\\.json$"},
         "receipt_id": {"type": "string", "pattern": "^specialist-eval\\.[a-z0-9-]+\\.v[0-9]+$"},
-        "disposition": {"enum": ["NOT_RUN", "STATIC_PASS_REVIEW_REQUIRED", "UTILITY_HARM_PENDING", "INTAKE_RECOMMENDED", "REJECTED", "SUSPENDED"]},
+        "disposition": {"enum": ["NOT_RUN", "STATIC_PASS_REVIEW_REQUIRED", "EXECUTED_REVIEW_REQUIRED", "UTILITY_HARM_PENDING", "INTAKE_RECOMMENDED", "REJECTED", "SUSPENDED"]},
         "independent_reviewer_required": {"const": true},
         "fixture_classes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 5}
       }

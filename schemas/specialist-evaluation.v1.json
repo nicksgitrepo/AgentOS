@@ -29,7 +29,18 @@
       "minItems": 5
     },
     "results": {"type": "object", "additionalProperties": false, "required": ["passed", "failed", "pending"], "properties": {"passed": {"type": "integer", "minimum": 0}, "failed": {"type": "integer", "minimum": 0}, "pending": {"type": "integer", "minimum": 0}}},
-    "disposition": {"enum": ["NOT_RUN", "STATIC_PASS_REVIEW_REQUIRED", "UTILITY_HARM_PENDING", "INTAKE_RECOMMENDED", "REJECTED", "SUSPENDED"]},
+    "disposition": {"enum": ["NOT_RUN", "STATIC_PASS_REVIEW_REQUIRED", "EXECUTED_REVIEW_REQUIRED", "UTILITY_HARM_PENDING", "INTAKE_RECOMMENDED", "REJECTED", "SUSPENDED"]},
+    "operational_readback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "required", "file_sha256"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+        "required": {"const": true},
+        "file_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "readback_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "independence_rule": {"const": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"}
   }
 }

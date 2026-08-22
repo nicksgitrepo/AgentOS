@@ -1,0 +1,18 @@
+{
+  "schema": "agentos.specialist_security_model_route.v1",
+  "version": 1,
+  "status": "BOUND",
+  "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT",
+  "task_class": "SECURITY_REVIEW",
+  "model_id": "gpt-5.6-sol",
+  "reasoning_effort": "high",
+  "capability_floor": 59,
+  "required_capabilities": [
+    "CODE",
+    "SECURITY",
+    "TOOLS"
+  ],
+  "context_floor_tokens": 128000,
+  "snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7"
+}

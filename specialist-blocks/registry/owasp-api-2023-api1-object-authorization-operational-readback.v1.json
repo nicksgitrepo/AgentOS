@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_api1_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
+  "candidate_digest": "2a79478baab548b255bb0c7b821dc1897d96b67ff81efffe1f89e0cae44bff95",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "2e2e3396d3bc2cd8d0f230f4ae8ef813e078edbc9480aede77a7ba9dcdf9359a",
+  "upstream_router_result_sha256": "5e3ee42f22c9bf1767368d873d82da67bbc5c13aeeb84e5dde25e609ebbfef0b",
+  "gate_execution_sha256": "6b14a2a47cc9fe9d6d5a38210a0ce9f0604ce5c5c5cf2646a686d11f27e5dc0b",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T17:55:42.670Z",
+  "readback_sha256": "f82db05d731f8a3d27d6e7456c4a93d455c0760325ce1ea65a8f7a33c8f519f3"
+}
