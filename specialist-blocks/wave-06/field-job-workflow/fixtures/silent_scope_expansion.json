@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.SILENT_SCOPE_EXPANSION",
   "class": "silent_scope_expansion",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for silent_scope_expansion; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"},
+  "note": "Silent scope expansion is denied even when the caller retains the same domain signal.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"broad_claim": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"}}
 }

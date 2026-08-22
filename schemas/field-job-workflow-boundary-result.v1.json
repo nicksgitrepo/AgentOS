@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/field-job-workflow-boundary-result.v1.json",
+  "title": "Field Job Workflow boundary result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "disposition", "route", "routing_allowed", "acceptance_allowed", "operational_dispatch_allowed", "engineering_or_safety_claim_allowed", "admission_allowed", "activation_allowed", "memory_write_allowed", "context_reuse_allowed", "external_side_effects", "error_code", "input_sha256", "evidence_binding", "lifecycle_status", "selected_owner", "handoff", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.field_job_workflow_boundary_result.v1"}, "version": {"const": 1}, "disposition": {"enum": ["DENY", "ROUTE"]}, "route": {"type": "string"}, "routing_allowed": {"type": "boolean"},
+    "acceptance_allowed": {"const": false}, "operational_dispatch_allowed": {"const": false}, "engineering_or_safety_claim_allowed": {"const": false}, "admission_allowed": {"const": false}, "activation_allowed": {"const": false}, "memory_write_allowed": {"const": false}, "context_reuse_allowed": {"type": "boolean"},
+    "external_side_effects": {"type": "object", "additionalProperties": {"const": 0}}, "error_code": {"type": "string"}, "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_binding": {"type": "object", "additionalProperties": false, "required": ["candidate_digest", "source_manifest_sha256", "model_snapshot_sha256", "model_route_sha256", "context_receipt_sha256", "memory_binding_sha256", "upstream_router_result_sha256"], "properties": {"candidate_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "source_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "model_snapshot_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "model_route_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "context_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "memory_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "upstream_router_result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+    "lifecycle_status": {"type": "string"}, "selected_owner": {"type": ["string", "null"]}, "handoff": {"type": ["object", "null"]}, "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

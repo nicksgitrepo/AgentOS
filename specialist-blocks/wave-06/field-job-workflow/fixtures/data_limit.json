@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.DATA_LIMIT",
   "class": "data_limit",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for data_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_DATA_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_DATA_LIMIT_REVIEW_REQUIRED"},
+  "note": "A data boundary routes to custody review; it never grants protected-data access.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"data_limit": true}}}, "expected_readback": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_DATA_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_DATA_LIMIT_REVIEW_REQUIRED"}}
 }

@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.BROAD_WHEN_NARROW_EXISTS",
   "class": "broad_when_narrow_exists",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for broad_when_narrow_exists; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"},
+  "note": "A broad request is denied when the atomic field-job scope is sufficient.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"scope_expanded": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"}}
 }

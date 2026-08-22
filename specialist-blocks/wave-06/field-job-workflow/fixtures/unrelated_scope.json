@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.UNRELATED_SCOPE",
   "class": "unrelated_scope",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for unrelated_scope; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "NO_FIELD_WORKFLOW_SCOPE", "error_code": "FIELD_JOB_WORKFLOW_NOT_APPLICABLE"},
+  "note": "An unrelated request is not applicable to Field Job Workflow.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "UNRELATED_REQUEST", "evidence_overrides": {}}, "expected_readback": {"disposition": "DENY", "route": "NO_FIELD_WORKFLOW_SCOPE", "error_code": "FIELD_JOB_WORKFLOW_NOT_APPLICABLE"}}
 }

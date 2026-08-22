@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.ROUTING",
   "class": "routing",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for routing; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"},
+  "note": "The required upstream router selects this atomic field-workflow block.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ROUTE_FIELD_JOB_WORKFLOW", "evidence_overrides": {}}, "expected_readback": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"}}
 }

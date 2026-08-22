@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.MISSING_CONTEXT",
   "class": "missing_context",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for missing_context; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_TYPED_CONTEXT_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_CONTEXT_INCOMPLETE"},
+  "note": "Missing typed context closes only the dependent workflow action.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"missing_context": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_TYPED_CONTEXT_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_CONTEXT_INCOMPLETE"}}
 }

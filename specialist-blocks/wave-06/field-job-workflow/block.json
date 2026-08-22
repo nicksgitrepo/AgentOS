@@ -64,8 +64,12 @@
   ],
   "required_knowledge": [
     "atomic specialization law",
+    "context and memory invalidation graph",
     "exact source lock",
-    "typed context contract"
+    "global model-policy snapshot route",
+    "source freshness and supersession policy",
+    "typed context contract",
+    "workflow-router boundary contract"
   ],
   "routing": {
     "signals": [
@@ -187,7 +191,10 @@
     "source_lock": "sources.lock",
     "freshness_policy": "Check publisher, identifier, version, publication/effective/supersession status, retrieved date, immutable identity, and digest when obtainable; stale or unverifiable evidence denies the dependent action.",
     "claim_rule": "Claims are limited to the exact source-backed P5 concern and selected reusable standards; no cross-domain, cross-version, legal, financial, engineering, safety, or provider claim is permitted.",
-    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion."
+    "unknown_rule": "UNKNOWN records missing evidence and closes only the dependent action; it never licenses inference or scope expansion.",
+    "model_policy_route": "Bind NARROW_CODING, gpt-5.6-luna, high reasoning, capability floor 49, CODE+TOOLS, and the exact global snapshot digest; prepared-inactive policy never permits admission or activation.",
+    "context_contract": "Require authority, candidate identity, custody, request, signal, source lock, workflow dependency/domain/phase/task, model route, and typed handoff context.",
+    "memory_invalidation": "Typed handoff is the only memory boundary; any candidate, source, model, route, upstream-router, custody, or context-contract change invalidates dependent context, route, handoff, and evaluation."
   },
   "controls": {
     "read": [
@@ -200,8 +207,10 @@
       "typed handoff receipt"
     ],
     "tools": [
+      "context-invalidation readback",
       "fixture evaluator",
       "local deterministic validator",
+      "model-policy snapshot reader",
       "source-lock reader"
     ],
     "data": [
@@ -215,7 +224,8 @@
     "build": "LOCAL_ISOLATED_CANDIDATE",
     "deploy": "DENY",
     "communication": "TYPED_HANDOFF_ONLY",
-    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY"
+    "acceptance_authority": "INDEPENDENT_AUTHORITY_ONLY",
+    "memory": "TYPED_HANDOFF_ONLY;_NO_DIRECT_PROJECT_OR_GLOBAL_MEMORY_WRITE"
   },
   "failure": {
     "ambiguous": "DENY_AND_REQUEST_TYPED_CONTEXT",
@@ -237,9 +247,12 @@
     ]
   },
   "lifecycle_rules": {
-    "candidate_entry": "Block, source lock, twelve gates, hostile fixtures, evaluation dossier, and typed handoff have matching digests.",
-    "evaluation_entry": "Independent evaluator reruns narrowness, routing, missing-context, stale-source, authority, custody, unsafe-action, and handoff cases.",
-    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, or failed utility/harm review.",
+    "candidate_entry": "Block, source lock, twelve gates, executable gate manifest, seventeen hostile vectors, model-policy route, context projection, memory-invalidation graph, evaluation dossier, registry entry, and typed handoff have matching digests.",
+    "evaluation_entry": "The operational evaluator invokes the public boundary for every real fixture, executes the ordered gate readback, proves unsafe-action mutation sensitivity, checks source freshness/model route, and computes invalidation closure.",
+    "model_policy": "A changed, expired, unavailable, or capability-inadequate global snapshot invalidates the model route and all dependent context, handoff, and evaluation; prepared-inactive policy remains candidate-only.",
+    "context_invalidation": "A changed candidate, source manifest, model snapshot, model route, upstream router result, custody reference, or context contract invalidates dependent context, route, handoff, and evaluation; no stale memory is reused.",
+    "suspension": "Suspend on source supersession, stale evidence, scope drift, sibling conflict, model-policy drift, context invalidation, or failed utility/harm review.",
+    "handoff": "Emit WAITING_WITH_RECEIPT with execution_instruction false, memory_write_allowed false, and independent_review_required true.",
     "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archived never means admitted.",
     "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
   },
@@ -265,7 +278,8 @@
       "NO",
       "UNKNOWN",
       "NOT_APPLICABLE"
-    ]
+    ],
+    "execution_manifest_path": "gates/execution.json"
   },
   "schema_path": "schemas/specialist-block.v1.json",
   "dependencies": [
@@ -281,8 +295,13 @@
   "evaluation": {
     "dossier_path": "evaluation.json",
     "receipt_id": "specialist-eval.field-job-workflow.v1",
-    "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+    "disposition": "EXECUTED_REVIEW_REQUIRED",
     "independent_reviewer_required": true,
+    "operational_evaluator": "control/field-job-workflow-package-evaluator.mjs#evaluateFieldJobWorkflowPackage",
+    "operational_evaluation_schema": "agentos.specialist_field_job_workflow_package_operational_evaluation.v1",
+    "model_route": "specialist-blocks/wave-06/field-job-workflow/model-route.json",
+    "context_projection": "specialist-blocks/wave-06/field-job-workflow/context.json",
+    "memory_invalidation": "specialist-blocks/wave-06/field-job-workflow/memory-invalidation.json",
     "fixture_classes": [
       "authority_conflict",
       "broad_when_narrow_exists",
@@ -313,5 +332,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "d67ada3b085af8ceb93454d33830c15de9879b71ce1bb7be2a4097827071c814"
+  "block_sha256": "ad3ae083c3f7f052a7b78ab8ad1db8c2989148fc5d70c847236895afb57ab9e7"
 }

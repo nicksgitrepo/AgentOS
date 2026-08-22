@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.TOOL_LIMIT",
   "class": "tool_limit",
-  "expected": "ROUTE",
   "hostile": true,
-  "note": "Synthetic hostile fixture for tool_limit; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_TOOL_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_TOOL_REVIEW_REQUIRED"},
+  "note": "Tool limits route to custody review without granting an unsupported tool.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"unsupported_tool": true}}}, "expected_readback": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_TOOL_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_TOOL_REVIEW_REQUIRED"}}
 }

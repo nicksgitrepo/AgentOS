@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.CROSS_PROVIDER_VERSION_CLAIM",
   "class": "cross_provider_version_claim",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for cross_provider_version_claim; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_SOURCE_REFRESH_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SOURCE_STALE_OR_UNVERIFIED"},
+  "note": "Cross-provider or cross-version evidence is not admitted into this source lock.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"cross_provider": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_SOURCE_REFRESH_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SOURCE_STALE_OR_UNVERIFIED"}}
 }

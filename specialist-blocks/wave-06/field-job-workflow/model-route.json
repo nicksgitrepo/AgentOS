@@ -1,0 +1,14 @@
+{
+  "schema": "agentos.field_job_workflow_model_route.v1",
+  "version": 1,
+  "status": "BOUND",
+  "route_source": "GLOBAL_MODEL_POLICY_SNAPSHOT",
+  "task_class": "NARROW_CODING",
+  "model_id": "gpt-5.6-luna",
+  "reasoning_effort": "high",
+  "capability_floor": 49,
+  "required_capabilities": ["CODE", "TOOLS"],
+  "context_floor_tokens": 64000,
+  "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+  "route_sha256": "ecc4315ae5235b904d2d00e25a9935b9c28219898706226f6a786661c4b05bab"
+}

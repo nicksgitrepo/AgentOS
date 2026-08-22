@@ -1,0 +1,21 @@
+{
+  "schema": "agentos.field_job_workflow_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.domain.field-job-workflow",
+  "evaluator_entrypoint": "control/field-job-workflow-package-evaluator.mjs#evaluateFieldJobWorkflowPackage",
+  "ordered_gate_ids": ["00-intake", "01-applicability", "02-authority-precedence", "03-scope-nongoals", "04-source-evidence-freshness", "05-context-completeness", "06-tool-resource-custody", "07-data-secret-privacy", "08-build-browser-runtime", "09-output-handoff", "10-proof-acceptance", "11-lifecycle-recovery-archive"],
+  "executions": [
+    {"gate_id": "00-intake", "fixture_class": "routing", "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"}},
+    {"gate_id": "01-applicability", "fixture_class": "unrelated_scope", "expected": {"disposition": "DENY", "route": "NO_FIELD_WORKFLOW_SCOPE", "error_code": "FIELD_JOB_WORKFLOW_NOT_APPLICABLE"}},
+    {"gate_id": "02-authority-precedence", "fixture_class": "authority_conflict", "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_AUTHORITY_ESCALATION", "error_code": "FIELD_JOB_WORKFLOW_AUTHORITY_CONFLICT"}},
+    {"gate_id": "03-scope-nongoals", "fixture_class": "broad_when_narrow_exists", "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"}},
+    {"gate_id": "04-source-evidence-freshness", "fixture_class": "stale_source", "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_SOURCE_REFRESH_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SOURCE_STALE_OR_UNVERIFIED"}},
+    {"gate_id": "05-context-completeness", "fixture_class": "missing_context", "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_TYPED_CONTEXT_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_CONTEXT_INCOMPLETE"}},
+    {"gate_id": "06-tool-resource-custody", "fixture_class": "tool_limit", "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_TOOL_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_TOOL_REVIEW_REQUIRED"}},
+    {"gate_id": "07-data-secret-privacy", "fixture_class": "data_limit", "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_DATA_CUSTODY_REVIEW", "error_code": "FIELD_JOB_WORKFLOW_DATA_LIMIT_REVIEW_REQUIRED"}},
+    {"gate_id": "08-build-browser-runtime", "fixture_class": "unsafe_action", "expected": {"disposition": "DENY", "route": "NO_FIELD_WORKFLOW_SIDE_EFFECT", "error_code": "FIELD_JOB_WORKFLOW_OPERATION_FORBIDDEN"}},
+    {"gate_id": "09-output-handoff", "fixture_class": "handoff", "expected": {"disposition": "ROUTE", "route": "FIELD_WORKFLOW_ANALYSIS_HANDOFF", "error_code": "FIELD_JOB_WORKFLOW_ROUTE_READY"}},
+    {"gate_id": "10-proof-acceptance", "fixture_class": "router_self_accept", "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_INDEPENDENT_REVIEW_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SELF_ACCEPTANCE_FORBIDDEN"}},
+    {"gate_id": "11-lifecycle-recovery-archive", "fixture_class": "false_positive", "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_TYPED_EVIDENCE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_FINDING_UNSUPPORTED"}}
+  ]
+}

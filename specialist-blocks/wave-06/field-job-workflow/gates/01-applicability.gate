@@ -11,13 +11,16 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 01-applicability condition pass without expanding this atomic specialist scope?",
+  "question": "Is the signal exactly DOMAIN.FIELD_JOB_WORKFLOW and not an unrelated, umbrella, well, regulatory, finance, or product request?",
   "evidence": [
     "block_sha256",
     "gate.01-applicability.answer",
     "gate.01-applicability.evidence",
     "source_lock_identity",
-    "upstream_router_identity"
+    "upstream_router_identity",
+    "workflow.domain",
+    "workflow.phase",
+    "workflow.task"
   ],
   "next": {
     "YES": "02-authority-precedence",
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "e30e6e96c7d78440f706733bf1d4f3795749b15c044391655c0d0437e14f4098"
+  "gate_sha256": "799ffb6cf3468e837dd7c46f4891f4007c50c347cc783d9715e20c0f8c3bfdb7"
 }

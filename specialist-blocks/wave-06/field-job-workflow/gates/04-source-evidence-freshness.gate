@@ -11,12 +11,15 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 04-source-evidence-freshness condition pass without expanding this atomic specialist scope?",
+  "question": "Are all source identities, versions, effective-date status, retrieved dates, immutable identities, and freshness conditions current and verifiable?",
   "evidence": [
     "block_sha256",
     "gate.04-source-evidence-freshness.answer",
     "gate.04-source-evidence-freshness.evidence",
+    "source_effective_date",
     "source_lock_identity",
+    "source_manifest_sha256",
+    "source_retrieved_date",
     "upstream_router_identity"
   ],
   "next": {
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "cdd5dfc12e3df9b86ea2a9a9f6ee95bec4f49a6f6109a47d38898efe974d6aa0"
+  "gate_sha256": "08c232dda6fc37ea8574602e2ef43678736b9a5e70270a6d74b301d36c8add1e"
 }

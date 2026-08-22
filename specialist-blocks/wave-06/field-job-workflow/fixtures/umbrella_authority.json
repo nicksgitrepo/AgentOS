@@ -2,8 +2,10 @@
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
   "block_id": "specialist.domain.field-job-workflow",
+  "fixture_id": "specialist.domain.field-job-workflow.UMBRELLA_AUTHORITY",
   "class": "umbrella_authority",
-  "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for umbrella_authority; provider, project, consumer, secret, and applicability facts remain external."
+  "expected": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"},
+  "note": "An umbrella authority claim cannot replace the narrow field-workflow block.",
+  "vector": {"entrypoint": "control/field-job-workflow-boundary-gate.mjs#evaluateFieldJobWorkflowBoundary", "input": {"request_kind": "ANALYZE_FIELD_JOB_WORKFLOW", "evidence_overrides": {"adversarial_flags": {"scope_expanded": true}}}, "expected_readback": {"disposition": "DENY", "route": "FIELD_WORKFLOW_NARROW_SCOPE_REQUIRED", "error_code": "FIELD_JOB_WORKFLOW_SCOPE_EXPANSION_FORBIDDEN"}}
 }

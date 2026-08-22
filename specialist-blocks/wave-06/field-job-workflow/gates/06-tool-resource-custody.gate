@@ -11,11 +11,14 @@
     "UNKNOWN",
     "NOT_APPLICABLE"
   ],
-  "question": "Field Job Workflow: does the exact 06-tool-resource-custody condition pass without expanding this atomic specialist scope?",
+  "question": "Are tools limited to read-only signal, source, catalog, context, and safety-boundary reads under isolated builder custody?",
   "evidence": [
     "block_sha256",
+    "custody_ref",
+    "custody_status",
     "gate.06-tool-resource-custody.answer",
     "gate.06-tool-resource-custody.evidence",
+    "requested_tools",
     "source_lock_identity",
     "upstream_router_identity"
   ],
@@ -33,5 +36,5 @@
     "unsafe_action": "DENY",
     "unknown_scope": "DEPENDENT_ACTION_ONLY"
   },
-  "gate_sha256": "7fd25b9149847d6b5cb4665586f5ea441b488742138c8698e47e85f13045fb16"
+  "gate_sha256": "42343ca5b4648a3998e4f438fca89aa19cc58e7c38590f94b40c237bfc3cd665"
 }
