@@ -1,9 +1,148 @@
 {
   "schema": "agentos.specialist_fixture.v1",
   "version": 1,
+  "fixture_id": "oidc-core-false_positive",
   "block_id": "specialist.security.oidc-core",
   "class": "false_positive",
   "expected": "DENY",
   "hostile": true,
-  "note": "Synthetic hostile fixture for false_positive; all provider, project, consumer, and applicability facts remain external."
+  "note": "Synthetic executable hostile vector for false_positive; all issuer, claims, provider, project, consumer, and applicability facts remain bounded and synthetic.",
+  "vector": {
+    "entrypoint": "control/oidc-core-boundary-gate.mjs#evaluateOidcCoreBoundary",
+    "input": {
+      "schema": "agentos.oidc_core_boundary_input.v1",
+      "version": 1,
+      "request_kind": "NOT_APPLICABLE",
+      "evidence": {
+        "authority_status": "CURRENT",
+        "custody_status": "BOUND",
+        "custody_owner": "AGENT.SECURITY_OIDC_CORE",
+        "custody_ref": "opaque:OIDC.CORE.CUSTODY",
+        "source_status": "CURRENT",
+        "source_identity": "SOURCE.ATOMIC_SPECIALIZATION_LAW",
+        "source_version": "1",
+        "source_effective_date": "2026-08-11",
+        "source_retrieved_date": "2026-08-11",
+        "standard_identity": "source.oidc-core-1-0",
+        "standard_version": "1.0",
+        "standard_effective_date": "2014-11-08",
+        "standard_retrieved_date": "2026-08-11",
+        "publisher_identity": "OpenID Foundation",
+        "issuer_ref": "opaque:OIDC.ISSUER.SYNTHETIC",
+        "client_type": "PUBLIC",
+        "flow": "AUTHORIZATION_CODE",
+        "protocol": "OIDC",
+        "response_type": "CODE",
+        "response_mode": "QUERY",
+        "claims_profile": "STANDARD_OIDC_CORE",
+        "signal": "OIDC",
+        "target_ref": "specialist.security.oidc-core",
+        "context_complete": true,
+        "scope": "NARROW",
+        "requested_action": "ANALYZE_OIDC_CLAIMS",
+        "requested_tools": [
+          "READ_SOURCE",
+          "READ_CONTEXT"
+        ],
+        "self_acceptance": false,
+        "scope_expanded": false,
+        "authority_conflict": false,
+        "project_data_present": false,
+        "secret_data_present": false,
+        "applicability_status": "EXTERNAL_TYPED",
+        "applicability_complete": true,
+        "claims_evidence_status": "BOUNDED",
+        "oidc_context": {
+          "issuer_ref": "opaque:OIDC.ISSUER.SYNTHETIC",
+          "client_type": "PUBLIC",
+          "flow": "AUTHORIZATION_CODE",
+          "protocol": "OIDC",
+          "response_type": "CODE",
+          "response_mode": "QUERY",
+          "scope_values": [
+            "openid",
+            "profile",
+            "email"
+          ],
+          "claims_requested": [
+            "SUB",
+            "EMAIL"
+          ],
+          "claims_present": [
+            "SUB",
+            "ISS",
+            "AUD",
+            "EXP",
+            "EMAIL"
+          ],
+          "nonce_present": true,
+          "issuer_claims_digest": "opaque:OIDC.CLAIMS.SYNTHETIC",
+          "id_token_alg": "RS256",
+          "id_token_signing_verified": true,
+          "context_digest": "813d2a9011b1f5245aad426c8479eab47673e28be862eb33f2b90aa606099a15"
+        },
+        "claims": [
+          {
+            "claim_id": "SUB",
+            "source": "ID_TOKEN",
+            "validation_status": "EVIDENCED",
+            "evidence_ref": "opaque:OIDC.EVIDENCE.SUB"
+          },
+          {
+            "claim_id": "ISS",
+            "source": "ID_TOKEN",
+            "validation_status": "EVIDENCED",
+            "evidence_ref": "opaque:OIDC.EVIDENCE.ISSUER"
+          },
+          {
+            "claim_id": "AUD",
+            "source": "ID_TOKEN",
+            "validation_status": "EVIDENCED",
+            "evidence_ref": "opaque:OIDC.EVIDENCE.AUDIENCE"
+          },
+          {
+            "claim_id": "EXP",
+            "source": "ID_TOKEN",
+            "validation_status": "EVIDENCED",
+            "evidence_ref": "opaque:OIDC.EVIDENCE.EXPIRY"
+          },
+          {
+            "claim_id": "EMAIL",
+            "source": "USERINFO",
+            "validation_status": "EVIDENCED",
+            "evidence_ref": "opaque:OIDC.EVIDENCE.EMAIL"
+          }
+        ],
+        "candidate_digest": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66",
+        "block_revision": "1.0.0",
+        "source_manifest_sha256": "314833b1825f6f0029b6c2c299e2fddc0ceceeb018cc36d74f1a79c9787f8429",
+        "standard_block_sha256": "4da992ee05545369feb2b4c01b00c60d1632f384d5c3eea7d1ac10f98add10f2",
+        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "context_receipt_sha256": "d016e8e5b812d6c7a206ccc59e0176fcd6ed4ce43d2335848ea3f00a32d11ad9",
+        "upstream_router_result_sha256": "404fa229e2c030aba963b93f518b7642c5c941a26b352732e85326d66e2c4d53",
+        "memory_binding": "TYPED_CONTEXT_INVALIDATION_V1",
+        "adversarial_flags": {
+          "authority_conflict": false,
+          "scope_expanded": false,
+          "cross_provider": false,
+          "duplicate_authority": false,
+          "umbrella_authority": false,
+          "false_positive": true,
+          "stale_source": false,
+          "unsupported_tool": false,
+          "missing_context": false,
+          "unsafe_action": false,
+          "issuer_mismatch": false,
+          "claims_unverified": false
+        }
+      }
+    },
+    "expected_readback": {
+      "disposition": "DENY",
+      "route": "NO_OIDC_CORE_SCOPE",
+      "error_code": "OIDC_CORE_SCOPE_NOT_APPLICABLE",
+      "zero_side_effects": true,
+      "acceptance_allowed": false
+    }
+  }
 }

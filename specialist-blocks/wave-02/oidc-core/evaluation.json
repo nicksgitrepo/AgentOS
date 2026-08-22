@@ -10,7 +10,7 @@
     {
       "case_id": "oidc-core-authority_conflict",
       "class": "authority_conflict",
-      "expected": "DENY",
+      "expected": "ESCALATE",
       "observed": "PASS"
     },
     {
@@ -28,7 +28,7 @@
     {
       "case_id": "oidc-core-data_limit",
       "class": "data_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {
@@ -88,7 +88,7 @@
     {
       "case_id": "oidc-core-tool_limit",
       "class": "tool_limit",
-      "expected": "ROUTE",
+      "expected": "DENY",
       "observed": "PASS"
     },
     {
@@ -116,5 +116,6 @@
     "pending": 0
   },
   "disposition": "STATIC_PASS_REVIEW_REQUIRED",
+  "independent_reviewer_required": true,
   "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
 }

@@ -1,0 +1,155 @@
+{
+  "schema": "agentos.oidc_core_gate_execution.v1",
+  "version": 1,
+  "block_id": "specialist.security.oidc-core",
+  "evaluator_entrypoint": "control/oidc-core-package-evaluator.mjs#evaluateOidcCorePackage",
+  "ordered_gate_ids": [
+    "00-intake",
+    "01-applicability",
+    "02-authority-precedence",
+    "03-scope-nongoals",
+    "04-source-evidence-freshness",
+    "05-context-completeness",
+    "06-tool-resource-custody",
+    "07-data-secret-privacy",
+    "08-build-browser-runtime",
+    "09-output-handoff",
+    "10-proof-acceptance",
+    "11-lifecycle-recovery-archive"
+  ],
+  "executions": [
+    {
+      "gate_id": "00-intake",
+      "fixture_class": "narrowness",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OIDC_CORE_SPECIALIST_HANDOFF",
+        "error_code": "OIDC_CORE_ROUTE_READY",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "01-applicability",
+      "fixture_class": "handoff",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OIDC_CORE_SPECIALIST_HANDOFF",
+        "error_code": "OIDC_CORE_ROUTE_READY",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "02-authority-precedence",
+      "fixture_class": "authority_conflict",
+      "expected": {
+        "disposition": "ESCALATE",
+        "route": "CONTROL_PLANE_ESCALATION",
+        "error_code": "OIDC_CORE_AUTHORITY_CONFLICT",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "03-scope-nongoals",
+      "fixture_class": "broad_when_narrow_exists",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NARROW_SCOPE_REQUIRED",
+        "error_code": "OIDC_CORE_SCOPE_EXPANSION_FORBIDDEN",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "04-source-evidence-freshness",
+      "fixture_class": "stale_source",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "OIDC_CORE_SOURCE_STALE_OR_UNVERIFIED",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "05-context-completeness",
+      "fixture_class": "missing_context",
+      "expected": {
+        "disposition": "DENY",
+        "route": "TYPED_CONTEXT_REQUIRED",
+        "error_code": "OIDC_CORE_CONTEXT_INCOMPLETE",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "06-tool-resource-custody",
+      "fixture_class": "tool_limit",
+      "expected": {
+        "disposition": "DENY",
+        "route": "READ_ONLY_TOOLS_REQUIRED",
+        "error_code": "OIDC_CORE_TOOL_SCOPE_FORBIDDEN",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "07-data-secret-privacy",
+      "fixture_class": "data_limit",
+      "expected": {
+        "disposition": "DENY",
+        "route": "PRIVACY_BOUNDARY_REQUIRED",
+        "error_code": "OIDC_CORE_PROTECTED_DATA_FORBIDDEN",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "08-build-browser-runtime",
+      "fixture_class": "unsafe_action",
+      "expected": {
+        "disposition": "DENY",
+        "route": "NO_OIDC_CORE_SIDE_EFFECT",
+        "error_code": "OIDC_CORE_OPERATION_FORBIDDEN",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "09-output-handoff",
+      "fixture_class": "routing",
+      "expected": {
+        "disposition": "ROUTE",
+        "route": "OIDC_CORE_SPECIALIST_HANDOFF",
+        "error_code": "OIDC_CORE_ROUTE_READY",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "10-proof-acceptance",
+      "fixture_class": "router_self_accept",
+      "expected": {
+        "disposition": "DENY",
+        "route": "INDEPENDENT_REVIEW_REQUIRED",
+        "error_code": "OIDC_CORE_SELF_ACCEPTANCE_FORBIDDEN",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    },
+    {
+      "gate_id": "11-lifecycle-recovery-archive",
+      "fixture_class": "cross_provider_version_claim",
+      "expected": {
+        "disposition": "DENY",
+        "route": "SOURCE_REFRESH_REQUIRED",
+        "error_code": "OIDC_CORE_STANDARD_IDENTITY_INVALID",
+        "zero_side_effects": true,
+        "acceptance_allowed": false
+      }
+    }
+  ],
+  "execution_sha256": "0a6a1c6abba3ce0fac2d84d823db92ff95b56e934a18bb834e2648d369d690a7"
+}
