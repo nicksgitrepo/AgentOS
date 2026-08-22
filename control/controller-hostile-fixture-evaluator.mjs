@@ -34,10 +34,22 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGE_ROOT = path.join(ROOT, "specialist-blocks/wave-01/project-controller");
 const EVENT_FIXTURE = path.join(ROOT, "tests/fixtures/controller-events/canonical-signed-sequence.v1.json");
 const PROVISIONING_CEILING = "CONTROLLER_OPERATIONAL_STORE_INACTIVE";
+const CURRENT_MODEL_POLICY_TEST_TIME = new Date().toISOString();
 
 function typedRejection(code, message) { const error = new Error(message); error.code = code; throw error; }
 function sha256(bytes) { return crypto.createHash("sha256").update(bytes).digest("hex"); }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }
+async function withControllerEventClock(signed, operation) {
+  const previousDateNow = Date.now;
+  const eventAuthorityMs = Date.parse(signed.trusted_now_utc);
+  const modelPolicyMs = Date.parse(CURRENT_MODEL_POLICY_TEST_TIME);
+  let firstAuthorityRead = true;
+  Date.now = () => {
+    if (firstAuthorityRead) { firstAuthorityRead = false; return eventAuthorityMs; }
+    return modelPolicyMs;
+  };
+  try { return await operation(); } finally { Date.now = previousDateNow; }
+}
 function sourceDigest(entrypoint) {
   const relative = entrypoint.split("#", 1)[0];
   const file = path.resolve(ROOT, relative);
@@ -110,20 +122,20 @@ function runMonitorFixture(fixture) {
   return {actual, semantic_error: null, adapter_invocation_count: 0, state_change_count: 0, operational_ceiling: null, evidence: {status: tick.status}};
 }
 async function runEventFixture(fixture, signed) {
-  const setup = buildContext(signed.trusted_now_utc, signed);
+  const setup = buildContext(CURRENT_MODEL_POLICY_TEST_TIME, signed);
   const event = eventFor(fixture, signed);
   const state = stateAtEvent(setup.state, event);
   const before = controllerDigest(state);
   let semanticError = null;
   try {
-    validateControllerEventPreconditions({state, event, globalGovernanceContext: setup.context, globalGovernanceAuthorityStore: setup.authorityStore});
+    await withControllerEventClock(signed, () => validateControllerEventPreconditions({state, event, globalGovernanceContext: setup.context, globalGovernanceAuthorityStore: setup.authorityStore}));
   } catch (error) { semanticError = error; }
   const after = controllerDigest(state);
   let adapterCalls = 0;
   const adapters = new Proxy({}, {get: () => async () => { adapterCalls += 1; throw new Error("Controller hostile evaluator adapter must not run"); }});
   let operationalError = null;
   try {
-    await applyAndWriteAgentOSControllerEventAsync({projectControlStoreCapability: Object.freeze(Object.create(null)), event, adapters, globalGovernanceContext: setup.context, globalGovernanceAuthorityStore: setup.authorityStore});
+    await withControllerEventClock(signed, () => applyAndWriteAgentOSControllerEventAsync({projectControlStoreCapability: Object.freeze(Object.create(null)), event, adapters, globalGovernanceContext: setup.context, globalGovernanceAuthorityStore: setup.authorityStore}));
   } catch (error) { operationalError = error; }
   fs.rmSync(setup.authorityRoot, {recursive: true, force: true});
   if (!operationalError || operationalError.code !== "CONTROLLER_PROJECT_STORE_PROVISIONING_REQUIRED") typedRejection("CONTROLLER_OPERATIONAL_CEILING_UNPROVEN", `Controller event did not stop at its typed inactive-store ceiling: ${fixture.class}`);
@@ -163,7 +175,7 @@ export async function evaluateCanonicalControllerHostileFixtures({fixtureManifes
   const signed = readJson(EVENT_FIXTURE);
   const results = [];
   const originalDateNow = Date.now;
-  Date.now = () => Date.parse(signed.trusted_now_utc);
+  Date.now = () => Date.parse(CURRENT_MODEL_POLICY_TEST_TIME);
   try {
    for (const entry of manifest.entries) {
     const fixturePath = path.resolve(path.dirname(fixtureManifestPath), entry.path);

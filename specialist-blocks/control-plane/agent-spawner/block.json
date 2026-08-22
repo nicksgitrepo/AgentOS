@@ -101,7 +101,7 @@
   "controller_issuer_registry_sha256": "1502baca58eadffadedec77ba490d65531321e2d2229b46c5cfbfdcdd8404cf2",
   "controller_operation_registry_sha256": "8885836131a089880d96d3e4a1bd739e9899059eba69497861d0cd042caf3bc8",
   "independent_clearance_trust_anchor_sha256": "a1127173718c702862b3246e82784c93d4142eb4430ec9168e2fff72690f8258",
-  "model_policy_source_registry_sha256": "73bd213ccac04114d0a53daf274bc65daf746d1503e98f415c097d58e0f06d8f",
+  "model_policy_source_registry_sha256": "d866c1d193d207d34696ef008409d28f6d5d8d392e238bccad737e3b1f5cc0cf",
   "decision_tree_sha256": "0ca793fdfd893166fa4fdd49436938d4a0cb0abc7d9004717af251b40aeb152d",
   "gates": [
     {
@@ -255,5 +255,5 @@
     "FIXTURE.SPAWNER.UNLISTED_MODEL",
     "FIXTURE.SPAWNER.WRONG_GLOBAL_MEMORY_WRITER"
   ],
-  "package_sha256": "d60e6842e34c42e5b2fd071da3a9c40848603f7cee12e9e63c432425ee56e9fb"
+  "package_sha256": "a78798c7df0279c92503885844a56b364c2b34c771aff65c5a3d99001449f18f"
 }

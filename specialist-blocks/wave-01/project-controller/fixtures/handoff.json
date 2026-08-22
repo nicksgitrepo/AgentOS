@@ -11,7 +11,7 @@
   "cleanup": ["REMOVE_TEMP_CUSTODY", "VERIFY_NO_SHARED_MUTATION"],
   "block_id": "specialist.control.project-controller",
   "class": "handoff",
-  "expected": "ROUTE",
+  "expected": "DENY",
   "hostile": true,
   "vector": {
     "entrypoint": "applyAndWriteAgentOSControllerEventAsync",
