@@ -20297,7 +20297,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-web-2025-a03-software-supply-chain-failures/handoff.json",
-        "handoff_file_sha256": "196549b113609b6e7feabdf981423dde97cf37fe7ed808a765d6f4a241449605",
+        "handoff_file_sha256": "7b7125bcfe8d853b2ec746869e7db8e47dd3ccd460c8edb278d7e5e87f1f6117",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-web-2025-a03-software-supply-chain-failures.v1"
       },
@@ -20352,11 +20352,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-03/owasp-web-2025-a03-software-supply-chain-failures/evaluation.json"
+          "specialist-blocks/wave-03/owasp-web-2025-a03-software-supply-chain-failures/evaluation.json",
+          "specialist-blocks/registry/owasp-web-2025-a03-software-supply-chain-failures-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40167,17 +40168,17 @@
       "rank": 63,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A03_SOFTWARE_SUPPLY_CHAIN_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Frozen after local execution; waits for fresh external authority and read-only Luna audit."
     },
     {
       "rank": 64,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A04_CRYPTOGRAPHIC_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 65,
@@ -40444,5 +40445,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "a8c9b8ecb30a2512a72e8eb61b86c0b139637ce00a2127eb8ba71796b1808737"
+  "roster_sha256": "9d6cc654e3a14fc5ce94d0b39dd8fda8ce16620b374d920d356f968c3fcb5807"
 }

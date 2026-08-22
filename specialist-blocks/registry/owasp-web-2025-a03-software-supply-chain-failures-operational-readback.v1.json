@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_web_a03_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-web-2025-a03-software-supply-chain-failures",
+  "candidate_digest": "bd3a9026691d4abef768147164c2309cf2538117993f0ae10624def52e7d5561",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "1d24362580c3748aacea27556089dd6a4199ad872d16ed7db5651f2da6606b68",
+  "upstream_router_result_sha256": "e6efa49b1b853a0df351b89bb1692029147a0d5ee93c3609a347a62a0b0c84a8",
+  "gate_execution_sha256": "87e178ca2b5f8f951488a8a7381183b8632b3611c69e2e0e6432f846eb5145e2",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T20:03:01.582Z",
+  "readback_sha256": "3f26f3772e812e4b4f35643e60ae501177c69bb24938813a25e2dc741b04180e"
+}
