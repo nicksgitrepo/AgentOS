@@ -1,0 +1,40 @@
+{
+  "status": "BLOCKED_EXACT",
+  "block_id": "specialist.security.owasp-api-2023-api7-ssrf",
+  "candidate_digest": "6d8b40fed998f7d8b0703b3ad315fb4abe6e394a4873a09744222156d9c36b6a",
+  "local_status": "PASS",
+  "local_proof": {
+    "fixture_count": 17,
+    "gate_count": 12,
+    "mutation_detected": true,
+    "canonical_binding_regression": "PASS",
+    "shared_registry_verdict": "ALIGNED",
+    "hostile_shared_registry_regression": "BLOCKED_EXACT:SHARED_REGISTRY_SPAWNER_INTEGRATION_DRIFT",
+    "workspace_custody_status": "MATCHED",
+    "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+    "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+    "context_sha256": "045ca2160e30096de299ed2f48fbab0cc069df8f8f66f94627dc739c0cad5fda",
+    "upstream_router_result_sha256": "37757c94ad761491c6dcbba19052e22fbe3279708f3e5f05998e42132239de56",
+    "gate_execution_sha256": "50ee8c1db9bc2da4a3bcbe1dfefa16a90c58d3dbc03e166ef62e2e25e2456e31",
+    "readback_sha256": "c134a3fe0681de80e7471f67b54055014230b0ed101c17922f27f7a67d981985",
+    "readback_file_sha256": "80067c19c41ea72d8a5c683e8abd7e4664b4bf25e7e78c673c1f671c08d92649",
+    "roster_sha256": "366906d07ecc821691a75761ed2258ece0add445225c7799b87f886dabf2ac07",
+    "next_eligible": "AGENT.SECURITY_OWASP_API_2023_API8_MISCONFIGURATION"
+  },
+  "external_admission": "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+  "error": {
+    "error_name": "Error",
+    "error_code": "SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
+    "error_message_sha256": "bade8e2732d6331542a220f5bdc4aab817ce97891e59c1cea62c68a78baa1c37"
+  },
+  "runtime_custody": {
+    "workspace_root_source": "ACTIVE_GIT_WORKTREE_ROOT",
+    "worktree_name": "AgentOS-product-client-openapi-contracts-spawner-lane-20260822-api7-01",
+    "branch": "codex/product-client-openapi-contracts-spawner-lane-20260822-api7-01",
+    "resolved_custody_path_sha256": "4e19f03d7182177b4908fcf260fcac101390687cb485b44c743382bf8e8240dc",
+    "project_root_contained": true,
+    "task_checkout_contained": true,
+    "task_worktree_contained": true
+  },
+  "observed_at_utc": "2026-08-22T19:07:57.000Z"
+}
