@@ -95,7 +95,7 @@ function evaluateDossier(packageDir) {
     const dossierCase = evaluation.cases.find((item) => item.class === caseClass);
     if (!dossierCase || dossierCase.case_id !== `${casePrefix}-${caseClass}`) fail(`${block.block_id} ${caseClass} case identity is not deterministic`);
     if (fixture.schema !== "agentos.specialist_fixture.v1" || fixture.version !== 1 || fixture.block_id !== block.block_id || fixture.class !== caseClass || fixture.hostile !== true) fail(`${block.block_id} ${caseClass} fixture contract is invalid`);
-    const expected = fixture.expected;
+    const expected = isRecord(fixture.expected) ? fixture.expected.disposition : fixture.expected;
     if (!["ROUTE", "DENY", "ESCALATE"].includes(expected) || dossierCase.expected !== expected || !["PASS", "PENDING"].includes(dossierCase.observed)) fail(`${block.block_id} ${caseClass} has an invalid observed utility/harm state`);
     if (ALWAYS_ROUTE_CLASSES.includes(caseClass) && expected !== "ROUTE") fail(`${block.block_id} ${caseClass} must remain routable under typed context`);
     if (ALWAYS_DENY_CLASSES.includes(caseClass) && expected !== "DENY") fail(`${block.block_id} ${caseClass} must deny unsafe or over-broad behavior`);

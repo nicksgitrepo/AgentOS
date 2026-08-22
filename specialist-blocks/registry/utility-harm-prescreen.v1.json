@@ -27,7 +27,7 @@
     "flexible_classes": ["authority_conflict", "data_limit", "duplicate_sibling_authority", "tool_limit"],
     "rule": "ROUTE_REQUIRES_EXPLICIT_TYPED_SCOPE;_DENY_OR_ESCALATE_CLOSES_UNSAFE_OR_UNRESOLVED_ACTIONS"
   },
-  "evaluation_manifest_sha256": "8e09c1e0e32b98cd62bd349d08258ba9474dc1f88cfb6a3c92d73828b79720e3",
+  "evaluation_manifest_sha256": "91540a8fadd55b0b7d9cd5cd75872cbc298fecd52cae3eab0328d5330f786213",
   "utility_harm": "PENDING_EXTERNAL_AUTHORITY",
   "residuals": [
     "This deterministic pre-screen validates declared fixture policy and dossier consistency; it is not external utility/harm acceptance.",

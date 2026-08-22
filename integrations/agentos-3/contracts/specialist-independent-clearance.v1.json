@@ -17,7 +17,7 @@
     { "block_id": "specialist.control.resource-scheduler", "block_sha256": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87" },
     { "block_id": "specialist.control.runtime-deployment-operator", "block_sha256": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859" }
   ],
-  "review_manifest_sha256": "366657337e4511691d58de86d8387e51df890839861f82bff69ee853fcc38ce9",
+  "review_manifest_sha256": "140372c0df092ee73c6c674b2d707cbb1e72131d6001a3e3d27b2ea854cafdcc",
   "residuals": ["Integration intake remains separate.", "Activation, deployment, migration, publication, and release promotion remain OFF."],
-  "clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"
+  "clearance_sha256": "55b59275c4de0f45a6a78375e2ec311da10da5480a0b07ba7b4dee5e83399165"
 }
