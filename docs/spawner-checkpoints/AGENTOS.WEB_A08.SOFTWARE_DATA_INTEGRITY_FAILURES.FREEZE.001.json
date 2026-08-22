@@ -1,0 +1,30 @@
+{
+  "schema": "agentos.spawner_liveness_checkpoint.v1",
+  "version": 1,
+  "checkpoint_id": "AGENTOS.WEB_A08.SOFTWARE_DATA_INTEGRITY_FAILURES.FREEZE.001",
+  "lifecycle_id": "OPENAPI_ROSTER_CONTINUE_20260822",
+  "phase": "WEB_A08_SOFTWARE_DATA_INTEGRITY_FAILURES_CANDIDATE_FREEZE",
+  "phase_index": 12,
+  "phase_window_seconds": 30,
+  "started_at_utc": "2026-08-22T20:11:39.000Z",
+  "observed_at_utc": "2026-08-22T20:12:09.000Z",
+  "elapsed_seconds": 30,
+  "window_status": "EXHAUSTED",
+  "meaningful_progress": true,
+  "typed_result_status": "PRESENT",
+  "exact_receipt_status": "EXACT",
+  "exact_receipt_ref": "opaque:AGENTOS.WEB_A08.SOFTWARE_DATA_INTEGRITY_FAILURES.FREEZE.001",
+  "exact_receipt_sha256": "7876cc77ff9f493f75b71c4ce465cd846b715adf18e1f5ba18f690142b23991e",
+  "persistence": {
+    "status": "CHECKPOINT_PERSISTED",
+    "receipt_ref": "opaque:AGENTOS.WEB_A08.SOFTWARE_DATA_INTEGRITY_FAILURES.FREEZE.001",
+    "receipt_sha256": "7876cc77ff9f493f75b71c4ce465cd846b715adf18e1f5ba18f690142b23991e",
+    "atomic": true,
+    "same_turn": true,
+    "write_scope": "CONTROL_PLANE_ONLY"
+  },
+  "status": "BLOCKED_EXACT",
+  "safe_stop": true,
+  "next_action": "CONTINUE_WITH_NEXT_ELIGIBLE_BLOCK",
+  "checkpoint_sha256": "b45e7fb14b28c0eb11ded69c8ad8be80867eb48e0e9ab7312528d60cdcb0891f"
+}

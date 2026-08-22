@@ -21876,7 +21876,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-03/owasp-web-2025-a08-software-data-integrity-failures/handoff.json",
-        "handoff_file_sha256": "2dc2e42bfad8f8c350764fcd2c7b622c4fa4f2942e46a7c2a662ec540f59571a",
+        "handoff_file_sha256": "bca3c4a49bf4793209df86b403dfce2789c72bb2e8dc6565a41e85e64fd30c84",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.owasp-web-2025-a08-software-data-integrity-failures.v1"
       },
@@ -21931,11 +21931,12 @@
         "reason": "SPECIALIST_AUDITORS entry covers security; impact is bounded by its narrow authority and independent admission requirement."
       },
       "build_state": "CANDIDATE_READY_FOR_QUALIFICATION",
-      "qa_state": "STATIC_PASS_REVIEW_REQUIRED",
-      "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
+      "qa_state": "EXECUTED_REVIEW_REQUIRED",
+      "independent_evaluation_state": "EXECUTED_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-03/owasp-web-2025-a08-software-data-integrity-failures/evaluation.json"
+          "specialist-blocks/wave-03/owasp-web-2025-a08-software-data-integrity-failures/evaluation.json",
+          "specialist-blocks/registry/owasp-web-2025-a08-software-data-integrity-failures-operational-readback.v1.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
@@ -40212,17 +40213,17 @@
       "rank": 68,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A08_SOFTWARE_DATA_INTEGRITY_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": true,
+      "eligible": false,
       "priority_score": 76.25,
-      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
+      "reason": "Frozen after local execution; waits for fresh external authority and read-only Luna audit."
     },
     {
       "rank": 69,
       "stable_agent_id": "AGENT.SECURITY_OWASP_WEB_2025_A09_SECURITY_LOGGING_ALERTING_FAILURES",
       "tier": "SPECIALIST_AUDITORS",
-      "eligible": false,
+      "eligible": true,
       "priority_score": 76.25,
-      "reason": "Queued after permanent roles and platform prerequisites."
+      "reason": "Highest eligible unaccepted package after dependency-safe predecessors."
     },
     {
       "rank": 70,
@@ -40449,5 +40450,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "2e0e8610533cd75ebf8318ca817969cae3e97582217709f79741202341e9f1cd"
+  "roster_sha256": "1a52cab3baaed21c2a36dd644df737a77a8e5396a5e1f686df90c5269cb67430"
 }
