@@ -7119,8 +7119,7 @@
             "path": "specialist-blocks/wave-02/cloudflare-cache/gates/11-lifecycle-recovery-archive.gate",
             "file_sha256": "e5d660df4e3a15408edadd631c64628cbe72d01865273bc1b6fea5d18b791c56"
           }
-        ],
-        "manifest_file_sha256": "d4c77fd720b8b5a1e593c9bb78b468811d1ee4fd8cfbbaad389dd914923894f9"
+        ]
       },
       "hostile_fixtures": {
         "status": "BOUND",
@@ -7227,8 +7226,7 @@
             "file_sha256": "a0b1c67edda8507f882ca555cf3407a19d86e5ec28b4d9c4ccfcbaee54506c19",
             "expected_outcome": "DENY"
           }
-        ],
-        "inventory_sha256": "69470f5bca412362f2996edc8b2b6ac252ee212979a4be848e3d66eacd96872d"
+        ]
       },
       "required_evidence_handoff": {
         "evidence_fields": [
@@ -7240,15 +7238,7 @@
         "handoff_path": "specialist-blocks/wave-02/cloudflare-cache/handoff.json",
         "handoff_file_sha256": "9f20849f3e14504da76896f87a608d814375350909034a08c7765e3e2a37f0a2",
         "independent_review_required": true,
-        "receipt_id": "specialist-eval.cloudflare-cache.v1",
-        "candidate_digest": "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1",
-        "gate_execution_path": "specialist-blocks/wave-02/cloudflare-cache/gates/execution.json",
-        "gate_execution_file_sha256": "9b05322de737ae408b6427dfc55f5425ce944ece487ec0d862ffb8a35735fa06",
-        "evaluation_file_sha256": "d6abe63c58539f354bd705212d69e5c027c614facf9a6923470b00c03a604704",
-        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
-        "model_route_sha256": "97a653ec06f36e1dea28aed122b143e57b1ee49d63c299a98d64721c9aa77caf",
-        "context_receipt_sha256": "30a920b3ccdd2e799048f1ab427cf3c4f052f5b6f9f7b4eadeff2d8e33c6e498",
-        "memory_binding": "TYPED_HANDOFF_ONLY"
+        "receipt_id": "specialist-eval.cloudflare-cache.v1"
       },
       "lifecycle": {
         "kind": "SEED_TO_WORKER",
@@ -7302,21 +7292,16 @@
       "independent_evaluation_state": "STATIC_PASS_REVIEW_REQUIRED",
       "supersession_invalidation": {
         "links": [
-          "specialist-blocks/wave-02/cloudflare-cache/evaluation.json",
-          "specialist-blocks/wave-02/cloudflare-cache/handoff.json",
-          "specialist-blocks/wave-02/cloudflare-cache/gates/execution.json"
+          "specialist-blocks/wave-02/cloudflare-cache/evaluation.json"
         ],
         "invalidate_when": [
           "block semantic digest changes",
           "source lock or authoritative evidence changes",
           "gate or hostile fixture bytes change",
-          "global model-policy snapshot or permanent-role registry changes",
-          "model route, typed context receipt, upstream router receipt, or memory binding changes",
-          "custody owner or rollback boundary changes"
+          "global model-policy snapshot or permanent-role registry changes"
         ],
         "rebuild_rule": "Invalidate dependent compiled contexts and seeds, preserve history, resolve current bytes, re-run deterministic gates, then obtain a new independent receipt before reuse."
-      },
-      "candidate_digest": "7fc6a10bd0f8533ef25ea36a074829c3eae951cf0418666498a45467deb957d1"
+      }
     },
     {
       "stable_agent_id": "AGENT.PLATFORM_CLOUDFLARE_DNS",
@@ -30058,9 +30043,55 @@
         "Seed, roster, defect, dependency, invalidation, handoff, memory, and Git custody contracts."
       ],
       "deterministic_gates": {
-        "status": "INCOMPLETE",
+        "status": "BOUND",
         "manifest_path": "specialist-blocks/control-plane/agent-spawner/gates/manifest.json",
-        "gates": []
+        "gates": [
+          {
+            "gate_id": "SPAWNER.OWNERSHIP_CLASSIFICATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/ownership-classification.gate",
+            "file_sha256": "c7a02b4886d777bea05ab8fca7997b90b517996ae359f9c74edd92c33dc3f987"
+          },
+          {
+            "gate_id": "SPAWNER.AUTHORITY_SEPARATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/controller-authority.gate",
+            "file_sha256": "0b5976cb74f0835f6dac395b4545d0402a56c53c482c6473ece32208a0f104c2"
+          },
+          {
+            "gate_id": "SPAWNER.EXACT_BLOCK_QA",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/exact-block-qa.gate",
+            "file_sha256": "ad8cc25928bb3d61b7f98bdbb399f15f0f31c09425ab1ad6c890a8adf98d128d"
+          },
+          {
+            "gate_id": "SPAWNER.SEED_INERTNESS",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/seed-inertness.gate",
+            "file_sha256": "8a6028242bc8674378638a18c63156f4a834055defde1c23edbb97ec4635ecff"
+          },
+          {
+            "gate_id": "SPAWNER.ECO_MODEL_POLICY",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/model-policy.gate",
+            "file_sha256": "cf6f4ea0a9087effd7d7dd691c4e15ddbced18fc2ffc37bcdc31daf95379fa58"
+          },
+          {
+            "gate_id": "SPAWNER.GLOBAL_MEMORY",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/memory-readback.gate",
+            "file_sha256": "0ad3852bde6b4efa161c3bc1be82a036b659db9b65c5cf4c4e15bc066cd7e0d3"
+          },
+          {
+            "gate_id": "SPAWNER.TURN_CONTINUATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/turn-closeout.gate",
+            "file_sha256": "d3da38dd60a4265141baa08b91b5f912486dd5a9dc75281539ac1ed67be8a234"
+          },
+          {
+            "gate_id": "SPAWNER.GIT_INTEGRATION",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/git-integration.gate",
+            "file_sha256": "43e1f1e57b5a4a5fa1fab5535c11283b7811c271bdc9afc6ed5993160ef07d9e"
+          },
+          {
+            "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
+            "path": "specialist-blocks/control-plane/agent-spawner/gates/feature-implementation-loop.gate",
+            "file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0"
+          }
+        ]
       },
       "hostile_fixtures": {
         "status": "BOUND",
@@ -40440,5 +40471,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "4b039d9075d79cf3321ba787c98e51f96baece8a53f95ad9cd83e894c35d438b"
+  "roster_sha256": "24aeb3b268b269a11ff95653b2f8e2fbaf3ba67947967857649803041f3bffda"
 }

@@ -100,10 +100,39 @@ function entryType(relativePath, block, role) {
   return relativePath.includes("/standards/") ? "REUSABLE_STANDARD_BLOCK" : "REUSABLE_GOVERNANCE_BLOCK";
 }
 function familyFor(block, role) { return String(role?.family ?? block.family ?? block.block_id.split(".")[1] ?? "unclassified"); }
+function safeDeclaredGatePath(relativePath, manifestPath, declaredPath) {
+  if (typeof declaredPath !== "string" || declaredPath.length === 0) return null;
+  const normalized = declaredPath.replaceAll("\\", "/");
+  if (normalized.startsWith("/") || normalized.split("/").includes("..")) return null;
+  const candidate = normalized.startsWith("gates/") ? path.join(relativePath, normalized) : path.join(path.dirname(manifestPath), normalized);
+  const normalizedCandidate = path.normalize(candidate).split(path.sep).join("/");
+  const packagePrefix = `${relativePath}/`;
+  return normalizedCandidate.startsWith(packagePrefix) ? normalizedCandidate : null;
+}
 function gateInventory(root, relativePath, block) {
   const manifestPath = path.join(relativePath, block.gate_pack?.manifest_path ?? "gates/manifest.json").split(path.sep).join("/");
   if (!exists(root, manifestPath)) return {status: "MISSING_GATE_MANIFEST", manifest_path: manifestPath, gates: []};
   const manifest = readJson(root, manifestPath);
+  if (Array.isArray(manifest.entries)) {
+    const entries = manifest.entries;
+    const declaredIds = entries.map((entry) => entry?.gate_id);
+    const expectedIds = Array.isArray(block.gates) ? block.gates.map((entry) => entry?.gate_id) : null;
+    const uniqueIds = declaredIds.every((gateId, index) => typeof gateId === "string" && declaredIds.indexOf(gateId) === index);
+    const expectedIdsMatch = expectedIds === null || JSON.stringify(declaredIds) === JSON.stringify(expectedIds);
+    const manifestDigestValid = typeof manifest.manifest_sha256 === "string" && manifest.manifest_sha256 === canonicalDigest({...manifest, manifest_sha256: null});
+    const blockDigestValid = block.gate_manifest_sha256 === undefined || block.gate_manifest_sha256 === manifest.manifest_sha256;
+    const gates = entries.flatMap((entry) => {
+      const gatePath = safeDeclaredGatePath(relativePath, manifestPath, entry?.path);
+      if (gatePath === null || !exists(root, gatePath)) return [];
+      return [{gate_id: entry.gate_id, path: gatePath, file_sha256: fileSha(root, gatePath)}];
+    });
+    const entryBindingsValid = entries.every((entry) => {
+      const gatePath = safeDeclaredGatePath(relativePath, manifestPath, entry?.path);
+      return gatePath !== null && exists(root, gatePath) && entry.file_sha256 === fileSha(root, gatePath);
+    });
+    const status = manifest.block_id === block.block_id && uniqueIds && expectedIdsMatch && manifestDigestValid && blockDigestValid && entryBindingsValid && gates.length === entries.length ? "BOUND" : "INCOMPLETE";
+    return {status, manifest_path: manifestPath, gates};
+  }
   const ids = manifest.ordered_gate_ids ?? manifest.gate_ids ?? GATE_IDS;
   const paths = manifest.gate_paths ?? [];
   const gates = ids.flatMap((gateId) => {
