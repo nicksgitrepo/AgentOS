@@ -4,8 +4,8 @@
   "receipt_id": "specialist-eval.owasp-api-2023-api1-object-authorization.v2",
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "candidate_digest": "739cebe10ca46d6dfb1b0e5faed961a69986cb84b38f8aa9df0cb732ed8b7d6e",
-  "source_commit": "1596faf4675ef2ad46e49714fd33574fd659d780",
-  "source_tree": "eb1a606a2c8d4dac3d48ea374e9f010ec33a45a0",
+  "source_commit": "3e891505f6cea189ccdbe63a21e5d4d8f887ddf8",
+  "source_tree": "eef11ab7b7d98ad8b1b4671719035d629f5ab24a",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "model_policy": {
     "snapshot_status": "PREPARED_INACTIVE",
@@ -62,7 +62,7 @@
   "results": {"passed":17,"failed":0,"pending":0},
   "external_side_effects": {"candidate_reads":0,"source_reads":0,"protected_data_reads":0,"authorization_decisions":0,"policy_mutations":0,"project_writes":0,"memory_writes":0,"credential_accesses":0,"state_changes":0},
   "execution_receipts": {
-    "candidate_freeze_package_root_sha256":"6fcf3a9f85d9dedf6ef65c944c5f6992697ac03eeb6e04c6a93f3ddd4857808a",
+    "candidate_freeze_package_root_sha256":"511026dd0b3b36994aff01e8f8f367039d49159cd9aa8830af50c55cf9a7a43c",
     "source_manifest_sha256":"a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
     "context_receipt_sha256":"9b049b35b778970139b7ac5a8439bf70889e92b2b29b5c85df06e444dcfdd47d",
     "upstream_router_result_sha256":"8da73311540fa268a8fab6479392285bd29c760b5d0dc5a52ccbaa13e3216675",
@@ -71,5 +71,5 @@
   "disposition": "PASS_WITH_INACTIVE_MODEL_REVIEW_REQUIRED",
   "independent_reviewer_required": true,
   "audit_report_path": "audits/read-only-adversary-audit.v1.json",
-  "evaluation_sha256": "bfab0e402e0fe16b1209bd5db4c4752f444739b94e2e93419d1d999e14edd521"
+  "evaluation_sha256": "7d4cbb02c396706e4d88aec7f6c08c74cd9b7d05e73473509e06079858d9972e"
 }

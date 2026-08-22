@@ -4,8 +4,8 @@
   "receipt_id": "specialist-handoff.owasp-api-2023-api1-object-authorization.v2",
   "block_id": "specialist.security.owasp-api-2023-api1-object-authorization",
   "candidate_digest": "739cebe10ca46d6dfb1b0e5faed961a69986cb84b38f8aa9df0cb732ed8b7d6e",
-  "source_commit": "1596faf4675ef2ad46e49714fd33574fd659d780",
-  "source_tree": "eb1a606a2c8d4dac3d48ea374e9f010ec33a45a0",
+  "source_commit": "3e891505f6cea189ccdbe63a21e5d4d8f887ddf8",
+  "source_tree": "eef11ab7b7d98ad8b1b4671719035d629f5ab24a",
   "changed_paths": [
     "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/block.json",
     "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/evaluation.json",
@@ -53,7 +53,7 @@
     "model-context-route-bound"
   ],
   "evidence_receipts": {
-    "candidate_freeze_package_root_sha256": "6fcf3a9f85d9dedf6ef65c944c5f6992697ac03eeb6e04c6a93f3ddd4857808a",
+    "candidate_freeze_package_root_sha256": "511026dd0b3b36994aff01e8f8f367039d49159cd9aa8830af50c55cf9a7a43c",
     "source_manifest_sha256": "a4abd25bccdea6351e50b33cef4f035a98139255ec63d53c631082c23d017660",
     "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
     "model_route_sha256": "9dedaf4a5aec3cda0fa6c6d980cba6fe69480f90d6261abd092fcefc7e8ca4f6",
@@ -72,8 +72,8 @@
   ],
   "audit": {
     "report_path": "specialist-blocks/wave-03/owasp-api-2023-api1-object-authorization/audits/read-only-adversary-audit.v1.json",
-    "audited_commit": "1596faf4675ef2ad46e49714fd33574fd659d780",
-    "audited_tree": "eb1a606a2c8d4dac3d48ea374e9f010ec33a45a0",
+    "audited_commit": "3e891505f6cea189ccdbe63a21e5d4d8f887ddf8",
+    "audited_tree": "eef11ab7b7d98ad8b1b4671719035d629f5ab24a",
     "disposition": "PASS_WITH_INACTIVE_MODEL_REVIEW_REQUIRED"
   },
   "next_action": "Route the immutable candidate through its upstream router and independent read-only auditor; preserve activation OFF until independent qualification and explicit owner approval.",
