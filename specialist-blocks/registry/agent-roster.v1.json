@@ -15467,105 +15467,105 @@
         "status": "BOUND",
         "fixtures": [
           {
-            "fixture_id": "specialist.security.oidc-core.AUTHORITY_CONFLICT",
+            "fixture_id": "oidc-core-authority_conflict",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/authority_conflict.json",
-            "file_sha256": "2efb0e739109af5a8831bbfc301ea42ec6964313c9b78b97da729642d9f1fa84",
-            "expected_outcome": "DENY"
+            "file_sha256": "75c48b37b3425e4a62a3ef6f5c6fa1543a53bd4188280073b757683d4a13aed0",
+            "expected_outcome": "ESCALATE"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.BROAD_WHEN_NARROW_EXISTS",
+            "fixture_id": "oidc-core-broad_when_narrow_exists",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "08d1a8f21fa6c5502433583aa3690bbb29d792bbfeb1c285b9142a491df773cb",
+            "file_sha256": "f57e188cc66c779e363d14a9d426a5b1d176edc8f17a5e1ae85699d6fc2ee43b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.CROSS_PROVIDER_VERSION_CLAIM",
+            "fixture_id": "oidc-core-cross_provider_version_claim",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "ef6397901eedbe1477b74857d3213a61d4f3e7dd107c981f88b0e250b6850525",
+            "file_sha256": "8f233493ecf341b4a04cf5770252a7c6c466cf8f6baf4c7f1c0222229fe89be7",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.DATA_LIMIT",
+            "fixture_id": "oidc-core-data_limit",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/data_limit.json",
-            "file_sha256": "796534d1fe58603ee7e1c3b398418c85f185d04ae965ab94f5a88d4cfbf4e1a9",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "4d0825bc1dfcb6d56e60e27217764f1d093e0f0c60a926d8a3913895370f8ada",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.DUPLICATE_SIBLING_AUTHORITY",
+            "fixture_id": "oidc-core-duplicate_sibling_authority",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/duplicate_sibling_authority.json",
-            "file_sha256": "5ca99e295693f7fca3bfc48a92cc9211587b0a12b2148d7587d16e0b5a1e5380",
+            "file_sha256": "cca1ae07a449143b405b43a17f26e04b62086e381c324e2b1f0dd52615998c0f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.FALSE_POSITIVE",
+            "fixture_id": "oidc-core-false_positive",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/false_positive.json",
-            "file_sha256": "6e843facdad4531143723d59f70ff94306c46073d8341aff0553cc39db03439d",
+            "file_sha256": "d3b7f6a97e7b33c46ac5a4f2ae93f618bc33cbadab88e9dbe5b38c7ac121b8e1",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.HANDOFF",
+            "fixture_id": "oidc-core-handoff",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/handoff.json",
-            "file_sha256": "00fe8692f8c6db68cb87447d3b207cfc12e5b5ec78829415512ceabe0e20a171",
+            "file_sha256": "0b135197458bece5125f27450c29fdf2417585cbcfa3ca5aaf1a5e4daa65e6b0",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.MISSING_CONTEXT",
+            "fixture_id": "oidc-core-missing_context",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/missing_context.json",
-            "file_sha256": "0cf181dc08ab35bc557162481b644424bdd775d4c8f25bb345b678b19be2e355",
+            "file_sha256": "7ad5225c4a68565c8b23250d822c413eff51b9b18cc0982e110baa2797d43e6f",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.NARROWNESS",
+            "fixture_id": "oidc-core-narrowness",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/narrowness.json",
-            "file_sha256": "320190ba823ed9bcf758de4480f6fb8f0d9960bd2723cadd2ea24788de443348",
+            "file_sha256": "c07f1d1dd9dd2bf343f1fbc2a72307fdc2ceab177542e565692d1eb7bb73a9e1",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.ROUTER_SELF_ACCEPT",
+            "fixture_id": "oidc-core-router_self_accept",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/router_self_accept.json",
-            "file_sha256": "e8af42868c6e7c10f25f4760a35803122a0327e3a339d0e2a60d10a14654280e",
+            "file_sha256": "a18f2598c3db9aa3061a8d3d005c9fa0e0802f397b32c7b5ddb961b555cac771",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.ROUTING",
+            "fixture_id": "oidc-core-routing",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/routing.json",
-            "file_sha256": "3c30205c7d186c51acab43c415a0322281189e1d79860d31993c78379db4a3b2",
+            "file_sha256": "be4a458951bb2c60114b1d3fb827743caf1a2bbff289c6ebe2246c98d701f6fb",
             "expected_outcome": "ROUTE"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.SILENT_SCOPE_EXPANSION",
+            "fixture_id": "oidc-core-silent_scope_expansion",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/silent_scope_expansion.json",
-            "file_sha256": "5ab3f1cfc81e707d0a0558f52ce1248ca7caa7c2797c4e0e654fa6de53184ceb",
+            "file_sha256": "f2fe657e58fcfe3c9f075c80b85a5fd36ef8fea05c444574752297fde6a51628",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.STALE_SOURCE",
+            "fixture_id": "oidc-core-stale_source",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/stale_source.json",
-            "file_sha256": "dc0dfa59cd86ae4c9688e5253200c4cea6045d5321b1eb29e9b6c4e0bfcd5e5e",
+            "file_sha256": "ed23d8dbe2bda8eecd5371e2b11b4129558ad03766434fce281b6c9b96b776f2",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.TOOL_LIMIT",
+            "fixture_id": "oidc-core-tool_limit",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/tool_limit.json",
-            "file_sha256": "1b551a3b86b5f3abd633bd15e565da5c23ea4e554f241449c81b3a91b75dfecc",
-            "expected_outcome": "ROUTE"
+            "file_sha256": "54a115647e1dc7bcf59dbdf4fbbc2645b68aca2cc2cb1fd324b6a0bfd33455da",
+            "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.UMBRELLA_AUTHORITY",
+            "fixture_id": "oidc-core-umbrella_authority",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/umbrella_authority.json",
-            "file_sha256": "18887dfcfd4bd4f139efd5a5f73890b60e02befe84380368daeae889ad6ae69a",
+            "file_sha256": "28858e2b34a2f50b96541482eb7cb22dcc2362599167e19a674913942f2dc494",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.UNRELATED_SCOPE",
+            "fixture_id": "oidc-core-unrelated_scope",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/unrelated_scope.json",
-            "file_sha256": "05ed9e547495bdd37dbe647243b2f67fe9baa1f52a94adfcc0084404cbf60ddf",
+            "file_sha256": "859293a43c7d708fed17ee44f32eefc13c6f438cd5273a7d220a344cdf434a5b",
             "expected_outcome": "DENY"
           },
           {
-            "fixture_id": "specialist.security.oidc-core.UNSAFE_ACTION",
+            "fixture_id": "oidc-core-unsafe_action",
             "path": "specialist-blocks/wave-02/oidc-core/fixtures/unsafe_action.json",
-            "file_sha256": "20338c3e3f2e8f219c941fba4a578e64dde9fc74c51046ed8da8b1cef9198668",
+            "file_sha256": "1389603f5b0eff902c1120c759fdcc7ff926c7bdbd6cde512b2fb491f2a485f5",
             "expected_outcome": "DENY"
           }
         ]
@@ -15578,7 +15578,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-02/oidc-core/handoff.json",
-        "handoff_file_sha256": "418ef1eec3db08802a61f0997d3d7b0086981aa33344f0b52f4aa3d201e0e44c",
+        "handoff_file_sha256": "39b99d7fde1ce58fb47a0f1bd3a267d9711b8356082fc4f0493744f64953c917",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.oidc-core.v1"
       },
@@ -40424,5 +40424,5 @@
       "reason": "Queued after permanent roles and platform prerequisites."
     }
   ],
-  "roster_sha256": "6f7a0f68f582e568f5e608b6202db4b7aa71a77c186a0dd05be41c6f4505190e"
+  "roster_sha256": "73f9485fcda15f68ded02f3baf3a06cd5c24a62aceb6ba4cff4aecd09b57f9f9"
 }
