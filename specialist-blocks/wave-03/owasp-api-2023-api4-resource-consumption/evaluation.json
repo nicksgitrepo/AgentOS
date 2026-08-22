@@ -115,6 +115,12 @@
     "failed": 0,
     "pending": 0
   },
-  "disposition": "STATIC_PASS_REVIEW_REQUIRED",
-  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION"
+  "disposition": "EXECUTED_REVIEW_REQUIRED",
+  "independence_rule": "AUTHOR_AND_EVALUATOR_MUST_BE_SEPARATE_CONTROLLED_IDENTITIES_BEFORE_ADMISSION",
+  "operational_readback": {
+    "path": "specialist-blocks/registry/owasp-api-2023-api4-resource-consumption-operational-readback.v1.json",
+    "required": true,
+    "file_sha256": "bd362d919227126ad44243d9346645dd5b25e03f58321ece6d3049737cf8dcdf",
+    "readback_sha256": "b702cbe4eef8bc0097734ceb0550b14858e6c2149909eab0fe0453470f7dabfe"
+  }
 }

@@ -1,0 +1,20 @@
+{
+  "schema": "agentos.owasp_api4_operational_readback.v1",
+  "version": 1,
+  "status": "PASS",
+  "block_id": "specialist.security.owasp-api-2023-api4-resource-consumption",
+  "candidate_digest": "b7d61cecf69233cdb51ccb8bd18d8ecb0f919b00622374c8f369e04450e66326",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "10c5b258ac8d28bb433795b5b050c9cac80f65d589cf1244d9d9977303eadec7",
+  "context_receipt_sha256": "d67214b207e51b0894070f1f4a3aaecb84912a21ef463afaec77647da8f5d780",
+  "upstream_router_result_sha256": "493b06d9f85bcc66cab9107bf350ee33924c87a6a4ff46236171a3d318e8a0a0",
+  "gate_execution_sha256": "91fc84c0a281183b3f37be0d8871c9a1cafe414c763838775b11095714aeb7db",
+  "fixture_count": 17,
+  "gate_count": 12,
+  "mutation_detected": true,
+  "invalidation_status": "PASS",
+  "shared_registry_verdict": "ALIGNED",
+  "workspace_custody_status": "MATCHED",
+  "observed_at_utc": "2026-08-22T18:52:14.815Z",
+  "readback_sha256": "b702cbe4eef8bc0097734ceb0550b14858e6c2149909eab0fe0453470f7dabfe"
+}
