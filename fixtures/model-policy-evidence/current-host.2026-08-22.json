@@ -5,8 +5,8 @@
   "authority_class": "HOST_ATTESTATION",
   "provider_id": "CURRENT_CODEX_HOST",
   "source_url": "host-attestation:codex-model-catalog",
-  "observed_at_utc": "2026-08-22T15:45:41.489Z",
-  "expires_at_utc": "2026-08-23T15:45:41.489Z",
+  "observed_at_utc": "2026-08-22T16:23:37.180Z",
+  "expires_at_utc": "2026-08-23T16:23:37.180Z",
   "max_age_days": 1,
   "uncertainty": "LOW",
   "summary": {
@@ -48,5 +48,5 @@
     ]
   },
   "summary_sha256": "8d261155b7f284110332c77ea17af939e0b357030dcc8407f06b4d3f0a5154a5",
-  "artifact_sha256": "d6cc4741793f5872a9d7c294ab8528cff638652a369ce453f754961e1f3c6f14"
+  "artifact_sha256": "bccc4beea4198aac50dd404023e226ce6e90eec82f0de44585a47ec9399b01bd"
 }

@@ -50,8 +50,8 @@
       "redirect_chain": [],
       "allowed_domain": "HOST_ATTESTATION",
       "source_revision": "HOST.CATALOG.2026-08-22",
-      "acquired_at_utc": "2026-08-22T15:45:41.489Z",
-      "acquisition_receipt_sha256": "ae0eb457af9ecd797a5212a34a88fb5e1a27c17c1790ecfbb24878d5f6f5405f",
+      "acquired_at_utc": "2026-08-22T16:23:37.180Z",
+      "acquisition_receipt_sha256": "127b7ae16c6ce9f614c8d5110b816908da0e0d7be99caf2fd291965bc5fe1b0f",
       "artifact_path": "fixtures/model-policy-evidence/current-host.2026-08-22.json"
     },
     {
@@ -81,5 +81,5 @@
       "artifact_path": "fixtures/model-policy-evidence/openai-model-catalog.2026-08-20.json"
     }
   ],
-  "registry_sha256": "13e3b8b61a71c10232e24ce06ceb097810e2c8184db3924398facd099b58119c"
+  "registry_sha256": "854f4d16e33c683a07af34a98630d17040bea70ddeda7797001c336f948f08e0"
 }

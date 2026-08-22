@@ -2316,7 +2316,7 @@
     "initial_model_policy_snapshot_fixture": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-snapshot.initial.v1.json",
-      "sha256": "4b3bbe8fd8cea7b0e6f031d43343b4d5276ccd4543af7fea242db26693f23c2b"
+      "sha256": "cd9096175cb46eb938ea8f37f69fc9d50a5056152b83294cd4ae8e1e81c2d973"
     },
     "installed_global_governance_provisioning_controller": {
       "path": "control/installed-global-governance-provisioning.mjs",
@@ -2526,12 +2526,12 @@
     "model_policy_evidence_manifest": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-evidence/manifest.json",
-      "sha256": "ad1315df2ba07b3948313f3c45934857b6b35ab5ee463d785769b2bb809a02d6"
+      "sha256": "a72fddcd54606b6b511ce186592136b04c6250cb9ce304294e51b512db24dac0"
     },
     "model_policy_host_source_artifact": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-evidence/current-host.2026-08-22.json",
-      "sha256": "4c8f8962f22b7098873b73ec1cc2f48fba288ea72c7191c9321fcda689395736"
+      "sha256": "19d3a8c0267d52ed987f4abbbe72214b70af2782346a89f6a5e76bbd153563db"
     },
     "model_policy_openai_source_artifact": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
@@ -2545,7 +2545,7 @@
     "model_policy_source_registry": {
       "classification": "PROJECT_AGNOSTIC_PROVIDER_EVIDENCE",
       "path": "fixtures/model-policy-evidence/source-registry.v1.json",
-      "sha256": "57a01352e0651c9040450fe7db695b69e27984a918ba2aa5c1bb115dcccc4e98"
+      "sha256": "7962c4e815030d6bd41c9d3dd99f93dcfd1064befd607a8b20040289b480dfda"
     },
     "naming_article": {
       "path": "governance/2.1rc/naming-and-terminology.md",
@@ -3821,7 +3821,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "1f761eaeb769fa81726bbc1e7131a6b9fbece43218b926b8e31cb56c42ce4cd3"
+      "sha256": "3f5b3d0f3ecc7f3aecece5d3311b3dab9ce9fb866e697aa8af16083617f0f7a4"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -5049,19 +5049,19 @@
     },
     "field_job_workflow_model_route": {
       "path": "specialist-blocks/wave-06/field-job-workflow/model-route.json",
-      "sha256": "885c0fc9729cd128da84bbed2d003e59c66de8c235fb43cd589c19791c2b8633"
+      "sha256": "2e200a1b73fead0078a5e96e793402f16acb06682f4c0ca2558dea36184247ca"
     },
     "field_job_workflow_context_projection": {
       "path": "specialist-blocks/wave-06/field-job-workflow/context.json",
-      "sha256": "7873896905bb00db4ac92cc183795196dd6e87c32039482f26886476813ec23f"
+      "sha256": "0e1c7a04d22aa31385d1589a443d788ee71bbef621078fdb6443c941ba43fbe4"
     },
     "field_job_workflow_evaluation_dossier": {
       "path": "specialist-blocks/wave-06/field-job-workflow/evaluation.json",
-      "sha256": "d64fa7df93da03b99f5a82ab3b61fdbc54af7a77419cff67cef1b8b998671a0b"
+      "sha256": "b1f19f54458e7c7d0bc420167807140de7092e60a0cc0c9763a5b460b2c5656a"
     },
     "field_job_workflow_registry_entry": {
       "path": "specialist-blocks/wave-06/field-job-workflow/registry-entry.json",
-      "sha256": "8635cdcb41290636a7848c43fd897d0181aa65bda2b6ac8bd76537335deaf513"
+      "sha256": "b2b7f049c80d0e4ecbf344d1e27f05b9973234b67691fd80b478225a2c8f79da"
     },
     "field_job_workflow_operational_readback_contract": {
       "path": "schemas/field-job-workflow-operational-readback.v1.json",
@@ -5069,7 +5069,7 @@
     },
     "field_job_workflow_operational_readback_artifact": {
       "path": "specialist-blocks/registry/field-job-workflow-operational-readback.v1.json",
-      "sha256": "c41f58ed0d1be61a99f89e0a15e7e93889986de3ef4af7f6459c5ea619ff5997"
+      "sha256": "f5acc565a78db026518add896361148bfb128fad5572c7b99fc39edf31e9e71c"
     },
     "field_job_workflow_boundary_verifier": {
       "path": "tests/verify-field-job-workflow-boundary.mjs",

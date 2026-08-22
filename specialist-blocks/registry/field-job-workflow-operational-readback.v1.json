@@ -4,17 +4,17 @@
   "status": "PASS",
   "block_id": "specialist.domain.field-job-workflow",
   "candidate_digest": "ad3ae083c3f7f052a7b78ab8ad1db8c2989148fc5d70c847236895afb57ab9e7",
-  "model_snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9",
-  "model_route_sha256": "ef9e67a40cc448e1544e7869f3e934513a2cb37db7e231e4093005670921c0f9",
-  "context_receipt_sha256": "c2701018d2a4bf3bcb5fa98823bdd0904a2f0e906e175568c23e8e7e5cb5c92d",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "40f0d3a9483e83907b20de18267b141c8f1b067aad89cca6cd56fe1ffb7a295b",
+  "context_receipt_sha256": "505885ddb4eb57f2a35df36a98232727c0061c62e1ef6ce353c451c136869344",
   "memory_invalidation_sha256": "eab3573fa90c3dbd676f602919485167e595466df3a8c7b2faa4b80ff2390788",
   "upstream_router_result_sha256": "f55322b39ec85a8069f2f250aad42302df3c5307101345922b43e4c29d33db71",
-  "gate_execution_sha256": "1734d6b6c42ca3de55bd0b29e4a0b47e8fa214d5b7032e5eab174fb542895579",
+  "gate_execution_sha256": "a68407cc859ffa13c84a3f81194f53adf64a9737ad51fc80c277011cb16161d1",
   "fixture_count": 17,
   "gate_count": 12,
   "mutation_detected": true,
   "invalidation_status": "PASS",
   "workspace_custody_status": "MATCHED",
-  "observed_at_utc": "2026-08-22T16:00:06.758Z",
-  "readback_sha256": "b091dcce63c2a448d08ce97d9b01f42cfdda66db0036694bb3dbf7d88c91dadf"
+  "observed_at_utc": "2026-08-22T16:23:47.925Z",
+  "readback_sha256": "07c47970523f394bd32bd5ca29843b03a5004426784347d6027fcd24448d6ae8"
 }

@@ -13,7 +13,7 @@
   "operational_readback": {
     "path": "specialist-blocks/registry/field-job-workflow-operational-readback.v1.json",
     "required": true,
-    "file_sha256": "c41f58ed0d1be61a99f89e0a15e7e93889986de3ef4af7f6459c5ea619ff5997"
+    "file_sha256": "f5acc565a78db026518add896361148bfb128fad5572c7b99fc39edf31e9e71c"
   },
   "canonical_external_admission": "BLOCKED_EXACT:SPAWNER_EXTERNAL_REVIEW_PROVISIONING_REQUIRED",
   "cases": [

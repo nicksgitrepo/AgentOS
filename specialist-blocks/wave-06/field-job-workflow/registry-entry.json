@@ -18,12 +18,12 @@
     "path": "specialist-blocks/wave-06/field-job-workflow/model-route.json",
     "task_class": "NARROW_CODING",
     "model_id": "gpt-5.6-luna",
-    "snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9",
-    "route_sha256": "ef9e67a40cc448e1544e7869f3e934513a2cb37db7e231e4093005670921c0f9"
+    "snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+    "route_sha256": "40f0d3a9483e83907b20de18267b141c8f1b067aad89cca6cd56fe1ffb7a295b"
   },
   "context_projection": {
     "path": "specialist-blocks/wave-06/field-job-workflow/context.json",
-    "context_sha256": "c2701018d2a4bf3bcb5fa98823bdd0904a2f0e906e175568c23e8e7e5cb5c92d",
+    "context_sha256": "505885ddb4eb57f2a35df36a98232727c0061c62e1ef6ce353c451c136869344",
     "memory_scope": "TYPED_HANDOFF_ONLY",
     "memory_write_allowed": false
   },
@@ -201,12 +201,12 @@
     "evaluator_entrypoint": "control/field-job-workflow-package-evaluator.mjs#evaluateFieldJobWorkflowPackage",
     "required": true,
     "status": "PASS",
-    "file_sha256": "c41f58ed0d1be61a99f89e0a15e7e93889986de3ef4af7f6459c5ea619ff5997",
-    "readback_sha256": "b091dcce63c2a448d08ce97d9b01f42cfdda66db0036694bb3dbf7d88c91dadf"
+    "file_sha256": "f5acc565a78db026518add896361148bfb128fad5572c7b99fc39edf31e9e71c",
+    "readback_sha256": "07c47970523f394bd32bd5ca29843b03a5004426784347d6027fcd24448d6ae8"
   },
   "focused_test": "tests/verify-field-job-workflow-boundary.mjs",
   "custody_ref": "opaque:FIELD_JOB_WORKFLOW.CUSTODY",
   "rollback_rule": "Revert the candidate commit on the isolated lane branch; never mutate or reuse the source checkout.",
   "independent_review_required": true,
-  "registry_sha256": "b10d54744ddb3ee37beb501f8a9a5f30366250fa4c26715ef6274f0949f0a5fe"
+  "registry_sha256": "7b83eb5b83cb025a33f013ae4f4247994c56d96cce5cd2ff63f3e31fb27ff5b6"
 }

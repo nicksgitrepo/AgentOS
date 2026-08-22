@@ -20,8 +20,8 @@
     "memory_invalidation"
   ],
   "source_manifest_sha256": "9705bb8fd93bc1ba58faaca9fb415e740c3e05de3916a4b014918a58c96eaa42",
-  "model_snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9",
-  "model_route_sha256": "ef9e67a40cc448e1544e7869f3e934513a2cb37db7e231e4093005670921c0f9",
+  "model_snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "model_route_sha256": "40f0d3a9483e83907b20de18267b141c8f1b067aad89cca6cd56fe1ffb7a295b",
   "memory_scope": "TYPED_HANDOFF_ONLY",
   "memory_write_allowed": false,
   "dependency_artifacts": [
@@ -42,5 +42,5 @@
     "custody_ref",
     "context_contract_sha256"
   ],
-  "context_sha256": "c2701018d2a4bf3bcb5fa98823bdd0904a2f0e906e175568c23e8e7e5cb5c92d"
+  "context_sha256": "505885ddb4eb57f2a35df36a98232727c0061c62e1ef6ce353c451c136869344"
 }

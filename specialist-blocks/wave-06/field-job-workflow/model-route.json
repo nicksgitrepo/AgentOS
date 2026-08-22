@@ -12,6 +12,6 @@
     "TOOLS"
   ],
   "context_floor_tokens": 64000,
-  "snapshot_sha256": "f0ff070a25b1259db11fdd80837ba8c186fdd90f1bee2db1f8431717637b0fd9",
-  "route_sha256": "ef9e67a40cc448e1544e7869f3e934513a2cb37db7e231e4093005670921c0f9"
+  "snapshot_sha256": "b6c8f9c329eaf77bf774c2989cc74d2441dcd2dd3d56f3c242698f658ec8288a",
+  "route_sha256": "40f0d3a9483e83907b20de18267b141c8f1b067aad89cca6cd56fe1ffb7a295b"
 }
