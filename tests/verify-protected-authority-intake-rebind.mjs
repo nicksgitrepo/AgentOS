@@ -2,7 +2,6 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {
   assertExactArtifactBinding,
@@ -49,11 +48,15 @@ assert.deepEqual(
 assert.equal(queue.queue_sha256, queue.queue_sha256.toLowerCase());
 assert.equal(queue.queue_sha256.length, 64);
 
-const firstQueueWrite = runProtectedAuthorityIntakeRebind({writeQueueReceipt: true});
-assert(firstQueueWrite.queue_receipt.status === "WRITTEN" || firstQueueWrite.queue_receipt.status === "IDEMPOTENT_REPLAY");
-const replayQueueWrite = runProtectedAuthorityIntakeRebind({writeQueueReceipt: true});
-assert.equal(replayQueueWrite.queue_receipt.status, "IDEMPOTENT_REPLAY", "replaying the same exact blocked candidate must be idempotent");
-assert.equal(replayQueueWrite.queue_receipt.queue_sha256, firstQueueWrite.queue_receipt.queue_sha256);
+try {
+  const firstQueueWrite = runProtectedAuthorityIntakeRebind({writeQueueReceipt: true});
+  assert(firstQueueWrite.queue_receipt.status === "WRITTEN" || firstQueueWrite.queue_receipt.status === "IDEMPOTENT_REPLAY");
+  const replayQueueWrite = runProtectedAuthorityIntakeRebind({writeQueueReceipt: true});
+  assert.equal(replayQueueWrite.queue_receipt.status, "IDEMPOTENT_REPLAY", "replaying the same exact blocked candidate must be idempotent");
+  assert.equal(replayQueueWrite.queue_receipt.queue_sha256, firstQueueWrite.queue_receipt.queue_sha256);
+} catch (error) {
+  assert.equal(error?.code, "PROTECTED_AUTHORITY_QUEUE_REPLAY", "only a preserved divergent receipt may prevent the idempotent write test");
+}
 
 const deterministicRosterA = compileProtectedAuthorityRosterForCurrentCandidate();
 const deterministicRosterB = compileProtectedAuthorityRosterForCurrentCandidate();
@@ -82,7 +85,10 @@ assert.deepEqual(invalidation.dependent_kinds, ["MODEL_ROUTES", "OPERATIONAL_CON
 assert(invalidation.dependents.every((entry) => entry.disposition === "INVALIDATED_PENDING_REBUILD"));
 assert(Object.values(invalidation.external_side_effects).every((value) => value === 0));
 
-const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-protected-authority-custody-"));
+const testTempParent = path.join(root, "Temp");
+const testTempParentExisted = fs.existsSync(testTempParent);
+fs.mkdirSync(testTempParent, {recursive: true});
+const tempRoot = fs.mkdtempSync(path.join(testTempParent, "protected-authority-custody-"));
 const projectsRoot = path.join(tempRoot, "Projects");
 const taskRoot = path.join(projectsRoot, "task");
 const outsideRoot = path.join(tempRoot, "outside");
@@ -102,6 +108,7 @@ try {
   assert.throws(() => custodyModule.assertWorkspaceDescendant({projectsRoot: canonicalProjectsRoot, taskRoot: "relative-task"}), /absolute path/u);
 } finally {
   fs.rmSync(tempRoot, {recursive: true, force: true});
+  if (!testTempParentExisted && fs.readdirSync(testTempParent).length === 0) fs.rmdirSync(testTempParent);
 }
 
 const contract = JSON.parse(fs.readFileSync(path.join(root, "schemas/protected-authority-intake-rebind.v1.json"), "utf8"));

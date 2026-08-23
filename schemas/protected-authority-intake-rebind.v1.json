@@ -92,7 +92,7 @@
       "properties": {
         "prerequisite_id": {
           "enum": [
-            "HOST.CODEX_MODEL_CATALOG_CURRENT",
+            "HOST.MODEL_CATALOG_CURRENT",
             "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
             "EVALUATOR_REVIEWER_HANDOFF_EXACT",
             "DEPENDENT_INVALIDATION_REBIND",

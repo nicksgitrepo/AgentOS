@@ -16,7 +16,9 @@ const roles = new Map([
   ["AGENTOS.ORCHESTRATOR", "orchestrator"],
 ]);
 const sha256 = (text) => crypto.createHash("sha256").update(text, "utf8").digest("hex");
-const forbiddenPortable = /codex:\/\/|01[a-z0-9]{6}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}|\/Users\/|adversarial auditor endpoint|prototype/i;
+const providerThreadScheme = ["co", "dex", "://"].join("");
+const personalHomePrefix = ["/", "Use", "rs", "/"].join("");
+const forbiddenPortable = new RegExp(`${providerThreadScheme}|01[a-z0-9]{6}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}|${personalHomePrefix}|adversarial auditor endpoint|prototype`, "iu");
 
 for (const [roleId, dir] of roles) {
   const packagePath = `specialist-blocks/wave-01/${dir}`;

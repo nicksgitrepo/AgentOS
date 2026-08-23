@@ -40,7 +40,7 @@ export const PROTECTED_AUTHORITY_DEPENDENTS = Object.freeze([
 ]);
 
 export const PROTECTED_AUTHORITY_PREREQUISITES = Object.freeze([
-  "HOST.CODEX_MODEL_CATALOG_CURRENT",
+  "HOST.MODEL_CATALOG_CURRENT",
   "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
   "EVALUATOR_REVIEWER_HANDOFF_EXACT",
   "DEPENDENT_INVALIDATION_REBIND",
@@ -52,7 +52,7 @@ const MODEL_POLICY_RELATIVE_PATH = "fixtures/model-policy-snapshot.initial.v1.js
 const MODEL_EVIDENCE_MANIFEST_PATH = "fixtures/model-policy-evidence/manifest.json";
 const ROSTER_BINDING_ID = "reusable_agent_roster_registry";
 const EVALUATOR_NAMESPACE_REF = "agentos-independent-evaluator";
-const HOST_EVIDENCE_ID = /^HOST\.CODEX_MODEL_CATALOG\.[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
+const HOST_EVIDENCE_ID = /^HOST\.[A-Z0-9_]+_MODEL_CATALOG\.[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
 const SAFE_ID = /^[A-Z][A-Z0-9._:-]{1,191}$/u;
@@ -228,7 +228,7 @@ function inspectModelPolicy({sealedAuthority, custody} = {}) {
     assert(Buffer.compare(local.bytes, binding.bytes) === 0, "local model-policy snapshot bytes diverge from sealed authority", "PROTECTED_AUTHORITY_DIVERGED");
     const snapshot = local.value;
     const hostEvidence = snapshot.evidence?.filter((entry) => entry?.authority_class === "HOST_ATTESTATION" && HOST_EVIDENCE_ID.test(entry.evidence_id)) ?? [];
-    assert(hostEvidence.length === 1, "model-policy snapshot must bind exactly one current HOST.CODEX_MODEL_CATALOG attestation", "HOST_ATTESTATION_BINDING_INVALID");
+    assert(hostEvidence.length === 1, "model-policy snapshot must bind exactly one current provider model-catalog attestation", "HOST_ATTESTATION_BINDING_INVALID");
     const identity = {
       binding_id: binding.binding_id,
       relative_path: binding.relative_path,
@@ -380,11 +380,11 @@ function compileBlockedPrerequisiteQueue({custody, modelPolicy, evaluatorHandoff
   const evaluatorBlocked = evaluatorHandoff.status !== "PASS";
   const rows = [
     {
-      prerequisite_id: "HOST.CODEX_MODEL_CATALOG_CURRENT",
+      prerequisite_id: "HOST.MODEL_CATALOG_CURRENT",
       status: modelBlocked ? "BLOCKED_EXACT" : "PASS",
       owner_role: "Spawner/root",
       code: modelBlocked ? "HOST_ATTESTATION_REQUIRED" : null,
-      action: modelBlocked ? "Obtain an authorized current HOST.CODEX_MODEL_CATALOG attestation bound into the candidate evidence store." : "Preserve the exact host attestation binding.",
+      action: modelBlocked ? "Obtain an authorized current provider model-catalog attestation bound into the candidate evidence store." : "Preserve the exact host attestation binding.",
     },
     {
       prerequisite_id: "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT",
@@ -437,7 +437,7 @@ export function validateProtectedAuthorityQueueReceipt(receipt) {
   assert(receipt.custody.projects_root_descendant === true, "queue custody is outside Projects", "PROTECTED_AUTHORITY_CUSTODY_ESCAPE");
   for (const field of ["projects_root_sha256", "candidate_root_sha256", "canonical_repository_root_sha256", "git_common_directory_sha256"]) sha(receipt.custody[field], `queue custody ${field}`);
   assert(Array.isArray(receipt.required_authority) && JSON.stringify(receipt.required_authority) === JSON.stringify([
-    "HOST.CODEX_MODEL_CATALOG_CURRENT", "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT",
+    "HOST.MODEL_CATALOG_CURRENT", "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT",
   ]), "queue required authority ordering differs", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   assert(Array.isArray(receipt.blockers) && receipt.blockers.length > 0, "queue blockers are missing", "PROTECTED_AUTHORITY_QUEUE_INVALID");
   for (const blocker of receipt.blockers) exactKeys(blocker, ["kind", "code", "detail"], "queue blocker");
@@ -473,7 +473,7 @@ export function compileProtectedAuthorityQueueReceipt({result} = {}) {
     status: "BLOCKED_EXACT",
     candidate: structuredClone(result.candidate),
     custody: structuredClone(result.custody),
-    required_authority: ["HOST.CODEX_MODEL_CATALOG_CURRENT", "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT"],
+    required_authority: ["HOST.MODEL_CATALOG_CURRENT", "MODEL_POLICY_ACCEPTED_ACTIVE_EXACT", "EVALUATOR_REVIEWER_HANDOFF_EXACT"],
     blockers: result.blockers.map((entry) => structuredClone(entry)),
     blocked_prerequisite_queue: result.blocked_prerequisite_queue.map((entry) => structuredClone(entry)),
     dependent_kinds: [...PROTECTED_AUTHORITY_DEPENDENTS],
