@@ -37,7 +37,12 @@ function modules(directory) {
   return result.sort();
 }
 
-const cliOnly = new Set([path.join(root, "control", "local-agent-worker.mjs")]);
+const cliOnly = new Set([
+  path.join(root, "control", "compile-permanent-role-production-bootstraps.mjs"),
+  path.join(root, "control", "installed-project-bootstrap-loader.mjs"),
+  path.join(root, "control", "local-agent-worker.mjs"),
+  path.join(root, "control", "scaffold-memory-package.mjs"),
+]);
 for (const modulePath of modules(path.join(root, "control"))) {
   if (cliOnly.has(modulePath)) continue;
   await import(pathToFileURL(modulePath).href);

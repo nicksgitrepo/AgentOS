@@ -27,7 +27,7 @@ export const IDEMPOTENCY_CUSTODY_REF = "opaque:IDEMPOTENCY.CUSTODY";
 export const IDEMPOTENCY_MODEL_TASK_CLASS = "SECURITY_REVIEW";
 export const IDEMPOTENCY_MODEL_CAPABILITY_FLOOR = 59;
 export const IDEMPOTENCY_MODEL_CAPABILITIES = Object.freeze(["CODE", "SECURITY", "TOOLS"]);
-export const IDEMPOTENCY_MODEL_SNAPSHOT_SHA256 = "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27";
+export const IDEMPOTENCY_MODEL_SNAPSHOT_SHA256 = "dcb11bb16c205eac3ad9ef3fbdb78262258914451447977511c41a248a40aa8f";
 export const IDEMPOTENCY_UPSTREAM_ROUTER_FILE_SHA256 = "7cb64aac3a89adc6dcb611237025160743bd40bc44edd99d4919184de78d039a";
 export const IDEMPOTENCY_STANDARD_BLOCK_SHA256 = "1b39ac928b70badd070d9f6716825e73b9b931959c5fc078edf12e875c91824f";
 export const IDEMPOTENCY_STANDARD_SOURCE_MANIFEST_SHA256 = "505595765deaa25206fd59936a4b7e415688c640373a83a68e76a9788ed587d6";
@@ -35,15 +35,15 @@ export const IDEMPOTENCY_STANDARD_SOURCE_MANIFEST_SHA256 = "505595765deaa25206fd
 /* These are filled with the final candidate bytes before the branch is
  * committed.  Keeping the pins in code makes any later substitution fail
  * closed instead of silently becoming the new authority. */
-export const IDEMPOTENCY_ROSTER_FILE_SHA256 = "f7e0a26ac639bc47be15b400c0a3edbf528658b805b0e39999b9d76a845191fa";
+export const IDEMPOTENCY_ROSTER_FILE_SHA256 = "4b9215c043903e4b05c62e57e5801d8901809e8b9d9ea869c6e19b37be429007";
 export const IDEMPOTENCY_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   block: "ba562077520d62a0ce6a949926a8a8b02aaa54038aa064bcd1e87191991cc939",
   source_lock: "27604b72651005c4dd53c4d92d45ed3bc2084b06f56d901b619499030c60549f",
   gate_manifest: "6b9a448bdb5e601490bcc4b70d4b4fb0cad39a77d34fca9c67085daef7626107",
   gate_execution: "ad10811e0d13fcc566af30fa134ec26275d50e34d0a85d52e32405d34f333b63",
   evaluation: "b2255d35d131e3d118d7f19819b9b442e3437fbb19e3e380f6be1c6f4ee631aa",
-  handoff: "8bd3d82494e15305cd32ac3a400f7c422f98f32096c54bc0914df547a01e37d3",
-  model_snapshot: "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d",
+  handoff: "663e807bd51b12b8f6823da8912615251846a40c9dc96871f64bc451fb41c3f6",
+  model_snapshot: "756a58f532d1e46ee64cbbfd836096a408f199488c6e4a6e200a0efbc10d592e",
 });
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");

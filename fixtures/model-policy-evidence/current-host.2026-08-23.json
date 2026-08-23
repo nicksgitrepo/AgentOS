@@ -1,0 +1,52 @@
+{
+  "schema": "agentos.model_policy_source_artifact.v1",
+  "version": 1,
+  "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-23",
+  "authority_class": "HOST_ATTESTATION",
+  "provider_id": "CURRENT_CODEX_HOST",
+  "source_url": "host-attestation:codex-model-catalog",
+  "observed_at_utc": "2026-08-23T00:36:45.000Z",
+  "expires_at_utc": "2026-08-24T00:36:45.000Z",
+  "max_age_days": 1,
+  "uncertainty": "LOW",
+  "summary": {
+    "host_id": "CURRENT_CODEX_HOST",
+    "models": [
+      {
+        "model_id": "gpt-5.6-luna",
+        "available": true,
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      },
+      {
+        "model_id": "gpt-5.6-sol",
+        "available": true,
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      },
+      {
+        "model_id": "gpt-5.6-terra",
+        "available": true,
+        "supported_reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    ]
+  },
+  "summary_sha256": "8d261155b7f284110332c77ea17af939e0b357030dcc8407f06b4d3f0a5154a5",
+  "artifact_sha256": "edaf0ff56570bb889874d0598997ad83b918792b54a151d99cc2292847c8a3c6"
+}

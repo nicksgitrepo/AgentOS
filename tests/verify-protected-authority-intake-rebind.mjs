@@ -22,7 +22,7 @@ const blocked = runProtectedAuthorityIntakeRebind({writeQueueReceipt: false});
 assert.equal(blocked.status, "BLOCKED_EXACT");
 assert.equal(blocked.readiness_claimed, false);
 assert.equal(blocked.intake.model_policy.status, "BLOCKED_EXACT");
-assert.equal(blocked.intake.model_policy.code, "POLICY_SNAPSHOT_STALE");
+assert.equal(blocked.intake.model_policy.code, "POLICY_SNAPSHOT_INACTIVE");
 assert.equal(blocked.intake.evaluator_handoff.status, "BLOCKED_EXACT");
 assert.equal(blocked.intake.evaluator_handoff.code, "CANONICAL_EVALUATOR_HANDOFF_REQUIRED");
 assert.equal(blocked.roster.status, "NOT_COMPILED_PROTECTED_BLOCK");
@@ -116,4 +116,4 @@ assert.equal(contract.$id, "agentos.protected_authority_intake_rebind.v1");
 assert(!JSON.stringify(contract).match(/(?:\/Users\/|\/home\/|~\/|[A-Za-z]:\\)/u), "portable contract contains a personal path literal");
 assert(!JSON.stringify(blocked).match(/(?:\/Users\/|\/home\/|~\/|[A-Za-z]:\\)/u), "portable intake result contains a personal path literal");
 
-console.log("PASS protected-authority intake/rebind: exact stale/missing blockers, diverged bindings, partial invalidation, deterministic roster projection, portable custody escape/symlink/relative-root hostiles, and zero side effects");
+console.log("PASS protected-authority intake/rebind: exact inactive/missing blockers, diverged bindings, partial invalidation, deterministic roster projection, portable custody escape/symlink/relative-root hostiles, and zero side effects");

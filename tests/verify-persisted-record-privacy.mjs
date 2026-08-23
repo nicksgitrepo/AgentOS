@@ -19,7 +19,11 @@ import {
 } from "../control/content-addressing.mjs";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const controlRoot = path.resolve(root, "../../../AgentOS-control");
+// A portable repository verifier must not discover or trust a mutable sibling
+// worktree. Private control evidence is consumed only through a separately
+// provisioned, content-bound store; absent that store, the committed public
+// attestation remains the canonical verification surface.
+const controlRoot = path.join(root, ".private-control-evidence-unavailable");
 const recordRoots = [
   {label: "CONTROL_SPACE", root: controlRoot, root_ref: "opaque:root:control-space"},
   {label: "PUBLIC_PROJECT_RECORDS", root: path.join(root, "docs"), root_ref: "opaque:root:public-project-records"},

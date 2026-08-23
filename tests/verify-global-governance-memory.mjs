@@ -2,7 +2,6 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {spawn} from "node:child_process";
 import {once} from "node:events";
@@ -24,13 +23,13 @@ import {compileGlobalGovernanceBootstrap, requireGlobalGovernanceRoleProjection,
 import {appendAuthorizedGlobalGovernanceMemoryEvent, compileOperationalGlobalGovernanceContext} from "../control/global-governance-operational-context.mjs";
 import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-fixture.mjs";
 
-const NOW = "2026-08-21T04:09:00.000Z";
+const NOW = new Date().toISOString();
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));
 const active = structuredClone(prepared);
 active.status = "ACCEPTED_ACTIVE";
 active.snapshot_sha256 = canonicalDigest({...active, snapshot_sha256: null});
-const event = compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
+const event = compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
 const replay = replayGlobalGovernanceMemory([event]);
 assert.equal(replay.status, "READY");
 assert.equal(replay.current_snapshot.snapshot_sha256, active.snapshot_sha256);
@@ -80,7 +79,7 @@ assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: 
 const leaked = structuredClone(active);
 leaked.project_ref = "FORBIDDEN_PROJECT";
 leaked.snapshot_sha256 = canonicalDigest({...leaked, snapshot_sha256: null});
-assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: leaked, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /fields mismatch|forbidden project|private/iu);
+assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: leaked, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /fields mismatch|forbidden project|private/iu);
 for (const privateValue of [
   {safe_label: "ExampleConsumer context"},
   {safe_label: ["/", "Users", "/example/", "private", "/model-notes.json"].join("")},
@@ -94,28 +93,33 @@ for (const privateValue of [
   {safe_label: "ｂｅａｒｅｒ abcdefghijklmnopqrstuvwxyz"},
   {safe_label: [{nested: {conversation: "prompt text"}}]},
 ]) assert.throws(() => assertProjectAgnosticGovernanceValue(privateValue), /private|transcript|secret|filesystem|forbidden/iu);
-assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: "not-a-time"}), /exact UTC timestamp/iu);
-for (const eventId of ["PROJECT.ACME.123", "PROJECT-ACME-123", "project.acme", "PROJECT_ACME_123", "ACME_PROJECT_123", "ＰＲＯＪＥＣＴ．ＡＣＭＥ", "%50%52%4F%4A%45%43%54.ACME", Buffer.from("PROJECT.ACME").toString("base64")]) assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId, sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /minted internally/iu);
-const nonMonotonic = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: active, priorEventSha256: event.event_sha256, observedAtUtc: "2026-08-21T03:00:00.000Z"});
+assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: "not-a-time"}), /exact UTC timestamp/iu);
+for (const eventId of ["PROJECT.ACME.123", "PROJECT-ACME-123", "project.acme", "PROJECT_ACME_123", "ACME_PROJECT_123", "ＰＲＯＪＥＣＴ．ＡＣＭＥ", "%50%52%4F%4A%45%43%54.ACME", Buffer.from("PROJECT.ACME").toString("base64")]) assert.throws(() => compileGlobalGovernanceMemoryEvent({eventId, sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: active, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /minted internally/iu);
+const nonMonotonic = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: active, priorEventSha256: event.event_sha256, observedAtUtc: "2026-08-21T03:00:00.000Z"});
 assert.throws(() => replayGlobalGovernanceMemory([event, nonMonotonic]), /non-monotonic|current model policy|future-dated/iu);
 const forgedEventId = structuredClone(event); forgedEventId.event_id = "GGM.ACCEPTED." + "A".repeat(48); forgedEventId.event_sha256 = canonicalDigest({...forgedEventId, event_sha256: null});
 assert.throws(() => replayGlobalGovernanceMemory([forgedEventId]), /internally derived/iu);
 const unknownSource = structuredClone(active);
 unknownSource.evidence[0].source_url = "https://unknown.invalid/model-research";
 unknownSource.snapshot_sha256 = canonicalDigest({...unknownSource, snapshot_sha256: null});
-assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: unknownSource, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /fields mismatch|raw URL|canonical registry|source identity/iu);
+assert.throws(() => compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: unknownSource, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}), /fields mismatch|raw URL|canonical registry|source identity/iu);
 
-const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-global-memory-"));
+const testTempParent = path.join(root, "Temp");
+const testTempParentExisted = fs.existsSync(testTempParent);
+fs.mkdirSync(testTempParent, {recursive: true});
+const authorityRoot = fs.mkdtempSync(path.join(testTempParent, "global-memory-"));
+let alternateRoot = null;
 try {
   const fixture = materializeTestGlobalGovernanceStore({authorityRoot, nowUtc: NOW});
-  const writerContext = compileOperationalGlobalGovernanceContext({authorityStore: fixture.authorityStore, roleClass: "SPAWNER", operationalId: "CONTEXT.SPAWNER.MEMORY.TEST"});
+  const writerContext = compileOperationalGlobalGovernanceContext({authorityStore: fixture.authorityStore, roleClass: "MEMORY", operationalId: "CONTEXT.MEMORY.WRITER.TEST"});
   const controllerContext = compileOperationalGlobalGovernanceContext({authorityStore: fixture.authorityStore, roleClass: "CONTROLLER", operationalId: "CONTEXT.CONTROLLER.MEMORY.TEST"});
   const supersessionEvent = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_SUPERSEDED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: fixture.snapshot.snapshot_sha256, reasonCode: "ROUTING_POLICY_REFRESH", priorEventSha256: fixture.events[0].event_sha256, observedAtUtc: NOW});
-  const alternateRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-global-memory-wrong-root-"));
+  alternateRoot = fs.mkdtempSync(path.join(testTempParent, "global-memory-wrong-root-"));
   assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({authorityRoot: alternateRoot, expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext}), /only a bound writer context|root/iu);
   assert.deepEqual(fs.readdirSync(alternateRoot), []);
   fs.rmSync(alternateRoot, {recursive: true, force: true});
-  assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext: controllerContext}), /Only a canonical Spawner|writer/iu);
+  alternateRoot = null;
+  assert.throws(() => appendAuthorizedGlobalGovernanceMemoryEvent({expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext: controllerContext}), /Only a canonical Memory|writer/iu);
   const appended = appendAuthorizedGlobalGovernanceMemoryEvent({expectedHeadSha256: fixture.events[0].event_sha256, event: supersessionEvent, writerContext});
   assert.equal(appended.status, "APPENDED");
   const idempotent = appendAuthorizedGlobalGovernanceMemoryEvent({expectedHeadSha256: supersessionEvent.event_sha256, event: supersessionEvent, writerContext});
@@ -136,7 +140,9 @@ try {
   assert(fs.existsSync(recovered.recovered_lock_path));
   assert.equal(appendAuthorizedGlobalGovernanceMemoryEvent({expectedHeadSha256: supersessionEvent.event_sha256, event: supersessionEvent, writerContext}).status, "IDEMPOTENT");
 } finally {
+  if (alternateRoot !== null) fs.rmSync(alternateRoot, {recursive: true, force: true});
   fs.rmSync(authorityRoot, {recursive: true, force: true});
+  if (!testTempParentExisted && fs.readdirSync(testTempParent).length === 0) fs.rmdirSync(testTempParent);
 }
 
 const superseded = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_SUPERSEDED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: active.snapshot_sha256, reasonCode: "ROUTING_POLICY_REFRESH", priorEventSha256: event.event_sha256, observedAtUtc: NOW});
@@ -149,7 +155,7 @@ assert.equal(updatedReplay.current_snapshot.snapshot_sha256, next.snapshot_sha25
 assert.equal(workerProjection.snapshot_sha256, active.snapshot_sha256, "active worker must retain its bound snapshot until safe refresh or handoff");
 assert.throws(() => validateGlobalGovernanceMemoryReadback(readback, {events: [event, superseded, nextEvent]}), /stale/iu);
 assert.throws(() => replayGlobalGovernanceMemory([event, nextEvent]), /noncontiguous|superseded or invalidated/iu);
-const invalidTarget = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_INVALIDATED", writerRole: "SPAWNER", targetSnapshotSha256: "f".repeat(64), reasonCode: "SOURCE_CONTRADICTION", priorEventSha256: event.event_sha256, observedAtUtc: NOW});
+const invalidTarget = compileGlobalGovernanceMemoryEvent({sequence: 1, eventType: "MODEL_POLICY_INVALIDATED", writerRole: "GOVERNED_MEMORY_ADAPTER", targetSnapshotSha256: "f".repeat(64), reasonCode: "SOURCE_CONTRADICTION", priorEventSha256: event.event_sha256, observedAtUtc: NOW});
 assert.throws(() => replayGlobalGovernanceMemory([event, invalidTarget]), /target is stale or unknown/iu);
 assert.throws(() => validateModelPolicySnapshot(active, {nowUtc: "2026-08-26T08:00:00.000Z", requireActive: true}), /stale/iu);
 const contextDigest = canonicalDigest({context: active.snapshot_sha256});

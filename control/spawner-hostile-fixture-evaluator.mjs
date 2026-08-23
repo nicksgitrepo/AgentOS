@@ -34,7 +34,7 @@ function mutateAdmissionManifest(root, mutate) { const file = path.join(root, "s
 function mutateGateManifest(root, mutate) { const file = path.join(root, "specialist-blocks/control-plane/agent-spawner/gates/manifest.json"); mutateJson(file, (value) => { mutate(value); value.manifest_sha256 = canonicalDigest({...value, manifest_sha256: null}); }); }
 function activePolicy() { const value = JSON.parse(fs.readFileSync(path.join(ROOT, "fixtures/model-policy-snapshot.initial.v1.json"))); value.status = "ACCEPTED_ACTIVE"; value.snapshot_sha256 = canonicalDigest({...value, snapshot_sha256: null}); return value; }
 function acceptedGlobalPolicyEvent() {
-  return compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
+  return compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
 }
 
 const VECTORS = Object.freeze({
@@ -81,7 +81,7 @@ const VECTORS = Object.freeze({
     return validateSpawnerGitAncestry(omitted, {repositoryRoot: ROOT});
   },
   AUTHORITY_ROOT_SUBSTITUTION: () => openGlobalGovernanceAuthorityStore({authorityRoot: os.tmpdir(), bootstrapSha256: "a".repeat(64)}),
-  EVENT_ID_SUBSTITUTION: () => compileGlobalGovernanceMemoryEvent({eventId: "PROJECT.ACME.123", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}),
+  EVENT_ID_SUBSTITUTION: () => compileGlobalGovernanceMemoryEvent({eventId: "PROJECT.ACME.123", sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: activePolicy(), priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW}),
   FIXTURE_INVENTORY_ALIAS: async () => {
     const manifest = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, "hostile-fixtures.manifest.json")));
     manifest.entries[1].fixture_id = manifest.entries[0].fixture_id;

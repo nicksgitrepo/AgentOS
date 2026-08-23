@@ -30,11 +30,11 @@ assert.deepEqual(output.roster.bindings.map((entry) => entry.binding_id), ["reus
 assert.equal(output.roster.package_entry.package_path, "specialist-blocks/wave-02/cloudflare-cache");
 assert.equal(output.roster.package_entry.candidate_digest.length, 64);
 assert.equal(output.model_policy.status, "BLOCKED_EXACT");
-assert.equal(output.model_policy.code, "POLICY_SNAPSHOT_STALE");
-assert.match(output.model_policy.message, /stale/iu);
+assert.equal(output.model_policy.code, "POLICY_SNAPSHOT_INACTIVE");
+assert.match(output.model_policy.message, /not active/iu);
 assert.equal(output.model_policy.relative_path, "fixtures/model-policy-snapshot.initial.v1.json");
 assert.equal(output.model_policy.snapshot_status, "PREPARED_INACTIVE");
-assert.equal(output.model_policy.expires_at_utc, "2026-08-22T04:09:00.000Z");
+assert.equal(output.model_policy.expires_at_utc, "2026-08-24T00:36:45.000Z");
 assert.equal(output.evaluator_handoff.status, "BLOCKED_EXACT");
 assert.equal(output.evaluator_handoff.code, "CANONICAL_EVALUATOR_HANDOFF_REQUIRED");
 assert.equal(output.evaluator_handoff.message, "Separately controlled evaluator handoff is not available for the current candidate");
@@ -53,4 +53,4 @@ assert.match(hostile.stderr, /CLOUDFLARE_CACHE_REBIND_PREFLIGHT_CALLER_INPUT_FOR
 
 const bindingBytes = fs.readFileSync(path.join(root, "schemas/bootstrap-binding.v1.json"));
 assert.equal(createHash("sha256").update(bindingBytes).digest("hex").length, 64);
-console.log("PASS Cloudflare Cache rebind preflight: sealed roster readback, exact stale-policy receipt, exact missing-evaluator receipt, candidate rollback identity, no-input guard, and zero filesystem writes");
+console.log("PASS Cloudflare Cache rebind preflight: sealed roster readback, exact inactive-policy receipt, exact missing-evaluator receipt, candidate rollback identity, no-input guard, and zero filesystem writes");

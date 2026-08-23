@@ -2,7 +2,6 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {generateKeyPairSync, sign} from "node:crypto";
 import {spawnSync} from "node:child_process";
@@ -14,17 +13,21 @@ import {materializeTestGlobalGovernanceStore} from "./helpers/global-governance-
 
 const repositoryRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const consumer = path.join(repositoryRoot, "tests/fixtures/permanent-role-external-review-consumer.mjs");
-const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-external-review-"));
+const rootSegments = repositoryRoot.split(path.sep), worktreesIndex = rootSegments.lastIndexOf("Worktrees");
+assert(worktreesIndex > 0, "test repository is not in the governed AgentOS Worktrees layout");
+const tempParent = path.join(path.sep, ...rootSegments.slice(1, worktreesIndex), "Temp");
+const tempParentExisted = fs.existsSync(tempParent); fs.mkdirSync(tempParent, {recursive: true});
+const temporary = fs.mkdtempSync(path.join(tempParent, "external-review-"));
 const governanceRoot = path.join(temporary, "governance"); fs.mkdirSync(governanceRoot);
 const reviewRoot = path.join(temporary, "external-review"); fs.mkdirSync(path.join(reviewRoot, "reviews"), {recursive: true});
-const TEST_NOW = "2026-08-21T04:09:00.000Z";
+const TEST_NOW = new Date().toISOString();
 
 function without(record, fields) { const copy = structuredClone(record); for (const field of fields) copy[field] = null; return copy; }
 function pem(key, type) { return key.export({type, format: "pem"}).toString(); }
 function signRecord(record, field, privateKey) { record[field] = sign(null, Buffer.from(canonicalJson(without(record, [field]))), privateKey).toString("base64"); }
 function runConsumer(provisioningPath, receiptRef, environment = process.env, mode = "TEST_ONLY") {
   const descriptor = fs.openSync(provisioningPath, "r");
-  try { return spawnSync(process.execPath, [consumer, receiptRef, mode], {cwd: repositoryRoot, env: environment, stdio: ["ignore", "pipe", "pipe", descriptor], encoding: "utf8"}); }
+  try { return spawnSync(process.execPath, [consumer, receiptRef, mode], {cwd: repositoryRoot, env: {...environment, AGENTOS_TEST_NOW_UTC: TEST_NOW}, stdio: ["ignore", "pipe", "pipe", descriptor], encoding: "utf8"}); }
   finally { fs.closeSync(descriptor); }
 }
 try {
@@ -63,6 +66,7 @@ try {
   const mutatedResult = runConsumer(provisioningPath, mutatedRef); assert.equal(mutatedResult.status, 2); assert.match(mutatedResult.stderr, /binding|digest|signature/u);
 } finally {
   fs.rmSync(temporary, {recursive: true, force: true});
+  if (!tempParentExisted && fs.readdirSync(tempParent).length === 0) fs.rmdirSync(tempParent);
 }
 
 console.log("PASS external review rejection: generic pre-admission authority denial is recorded honestly, cannot count as semantic fixture execution, cannot create even a test admission, and attacker FD3 cannot unlock production");

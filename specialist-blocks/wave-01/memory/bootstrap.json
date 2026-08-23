@@ -5,7 +5,7 @@
   "role_id": "AGENTOS.MEMORY",
   "display_name": "Memory",
   "role_package_path": "specialist-blocks/wave-01/memory",
-  "role_block_sha256": "167f9c8d07af2a560cfa12bdcb470e64836c5f090084371385346bc7e93decea",
+  "role_block_sha256": "fead87854893d166822bff3cd9194f12f37a61ad3787094bf0c72f45b174e5fc",
   "source_binding": {
     "kind": "OWNER_AUTHORIZED_RUNTIME_SOURCE",
     "portable_source_ref": null,

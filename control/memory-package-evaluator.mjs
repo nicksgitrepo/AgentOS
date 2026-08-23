@@ -10,7 +10,6 @@
  */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {createHash} from "node:crypto";
 import {pathToFileURL} from "node:url";
@@ -73,11 +72,18 @@ function readFixtureMap() {
   const names = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
   const expected = [...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES].sort();
   assert(names.map((name) => name.slice(0, -5)).join("\0") === expected.join("\0"), "Memory fixture inventory is not exact", "MEMORY_FIXTURE_INVENTORY_INVALID");
+  const manifest = json(path.join(ROOT, PACKAGE_RELATIVE, "hostile-fixtures.manifest.json"));
+  assert(manifest.schema === "agentos.memory_hostile_fixture_manifest.v1" && manifest.version === 1 && manifest.block_id === BLOCK_ID, "Memory hostile manifest identity differs", "MEMORY_FIXTURE_MANIFEST_INVALID");
+  assert(manifest.manifest_sha256 === canonicalDigest({...manifest, manifest_sha256: null}), "Memory hostile manifest digest differs", "MEMORY_FIXTURE_MANIFEST_INVALID");
+  assert(Array.isArray(manifest.entries) && manifest.entries.length === names.length && new Set(manifest.entries.map((entry) => entry.fixture_id)).size === names.length, "Memory hostile manifest coverage differs", "MEMORY_FIXTURE_MANIFEST_INVALID");
   const fixtures = new Map();
   for (const name of names) {
     const bytes = safeRead(path.join(fixtureRoot, name));
     const fixture = JSON.parse(bytes);
     assert(fixture.block_id === BLOCK_ID && typeof fixture.fixture_id === "string", `Memory fixture ${name} is not bound`, "MEMORY_FIXTURE_UNBOUND");
+    const manifestEntry = manifest.entries.find((entry) => entry.fixture_id === fixture.fixture_id);
+    assert(manifestEntry && manifestEntry.path === `fixtures/${name}` && manifestEntry.class === fixture.class && manifestEntry.attack_vector === fixture.vector.attack && manifestEntry.expected_outcome === fixture.vector.expected_readback.disposition, `Memory hostile manifest metadata differs: ${name}`, "MEMORY_FIXTURE_MANIFEST_INVALID");
+    assert(manifestEntry.file_sha256 === rawSha256(bytes), `Memory hostile manifest file digest differs: ${name}`, "MEMORY_FIXTURE_MANIFEST_INVALID");
     assert(!fixtures.has(fixture.fixture_id), `Memory fixture alias: ${name}`, "MEMORY_FIXTURE_ALIAS");
     fixtures.set(fixture.class, {fixture, file_sha256: rawSha256(bytes), relative_path: `${PACKAGE_RELATIVE}/fixtures/${name}`});
   }
@@ -114,9 +120,19 @@ function eventFor(record, sequence, priorEventSha256 = GENESIS_EVENT_SHA256, eve
 function appendOne(authorityRoot, event) {
   return appendProjectMemoryEvent({authorityRoot, expectedHeadSha256: event.prior_event_sha256, event});
 }
+function projectTemp(prefix) {
+  const rootSegments = ROOT.split(path.sep);
+  const worktreesIndex = rootSegments.lastIndexOf("Worktrees");
+  assert(worktreesIndex > 0, "Memory evaluator repository is not in the governed AgentOS Worktrees layout", "MEMORY_TEMP_CUSTODY_INVALID");
+  const parent = path.join(path.sep, ...rootSegments.slice(1, worktreesIndex), "Temp");
+  const parentExisted = fs.existsSync(parent);
+  fs.mkdirSync(parent, {recursive: true});
+  const root = fs.mkdtempSync(path.join(parent, prefix));
+  return {root, cleanup() { fs.rmSync(root, {recursive: true, force: true}); if (!parentExisted && fs.readdirSync(parent).length === 0) fs.rmdirSync(parent); }};
+}
 function withTempStore(fn) {
-  const authorityRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-memory-package-store-"));
-  try { return fn(authorityRoot); } finally { fs.rmSync(authorityRoot, {recursive: true, force: true}); }
+  const temporary = projectTemp("memory-package-store-");
+  try { return fn(temporary.root); } finally { temporary.cleanup(); }
 }
 function expectThrow(fn, code = null) {
   try { fn(); } catch (error) {
@@ -134,7 +150,7 @@ function executeValid(className, memoryBinding, authorityRoot) {
     return {disposition: "ACCEPT_RECORD", memory_events: 1};
   }
   if (className === "handoff") {
-    const record = compileHandoffRecord({recordId: "HANDOFF_1", binding: memoryBinding, handoffKind: "MEMORY_LANE", nextActionRef: "SPAWNER_REVIEW", resultSha256: sha("handoff-result")});
+    const record = compileHandoffRecord({recordId: "HANDOFF_1", binding: memoryBinding, handoffKind: "MEMORY_LANE", nextActionRef: "ORCHESTRATOR_REVIEW", resultSha256: sha("handoff-result")});
     appendOne(authorityRoot, eventFor(record, 0));
     assert(reconstructProjectMemory({authorityRoot, binding: memoryBinding}).current_records[0].record_type === "HANDOFF", "Handoff did not replay", "MEMORY_HANDOFF_REPLAY_MISSING");
     return {disposition: "ACCEPT_HANDOFF", memory_events: 1};
@@ -182,7 +198,7 @@ function executeDenied(className, memoryBinding, authorityRoot) {
   }
   if (className === "stale_source") {
     const snapshot = json(path.join(ROOT, "fixtures/model-policy-snapshot.initial.v1.json"));
-    const accepted = compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot: {...snapshot, status: "ACCEPTED_ACTIVE", snapshot_sha256: canonicalDigest({...snapshot, status: "ACCEPTED_ACTIVE", snapshot_sha256: null})}, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
+    const accepted = compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot: {...snapshot, status: "ACCEPTED_ACTIVE", snapshot_sha256: canonicalDigest({...snapshot, status: "ACCEPTED_ACTIVE", snapshot_sha256: null})}, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: NOW});
     const readback = compileGlobalGovernanceMemoryReadback({events: [accepted], historicalActivationReceiptSha256: sha("historical"), observedAtUtc: NOW});
     const stale = {...readback, live_event_count: 99, readback_sha256: null}; stale.readback_sha256 = canonicalDigest({...stale, readback_sha256: null});
     return expectThrow(() => validateGlobalGovernanceMemoryReadback(stale, {events: [accepted]}), "GLOBAL_MEMORY_READBACK_STALE");
@@ -211,7 +227,8 @@ function runFocusedSuites() {
 }
 
 async function auditPrivacyMutation() {
-  const mutationRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-memory-privacy-mutation-"));
+  const temporary = projectTemp("memory-privacy-mutation-");
+  const mutationRoot = temporary.root;
   try {
     const sourcePath = path.join(ROOT, "control/persisted-record-privacy.mjs");
     const targetPath = path.join(mutationRoot, "persisted-record-privacy.mjs");
@@ -223,14 +240,14 @@ async function auditPrivacyMutation() {
     const mutated = await import(`${pathToFileURL(targetPath).href}?mutation=${Date.now()}`);
     const observed = mutated.scanPersistedRecord("sk-test-secret-value");
     return {status: observed.safe ? "WEAKENED" : "INTACT", mutation_detected: observed.safe, expected_safe: false, observed_safe: observed.safe, result_sha256: canonicalDigest(observed)};
-  } finally { fs.rmSync(mutationRoot, {recursive: true, force: true}); }
+  } finally { temporary.cleanup(); }
 }
 
 export async function evaluateMemoryPackage() {
   const packageRoot = path.join(ROOT, PACKAGE_RELATIVE);
   const block = json(path.join(packageRoot, "block.json"));
   assert(block.block_id === BLOCK_ID && block.lifecycle === "CANDIDATE" && block.activation === "OFF", "Memory package is not an inactive candidate", "MEMORY_PACKAGE_STATE_INVALID");
-  const files = ["block.json", "sources.lock", "gates/manifest.json", "evaluation.json", "handoff.json", ...fs.readdirSync(path.join(packageRoot, "gates")).filter((name) => name.endsWith(".gate")).map((name) => `gates/${name}`), ...fs.readdirSync(path.join(packageRoot, "fixtures")).filter((name) => name.endsWith(".json")).map((name) => `fixtures/${name}`)].sort();
+  const files = ["block.json", "sources.lock", "gates/manifest.json", "hostile-fixtures.manifest.json", "evaluation.json", "handoff.json", ...fs.readdirSync(path.join(packageRoot, "gates")).filter((name) => name.endsWith(".gate")).map((name) => `gates/${name}`), ...fs.readdirSync(path.join(packageRoot, "fixtures")).filter((name) => name.endsWith(".json")).map((name) => `fixtures/${name}`)].sort();
   const fileDigests = files.map((relativePath) => ({relative_path: `${PACKAGE_RELATIVE}/${relativePath}`, sha256: rawSha256(safeRead(path.join(packageRoot, relativePath)))}));
   assert(files.filter((file) => file.startsWith("gates/") && file.endsWith(".gate")).length === SPECIALIST_GATE_IDS.length, "Memory gate inventory is incomplete", "MEMORY_GATE_INVENTORY_INVALID");
   const fixtures = readFixtureMap();

@@ -12,7 +12,7 @@ export function compileTestGlobalGovernance({nowUtc = new Date().toISOString()} 
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
   const snapshot = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json"), "utf8"));
   snapshot.status = "ACCEPTED_ACTIVE"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null});
-  const event = compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "SPAWNER", snapshot, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: nowUtc});
+  const event = compileGlobalGovernanceMemoryEvent({sequence: 0, eventType: "MODEL_POLICY_ACCEPTED", writerRole: "GOVERNED_MEMORY_ADAPTER", snapshot, priorEventSha256: GLOBAL_GOVERNANCE_MEMORY_GENESIS, observedAtUtc: nowUtc});
   const events = [event];
   const readback = compileGlobalGovernanceMemoryReadback({events, historicalActivationReceiptSha256: canonicalDigest({receipt: "historical-test-activation"}), observedAtUtc: nowUtc});
   const route = selectEcoModelRoute({snapshot, taskClass: "NARROW_CODING", roleCapabilityFloor: 49, requiredContextTokens: 64000, requiredCapabilities: ["CODE", "TOOLS"], nowUtc});

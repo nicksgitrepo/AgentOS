@@ -6,19 +6,19 @@
   "visibility": "PRIVATE_GLOBAL_GOVERNANCE",
   "contains_consumer_context": false,
   "raw_browsing_transcripts": false,
-  "observed_at_utc": "2026-08-21T04:09:00.000Z",
-  "expires_at_utc": "2026-08-22T04:09:00.000Z",
+  "observed_at_utc": "2026-08-23T00:36:45.000Z",
+  "expires_at_utc": "2026-08-24T00:36:45.000Z",
   "evidence": [
     {
-      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
+      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
       "authority_class": "FIRST_PARTY_PROVIDER",
-      "observed_at_utc": "2026-08-20T04:00:00.000Z",
-      "expires_at_utc": "2026-08-27T04:00:00.000Z",
+      "observed_at_utc": "2026-08-23T00:36:45.000Z",
+      "expires_at_utc": "2026-08-30T00:36:45.000Z",
       "max_age_days": 7,
-      "uncertainty": "MEDIUM",
-      "artifact_sha256": "976135c79d9f9eb588f1e8dce55df797bca8f134c5ff9f72536698f3a8cbe9ea",
-      "file_sha256": "318d0f03d17da94be7b2b96a22dfd2729432b5e43d61d44e9065f9777e141fae",
-      "summary_sha256": "3fcbece4e7c8ab660f2fdf158eebacd583d256e783162a96190be3854bda520e",
+      "uncertainty": "LOW",
+      "artifact_sha256": "85870e376cd65328aff25c92081659623640c0c157f5b1b1e0a7dd0d113e4ee3",
+      "file_sha256": "a562428280edfc970dd40120911b6b8c076277a3743260c569e447d1a797b8a9",
+      "summary_sha256": "731d3017100c6786eeaa1caafa301a6ebaedfd05a9714cf17bca8a6c1e186f2e",
       "raw_transcript_stored": false
     },
     {
@@ -34,26 +34,69 @@
       "raw_transcript_stored": false
     },
     {
-      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-23",
       "authority_class": "HOST_ATTESTATION",
-      "observed_at_utc": "2026-08-21T04:09:00.000Z",
-      "expires_at_utc": "2026-08-22T04:09:00.000Z",
+      "observed_at_utc": "2026-08-23T00:36:45.000Z",
+      "expires_at_utc": "2026-08-24T00:36:45.000Z",
       "max_age_days": 1,
       "uncertainty": "LOW",
-      "artifact_sha256": "5235d06738c62d06cc18190483ca1e599295f87f6728fea103aaae36712a5c00",
-      "file_sha256": "d66d9d804f5358577448850bd91e6b61564f7f51c988de9c04f11c3d38537de6",
+      "artifact_sha256": "edaf0ff56570bb889874d0598997ad83b918792b54a151d99cc2292847c8a3c6",
+      "file_sha256": "2eb95d3e42646d42b6c142e62336532812e714b0e58a58772d416a7704465e66",
       "summary_sha256": "8d261155b7f284110332c77ea17af939e0b357030dcc8407f06b4d3f0a5154a5",
       "raw_transcript_stored": false
     }
   ],
-  "conflicts": [],
+  "conflicts": [
+    {
+      "conflict_id": "CONFLICT.GPT_5_6_SOL.INPUT_PRICE.2026-08-23",
+      "field": "gpt-5.6-sol.input_usd_per_million",
+      "first_party_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
+      "first_party_artifact_sha256": "85870e376cd65328aff25c92081659623640c0c157f5b1b1e0a7dd0d113e4ee3",
+      "first_party_value": "4",
+      "comparative_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
+      "comparative_artifact_sha256": "777dcfbc1fa67d54d5a3c9e52cdd4790433d5abd2c618ce031cb8e21c2ebe676",
+      "comparative_value": "5",
+      "authority_ordering": [
+        "FIRST_PARTY_PROVIDER",
+        "COMPARATIVE_BENCHMARK"
+      ],
+      "selected_value": "4",
+      "resolution": "FIRST_PARTY_GOVERNS",
+      "rationale_code": "PROVIDER_FACT_OVERRIDES_COMPARATIVE_ECONOMICS",
+      "observed_at_utc": "2026-08-23T00:36:45.000Z",
+      "expires_at_utc": "2026-08-30T00:36:45.000Z",
+      "supersession_trigger": "ANY_BOUND_SOURCE_REVISION_OR_VALUE_CHANGE",
+      "conflict_sha256": "c04921547bd9bbba7bfab0d63d93ad8417c0363851b3f4be4dcb8aa7edf29d69"
+    },
+    {
+      "conflict_id": "CONFLICT.GPT_5_6_SOL.OUTPUT_PRICE.2026-08-23",
+      "field": "gpt-5.6-sol.output_usd_per_million",
+      "first_party_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
+      "first_party_artifact_sha256": "85870e376cd65328aff25c92081659623640c0c157f5b1b1e0a7dd0d113e4ee3",
+      "first_party_value": "20",
+      "comparative_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
+      "comparative_artifact_sha256": "777dcfbc1fa67d54d5a3c9e52cdd4790433d5abd2c618ce031cb8e21c2ebe676",
+      "comparative_value": "30",
+      "authority_ordering": [
+        "FIRST_PARTY_PROVIDER",
+        "COMPARATIVE_BENCHMARK"
+      ],
+      "selected_value": "20",
+      "resolution": "FIRST_PARTY_GOVERNS",
+      "rationale_code": "PROVIDER_FACT_OVERRIDES_COMPARATIVE_ECONOMICS",
+      "observed_at_utc": "2026-08-23T00:36:45.000Z",
+      "expires_at_utc": "2026-08-30T00:36:45.000Z",
+      "supersession_trigger": "ANY_BOUND_SOURCE_REVISION_OR_VALUE_CHANGE",
+      "conflict_sha256": "5a322804ba108717ec80557ea72e74817061f045c0257627206e836df2de7299"
+    }
+  ],
   "models": [
     {
       "model_id": "gpt-5.6-luna",
       "provider_id": "OPENAI",
-      "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
+      "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
       "benchmark_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
-      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-23",
       "host_available": true,
       "availability_evidence": "HOST_DECLARED_NOT_EXECUTION_PROVEN",
       "capability_score": 52,
@@ -87,14 +130,14 @@
     {
       "model_id": "gpt-5.6-sol",
       "provider_id": "OPENAI",
-      "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
+      "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
       "benchmark_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
-      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-23",
       "host_available": true,
       "availability_evidence": "EXECUTION_PROVEN_MEDIUM_ONLY_OTHER_EFFORTS_DECLARED",
       "capability_score": 61,
-      "input_usd_per_million": 5,
-      "output_usd_per_million": 30,
+      "input_usd_per_million": 4,
+      "output_usd_per_million": 20,
       "output_tokens_per_second": 67.8,
       "context_tokens": 1050000,
       "supported_reasoning_efforts": [
@@ -124,9 +167,9 @@
     {
       "model_id": "gpt-5.6-terra",
       "provider_id": "OPENAI",
-      "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
+      "provider_evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
       "benchmark_evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
-      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
+      "host_evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-23",
       "host_available": true,
       "availability_evidence": "HOST_DECLARED_NOT_EXECUTION_PROVEN",
       "capability_score": 57,
@@ -363,5 +406,5 @@
       ]
     }
   ],
-  "snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27"
+  "snapshot_sha256": "dcb11bb16c205eac3ad9ef3fbdb78262258914451447977511c41a248a40aa8f"
 }

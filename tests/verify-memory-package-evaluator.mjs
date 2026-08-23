@@ -1,7 +1,20 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 import {evaluateMemoryPackage} from "../control/memory-package-evaluator.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const packageRoot = path.join(root, "specialist-blocks/wave-01/memory");
+const manifest = JSON.parse(fs.readFileSync(path.join(packageRoot, "hostile-fixtures.manifest.json"), "utf8"));
+assert.equal(manifest.schema, "agentos.memory_hostile_fixture_manifest.v1");
+assert.equal(manifest.manifest_sha256, canonicalDigest({...manifest, manifest_sha256: null}));
+assert.equal(manifest.entries.length, 17);
+for (const entry of manifest.entries) assert.equal(entry.file_sha256, crypto.createHash("sha256").update(fs.readFileSync(path.join(packageRoot, entry.path))).digest("hex"));
 
 const evaluation = await evaluateMemoryPackage();
 assert.equal(evaluation.schema, "agentos.specialist_memory_package_operational_evaluation.v1");

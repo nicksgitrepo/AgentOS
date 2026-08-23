@@ -11,7 +11,7 @@
   "can_deploy": false,
   "admission": "NOT_ADMITTED",
   "package_block_id": "specialist.control.repair",
-  "package_block_sha256": "062ec59155c904b29adced72ed7ffe52bab3a6b457bcab2acabf80a0f9d1fea8",
+  "package_block_sha256": "b96b95c9da1e3119726a0100a8d90a2c9aa71db3ee4289a8f3b7306b7f9034e9",
   "model_route": {
     "source": "GLOBAL_MODEL_POLICY_SNAPSHOT",
     "task_class": "BROAD_ARCHITECTURE",
@@ -22,5 +22,5 @@
   "global_projection": "READ_ONLY_ACCEPTED_MODEL_POLICY_AND_AGENTOS_GOVERNANCE",
   "project_projection": "BOUND_ONLY_AT_GOVERNED_SPAWN",
   "execution_rule": "A seed is a clean checkpoint only; clone-to-worker requires a current governed admission receipt and never occurs from this candidate artifact alone.",
-  "seed_sha256": "67fcbf44dd41cbc1028a7542460c1440df7efdc0aee3d56568022b0f7eb57e72"
+  "seed_sha256": "214268cf11b347092c3e8bb4d56333c894889c218e3c706bf383ddd73027d2d8"
 }

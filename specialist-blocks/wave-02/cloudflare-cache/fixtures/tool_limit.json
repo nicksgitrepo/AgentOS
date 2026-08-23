@@ -60,15 +60,15 @@
         "standard_version": "current",
         "standard_block_sha256": "fd2aee0c3d782a3f37b68a188e314c754ddb25ed3ccde036c9853eced75c9fd0",
         "standard_source_manifest_sha256": "5b0be23138cb3082aaba736daf69ddfbfc814c978f143af844299df63e5d0adf",
-        "model_snapshot_sha256": "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27",
+        "model_snapshot_sha256": "dcb11bb16c205eac3ad9ef3fbdb78262258914451447977511c41a248a40aa8f",
         "model_task_class": "NARROW_CODING",
         "model_capability_floor": 49,
         "model_required_capabilities": [
           "CODE",
           "TOOLS"
         ],
-        "model_route_sha256": "97a653ec06f36e1dea28aed122b143e57b1ee49d63c299a98d64721c9aa77caf",
-        "context_receipt_sha256": "30a920b3ccdd2e799048f1ab427cf3c4f052f5b6f9f7b4eadeff2d8e33c6e498",
+        "model_route_sha256": "a8c611443b22b521d90756661691bcd687851b27d09800b4861f0a3757f142f5",
+        "context_receipt_sha256": "8ebc5a5b2111d5f5e6655db11d068a5017180e8c9b078d801f39afbee5dbd2fd",
         "upstream_router_result_sha256": "e0bfa605625a80f6a6d60f38390cb7240b98899a34f3f8ef941a2e95613bff2a",
         "memory_binding": "TYPED_HANDOFF_ONLY",
         "project_data_present": false,

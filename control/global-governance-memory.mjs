@@ -10,7 +10,7 @@ import {MODEL_POLICY_ROLE_CLASSES, MODEL_POLICY_SNAPSHOT_SCHEMA, validateModelPo
 export const GLOBAL_GOVERNANCE_MEMORY_EVENT_SCHEMA = "agentos.global_governance_memory_event.v1";
 export const GLOBAL_GOVERNANCE_MEMORY_READBACK_SCHEMA = "agentos.global_governance_memory_readback.v1";
 export const GLOBAL_GOVERNANCE_MEMORY_GENESIS = canonicalDigest({schema: "agentos.global_governance_memory_genesis.v1"});
-export const GLOBAL_GOVERNANCE_MEMORY_WRITERS = Object.freeze(["SPAWNER", "GOVERNED_MEMORY_ADAPTER"]);
+export const GLOBAL_GOVERNANCE_MEMORY_WRITERS = Object.freeze(["GOVERNED_MEMORY_ADAPTER"]);
 export const GLOBAL_GOVERNANCE_GENESIS_WRITER = "BOOTSTRAP_GENESIS";
 
 const SHA256 = /^[0-9a-f]{64}$/u;

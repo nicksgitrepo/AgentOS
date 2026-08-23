@@ -248,7 +248,7 @@
     "candidate_entry": "Package, source lock, twelve executable gates, seventeen hostile fixtures, evaluation dossier, and handoff exist with matching content identities while lifecycle remains CANDIDATE and activation remains OFF.",
     "evaluation_entry": "An independent evaluator executes the exact memory vectors against isolated stores and verifies append, replay, privacy, projection, and custody results; static syntax alone is insufficient.",
     "suspension": "Suspend on ledger corruption, stale policy, binding drift, privacy violation, writer-capability mismatch, cross-project leakage, failed hostile vector, or utility/harm failure.",
-    "archive": "Only Spawner may archive or despawn after inactive-process readback, a STALE_AND_NO_LONGER_USED worktree, zero live references, preserved handoff, supported host close-worktree capability, and CLOSED result readback; archival never means admission.",
+    "archive": "Archive only by immutable Spawner receipt after all active references close and evidence is preserved; archive never means admitted.",
     "reactivation": "Create or validate a new revision, rebuild all affected projections, and rerun independent evaluation; never silently reactivate an old digest."
   },
   "gate_path": "gates/00-intake.gate",
@@ -343,17 +343,5 @@
     "edition_rule": "Changes to memory schema, privacy, ledger, projection, gate semantics, or authority create a new immutable revision and rerun every affected package.",
     "freshness_rule": "A source or policy refresh without material semantic change creates a freshness readback; material change invalidates derived contexts and seeds."
   },
-  "delegation_policy": {
-    "default": "NO_SUBAGENTS",
-    "explicit_owner_approval_required": true,
-    "approval_scope": "EACH_USE",
-    "recursive_or_hidden_delegation_forbidden": true
-  },
-  "agent_lifecycle": {
-    "kind": "LONG_RUNNING_NAMED_AGENT",
-    "activation": "OFF_UNTIL_SPAWNER_ADMISSION",
-    "no_self_admission": true,
-    "no_self_acceptance": true
-  },
-  "block_sha256": "167f9c8d07af2a560cfa12bdcb470e64836c5f090084371385346bc7e93decea"
+  "block_sha256": "fead87854893d166822bff3cd9194f12f37a61ad3787094bf0c72f45b174e5fc"
 }

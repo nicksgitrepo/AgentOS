@@ -369,7 +369,7 @@ export function validateModelPolicyProjection(projection, {snapshot, expectedRol
   assert(Date.parse(projection.projected_at_utc) >= Date.parse(snapshot.observed_at_utc) && Date.parse(projection.projected_at_utc) <= Date.parse(trustedValidationUtc), "Model-policy projection time is stale or future", "POLICY_PROJECTION_TIME_INVALID");
   assert(MODEL_POLICY_ROLE_CLASSES.includes(projection.role_class) && (expectedRoleClass === null || projection.role_class === expectedRoleClass), "Model-policy projection role differs");
   assert(projection.snapshot_sha256 === snapshot.snapshot_sha256 && projection.expires_at_utc === snapshot.expires_at_utc, "Model-policy projection snapshot is stale");
-  assert(projection.mutation_authority === ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"].includes(projection.role_class), "Model-policy projection writer authority differs");
+  assert(projection.mutation_authority === (projection.role_class === "GOVERNED_MEMORY_ADAPTER"), "Model-policy projection writer authority differs");
   if (MODEL_POLICY_COMPACT_SELECTION_ROLES.includes(projection.role_class)) {
     exactKeys(projection.selected, ["task_class", "route_class", "model_id", "reasoning_effort", "capability_floor", "required_capabilities", "context_floor_tokens", "input_usd_per_million", "output_usd_per_million", "max_concurrency", "max_heavyweight_processes", "fallback_models", "escalation_triggers"], "Compact model-policy selection");
     const task = snapshot.task_classes.find((entry) => entry.task_class === projection.selected.task_class);
@@ -412,7 +412,7 @@ export function compileModelPolicyProjection({snapshot, roleClass, selectedRoute
       max_concurrency: selectedRoute.max_concurrency, max_heavyweight_processes: selectedRoute.max_heavyweight_processes,
       fallback_models: selectedRoute.fallback_models, escalation_triggers: selectedRoute.escalation_triggers,
     },
-    mutation_authority: ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"].includes(roleClass),
+    mutation_authority: roleClass === "GOVERNED_MEMORY_ADAPTER",
     projected_at_utc: projectedAtUtc, projection_sha256: null,
   };
   projection.projection_sha256 = canonicalDigest(digestBody(projection, "projection_sha256"));

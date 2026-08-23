@@ -11,7 +11,7 @@
     "status": {"const": "PREPARED_NOT_ACTIVATED"},
     "project_agnostic": {"const": true},
     "genesis_writer": {"const": "BOOTSTRAP_GENESIS_SEQUENCE_ZERO_ONLY"},
-    "writers": {"const": ["SPAWNER", "GOVERNED_MEMORY_ADAPTER"]},
+    "writers": {"const": ["GOVERNED_MEMORY_ADAPTER"]},
     "readers": {"const": ["CONTROLLER", "PRODUCT_OWNER", "SPAWNER", "MEMORY", "SCHEDULER", "RUNTIME", "ORCHESTRATOR", "INERT_SEED", "WORKING_AGENT"]},
     "canonical_event": {"const": "agentos.global_governance_memory_event.v1"},
     "current_readback": {"const": "agentos.global_governance_memory_readback.v1"},

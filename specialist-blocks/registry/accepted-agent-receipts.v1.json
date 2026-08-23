@@ -341,36 +341,6 @@
       "readback_scope": "EXACT_RECEIPT_RETAINED"
     },
     {
-      "stable_agent_id": "AGENT.SECURITY_FUNCTION_SCOPE",
-      "package_path": "specialist-blocks/wave-03/function-scope",
-      "candidate_commit": "a86fff381f9ee631bd2a63635d436c38e9dd928c",
-      "candidate_tree": "f73386abb287613ae102fe6ae51944ff8a548c50",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/a86fff381f9ee631bd2a63635d436c38e9dd928c",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENT.SECURITY_IDEMPOTENCY",
-      "package_path": "specialist-blocks/wave-03/idempotency",
-      "candidate_commit": "908d7846e290eda8031a1f56b505ca6f52e2a2e6",
-      "candidate_tree": "1c66db99abc83a1b92bc526ba3e12d2f5f9e4b51",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/908d7846e290eda8031a1f56b505ca6f52e2a2e6",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENT.SECURITY_OBJECT_SCOPE",
-      "package_path": "specialist-blocks/wave-03/object-scope",
-      "candidate_commit": "6deb2a3dc2d6f9b449487b601d0a385ab82d8a8b",
-      "candidate_tree": "8a1a6f9cac004e2dd94091dba9fd2b4833de8a5e",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/6deb2a3dc2d6f9b449487b601d0a385ab82d8a8b",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
       "stable_agent_id": "AGENT.SECURITY_OWASP_API_TOP10_ROUTER",
       "package_path": "specialist-blocks/wave-03/owasp-api-top10-router",
       "candidate_commit": "0ed1b5b760528663d520c2b6d0df088fe2841c4b",
@@ -429,77 +399,7 @@
       "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/e5a72a62f5006f550e494c0329ea54580d1ba5fd",
       "receipt_sha256": "5478f422d974e008444e607de23bc45e57dabb8db17cf7a0a30a0a2411b4b4b8",
       "readback_scope": "EXACT_RECEIPT_RETAINED"
-    },
-    {
-      "stable_agent_id": "AGENTOS.MEMORY",
-      "package_path": "specialist-blocks/wave-01/memory",
-      "candidate_commit": "a51ff068c3369b66722c759958fade8b0523fdd3",
-      "candidate_tree": "6bbd683d868d37d845a306e453e59243afa8139d",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/a51ff068c3369b66722c759958fade8b0523fdd3",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENTOS.ORCHESTRATOR",
-      "package_path": "specialist-blocks/wave-01/orchestrator",
-      "candidate_commit": "abd8c59a88df65a3333155871ccf6f5064be9b23",
-      "candidate_tree": "8ca1a47485fe5833a965c27d420244bd43b94f9d",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/abd8c59a88df65a3333155871ccf6f5064be9b23",
-      "receipt_sha256": "a2e947908ddf46ccbf22b5df74ae51e0283628e4f11a259b7bb89d3602785f04",
-      "readback_scope": "EXACT_RECEIPT_RETAINED"
-    },
-    {
-      "stable_agent_id": "AGENTOS.PRODUCT_OWNER",
-      "package_path": "specialist-blocks/wave-01/product-owner",
-      "candidate_commit": "ac31996d36c1c2486112aedb0b15a119d8b99294",
-      "candidate_tree": "0e8b9e62cd093727d25c3685ebd66f2c00144d70",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/ac31996d36c1c2486112aedb0b15a119d8b99294",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENTOS.REPAIR",
-      "package_path": "specialist-blocks/wave-07/repair",
-      "candidate_commit": "94bf040b30e7ff953a57e1ce46a486107b9d924c",
-      "candidate_tree": "27fcbd7c7ac34d86814ae5a529c1e8774f3321a7",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/94bf040b30e7ff953a57e1ce46a486107b9d924c",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENTOS.RUNTIME",
-      "package_path": "specialist-blocks/wave-01/runtime-deployment-operator",
-      "candidate_commit": "373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
-      "candidate_tree": "9bd8881ca7ef4fb6cffc795bdf352b655f050423",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/373f662bbc3d7d4baa359b8176ca0a5a55fdab62",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENTOS.SCHEDULER",
-      "package_path": "specialist-blocks/wave-01/resource-scheduler",
-      "candidate_commit": "d43d148aadd42e440f821dc289480fefe39eadce",
-      "candidate_tree": "568ef50d9722340705f08de8baece902d55d1777",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/d43d148aadd42e440f821dc289480fefe39eadce",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
-    },
-    {
-      "stable_agent_id": "AGENTOS_CONTROLLER",
-      "package_path": "specialist-blocks/wave-01/project-controller",
-      "candidate_commit": "66d7e8f469d7cba9962f5477e88a6d0e7efd4e7e",
-      "candidate_tree": "fc725e5e88bab0d8281129f8a72c910838fc6b4c",
-      "independent_status": "PASS",
-      "receipt_ref": "INDEPENDENT_EVALUATOR_HANDOFF/66d7e8f469d7cba9962f5477e88a6d0e7efd4e7e",
-      "receipt_sha256": null,
-      "readback_scope": "READBACK_SUMMARY_ONLY"
     }
   ],
-  "ledger_sha256": "ad009d802f196334c9709e416257742f988c125e827823dde7b4fe3c3b4a5b17"
+  "ledger_sha256": "256dc7bbd8fce1b1762fcd33af0658bb9b8d0263bf5115098cea1b8173c16337"
 }

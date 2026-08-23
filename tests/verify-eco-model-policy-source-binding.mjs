@@ -2,14 +2,16 @@
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {auditModelPolicyEvidenceStore, compileModelPolicyProjection, selectEcoModelRoute, validateEcoModelRoute, validateModelPolicyProjection, validateModelPolicySnapshot} from "../control/eco-model-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const NOW = "2026-08-21T04:09:00.000Z";
+const testTempParent = path.join(root, "Temp");
+const testTempParentExisted = fs.existsSync(testTempParent);
+fs.mkdirSync(testTempParent, {recursive: true});
+const NOW = "2026-08-23T00:36:45.000Z";
 const prepared = JSON.parse(fs.readFileSync(path.join(root, "fixtures/model-policy-snapshot.initial.v1.json")));
 const activate = (snapshot) => { snapshot.status = "ACCEPTED_ACTIVE"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); return snapshot; };
 const active = activate(structuredClone(prepared));
@@ -60,7 +62,7 @@ assert.throws(() => compileModelPolicyProjection({snapshot: staleWithoutCallerCl
 assert.throws(() => compileModelPolicyProjection({snapshot: active, roleClass: "WORKING_AGENT", selectedRoute: narrowRoute, projectedAtUtc: "2999-01-01T00:00:00.000Z"}), /future/iu, "future projection compilation minted READY authority");
 
 function copiedAuthority() {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-model-evidence-"));
+  const temp = fs.mkdtempSync(path.join(testTempParent, "model-evidence-"));
   fs.mkdirSync(path.join(temp, "fixtures"), {recursive: true});
   fs.cpSync(path.join(root, "fixtures/model-policy-evidence"), path.join(temp, "fixtures/model-policy-evidence"), {recursive: true});
   return temp;
@@ -84,21 +86,21 @@ function hostile(mutate, pattern) {
   try { mutate({authorityRoot, snapshot}); assert.throws(() => auditModelPolicyEvidenceStore(snapshot, {nowUtc: NOW, requireActive: true, authorityRoot}), pattern); }
   finally { fs.rmSync(authorityRoot, {recursive: true, force: true}); }
 }
-hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, "fixtures/model-policy-evidence/current-host.2026-08-21.json")), /ENOENT|artifact/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-21", (artifact) => { artifact.observed_at_utc = "2026-08-21T17:00:00.000Z"; }), /future-dated/iu);
+hostile(({authorityRoot}) => fs.unlinkSync(path.join(authorityRoot, "fixtures/model-policy-evidence/current-host.2026-08-23.json")), /ENOENT|artifact/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-23", (artifact) => { artifact.observed_at_utc = "2026-08-23T17:00:00.000Z"; }), /future-dated/iu);
 hostile(({snapshot}) => { snapshot.models.push({...snapshot.models[0], model_id: "unlisted-cheap-model"}); snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /unlisted|coverage differs/iu);
 hostile(({snapshot}) => { snapshot.models[0].input_usd_per_million = 0.0001; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /First-party model fact conflict/iu);
 hostile(({snapshot}) => { snapshot.task_classes[2].preferred_reasoning_effort = "ultra"; snapshot.snapshot_sha256 = canonicalDigest({...snapshot, snapshot_sha256: null}); }, /reasoning preference/iu);
 hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models.find((model) => model.model_id === "gpt-5.6-terra").input_usd_per_million = 2.5; }), /not explicitly resolved|Structured source conflicts/iu);
 hostile(({authorityRoot, snapshot}) => {
-  rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-21", (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
+  rebindArtifact(authorityRoot, snapshot, "HOST.CODEX_MODEL_CATALOG.2026-08-23", (artifact) => artifact.summary.models.forEach((model) => { model.available = false; }));
 }, /Host availability binding differs/iu);
 hostile(({authorityRoot, snapshot}) => {
-  const artifactPath = path.join(authorityRoot, "fixtures/model-policy-evidence/openai-model-catalog.2026-08-20.json");
+  const artifactPath = path.join(authorityRoot, "fixtures/model-policy-evidence/openai-model-catalog.2026-08-23.json");
   const artifact = JSON.parse(fs.readFileSync(artifactPath)); artifact.summary.observation_note = "tampered summary without digest repair"; fs.writeFileSync(artifactPath, JSON.stringify(artifact));
 }, /file digest mismatch|summary digest mismatch/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-20", (artifact) => { artifact.source_url = "https://untrusted.invalid/models"; }), /canonical registry|source identity/iu);
-hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-20", (artifact) => { artifact.source_url = "https://developers.openai.com.lookalike.invalid/models"; }), /canonical registry|source identity|lookalike/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-23", (artifact) => { artifact.source_url = "https://untrusted.invalid/models"; }), /canonical registry|source identity/iu);
+hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "OPENAI.MODEL_CATALOG.2026-08-23", (artifact) => { artifact.source_url = "https://developers.openai.com.lookalike.invalid/models"; }), /canonical registry|source identity|lookalike/iu);
 hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models[0].source_url = artifact.summary.models[1].source_url; }), /canonically bound/iu);
 hostile(({authorityRoot, snapshot}) => rebindArtifact(authorityRoot, snapshot, "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20", (artifact) => { artifact.summary.models[0].source_url = "https://artificialanalysis.ai.lookalike.invalid/models/gpt-5-6-luna"; }), /canonically bound|lookalike/iu);
 hostile(({authorityRoot}) => {
@@ -108,6 +110,12 @@ hostile(({authorityRoot}) => {
   registry.registry_sha256 = canonicalDigest({...registry, registry_sha256: null});
   fs.writeFileSync(registryPath, `${JSON.stringify(registry, null, 2)}\n`);
 }, /registry digest|source URL|allowlisted|canonical/iu);
-assert.throws(() => validateModelPolicySnapshot(active, {nowUtc: NOW, requireActive: true, authorityRoot: copiedAuthority()}), /Caller-supplied model evidence roots/iu, "source registry substitution reached production validation");
+const substitutedAuthority = copiedAuthority();
+try {
+  assert.throws(() => validateModelPolicySnapshot(active, {nowUtc: NOW, requireActive: true, authorityRoot: substitutedAuthority}), /Caller-supplied model evidence roots/iu, "source registry substitution reached production validation");
+} finally {
+  fs.rmSync(substitutedAuthority, {recursive: true, force: true});
+}
+if (!testTempParentExisted && fs.readdirSync(testTempParent).length === 0) fs.rmdirSync(testTempParent);
 
 console.log("PASS ECO model policy source binding: canonical files, trusted time, listed identity, first-party economics, host/reasoning support, and preferred economical routing");

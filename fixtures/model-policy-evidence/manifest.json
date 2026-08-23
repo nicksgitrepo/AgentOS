@@ -1,7 +1,7 @@
 {
   "schema": "agentos.model_policy_evidence_manifest.v1",
   "version": 1,
-  "source_registry_sha256": "d866c1d193d207d34696ef008409d28f6d5d8d392e238bccad737e3b1f5cc0cf",
+  "source_registry_sha256": "8bfa9f0689ecfcd37017a01ad730935f27b1644e7d5d4a4b04d470ad78b860a4",
   "entries": [
     {
       "evidence_id": "ARTIFICIAL_ANALYSIS.GPT_5_6.2026-08-20",
@@ -11,19 +11,19 @@
       "file_sha256": "a5f84899d8fe56369733d6d3119819c0a66f62363bd4c8918d602ec9deda1098"
     },
     {
-      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-21",
-      "path": "current-host.2026-08-21.json",
+      "evidence_id": "HOST.CODEX_MODEL_CATALOG.2026-08-23",
+      "path": "current-host.2026-08-23.json",
       "authority_class": "HOST_ATTESTATION",
-      "artifact_sha256": "5235d06738c62d06cc18190483ca1e599295f87f6728fea103aaae36712a5c00",
-      "file_sha256": "d66d9d804f5358577448850bd91e6b61564f7f51c988de9c04f11c3d38537de6"
+      "artifact_sha256": "edaf0ff56570bb889874d0598997ad83b918792b54a151d99cc2292847c8a3c6",
+      "file_sha256": "2eb95d3e42646d42b6c142e62336532812e714b0e58a58772d416a7704465e66"
     },
     {
-      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-20",
-      "path": "openai-model-catalog.2026-08-20.json",
+      "evidence_id": "OPENAI.MODEL_CATALOG.2026-08-23",
+      "path": "openai-model-catalog.2026-08-23.json",
       "authority_class": "FIRST_PARTY_PROVIDER",
-      "artifact_sha256": "976135c79d9f9eb588f1e8dce55df797bca8f134c5ff9f72536698f3a8cbe9ea",
-      "file_sha256": "318d0f03d17da94be7b2b96a22dfd2729432b5e43d61d44e9065f9777e141fae"
+      "artifact_sha256": "85870e376cd65328aff25c92081659623640c0c157f5b1b1e0a7dd0d113e4ee3",
+      "file_sha256": "a562428280edfc970dd40120911b6b8c076277a3743260c569e447d1a797b8a9"
     }
   ],
-  "manifest_sha256": "378b38e92c6cf80efe6e439786265e47d95fb7d167079f0a0e1fd858dac64a28"
+  "manifest_sha256": "e6842d8e457911610a237107feeaf2fb30e87f0f93a11099a19ba6cc4bb204f0"
 }

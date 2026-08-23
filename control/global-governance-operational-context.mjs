@@ -52,7 +52,7 @@ export function compileOperationalGlobalGovernanceContext({authorityStore, roleC
   };
   const context = {
     schema: OPERATIONAL_GLOBAL_GOVERNANCE_CONTEXT_SCHEMA, version: 1, status: "READY", operational_id: operationalId,
-    role_class: roleClass, read_only_projection: true, global_memory_write_capability: roleClass === "SPAWNER",
+    role_class: roleClass, read_only_projection: true, global_memory_write_capability: roleClass === "MEMORY",
     ledger_head_sha256: governed.ledger_head_sha256, memory_readback_sha256: governed.readback_sha256,
     bootstrap_sha256: governed.bootstrap_sha256, snapshot_sha256: governed.snapshot.snapshot_sha256,
     projection_sha256: governed.projection.projection_sha256, compact_selection: compactSelection,
@@ -70,7 +70,7 @@ export function assertOperationalGlobalGovernanceContext(context, {authorityStor
   assert(issuedContexts.has(context), "Operational context was not constructed from canonical global governance memory");
   assert(context.schema === OPERATIONAL_GLOBAL_GOVERNANCE_CONTEXT_SCHEMA && context.version === 1 && context.status === "READY", "Operational context identity is invalid");
   assert(context.role_class === expectedRoleClass && context.read_only_projection === true, "Operational context role or projection authority differs");
-  assert(context.global_memory_write_capability === (expectedRoleClass === "SPAWNER"), "Operational context global-memory writer authority differs");
+  assert(context.global_memory_write_capability === (expectedRoleClass === "MEMORY"), "Operational context global-memory writer authority differs");
   const behavior = compileGlobalBehaviorPolicy(expectedRoleClass); assert(context.global_behavior_policy.policy_sha256 === behavior.policy_sha256 && canonicalDigest(context.global_behavior_policy) === canonicalDigest(behavior), "Operational context global behavior policy differs");
   for (const field of ["ledger_head_sha256", "memory_readback_sha256", "bootstrap_sha256", "snapshot_sha256", "projection_sha256", "context_sha256"]) assert(typeof context[field] === "string" && SHA.test(context[field]), `Operational context ${field} is invalid`);
   assert(context.context_sha256 === canonicalDigest(body(context)), "Operational context digest mismatch");
@@ -89,7 +89,7 @@ export function assertOperationalGlobalGovernanceContext(context, {authorityStor
 export function assertGlobalGovernanceWriterContext(context, {bootstrapSha256, expectedPriorHeadSha256} = {}) {
   exact(context, ["schema", "version", "status", "operational_id", "role_class", "read_only_projection", "global_memory_write_capability", "ledger_head_sha256", "memory_readback_sha256", "bootstrap_sha256", "snapshot_sha256", "projection_sha256", "compact_selection", "global_behavior_policy", "worker_binding_rule", "context_sha256"], "Global-governance writer context");
   assert(issuedContexts.has(context), "Global-governance writer context was not minted from canonical memory", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
-  assert(context.role_class === "SPAWNER" && context.global_memory_write_capability === true, "Only a canonical Spawner context can authorize global-memory writes", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
+  assert(context.role_class === "MEMORY" && context.global_memory_write_capability === true, "Only a canonical Memory context can authorize global-memory writes", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   assert(context.bootstrap_sha256 === bootstrapSha256 && context.ledger_head_sha256 === expectedPriorHeadSha256, "Global-memory writer context is stale or bound to another bootstrap/head", "GLOBAL_MEMORY_WRITER_STALE");
   assert(context.context_sha256 === canonicalDigest(body(context)), "Global-memory writer context digest mismatch", "GLOBAL_MEMORY_WRITER_FORBIDDEN");
   return context;

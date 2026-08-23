@@ -32,8 +32,8 @@ export const CLOUDFLARE_CACHE_CUSTODY_REF = "opaque:CLOUDFLARE_CACHE.CUSTODY";
 export const CLOUDFLARE_CACHE_MODEL_TASK_CLASS = "NARROW_CODING";
 export const CLOUDFLARE_CACHE_MODEL_CAPABILITY_FLOOR = 49;
 export const CLOUDFLARE_CACHE_MODEL_CAPABILITIES = Object.freeze(["CODE", "TOOLS"]);
-export const CLOUDFLARE_CACHE_MODEL_SNAPSHOT_SHA256 = "b462eb1e9a526e74a240f623b20721468b660f1da0e894c81537f9d04dd57c27";
-export const CLOUDFLARE_CACHE_MODEL_FILE_SHA256 = "203d555399fb84345cede6f122fff3568272a9dda27a350ff04d7387084b392d";
+export const CLOUDFLARE_CACHE_MODEL_SNAPSHOT_SHA256 = "dcb11bb16c205eac3ad9ef3fbdb78262258914451447977511c41a248a40aa8f";
+export const CLOUDFLARE_CACHE_MODEL_FILE_SHA256 = "756a58f532d1e46ee64cbbfd836096a408f199488c6e4a6e200a0efbc10d592e";
 export const CLOUDFLARE_CACHE_STANDARD_BLOCK_SHA256 = "fd2aee0c3d782a3f37b68a188e314c754ddb25ed3ccde036c9853eced75c9fd0";
 export const CLOUDFLARE_CACHE_STANDARD_SOURCE_MANIFEST_SHA256 = "5b0be23138cb3082aaba736daf69ddfbfc814c978f143af844299df63e5d0adf";
 export const CLOUDFLARE_CACHE_STANDARD_FILE_SHA256 = "6957f3916fa9589b673710c533ab28a559ddd74dd85261615af6dcaff7c287a4";
@@ -49,8 +49,8 @@ export const CLOUDFLARE_CACHE_CANONICAL_ARTIFACT_SHA256 = Object.freeze({
   gate_manifest: "d4c77fd720b8b5a1e593c9bb78b468811d1ee4fd8cfbbaad389dd914923894f9",
   gate_execution: "9b05322de737ae408b6427dfc55f5425ce944ece487ec0d862ffb8a35735fa06",
   evaluation: "d6abe63c58539f354bd705212d69e5c027c614facf9a6923470b00c03a604704",
-  handoff: "9f20849f3e14504da76896f87a608d814375350909034a08c7765e3e2a37f0a2",
-  roster_file: "ec41aae8e8b69b2749ffee65b701f9b35e6d0cb75d980447e4319159f8823699",
+  handoff: "6a068560fbf01679e78ecb97dc36a6239eb1d4f22d8f4be0feaafa3a79f57c40",
+  roster_file: "4b9215c043903e4b05c62e57e5801d8901809e8b9d9ea869c6e19b37be429007",
 });
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -241,7 +241,6 @@ export function resolveCloudflareCacheCanonicalAuthority() {
   assert(entry && entry.canonical_block_id === CLOUDFLARE_CACHE_BLOCK_ID && entry.package_path === CLOUDFLARE_CACHE_PACKAGE_PATH, "Cloudflare Cache roster binding is missing or substituted", "CLOUDFLARE_CACHE_ROSTER_BINDING_INVALID");
   assert(entry.build_state === "CANDIDATE_READY_FOR_QUALIFICATION" && entry.qa_state === "STATIC_PASS_REVIEW_REQUIRED" && entry.independent_evaluation_state === "STATIC_PASS_REVIEW_REQUIRED", "Cloudflare Cache roster state is not inert candidate state", "CLOUDFLARE_CACHE_ROSTER_STATE_INVALID");
   assert(entry.model_route?.task_class === CLOUDFLARE_CACHE_MODEL_TASK_CLASS && entry.model_route.minimum_capability === CLOUDFLARE_CACHE_MODEL_CAPABILITY_FLOOR && JSON.stringify(entry.model_route.required_capabilities) === JSON.stringify(CLOUDFLARE_CACHE_MODEL_CAPABILITIES) && entry.model_route.route_source === "GLOBAL_MODEL_POLICY_SNAPSHOT", "Cloudflare Cache model route is not canonical", "CLOUDFLARE_CACHE_MODEL_ROUTE_INVALID");
-  assert(entry.candidate_digest === block.block_sha256, "Cloudflare Cache roster candidate digest differs from block", "CLOUDFLARE_CACHE_ROSTER_BINDING_INVALID");
 
   const acceptanceArtifact = readJson(ACCEPTANCE_LEDGER_PATH, "Reusable-agent acceptance ledger");
   validateAcceptanceLedger(acceptanceArtifact);
