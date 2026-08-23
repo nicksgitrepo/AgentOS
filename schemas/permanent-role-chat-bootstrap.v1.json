@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.dev/schemas/permanent-role-chat-bootstrap.v1.json",
+  "title": "AgentOS Permanent Role Chat Bootstrap",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "role_id", "display_name", "role_package_path", "role_block_sha256", "source_binding", "model_route", "delegation_policy", "lifecycle", "authority_boundary", "archive_gate", "prompt", "prompt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.permanent_role_chat_bootstrap.v1"},
+    "version": {"const": 1},
+    "status": {"const": "PREPARED_NOT_ACTIVATED"},
+    "role_id": {"enum": ["AGENTOS_CONTROLLER", "AGENTOS.PRODUCT_OWNER", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER", "AGENTOS.ORCHESTRATOR"]},
+    "display_name": {"type": "string", "minLength": 1},
+    "role_package_path": {"type": "string", "pattern": "^specialist-blocks/wave-01/[A-Za-z0-9._-]+$"},
+    "role_block_sha256": {"$ref": "#/$defs/sha256"},
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "portable_source_ref", "runtime_owner_authorized_source_required", "fork_readback_required"],
+      "properties": {
+        "kind": {"const": "OWNER_AUTHORIZED_RUNTIME_SOURCE"},
+        "portable_source_ref": {"type": "null"},
+        "runtime_owner_authorized_source_required": {"const": true},
+        "fork_readback_required": {"const": true}
+      }
+    },
+    "model_route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "reasoning_effort", "authority", "runtime_readback_required"],
+      "properties": {
+        "model": {"const": "gpt-5.6-sol"},
+        "reasoning_effort": {"const": "medium"},
+        "authority": {"const": "PROJECT_OWNER_EXPLICIT_ROUTE"},
+        "runtime_readback_required": {"const": true}
+      }
+    },
+    "delegation_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default", "explicit_owner_approval_required", "approval_scope", "hidden_or_recursive_delegation_forbidden"],
+      "properties": {
+        "default": {"const": "NO_SUBAGENTS"},
+        "explicit_owner_approval_required": {"const": true},
+        "approval_scope": {"const": "EACH_USE"},
+        "hidden_or_recursive_delegation_forbidden": {"const": true}
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "activation", "self_admission_forbidden", "owner_closeout_required"],
+      "properties": {
+        "kind": {"const": "LONG_RUNNING_NAMED_AGENT"},
+        "activation": {"const": "OFF_UNTIL_SPAWNER_ADMISSION"},
+        "self_admission_forbidden": {"const": true},
+        "owner_closeout_required": {"const": true}
+      }
+    },
+    "authority_boundary": {"type": "string", "minLength": 24},
+    "archive_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executor", "process_state", "worktree_state", "live_reference_count", "handoff_preserved", "host_close_capability", "result"],
+      "properties": {
+        "executor": {"const": "AGENTOS.SPAWNER"},
+        "process_state": {"const": "INACTIVE"},
+        "worktree_state": {"const": "STALE_AND_NO_LONGER_USED"},
+        "live_reference_count": {"const": 0},
+        "handoff_preserved": {"const": true},
+        "host_close_capability": {"const": "SUPPORTED"},
+        "result": {"const": "CLOSED"}
+      }
+    },
+    "prompt": {"type": "string", "minLength": 600},
+    "prompt_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+}

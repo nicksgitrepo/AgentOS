@@ -41,6 +41,7 @@ assert.deepEqual(schema.required, [
   "schema", "version", "status", "source_receipt_sha256", "next_action", "next_handler",
   "handoff_ref", "handoff_sha256", "started_same_turn",
 ]);
-assert.match(schema.state_rules.failure, /Spawner repair path/u);
+assert.match(schema.state_rules.failure, /Controller bounded workflow repair/u);
+assert.doesNotMatch(schema.state_rules.failure, /Spawner repair path/u);
 
 console.log("PASS Controller next-lifecycle handoff: bounded local successor must start a typed same-turn continuation or fail as workflow dead-end");

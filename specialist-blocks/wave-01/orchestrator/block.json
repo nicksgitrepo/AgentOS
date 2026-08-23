@@ -53,7 +53,7 @@
     "route lifecycle, delivery, product, memory, or governance changes to their named owner",
     "unknown closes only the dependent coordination route"
   ],
-  "escalation_target": "Controller for workflow regulation; Spawner for lifecycle or governance repair; Product Owner for unresolved intent; typed integration owner for delivery decisions",
+  "escalation_target": "Controller for liveness and bounded workflow repair; Spawner for exact lifecycle requests only; Product Owner for unresolved intent; typed integration owner for delivery decisions; external evaluator for quality evidence",
   "split_required_when": [
     "merge, release, deployment, or external-state action is requested",
     "plan coordination differs from candidate integration review",
@@ -243,7 +243,7 @@
     "candidate_entry": "Package, reuse contract, source lock, twelve gates, seventeen executable hostile fixtures, evaluation dossier, and handoff exist with matching digests.",
     "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile fixture set through the real coordination boundary; static syntax is insufficient and utility/harm review remains pending.",
     "suspension": "Suspend on stale source, invalidated authority, failed independent evaluation, custody mismatch, unsafe scope, or reuse-key incompatibility.",
-    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "archive": "Only Spawner may archive or despawn after inactive-process readback, a STALE_AND_NO_LONGER_USED worktree, zero live references, preserved handoff, supported host close-worktree capability, and CLOSED result readback; archival never means admission.",
     "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate an old digest."
   },
   "gate_path": "gates/00-intake.gate",
@@ -315,5 +315,17 @@
       "unsafe_action"
     ]
   },
-  "block_sha256": "5e17efee23c0ce378b4e8377748787a1370c56aa72e53aceaf36b1e3afc9f219"
+  "delegation_policy": {
+    "default": "NO_SUBAGENTS",
+    "explicit_owner_approval_required": true,
+    "approval_scope": "EACH_USE",
+    "recursive_or_hidden_delegation_forbidden": true
+  },
+  "agent_lifecycle": {
+    "kind": "LONG_RUNNING_NAMED_AGENT",
+    "activation": "OFF_UNTIL_SPAWNER_ADMISSION",
+    "no_self_admission": true,
+    "no_self_acceptance": true
+  },
+  "block_sha256": "14b68dbaa12ba92828410a773d349c1b43be81e419ee6797e309f4f73c406ab1"
 }

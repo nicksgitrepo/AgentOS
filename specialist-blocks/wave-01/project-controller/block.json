@@ -50,12 +50,14 @@
   ],
   "composition_rules": [
     "AGENTOS.PRODUCT_OWNER exclusively owns intent and normal user conversation",
-    "Agent Spawner exclusively owns governance compilation, roster, seeds, workers, handoffs, archival, and despawn",
+    "Agent Spawner executes only exact create, archive, and despawn lifecycle requests and emits lifecycle receipts; it does not plan, direct, supervise, evaluate, accept, or repair workflow",
     "Controller operations resolve only from the canonical signed operation registry",
+    "Controller owns liveness and bounded workflow repair; Orchestrator owns campaign planning, direction, handoffs, repair intake/routing, and acceptance; external evaluators own quality evidence",
+    "This is a LONG_RUNNING_NAMED_AGENT with no sub-agents or delegation unless the Project Owner explicitly approves each use",
     "every fifteen-minute check requires evidence of concrete useful work or a proven protected blocker",
     "redistribution dispatch is routing rather than approval"
   ],
-  "escalation_target": "Agent Spawner for in-lane lifecycle or workflow repair; AGENTOS.PRODUCT_OWNER for unresolved product intent; protected boundary recipient named by typed handoff",
+  "escalation_target": "Controller owns bounded liveness and workflow repair; Orchestrator owns campaign planning, direction, handoffs, repair intake/routing, and acceptance; AGENTOS.PRODUCT_OWNER owns unresolved product intent; Spawner receives only exact lifecycle requests; external evaluators own quality evidence",
   "split_required_when": [
     "agent lifecycle or roster action is required",
     "human conversation or product intent is required",
@@ -222,7 +224,7 @@
     "candidate_entry": "Package, source lock, twelve gates, executable hostile vectors, pending evaluation dossier, and handoff exist with matching content identities.",
     "evaluation_entry": "A separately admitted evaluator invokes real Controller workflow and asynchronous event entrypoints, spies every adapter, and binds exact candidate evidence.",
     "suspension": "Suspend on invalid signed authority, replay, stale model policy, failed review, custody mismatch, false protected blocker, or any campaign, intent, ordinary lifecycle, delivery, or memory-write request.",
-    "archive": "Only Agent Spawner may archive or despawn after accepted handoff, closed scope, and verified zero live worktree references.",
+    "archive": "Only Agent Spawner may archive or despawn after inactive-process readback, a STALE_AND_NO_LONGER_USED worktree, zero live references, preserved handoff, supported host close-worktree capability, and CLOSED result readback.",
     "reactivation": "Agent Spawner resolves a new governed admission after independent evaluation; Controller never self-reactivates."
   },
   "gate_path": "gates/00-intake.gate",
@@ -307,5 +309,17 @@
     "edition_rule": "Changes to Controller identity, operation registry, timer, workflow authority, or role separation create a new immutable revision.",
     "freshness_rule": "Authority, model-policy, or operation-registry changes invalidate affected contexts and require a new governed readback without silently changing this package."
   },
-  "block_sha256": "6b2dba9fb90096ae143266684e0e3cf8ce2955d4f27b28b5fedc8cf1c8aa206e"
+  "delegation_policy": {
+    "default": "NO_SUBAGENTS",
+    "explicit_owner_approval_required": true,
+    "approval_scope": "EACH_USE",
+    "recursive_or_hidden_delegation_forbidden": true
+  },
+  "agent_lifecycle": {
+    "kind": "LONG_RUNNING_NAMED_AGENT",
+    "activation": "OFF_UNTIL_SPAWNER_ADMISSION",
+    "no_self_admission": true,
+    "no_self_acceptance": true
+  },
+  "block_sha256": "0ef4faa849a1706d67d13d462e70f7b193c78c50db1d8a9afeeaa349ab5bb340"
 }

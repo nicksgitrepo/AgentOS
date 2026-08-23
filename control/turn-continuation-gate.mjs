@@ -4,7 +4,8 @@
  * Project-agnostic gate for Controller, Orchestrator, Spawner, and Runtime
  * turn closeouts.  A turn is not healthy because it is in progress or because
  * it emitted commentary.  It must either prove a same-turn successor, or
- * compile the observed liveness defect into a Spawner block-repair route.
+ * compile the observed liveness defect into a Controller bounded-workflow
+ * repair route. Campaign repair intake belongs to Orchestrator.
  * Protected waiting is a separate, evidence-bound state and may not be used
  * to hide a missing local successor.
  */
@@ -14,7 +15,7 @@ import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 export const TURN_CONTINUATION_GATE_SCHEMA = "agentos.turn_continuation_gate.v1";
 export const TURN_CONTINUATION_GATE_VERSION = 1;
 export const TURN_CONTINUATION_REPAIR_ACTION = "COMPILE_BLOCK_PATCH";
-export const TURN_CONTINUATION_REPAIR_HANDLER = "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER";
+export const TURN_CONTINUATION_REPAIR_HANDLER = "HANDLER.CONTROLLER_BLOCK_REPAIR";
 export const TURN_CONTINUATION_PROTECTED_ACTION = "WAIT_FOR_EXACT_PROTECTED_BOUNDARY_RESOLUTION";
 export const TURN_CONTINUATION_HOSTILE_FIXTURE_REFS = Object.freeze([
   "FIXTURE.TURN_CONTINUATION.COMMENTARY_ONLY",
@@ -160,7 +161,7 @@ export function validateTurnContinuationGate(gate) {
   if (gate.status === "REPAIR_REQUIRED") {
     assert(gate.turn.overlong === true, "repair-required turn must be overlong");
     assert(gate.observed_route.handler_invoked === false || gate.observed_route.readback_sha256 === null, "repair-required turn cannot claim a valid invocation");
-    assert(gate.successor.next_action === TURN_CONTINUATION_REPAIR_ACTION && gate.successor.next_handler === TURN_CONTINUATION_REPAIR_HANDLER, "repair-required turn must route the Spawner block compiler");
+    assert(gate.successor.next_action === TURN_CONTINUATION_REPAIR_ACTION && gate.successor.next_handler === TURN_CONTINUATION_REPAIR_HANDLER, "repair-required turn must route Controller bounded workflow repair");
     assert(gate.defect.protected_event_id === null, "a local repair defect may not masquerade as a protected wait");
     assert(gate.defect.restart_event === "EVENT.TURN_CONTINUATION.REPAIR_BLOCKS", "repair-required turn lacks its restart event");
   }

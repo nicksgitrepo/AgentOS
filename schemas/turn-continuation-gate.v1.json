@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/turn-continuation-gate.v1.json",
   "title": "AgentOS Turn Continuation Gate",
-  "description": "Project-agnostic gate requiring a real same-turn successor or a typed Spawner block-repair route for every overlong turn. Commentary, timer-only waiting, false protected waits, null reasons, and mismatched retry routes fail closed.",
+  "description": "Project-agnostic gate requiring a real same-turn successor or a typed Controller bounded-workflow repair route for every overlong turn. Campaign repair intake belongs to Orchestrator; Spawner remains lifecycle-only. Commentary, timer-only waiting, false protected waits, null reasons, and mismatched retry routes fail closed.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "gate_id", "authority", "turn", "observed_route", "defect", "successor", "custody", "status", "hostile_fixture_refs", "gate_sha256"],

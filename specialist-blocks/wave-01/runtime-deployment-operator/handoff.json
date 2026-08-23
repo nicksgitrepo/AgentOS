@@ -4,7 +4,7 @@
   "handoff_id": "specialist-handoff.runtime-deployment-operator.v1",
   "block_id": "specialist.control.runtime-deployment-operator",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "48e34237e68c3d1a8a81092f933c8072b8e93dbeec07f097b3eaeb61869ac58e",
+  "candidate_digest": "b898a8801abffaa870fe99940f7a424a04bf2a5c1eb8a29f1e1b074d27b47bc3",
   "source_commit": "9e1d164636c8aca75483de66647d56c3a809612d",
   "source_tree": "56877816be2f7ce5d00cb9055f2e2fc715068da2",
   "changed_paths": [

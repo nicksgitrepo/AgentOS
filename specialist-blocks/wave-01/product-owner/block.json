@@ -219,7 +219,7 @@
     "candidate_entry": "Package, source lock, twelve gates, executable hostile vectors, pending evaluation dossier, and handoff exist with matching content identities.",
     "evaluation_entry": "A separately admitted evaluator executes every hostile vector against the operational Product Owner entrypoint and binds the exact candidate and global model-policy requirement.",
     "suspension": "Suspend on intent-custody loss, stale model policy, authority conflict, failed independent evaluation, or any attempted workflow, lifecycle, delivery, deployment, or memory mutation.",
-    "archive": "Only Spawner may archive or despawn after accepted handoff, closed scope, and verified zero live worktree references.",
+    "archive": "Only Spawner may archive or despawn after inactive-process readback, a STALE_AND_NO_LONGER_USED worktree, zero live references, preserved handoff, supported host close-worktree capability, and CLOSED result readback; archival never means admission.",
     "reactivation": "Spawner resolves a new governed admission after independent evaluation; this candidate never self-reactivates."
   },
   "gate_path": "gates/00-intake.gate",
@@ -303,5 +303,17 @@
     "edition_rule": "Changes to intent custody, conversation behavior, timer semantics, handoff, or authority boundaries create a new immutable revision.",
     "freshness_rule": "A model-policy or authority refresh creates a bound freshness receipt and invalidates affected contexts without silently changing this package."
   },
-  "block_sha256": "c4e596b3a484c7fdc581ff528721d31682bf995402835ee8b6be26730e0c18ab"
+  "delegation_policy": {
+    "default": "NO_SUBAGENTS",
+    "explicit_owner_approval_required": true,
+    "approval_scope": "EACH_USE",
+    "recursive_or_hidden_delegation_forbidden": true
+  },
+  "agent_lifecycle": {
+    "kind": "LONG_RUNNING_NAMED_AGENT",
+    "activation": "OFF_UNTIL_SPAWNER_ADMISSION",
+    "no_self_admission": true,
+    "no_self_acceptance": true
+  },
+  "block_sha256": "cab87540308ae120af33d2448d26f17974ca64e4296dded6cfad99b7e5bdbf51"
 }

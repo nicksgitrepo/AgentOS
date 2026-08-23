@@ -27,6 +27,6 @@
   },
   "state_rules": {
     "start": "A local dispatch may close only after an executable starter returns status STARTED, binds the final persisted receipt, names the registry handler, and proves started_same_turn=true.",
-    "failure": "A missing, null, stale, placeholder, or mismatched handoff is a workflow dead-end and must route to the project-agnostic Spawner repair path; it is never a timer or approval wait."
+    "failure": "A missing, null, stale, placeholder, or mismatched handoff is a workflow dead-end and must route to Controller bounded workflow repair or Orchestrator campaign repair intake; it is never a lifecycle-executor handoff, timer, or approval wait."
   }
 }

@@ -13,7 +13,7 @@
   },
   "storage_scope": "CONTROL_PLANE_PERSISTENT",
   "storage_rule": "Controller state is stored under the bound control-plane root and is never written into the product root by default. An in-project control plane requires an explicit owner opt-in.",
-  "purpose": "A persistent project-level control plane that validates its own governance and handoffs and may create, start, wake, observe, or dispatch redistribution for exactly one Agent Spawner. Spawner alone owns role compilation, roster mutation, spawn/admission, routing, archival/despawn, invalidation, and rebuild.",
+  "purpose": "A persistent project-level control plane that validates its own governance and handoffs and owns liveness plus bounded workflow repair. Orchestrator owns campaign planning, worker direction, handoffs, repair intake/routing, and acceptance; Agent Spawner performs only exact host create, archive, and despawn operations and emits lifecycle receipts.",
   "controller_agent": {
     "schema": "agentos.controller_agent_binding.v1",
     "role": "JUDGMENT_INTERPRETATION_PLANNING_ROUTING",

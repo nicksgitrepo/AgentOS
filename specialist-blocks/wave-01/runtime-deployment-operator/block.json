@@ -236,7 +236,7 @@
     "candidate_entry": "Package, source lock, twelve gates, fixtures, evaluation dossier, and handoff exist with matching digests.",
     "evaluation_entry": "An independent evaluator reruns the exact candidate and hostile task set; static syntax alone is insufficient.",
     "suspension": "Suspend on stale or conflicting evidence, invalidated authority, failed utility/harm evaluation, custody mismatch, or any attempted execution.",
-    "archive": "Archive only by immutable receipt when superseded, rejected, or the scoped request closes; archive never means admitted.",
+    "archive": "Only Spawner may archive or despawn after inactive-process readback, a STALE_AND_NO_LONGER_USED worktree, zero live references, preserved handoff, supported host close-worktree capability, and CLOSED result readback; archival never means admission.",
     "reactivation": "Create or validate a new revision and rerun independent evaluation; never silently reactivate the old digest."
   },
   "gate_path": "gates/00-intake.gate",
@@ -310,5 +310,17 @@
     "edition_rule": "CONTROL_PLANE_REUSE_IS_BOUND_TO_BLOCK_REVISION_AND_CANDIDATE_DIGEST;_NO_STANDARD_EDITION_CLAIM",
     "freshness_rule": "REQUIRE_CURRENT_SOURCE_LOCK_AND_TYPED_RUNTIME_READBACK;_STALE_OR_SUPERSEDED_EVIDENCE_DENIES_DEPENDENT_ACTION"
   },
-  "block_sha256": "48e34237e68c3d1a8a81092f933c8072b8e93dbeec07f097b3eaeb61869ac58e"
+  "delegation_policy": {
+    "default": "NO_SUBAGENTS",
+    "explicit_owner_approval_required": true,
+    "approval_scope": "EACH_USE",
+    "recursive_or_hidden_delegation_forbidden": true
+  },
+  "agent_lifecycle": {
+    "kind": "LONG_RUNNING_NAMED_AGENT",
+    "activation": "OFF_UNTIL_SPAWNER_ADMISSION",
+    "no_self_admission": true,
+    "no_self_acceptance": true
+  },
+  "block_sha256": "b898a8801abffaa870fe99940f7a424a04bf2a5c1eb8a29f1e1b074d27b47bc3"
 }

@@ -216,7 +216,7 @@ const compilerSuccessor = compileActionResultContinuation({
   semanticBeforeSha256: sha("compiler-before"),
   semanticAfterSha256: sha("compiler-after"),
   nextAction: "COMPILE_BLOCK_PATCH",
-  nextHandler: "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER",
+  nextHandler: "HANDLER.CONTROLLER_BLOCK_REPAIR",
   continuation: compileControllerContinuation("COMPILE_BLOCK_PATCH"),
   persistence: {status: "PERSISTED", receipt_ref: "ref:control-plane/turn-continuation-repair", receipt_sha256: sha("compiler-receipt"), atomic: true, same_turn: true, write_scope: "CONTROL_PLANE_ONLY"},
   evidenceRefs: [evidence("EVIDENCE.TURN.CONTINUATION.REPAIR")],
@@ -226,14 +226,14 @@ const compilerReadback = dispatchOrchestratorSuccessor({
   successor: compilerSuccessor,
   dispatchId: "DISPATCH.ORCHESTRATOR.TURN.CONTINUATION.REPAIR.001",
   handlers: {
-    "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER": (cursor) => ({
+    "HANDLER.CONTROLLER_BLOCK_REPAIR": (cursor) => ({
       semantic_after_sha256: sha(`${cursor.semantic_after_sha256}:compiled`),
       next_action: "REPAIR_BLOCKS",
       next_handler: "HANDLER.ORCHESTRATOR_BLOCK_REPAIR",
       continuation: compileControllerContinuation("REPAIR_BLOCKS"),
       continuation_sha256: canonicalDigest(compileControllerContinuation("REPAIR_BLOCKS")),
-      evidence_refs: [evidence("EVIDENCE.SPAWNER.COMPILER.REPAIR")],
-      hostile_fixture_refs: ["FIXTURE.SPAWNER.COMPILER.REPAIR"],
+      evidence_refs: [evidence("EVIDENCE.CONTROLLER.BOUNDED.REPAIR")],
+      hostile_fixture_refs: ["FIXTURE.CONTROLLER.BOUNDED.REPAIR"],
       protected_event: null,
       defect: null,
     }),
@@ -243,22 +243,22 @@ const compilerReadback = dispatchOrchestratorSuccessor({
     sourceReceiptSha256: cursor.receipt_sha256,
     nextAction: cursor.next_action,
     nextHandler: cursor.next_handler,
-    handoffRef: "ref:controller/next-lifecycle/spawner-compiler-repair",
+    handoffRef: "ref:controller/next-lifecycle/bounded-workflow-repair",
   }),
   maxTransitions: 1,
 });
 validateOrchestratorSuccessorDispatchReadback(compilerReadback);
 assert.equal(compilerReadback.source_action, "COMPILE_BLOCK_PATCH");
-assert.equal(compilerReadback.source_handler, "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER");
+assert.equal(compilerReadback.source_handler, "HANDLER.CONTROLLER_BLOCK_REPAIR");
 assert.equal(compilerReadback.dispatch_observed, true);
 assert.equal(compilerReadback.status, "DISPATCHED_SAME_TURN");
 assert.equal(validateControllerActionTransition("COMPILE_BLOCK_PATCH", "REPAIR_BLOCKS"), true);
 
 const compilerSelfLoopHandlers = {
-  "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER": (current) => ({
+  "HANDLER.CONTROLLER_BLOCK_REPAIR": (current) => ({
     semantic_after_sha256: sha(`${current.semantic_after_sha256}:compiler-self-loop`),
     next_action: "COMPILE_BLOCK_PATCH",
-    next_handler: "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER",
+    next_handler: "HANDLER.CONTROLLER_BLOCK_REPAIR",
     continuation: compileControllerContinuation("COMPILE_BLOCK_PATCH"),
     continuation_sha256: canonicalDigest(compileControllerContinuation("COMPILE_BLOCK_PATCH")),
     evidence_refs: [evidence("EVIDENCE.SPAWNER.COMPILER.SELF_LOOP")],

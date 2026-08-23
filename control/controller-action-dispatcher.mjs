@@ -26,7 +26,7 @@ export const CONTROLLER_ACTION_COVERAGE = Object.freeze({
   ADMIT_NEXT_PERMANENT_ROLE: local("HANDLER.PERMANENT_ROLE_ADMISSION"),
   INJECT_ORCHESTRATOR_GOVERNANCE: local("HANDLER.ORCHESTRATOR_GOVERNANCE"),
   START_COMPILER: local("HANDLER.SPAWNER_COMPILER"),
-  COMPILE_BLOCK_PATCH: local("HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER"),
+  COMPILE_BLOCK_PATCH: local("HANDLER.CONTROLLER_BLOCK_REPAIR"),
   START_IMPORT_ORCHESTRATOR: local("HANDLER.ORCHESTRATOR_START"),
   COMPILE_NEXT_BLOCK: local("HANDLER.SPAWNER_BLOCK_COMPILER"),
   PUBLISH_TYPED_ROSTER: local("HANDLER.SPAWNER_ROSTER_PUBLISHER"),
@@ -94,7 +94,8 @@ export const CONTROLLER_ACTION_DEFECT_CLASSES = Object.freeze([
 
 /* One-shot repair routes must hand their result to the consumer.  A compiler
  * receipt that points back to the compiler is a workflow self-loop, even when
- * its semantic digest changes, so it must become a typed Spawner defect. */
+ * its semantic digest changes, so it must become a typed Controller bounded
+ * workflow defect or Orchestrator campaign-repair intake. */
 export const CONTROLLER_REQUIRED_SUCCESSORS = Object.freeze({
   COMPILE_BLOCK_PATCH: Object.freeze(["REPAIR_BLOCKS"]),
 });
@@ -291,7 +292,7 @@ export function compileControllerProtectedStopDecision({protectedEvent, nextActi
   });
 }
 
-export function compileControllerActionDefect({defectId, defectClass, evidenceRefs, stopCondition = "Reject the successor and route the defect through the project-agnostic Spawner compiler.", requiredGate = "AGENTOS.CONTROLLER.ACTION_CONTINUATION", rosterInvalidation = "INVALIDATE_DEPENDENT_SUCCESSORS"} = {}) {
+export function compileControllerActionDefect({defectId, defectClass, evidenceRefs, stopCondition = "Reject the successor and route bounded workflow repair to Controller or campaign repair intake to Orchestrator.", requiredGate = "AGENTOS.CONTROLLER.ACTION_CONTINUATION", rosterInvalidation = "INVALIDATE_DEPENDENT_SUCCESSORS"} = {}) {
   requireIdentifier(defectId, "Controller action defect id");
   assert(CONTROLLER_ACTION_DEFECT_CLASSES.includes(defectClass), "Controller action defect class is invalid");
   validateEvidenceRefs(evidenceRefs);
@@ -495,7 +496,7 @@ export function deriveControllerSuccessor({localActions = [], protectedEvent = n
   const hasLocalSuccessor = localActions.length > 0;
   // A stale protected event or owner-review flag must never silently mask an
   // ordinary eligible action.  Such an ambiguous route is a typed defect so
-  // the Controller/Spawner can repair the decision tree in the same turn.
+  // Controller or Orchestrator can repair the decision tree in the same turn.
   if (protectedEvent !== null && (hasLocalSuccessor || ownerReview)) {
     const defect = compileControllerActionDefect({
       defectId: "DEFECT.CONTROLLER.SUCCESSOR.AMBIGUOUS_PROTECTED_ROUTE",

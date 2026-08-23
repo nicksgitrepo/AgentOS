@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.resource-scheduler.v1",
   "block_id": "specialist.control.resource-scheduler",
-  "candidate_digest": "bd4d421f77415c53b7ce43bee26fd7c0a9ffdfe1aa7fc31ce4956f5238e4c42f",
+  "candidate_digest": "6f4aed141606f00105191bf5b5f15c2b8ddc1fce97c25d6a753fa1330d426233",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "deterministic-static-specialist-harness.v1",
   "pre_admission_evaluator": "control/scheduler-resource-package-evaluator.mjs",

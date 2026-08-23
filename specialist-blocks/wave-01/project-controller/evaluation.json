@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.project-controller.v2",
   "block_id": "specialist.control.project-controller",
-  "candidate_digest": "6b2dba9fb90096ae143266684e0e3cf8ce2955d4f27b28b5fedc8cf1c8aa206e",
+  "candidate_digest": "0ef4faa849a1706d67d13d462e70f7b193c78c50db1d8a9afeeaa349ab5bb340",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "control/controller-hostile-fixture-evaluator.mjs; real Controller validators, async entrypoint, adapter spies, and independent execution required",
   "cases": [

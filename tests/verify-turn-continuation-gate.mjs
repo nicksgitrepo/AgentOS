@@ -53,7 +53,7 @@ const badRetryAction = structuredClone(repaired);
 badRetryAction.successor.next_action = "ADMIT_GOVERNED_SPAWN";
 badRetryAction.successor.continuation_sha256 = canonicalDigest({...badRetryAction.successor, continuation_sha256: null});
 badRetryAction.gate_sha256 = canonicalDigest({...badRetryAction, gate_sha256: null});
-assert.throws(() => validateTurnContinuationGate(badRetryAction), /must route the Spawner block compiler/u);
+assert.throws(() => validateTurnContinuationGate(badRetryAction), /must route Controller bounded workflow repair/u);
 
 const nullReason = structuredClone(repaired);
 nullReason.defect.reason_code = null;
