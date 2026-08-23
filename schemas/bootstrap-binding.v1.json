@@ -3833,7 +3833,7 @@
     },
     "reusable_agent_roster_compiler": {
       "path": "control/reusable-agent-roster-compiler.mjs",
-      "sha256": "c73f7e1e416688a76f08856036946b2601abc01bac3f820450fc3ffe54071656"
+      "sha256": "fb142e3da9156c60e3dabd9ac7edee005b18d8e6c7f674fc45119d2c94d1d67d"
     },
     "reusable_agent_roster_contract": {
       "path": "schemas/reusable-agent-roster.v1.json",
@@ -3845,11 +3845,11 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "62ddec144661eb7cd347ac92a6f12e7463baf45c1359f2e113a0e0fdd96ea601"
+      "sha256": "2c0e5d4d7ed533bc84fd7a81b9f065058161e8464e7ea362f56af4d9b3a935c1"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
-      "sha256": "273007252a7f560093568f07f7303313ac3e073016cd9bf2ce03d95b18b8bb08"
+      "sha256": "d681bcbde546c5197e858b46ab4aec1b0f506012e862373c8c66af46a1a7ae1e"
     },
     "spawner_roster_hostile_verifier": {
       "path": "tests/verify-spawner-roster-hostile.mjs",

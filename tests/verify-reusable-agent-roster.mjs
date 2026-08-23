@@ -45,6 +45,18 @@ assert.deepEqual(roster.tiers.map((tier) => tier.tier), ["PERMANENT_AGENTOS_ROLE
 assert.equal(roster.tiers[0].order[0], "AGENTOS.SPAWNER");
 assert.equal(roster.tiers[0].order.includes("AGENTOS_CONTROLLER"), true);
 assert.equal(roster.tiers[0].order.includes("AGENTOS.PRODUCT_OWNER"), true);
+const permanentEntries = roster.entries.filter((entry) => roster.tiers[0].order.includes(entry.stable_agent_id));
+for (const entry of permanentEntries) {
+  assert.equal(entry.lifecycle.kind, "LONG_RUNNING_NAMED_AGENT", `${entry.stable_agent_id} is not a long-running named agent`);
+  assert.match(entry.lifecycle.worker_rule, /Project Owner explicitly approves that individual use/u, `${entry.stable_agent_id} permits unapproved delegation`);
+  assert.match(entry.lifecycle.archive_rule, /INACTIVE/u, `${entry.stable_agent_id} archive rule lacks inactive-process proof`);
+  assert.match(entry.lifecycle.archive_rule, /STALE_AND_NO_LONGER_USED/u, `${entry.stable_agent_id} archive rule lacks stale-worktree proof`);
+  assert.match(entry.lifecycle.archive_rule, /zero live references/u, `${entry.stable_agent_id} archive rule lacks zero-reference proof`);
+}
+const spawner = roster.entries.find((entry) => entry.stable_agent_id === "AGENTOS.SPAWNER");
+assert(spawner, "Spawner roster entry missing");
+assert.match(spawner.exact_narrow_purpose, /host lifecycle operation/u);
+assert.doesNotMatch(spawner.exact_narrow_purpose, /Compile exact governance|repair workers|comprehensive plan/u);
 const runtime = compileReusableAgentRoster({repositoryRoot: root, writeGenerated: false});
 assert.deepEqual(runtime.build_queue, roster.build_queue, "tracked queue differs from the current fail-closed runtime projection");
 const stalePolicy = Date.parse(runtime.model_policy.expires_at_utc) <= Date.now();
