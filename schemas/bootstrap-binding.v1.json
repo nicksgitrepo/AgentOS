@@ -4066,7 +4066,7 @@
     },
     "spawner_admission_manifest": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/manifest.json",
-      "sha256": "707231a2bbc201899651b1f56cba45ca97ce1ae52a2c60ff78a6498a6569716b"
+      "sha256": "3bac644a25d5c1d8457499978e0b0be2f92830bd2aabff7403da05d149b81aef"
     },
     "spawner_admission_project_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/project.block.json",
@@ -4074,11 +4074,11 @@
     },
     "spawner_admission_role_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/role.block.json",
-      "sha256": "643a0e3174f30d9e9c207ef41e34c5b04721269246079a16c728671a093baadf"
+      "sha256": "6999c16345ad763a16ac5a3135eeb1c8ee473bfb546541b893dbbd7cc7c52516"
     },
     "spawner_admission_task_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/task.block.json",
-      "sha256": "bdc8fd23d2a0fae48e3ed42e05519c91ef54626b0489255f5a2bed4889a8630c"
+      "sha256": "652d6271b4a8c0aaf3a85b10497f3fbd97a30203522885ab0cfa4091d2a4d5a4"
     },
     "spawner_admission_technology_standard_block": {
       "path": "specialist-blocks/control-plane/agent-spawner/admission/technology-standard.block.json",

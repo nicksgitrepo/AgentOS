@@ -35,8 +35,8 @@
     },
     {
       "gate_id": "SPAWNER.FEATURE_IMPLEMENTATION_LOOP",
-      "gate_file_sha256": "8da701f42ce0865c45743e167644112268ea0f1fa4aae51e4acc4727889e52c0",
-      "gate_sha256": "626c9a0c21436e8b857f1b147a247bc1bd46f71233242ddd8351ede8925e993e",
+      "gate_file_sha256": "c41c0a648e32f0c7b385a7c3ec291983a1e1c171c6c291f232275dd80b7b2959",
+      "gate_sha256": "8d073a3d768bb048fb26135877b6d3a66b9e4b1d76dbe6877818a2a40db4cfd6",
       "hostile_fixture_ids": [
         "FIXTURE.SPAWNER.FEATURE_IMPLEMENTER_SELF_REVIEW",
         "FIXTURE.SPAWNER.FEATURE_MODEL_HARDCODE_BYPASS"
@@ -51,5 +51,5 @@
       ]
     }
   ],
-  "block_sha256": "cfcd06262b2c9071ff6b91f6967eca3fac958762cf5097ce9bf23bfa2b4b856a"
+  "block_sha256": "b3d74b6f9f90623f581e04dab8e81679144a4520981c0c11c898c8bd069e7598"
 }
