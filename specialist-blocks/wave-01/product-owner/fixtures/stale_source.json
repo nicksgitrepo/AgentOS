@@ -6,6 +6,6 @@
   "fixture_id": "product-owner-stale-model-denial",
   "expected": "DENY",
   "hostile": true,
-  "vector": {"entrypoint":"evaluateProductOwnerBoundary","input":{"schema":"agentos.product_owner_boundary_input.v1","version":1,"request_kind":"SIMPLE_EXPLANATION","admission_status":"CURRENT","model_context_status":"STALE","intent_context_status":"CURRENT","project_binding_status":"MATCHED","detail_level":"SIMPLE"},"expected_readback":{"disposition":"DENY","route":"SPAWNER","all_side_effect_counts":0}},
+  "vector": {"entrypoint":"evaluateProductOwnerBoundary","input":{"schema":"agentos.product_owner_boundary_input.v1","version":1,"request_kind":"SIMPLE_EXPLANATION","admission_status":"CURRENT","model_context_status":"STALE","intent_context_status":"CURRENT","project_binding_status":"MATCHED","detail_level":"SIMPLE"},"expected_readback":{"disposition":"DENY","route":"CONTROLLER","all_side_effect_counts":0}},
   "note": "Stale model evidence fails closed before work."
 }

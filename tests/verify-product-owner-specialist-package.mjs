@@ -2,6 +2,7 @@
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {validateGatePack, validateSourceLock, validateSpecialistBlock} from "../control/specialist-block-compiler.mjs";
@@ -37,6 +38,11 @@ assert.equal(evaluation.model_requirement, "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CL
 const fixtureNames = fs.readdirSync(path.join(packageDir, "fixtures")).filter((name) => name.endsWith(".json")).sort();
 assert.equal(fixtureNames.length, 17);
 assert.equal(new Set(fixtureNames).size, 17);
+const fixtureManifest = read("hostile-fixtures.manifest.json");
+assert.equal(fixtureManifest.schema, "agentos.product_owner_hostile_fixture_manifest.v1");
+assert.equal(fixtureManifest.block_id, block.block_id);
+assert.equal(fixtureManifest.entries.length, fixtureNames.length);
+assert.equal(fixtureManifest.manifest_sha256, (await import("../control/content-addressing.mjs")).canonicalDigest({...fixtureManifest, manifest_sha256: null}));
 for (const fixtureName of fixtureNames) {
   const fixture = read(path.join("fixtures", fixtureName));
   assert.equal(fixture.block_id, block.block_id);
@@ -49,6 +55,12 @@ for (const fixtureName of fixtureNames) {
   assert.equal(fixture.vector.input.schema, "agentos.product_owner_boundary_input.v1");
   assert.equal(fixture.vector.expected_readback.all_side_effect_counts, 0);
   assert(evaluation.cases.some((item) => item.class === fixture.class && item.expected === fixture.expected && item.observed === "PENDING"));
+  const manifestEntry = fixtureManifest.entries.find((entry) => entry.fixture_id === fixture.fixture_id);
+  assert(manifestEntry, `${fixtureName} is absent from the hostile fixture manifest`);
+  assert.equal(manifestEntry.path, `fixtures/${fixtureName}`);
+  assert.equal(manifestEntry.class, fixture.class);
+  assert.equal(manifestEntry.expected_outcome, fixture.expected);
+  assert.equal(manifestEntry.file_sha256, crypto.createHash("sha256").update(fs.readFileSync(path.join(packageDir, "fixtures", fixtureName))).digest("hex"));
 }
 
 const routingFixture = read("fixtures/routing.json");

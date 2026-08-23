@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.product-owner.v1",
   "block_id": "specialist.control.product-owner",
-  "candidate_digest": "cab87540308ae120af33d2448d26f17974ca64e4296dded6cfad99b7e5bdbf51",
+  "candidate_digest": "5218f7078c9b811bfab64e3d36c609038e8d0a5ae033e5ed0d4f21ae1c59caf5",
   "model_requirement": "GLOBAL_MODEL_POLICY_SNAPSHOT/TASK_CLASS_ROUTE",
   "harness": "operational-product-owner-hostile-harness.v1; independent execution required",
   "pre_admission_evaluator": "control/product-owner-pre-admission-evaluator.mjs",

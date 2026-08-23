@@ -3077,11 +3077,11 @@
     },
     "product_owner_boundary_controller": {
       "path": "control/product-owner-boundary-gate.mjs",
-      "sha256": "4a95fe5aa9cd3862f73f55dca02d01122053ae76c29530bd375baea3bb12b21b"
+      "sha256": "fcdc2fd6679eab135a1bc841d3bc3eaf2c836ab4aeae9dc7e679dc42612ffc32"
     },
     "product_owner_boundary_verifier": {
       "path": "tests/verify-product-owner-boundary-operational.mjs",
-      "sha256": "102d026d9f054f1a30148bf9681fdf664179e320f7270c88d8ca3a11cbc28a32"
+      "sha256": "f673bfdaea0690566d4884e4bf07dd9ac3b68198fe53faf535ec52923ef17532"
     },
     "product_owner_operational_contract": {
       "path": "schemas/product-owner-operational.v1.json",
@@ -3097,7 +3097,7 @@
     },
     "product_owner_package_evaluator": {
       "path": "control/product-owner-package-evaluator.mjs",
-      "sha256": "6f9890ef66ebcc05dd2a569eabe4558e29297b2eb169bc8d2f64d9c9017ca6c1"
+      "sha256": "5e320835a05025a3a45711b4613761a4dad2e23ef213fd7e481de30eba83432c"
     },
     "product_owner_package_evaluator_verifier": {
       "path": "tests/verify-product-owner-package-evaluator.mjs",
@@ -3111,9 +3111,13 @@
       "path": "control/product-owner-pre-admission-evaluator.mjs",
       "sha256": "bdf562d5888e4a67fedae2e6b84703f782ad2fdc7130ea83869f9aa480ff73ff"
     },
+    "product_owner_hostile_fixture_manifest": {
+      "path": "specialist-blocks/wave-01/product-owner/hostile-fixtures.manifest.json",
+      "sha256": "d79f365c72eca5d8a6d98702a072be5a636f8e9055a6558e4ebcccdb7fac6abe"
+    },
     "product_owner_specialist_package_verifier": {
       "path": "tests/verify-product-owner-specialist-package.mjs",
-      "sha256": "1ee530d7665a848280e42a19a2db9ef62b7b73416e241c00f75decd13f069ee9"
+      "sha256": "b50da5173c1f7dced41e29585ed299c6719d513b4e6068a1c84693828ff5274e"
     },
     "project_context_store_controller": {
       "path": "control/project-context-store.mjs",
@@ -3845,7 +3849,7 @@
     },
     "reusable_agent_roster_registry": {
       "path": "specialist-blocks/registry/agent-roster.v1.json",
-      "sha256": "2c0e5d4d7ed533bc84fd7a81b9f065058161e8464e7ea362f56af4d9b3a935c1"
+      "sha256": "8968197ea8878603d90aba2271dc0edbf183cf4766a502d5dad71a4c93e916db"
     },
     "reusable_agent_roster_verifier": {
       "path": "tests/verify-reusable-agent-roster.mjs",
@@ -5081,7 +5085,7 @@
     },
     "permanent_role_product_owner_bootstrap": {
       "path": "specialist-blocks/wave-01/product-owner/bootstrap.json",
-      "sha256": "fa1ebb40fa23bcd819a202de07d28ed739d50aaf9e7b7753dac21fea0534a1cb"
+      "sha256": "8b9e4e27e325049e8dc9b73844df28065022b638cb191bac5cf33f2d003aec60"
     },
     "permanent_role_memory_bootstrap": {
       "path": "specialist-blocks/wave-01/memory/bootstrap.json",

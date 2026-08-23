@@ -5,7 +5,7 @@
   "role_id": "AGENTOS.PRODUCT_OWNER",
   "display_name": "Product Owner",
   "role_package_path": "specialist-blocks/wave-01/product-owner",
-  "role_block_sha256": "cab87540308ae120af33d2448d26f17974ca64e4296dded6cfad99b7e5bdbf51",
+  "role_block_sha256": "5218f7078c9b811bfab64e3d36c609038e8d0a5ae033e5ed0d4f21ae1c59caf5",
   "source_binding": {
     "kind": "OWNER_AUTHORIZED_RUNTIME_SOURCE",
     "portable_source_ref": null,

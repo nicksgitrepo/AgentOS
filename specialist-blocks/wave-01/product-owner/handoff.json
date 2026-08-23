@@ -4,7 +4,7 @@
   "handoff_id": "specialist-handoff.product-owner.v1",
   "block_id": "specialist.control.product-owner",
   "disposition": "WAITING_WITH_RECEIPT",
-  "candidate_digest": "cab87540308ae120af33d2448d26f17974ca64e4296dded6cfad99b7e5bdbf51",
+  "candidate_digest": "5218f7078c9b811bfab64e3d36c609038e8d0a5ae033e5ed0d4f21ae1c59caf5",
   "source_commit": "901acb6aa7ec0f6de73065a60ccc7d1817f651e7",
   "source_tree": "387a4d3f5a9c3fe57dd44894a7c43b72280e7f53",
   "changed_paths": [
@@ -27,6 +27,7 @@
     "specialist-blocks/wave-01/product-owner/fixtures/umbrella_authority.json",
     "specialist-blocks/wave-01/product-owner/fixtures/unrelated_scope.json",
     "specialist-blocks/wave-01/product-owner/fixtures/unsafe_action.json",
+    "specialist-blocks/wave-01/product-owner/hostile-fixtures.manifest.json",
     "specialist-blocks/wave-01/product-owner/gates/00-intake.gate",
     "specialist-blocks/wave-01/product-owner/gates/01-applicability.gate",
     "specialist-blocks/wave-01/product-owner/gates/02-authority-precedence.gate",

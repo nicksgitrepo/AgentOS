@@ -3,7 +3,6 @@
 /* Independent-review input compiler for the Product Owner package. */
 
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import {createHash} from "node:crypto";
 import {pathToFileURL} from "node:url";
@@ -22,11 +21,19 @@ function readFixtureMap() {
   const fixtureRoot = path.join(ROOT, "specialist-blocks/wave-01/product-owner/fixtures");
   const files = fs.readdirSync(fixtureRoot).filter((name) => name.endsWith(".json")).sort();
   assert(files.length === 17 && new Set(files).size === 17, "Product Owner hostile fixture inventory is incomplete", "PRODUCT_OWNER_HOSTILE_INVENTORY_INCOMPLETE");
+  const manifestPath = path.join(ROOT, "specialist-blocks/wave-01/product-owner/hostile-fixtures.manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  assert(manifest.schema === "agentos.product_owner_hostile_fixture_manifest.v1" && manifest.version === 1 && manifest.block_id === "specialist.control.product-owner", "Product Owner hostile manifest identity differs", "PRODUCT_OWNER_HOSTILE_MANIFEST_INVALID");
+  assert(manifest.manifest_sha256 === canonicalDigest({...manifest, manifest_sha256: null}), "Product Owner hostile manifest digest differs", "PRODUCT_OWNER_HOSTILE_MANIFEST_INVALID");
+  assert(Array.isArray(manifest.entries) && manifest.entries.length === files.length && new Set(manifest.entries.map((entry) => entry.fixture_id)).size === files.length, "Product Owner hostile manifest coverage differs", "PRODUCT_OWNER_HOSTILE_MANIFEST_INVALID");
   const map = new Map();
   for (const name of files) {
     const bytes = fs.readFileSync(path.join(fixtureRoot, name));
     const fixture = JSON.parse(bytes);
     assert(typeof fixture.fixture_id === "string" && !map.has(fixture.fixture_id), `Duplicate Product Owner fixture: ${name}`, "PRODUCT_OWNER_FIXTURE_ALIAS");
+    const manifestEntry = manifest.entries.find((entry) => entry.fixture_id === fixture.fixture_id);
+    assert(manifestEntry && manifestEntry.path === `fixtures/${name}` && manifestEntry.class === fixture.class && manifestEntry.expected_outcome === fixture.expected, `Product Owner hostile manifest metadata differs: ${name}`, "PRODUCT_OWNER_HOSTILE_MANIFEST_INVALID");
+    assert(manifestEntry.file_sha256 === rawSha256(bytes), `Product Owner hostile manifest file digest differs: ${name}`, "PRODUCT_OWNER_HOSTILE_MANIFEST_INVALID");
     map.set(fixture.fixture_id, {fixture, file_sha256: rawSha256(bytes)});
   }
   return map;
@@ -46,7 +53,7 @@ export async function auditProductOwnerGateWeakeningAtUntrustedRoot({authorityRo
   fs.copyFileSync(dependencyPath, path.join(controlRoot, "content-addressing.mjs"));
   fs.copyFileSync(privacyDependencyPath, path.join(controlRoot, "persisted-record-privacy.mjs"));
   let source = fs.readFileSync(sourcePath, "utf8");
-  const needle = 'IMPLEMENTATION: ["DENY", "CONTROLLER", "PRODUCT_OWNER_CANNOT_IMPLEMENT"]';
+  const needle = 'IMPLEMENTATION: ["DENY", "ORCHESTRATOR", "PRODUCT_OWNER_CANNOT_IMPLEMENT"]';
   assert(source.includes(needle), "Product Owner mutation anchor is missing", "PRODUCT_OWNER_MUTATION_ANCHOR_MISSING");
   source = source.replace(needle, 'IMPLEMENTATION: ["ALLOW_CONVERSATION", "PRODUCT_OWNER", "MUTATED_IMPLEMENTATION_ALLOWED"]');
   fs.writeFileSync(mutatedPath, source, {flag: "wx"});
@@ -61,10 +68,16 @@ export async function evaluateProductOwnerPackage({roleId = "AGENTOS.PRODUCT_OWN
   const candidate = inspectCanonicalPermanentRoleCandidate({roleId});
   const pre = evaluateCanonicalProductOwnerBoundaryFixtures();
   assert(pre.status === "EXECUTED_RESULTS_COMPLETE_REVIEW_PENDING" && pre.fixture_count === 17, "Product Owner hostile execution is incomplete", "PRODUCT_OWNER_HOSTILE_EXECUTION_INCOMPLETE");
-  const mutationRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-product-owner-package-mutation-"));
+  const testTempParent = path.join(ROOT, "Temp");
+  const testTempParentExisted = fs.existsSync(testTempParent);
+  fs.mkdirSync(testTempParent, {recursive: true});
+  const mutationRoot = fs.mkdtempSync(path.join(testTempParent, "product-owner-package-mutation-"));
   let mutation;
   try { mutation = await auditProductOwnerGateWeakeningAtUntrustedRoot({authorityRoot: mutationRoot}); }
-  finally { fs.rmSync(mutationRoot, {recursive: true, force: true}); }
+  finally {
+    fs.rmSync(mutationRoot, {recursive: true, force: true});
+    if (!testTempParentExisted && fs.readdirSync(testTempParent).length === 0) fs.rmdirSync(testTempParent);
+  }
   assert(mutation.status === "WEAKENED" && mutation.mutation_detected === true, "Product Owner mutation proof did not execute", "PRODUCT_OWNER_MUTATION_PROOF_MISSING");
   const fixtures = readFixtureMap();
   const now = new Date().toISOString();

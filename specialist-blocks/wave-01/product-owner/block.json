@@ -48,13 +48,13 @@
     "specialist.control.project-controller"
   ],
   "composition_rules": [
-    "Controller owns workflow regulation while Product Owner owns user intent",
+    "Controller owns liveness and bounded workflow repair, Orchestrator owns campaign planning, implementation handoffs, direction, repair routing, and acceptance, and Product Owner owns user intent",
     "every user-facing question offers bounded simple answers and optional elaborate or advanced explanation",
     "intent observations are advisory until accepted through the typed project authority",
     "model choice and reasoning must come from the current accepted global model-policy projection",
     "normal human-facing responses default to simple natural language without internal codes"
   ],
-  "escalation_target": "typed Controller or named specialist for execution; user only for an unresolved material intent choice",
+  "escalation_target": "Orchestrator for implementation or campaign execution; Controller for liveness, bounded workflow repair, and context/freshness defects; named specialist for narrow execution; user only for an unresolved material intent choice; Spawner only for exact lifecycle operations",
   "split_required_when": [
     "delivery or deployment authority is required",
     "implementation or domain work is required",
@@ -315,5 +315,5 @@
     "no_self_admission": true,
     "no_self_acceptance": true
   },
-  "block_sha256": "cab87540308ae120af33d2448d26f17974ca64e4296dded6cfad99b7e5bdbf51"
+  "block_sha256": "5218f7078c9b811bfab64e3d36c609038e8d0a5ae033e5ed0d4f21ae1c59caf5"
 }

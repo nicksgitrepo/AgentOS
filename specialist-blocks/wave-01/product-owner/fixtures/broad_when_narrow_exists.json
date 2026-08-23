@@ -6,6 +6,6 @@
   "fixture_id": "product-owner-implementation-denial",
   "expected": "DENY",
   "hostile": true,
-  "vector": {"entrypoint":"evaluateProductOwnerBoundary","input":{"schema":"agentos.product_owner_boundary_input.v1","version":1,"request_kind":"IMPLEMENTATION","admission_status":"CURRENT","model_context_status":"CURRENT","intent_context_status":"CURRENT","project_binding_status":"MATCHED","detail_level":"SIMPLE"},"expected_readback":{"disposition":"DENY","route":"CONTROLLER","all_side_effect_counts":0}},
+  "vector": {"entrypoint":"evaluateProductOwnerBoundary","input":{"schema":"agentos.product_owner_boundary_input.v1","version":1,"request_kind":"IMPLEMENTATION","admission_status":"CURRENT","model_context_status":"CURRENT","intent_context_status":"CURRENT","project_binding_status":"MATCHED","detail_level":"SIMPLE"},"expected_readback":{"disposition":"DENY","route":"ORCHESTRATOR","all_side_effect_counts":0}},
   "note": "Intent custody cannot substitute for a narrow implementation role."
 }

@@ -28855,24 +28855,24 @@
             "fixture_id": "product-owner-authority-conflict",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/authority_conflict.json",
             "file_sha256": "b5681c70d4fd9b0a4c6dbec1320a519cc076619b0bb9f686e5ef89a053ea6313",
-            "expected_outcome": "ESCALATE_USER"
+            "expected_outcome": "ESCALATE"
           },
           {
             "fixture_id": "product-owner-implementation-denial",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/broad_when_narrow_exists.json",
-            "file_sha256": "b7ca79682d51737b5c6c56a66e1001e93facd2346d44a11d0139d56890f598aa",
+            "file_sha256": "5e7dce2c4b568d119f2ff7f0ed2daf89b4cda5ddc2a5b2eff029b5631a5760e4",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "product-owner-model-override-denial",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/cross_provider_version_claim.json",
-            "file_sha256": "811138ee6dd33e6328f6a7c59227caf313116bb4341261b8ee6c7039d1762aad",
+            "file_sha256": "8e050874abd4d468ea599e0ff48934836bef08b113b9bdb62365cf0dbbda6249",
             "expected_outcome": "DENY"
           },
           {
             "fixture_id": "product-owner-cross-project-denial",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/data_limit.json",
-            "file_sha256": "cb53aaf4b39fec30a7e4d76e09fbe13ed315ce5fd815133b33c2e55a4bb91b25",
+            "file_sha256": "df33bdb89f6d49a2698e1f999a93729de527ec46eb5bdc8635f7562d3abbf359",
             "expected_outcome": "DENY"
           },
           {
@@ -28890,20 +28890,20 @@
           {
             "fixture_id": "product-owner-declared-intent-handoff",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/handoff.json",
-            "file_sha256": "978294eb9041f06623c7825c3359b068454e8bf3a7c589b1dcd3a86ba34197bf",
-            "expected_outcome": "ROUTE_HANDOFF"
+            "file_sha256": "40814426172c86c99efe200274ebb2c0f1186ff3863697c000ecdcf3a453714e",
+            "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "product-owner-missing-intent-escalation",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/missing_context.json",
             "file_sha256": "63f53332700ea6dfdbee767f80b86fed4579c64bbd908d501dee20019f8d9a98",
-            "expected_outcome": "ESCALATE_USER"
+            "expected_outcome": "DENY"
           },
           {
             "fixture_id": "product-owner-intent-clarification",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/narrowness.json",
             "file_sha256": "05f5a8e752c9bea289fff1f43dc1f46c534b1b5fd3654825b0b2f40a35271f73",
-            "expected_outcome": "ALLOW_CONVERSATION"
+            "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "product-owner-self-review-denial",
@@ -28915,7 +28915,7 @@
             "fixture_id": "product-owner-simple-explanation",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/routing.json",
             "file_sha256": "b03a7e61d8731524a19733c9d833c42611d2a4d56e4ab51308ac5a913ac186d4",
-            "expected_outcome": "ALLOW_CONVERSATION"
+            "expected_outcome": "ROUTE"
           },
           {
             "fixture_id": "product-owner-silent-workflow-denial",
@@ -28926,7 +28926,7 @@
           {
             "fixture_id": "product-owner-stale-model-denial",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/stale_source.json",
-            "file_sha256": "5b67503c691b3b841343399ae2f62a9611243da73d3a07fb199ff89c468555fd",
+            "file_sha256": "16e4807c64a07084dde9222803e20d666eee64588289b366bc925f06b077264d",
             "expected_outcome": "DENY"
           },
           {
@@ -28938,7 +28938,7 @@
           {
             "fixture_id": "product-owner-umbrella-implementation-denial",
             "path": "specialist-blocks/wave-01/product-owner/fixtures/umbrella_authority.json",
-            "file_sha256": "8283fea7992a21a7c0e96a6373dfef4485071957cc740852859a9d2e59c0b9dd",
+            "file_sha256": "be61ce61ca904fe627f8594453e0c2b6c350be2adfa97bd9d37eac11b0d41f46",
             "expected_outcome": "DENY"
           },
           {
@@ -28963,7 +28963,7 @@
           "unknown_rule"
         ],
         "handoff_path": "specialist-blocks/wave-01/product-owner/handoff.json",
-        "handoff_file_sha256": "a189e70f6d707ddade2a63a90c255871611c73bf472ac54e30e3baa07126161b",
+        "handoff_file_sha256": "e596e84698ab6056819a894f17e68dafc184f203041811d6ce414167d39b4cd7",
         "independent_review_required": true,
         "receipt_id": "specialist-eval.product-owner.v1"
       },
@@ -40471,5 +40471,5 @@
       "reason": "Blocked until the current model-policy snapshot and evidence store are fresh; no package may advance."
     }
   ],
-  "roster_sha256": "02d9dbb7f427dd0ad4566247fc67ac2d46f71c5457c6ce701d3eb79e8b8dae82"
+  "roster_sha256": "0fdd91f1aca0ea15a3727debb52a95dde7d176102ebd3edf8954dab5e6dd43a9"
 }
