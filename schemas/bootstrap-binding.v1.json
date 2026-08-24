@@ -398,7 +398,7 @@
     },
     "campaign_lifecycle_controller": {
       "path": "control/campaign-lifecycle.mjs",
-      "sha256": "6e52aefc0a02ab0d20c7afdb7c3644c2a952f07d61e1ae01f8fdb78b66fb4b76"
+      "sha256": "fb4f22913ec9a8c9d9e3ed16c1d15409e4c360bc8a9335b5ed13fa1db0360924"
     },
     "campaign_lifecycle_contract": {
       "path": "schemas/campaign-lifecycle.v1.json",
@@ -406,7 +406,7 @@
     },
     "campaign_controller_verifier": {
       "path": "tests/verify-campaign-controller.mjs",
-      "sha256": "3edc7e4477dfa9cc5f5c12d8568ef4c95726a0765badca66fd91ac0c812ad82f"
+      "sha256": "d242ddf0cc6f718dde836557792c38a6737b5bfa3743dac3f29a1c8c58c82435"
     },
     "continuous_audit_sentinel_controller": {
       "path": "control/continuous-audit-sentinel.mjs",
@@ -474,7 +474,7 @@
     },
     "question_tree_contract": {
       "path": "schemas/question-tree.v1.json",
-      "sha256": "e7f0adff1091f08a639b30442108f8c7824a3ad07ff4cede0ab9f22abb6752b8"
+      "sha256": "f9862e218b5984a83bbdd6faa596db04da089e8009d43d080717249e756ee90b"
     },
     "question_tree_verifier": {
       "path": "tests/verify-question-tree.mjs",
