@@ -5,11 +5,11 @@
   "evaluator_version": "1.0.0",
   "model_requirement": "gpt-5.6-luna/max",
   "candidate": {
-    "branch": "codex/specialist-block-library-candidate",
-    "commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
-    "tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb"
+    "branch": "codex/project-agnostic-host-lifecycle-governance-001",
+    "commit": "f09c975317137cbe5b85ae9cccb1a05c47688a57",
+    "tree": "9fb6003a3e0c3644fc0398b6aa61b0066014ff7d"
   },
-  "candidate_roster_digest": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08",
+  "candidate_roster_digest": "eec86e63558641b59a3416ead4395b29686a4297972f7578c638b9af9561ffb8",
   "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW",
   "independent_reviewer_required": true,
   "self_acceptance": "FORBIDDEN",
@@ -27,7 +27,7 @@
     "flexible_classes": ["authority_conflict", "data_limit", "duplicate_sibling_authority", "tool_limit"],
     "rule": "ROUTE_REQUIRES_EXPLICIT_TYPED_SCOPE;_DENY_OR_ESCALATE_CLOSES_UNSAFE_OR_UNRESOLVED_ACTIONS"
   },
-  "evaluation_manifest_sha256": "8e09c1e0e32b98cd62bd349d08258ba9474dc1f88cfb6a3c92d73828b79720e3",
+  "evaluation_manifest_sha256": "43c2346b839ffb120e1e4225521a630fe462b4d8a6afcbf62e14937ea4effa92",
   "utility_harm": "PENDING_EXTERNAL_AUTHORITY",
   "residuals": [
     "This deterministic pre-screen validates declared fixture policy and dossier consistency; it is not external utility/harm acceptance.",

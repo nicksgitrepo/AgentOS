@@ -3,10 +3,10 @@
   "version": 1,
   "status": "WAITING_WITH_RECEIPT",
   "candidate": {
-    "branch": "codex/specialist-block-library-candidate",
-    "commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
-    "tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb",
-    "remote_ref": "origin/codex/specialist-block-library-candidate",
+    "branch": "codex/project-agnostic-host-lifecycle-governance-001",
+    "commit": "f09c975317137cbe5b85ae9cccb1a05c47688a57",
+    "tree": "9fb6003a3e0c3644fc0398b6aa61b0066014ff7d",
+    "remote_ref": "refs/heads/codex/project-agnostic-host-lifecycle-governance-001",
     "activation": "OFF",
     "admission": "NOT_ADMITTED"
   },
