@@ -87,11 +87,13 @@ count.
 
 The on-demand recipe catalog is now complete for the retained backlog: `621`
 stable recipes map one-to-one to the `621` inventory titles and preserve all
-`10` alias mappings. Seventeen recipes are `CANDIDATE`/compileable (`6` P0,
-`5` P4, and `6` P5); `603` are `PLANNED`/non-compileable until a role-specific block has source evidence, the
-exact twelve gates, hostile fixtures, independent evaluation, and an admission
-receipt. The protected Memory lane is retained as `NOT_APPLICABLE` and
-external-only.
+`10` alias mappings. All `620` non-protected recipes are compileable: `17` are
+package-backed `COMPILED_CANDIDATE` lanes (`6` P0, `5` P4, and `6` P5), while
+`603` are `CONTEXT_PROFILE_CANDIDATE` recipes whose role profiles provide
+context only and do not replace role-specific source evidence, the exact
+twelve gates, hostile fixtures, independent evaluation, or an admission
+receipt. None are `PLANNED` or non-compileable. The protected Memory lane is
+retained as `NOT_APPLICABLE` and external-only.
 
 ## Wave law
 
