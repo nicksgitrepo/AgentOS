@@ -136,6 +136,8 @@ export function compileExistingTaskLifecycle({operationId, nonce, projectCampaig
     replacement_output: null,
     recovery_prompt_count: 0,
     packet,
+    transition_sequence: 0,
+    transition_parent_sha256: null,
     record_sha256: null,
   };
   return reseal(validateExistingTaskLifecycle(reseal(record)));
@@ -171,6 +173,13 @@ export function validateExistingTaskLifecycle(record) {
   assert(isRecord(record.replacement) && (record.replacement.role_lock_nonce === null || typeof record.replacement.role_lock_nonce === "string") && typeof record.replacement.authorized === "boolean" && typeof record.replacement.consumed === "boolean", "replacement state is invalid");
   assert(record.replacement_output === null || isRecord(record.replacement_output), "replacement output custody is invalid");
   assert(Number.isInteger(record.recovery_prompt_count) && record.recovery_prompt_count >= 0, "recovery prompt count is invalid");
+  assert(Number.isSafeInteger(record.transition_sequence) && record.transition_sequence >= 0, "lifecycle transition sequence is invalid");
+  assert(record.transition_parent_sha256 === null || SHA256.test(record.transition_parent_sha256), "lifecycle transition parent digest is invalid");
+  if (record.transition_sequence === 0) {
+    assert(record.transition_parent_sha256 === null && record.state === "OBSERVING", "lifecycle genesis provenance is invalid");
+  } else {
+    assert(record.transition_parent_sha256 !== null && record.transition_parent_sha256 !== record.record_sha256, "lifecycle transition provenance is missing or self-referential");
+  }
   validatePacket(record.packet);
   requireSha(record.record_sha256, "lifecycle record digest");
   assert(record.record_sha256 === canonicalDigest(body(record)), "lifecycle record digest mismatch");
@@ -260,6 +269,8 @@ function transition(record, mutate) {
   validateExistingTaskLifecycle(record);
   const next = structuredClone(record);
   mutate(next);
+  next.transition_sequence += 1;
+  next.transition_parent_sha256 = record.record_sha256;
   return validateExistingTaskLifecycle(reseal(next));
 }
 

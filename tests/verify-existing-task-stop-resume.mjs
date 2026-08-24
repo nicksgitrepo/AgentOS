@@ -74,6 +74,12 @@ const custody = () => revalidateExistingTaskCustody(finalized(), {custodySha256:
 const exhausted = () => exhaustExistingTask(custody(), {taskId: "TASK.EXISTING.001", pinnedThreads: ["TASK.EXISTING.001"], harmlessProbeOutcome: "PASSED", substantiveRetryOutcome: "FAILED"});
 
 validateExistingTaskLifecycle(base());
+assert.equal(base().transition_sequence, 0);
+assert.equal(observation(base(), "provenance").transition_sequence, 1);
+const forgedTransition = structuredClone(observation(base(), "provenance"));
+forgedTransition.transition_parent_sha256 = null;
+forgedTransition.record_sha256 = canonicalDigest({...forgedTransition, record_sha256: null});
+assert.throws(() => validateExistingTaskLifecycle(forgedTransition), /transition provenance/u);
 
 // A resealed record cannot promote caller-controlled flags into lifecycle
 // authority: every state must agree with the finalized event and its
@@ -82,12 +88,12 @@ const forgedExhaustion = structuredClone(base());
 forgedExhaustion.state = "SAME_TASK_RETRY_FAILED";
 forgedExhaustion.same_task.exhausted = true;
 forgedExhaustion.record_sha256 = canonicalDigest({...forgedExhaustion, record_sha256: null});
-assert.throws(() => validateExistingTaskLifecycle(forgedExhaustion), /post-STOP|exhaustion evidence/u);
+assert.throws(() => validateExistingTaskLifecycle(forgedExhaustion), /genesis provenance|post-STOP|exhaustion evidence/u);
 const forgedFinalization = structuredClone(base());
 forgedFinalization.state = "TURN_ENDED_IDLE";
 forgedFinalization.stop.requested = true;
 forgedFinalization.record_sha256 = canonicalDigest({...forgedFinalization, record_sha256: null});
-assert.throws(() => validateExistingTaskLifecycle(forgedFinalization), /post-STOP|finalized host event/u);
+assert.throws(() => validateExistingTaskLifecycle(forgedFinalization), /genesis provenance|post-STOP|finalized host event/u);
 const forgedReplacement = structuredClone(exhausted());
 forgedReplacement.state = "REPLACEMENT_AUTHORIZED";
 forgedReplacement.replacement_task_id = "TASK.REPLACEMENT.FORGED";

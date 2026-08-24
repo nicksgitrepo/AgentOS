@@ -4,7 +4,7 @@
   "title": "AgentOS existing-task STOP, resume, and single-replacement lifecycle",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "version", "operation_id", "nonce", "state", "project_campaign_id", "task_id", "host_id", "active_turn_id", "replacement_task_id", "binding", "custody_sha256", "pinned_task_id", "old_task_retired", "writer_task_id", "observations", "last_material_receipt_sha256", "checkpoint", "preservation_terms", "smallest_pending_transition", "escalation_reason", "stop", "same_task", "replacement", "replacement_output", "recovery_prompt_count", "packet", "record_sha256"],
+  "required": ["schema", "version", "operation_id", "nonce", "state", "project_campaign_id", "task_id", "host_id", "active_turn_id", "replacement_task_id", "binding", "custody_sha256", "pinned_task_id", "old_task_retired", "writer_task_id", "observations", "last_material_receipt_sha256", "checkpoint", "preservation_terms", "smallest_pending_transition", "escalation_reason", "stop", "same_task", "replacement", "replacement_output", "recovery_prompt_count", "packet", "transition_sequence", "transition_parent_sha256", "record_sha256"],
   "properties": {
     "schema": {"const": "agentos.existing_task_stop_resume.v1"},
     "version": {"const": 1},
@@ -33,6 +33,8 @@
     "replacement_output": {"type": ["object", "null"]},
     "recovery_prompt_count": {"type": "integer", "minimum": 0},
     "packet": {"$ref": "#/$defs/packet"},
+    "transition_sequence": {"type": "integer", "minimum": 0},
+    "transition_parent_sha256": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]},
     "record_sha256": {"$ref": "#/$defs/sha"}
   },
   "$defs": {
