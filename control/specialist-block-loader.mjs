@@ -76,6 +76,91 @@ function contextHas(context, key) {
   return current !== null && current !== undefined && current !== "";
 }
 
+const FALSE_DENY_VALUES = new Set(["", "false", "no", "none", "null", "undefined", "bound", "declared", "fresh", "valid", "pass", "safe"]);
+const STATUS_DENY_VALUES = /\b(?:absent|ambiguous|conflict|denied|expired|forbidden|invalid|missing|pending|stale|superseded|unresolved|unsafe|unverifiable)\b/iu;
+const ACTION_DENY_VALUES = /\b(?:activate|admit|adoption|credential|deploy|execute|external[-_ ]state|migrate|production|publish|secret|side[-_ ]effect|write)\b/iu;
+
+function normalizeDenyPath(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/gu, "_").replace(/^_+|_+$/gu, "");
+}
+
+function flattenContext(value, prefix = "", entries = []) {
+  if (value === null || value === undefined) return entries;
+  if (typeof value === "object" && !Array.isArray(value)) {
+    for (const [key, child] of Object.entries(value)) flattenContext(child, prefix ? `${prefix}.${key}` : key, entries);
+    return entries;
+  }
+  entries.push([prefix, value]);
+  return entries;
+}
+
+function denyValue(value) {
+  if (value === true) return true;
+  if (value === false || value === null || value === undefined) return false;
+  if (typeof value === "number") return value !== 0;
+  if (typeof value !== "string") return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized.length > 0 && !FALSE_DENY_VALUES.has(normalized);
+}
+
+function denyAliases(predicate) {
+  const normalized = normalizeDenyPath(predicate);
+  const aliases = new Set([normalized]);
+  if (/(?:unsafe|side_effect|external_state).*action|action.*(?:unsafe|side_effect|external_state)/u.test(normalized)) {
+    aliases.add("unsafe_action");
+    aliases.add("side_effect_request");
+    aliases.add("request_unsafe_action");
+  }
+  if (normalized.includes("scope_expansion")) {
+    aliases.add("scope_expansion");
+    aliases.add("requested_scope_expansion");
+    aliases.add("scope_expanded");
+  }
+  if (normalized.includes("authority_conflict")) {
+    aliases.add("authority_conflict");
+    aliases.add("authority_conflicted");
+  }
+  if (normalized.includes("stale_source") || normalized.includes("superseded_source")) {
+    aliases.add("stale_source");
+    aliases.add("superseded_source");
+    aliases.add("source_stale");
+    aliases.add("source_superseded");
+  }
+  if (normalized.includes("missing_authority")) aliases.add("missing_authority");
+  if (normalized.includes("missing_custody")) aliases.add("missing_custody");
+  if (normalized.includes("missing_source_lock")) aliases.add("missing_source_lock");
+  if (normalized.includes("self_acceptance")) {
+    aliases.add("self_acceptance");
+    aliases.add("self_accept");
+  }
+  return aliases;
+}
+
+function contextHasDenyPredicate(context, predicate) {
+  const normalized = normalizeDenyPath(predicate);
+  const flattened = flattenContext(context);
+  const aliases = denyAliases(predicate);
+  for (const [path, value] of flattened) {
+    if (aliases.has(normalizeDenyPath(path)) && denyValue(value)) return true;
+  }
+
+  const actionValues = flattened
+    .filter(([path]) => /(?:^|_)(?:action|request|requested_action|operation|intent)(?:$|_)/u.test(normalizeDenyPath(path)))
+    .map(([, value]) => String(value));
+  if (/(?:unsafe|write|deploy|publish|migrate|runtime|execution|activation|adoption|external_state|side_effect|credential|provider_identity)/u.test(normalized) && actionValues.some((value) => ACTION_DENY_VALUES.test(value))) return true;
+
+  const statusValues = flattened
+    .filter(([path]) => /(?:authority|custody|source|lock|jurisdiction|platform|provider|standard|version|scope|evidence)/u.test(normalizeDenyPath(path)))
+    .map(([, value]) => String(value));
+  if (/(?:stale|superseded|unverifiable|conflicting|conflict)/u.test(normalized) && statusValues.some((value) => STATUS_DENY_VALUES.test(value))) return true;
+  if (normalized.includes("unresolved") && statusValues.some((value) => /\b(?:unresolved|unknown|pending|missing|ambiguous)\b/iu.test(value))) return true;
+  if (normalized.includes("missing") && statusValues.some((value) => /\b(?:missing|absent|unbound|invalid)\b/iu.test(value))) return true;
+  if (normalized.includes("certification") && actionValues.some((value) => /\b(?:certif|legal|attest)\w*/iu.test(value))) return true;
+  if (normalized.includes("chat_only") && actionValues.some((value) => /\b(?:chat|assertion|claimed)\w*/iu.test(value))) return true;
+  if (normalized.includes("unsupported_tool") && actionValues.some((value) => /\b(?:tool|data|access)\w*/iu.test(value))) return true;
+  return false;
+}
+
 export function routeSpecialists({library, signals = [], context = {}, requestedBlockIds = []}) {
   assert(library?.routing && library?.byId, "compiled specialist library is required");
   const normalizedSignals = normalizeSignals(signals);
@@ -87,7 +172,7 @@ export function routeSpecialists({library, signals = [], context = {}, requested
     const requestedMatch = route.select.some((blockId) => requested.has(blockId));
     if (!signalMatch && !requestedMatch) continue;
     const missing = route.required_context.filter((key) => !contextHas(context, key));
-    const denied = route.deny_if.some((key) => contextHas(context, key));
+    const denied = route.deny_if.some((key) => contextHasDenyPredicate(context, key));
     if (denied || missing.length > 0) {
       denials.push({route_id: route.route_id, outcome: missing.length > 0 ? "UNKNOWN" : "NO", missing_context: missing.sort()});
       continue;

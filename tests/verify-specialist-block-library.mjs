@@ -121,6 +121,22 @@ for (const route of routableRoutes) {
   assert(result.selected.length > 0, `${route.route_id} selected no candidate block`);
 }
 
+const hostileTypedContext = (route) => ({
+  ...contextForRoute(route),
+  unsafe_action: true,
+  stale_source: true,
+  authority_conflict: true,
+  scope_expansion: true,
+  side_effect_request: true,
+  requested_action: "deploy",
+});
+for (const route of routableRoutes) {
+  const hostile = routeSpecialists({library, signals: route.signals, context: hostileTypedContext(route)});
+  assert.notEqual(hostile.status, "ROUTE", `${route.route_id} routed a typed hostile context`);
+  assert.equal(hostile.selected.length, 0, `${route.route_id} selected a specialist for a typed hostile context`);
+  assert(hostile.status === "UNKNOWN" || hostile.status === "NO_MATCH", `${route.route_id} did not fail closed for a typed hostile context`);
+}
+
 const removeContextPath = (context, dottedPath) => {
   const copy = structuredClone(context);
   const parts = dottedPath.split(".");
