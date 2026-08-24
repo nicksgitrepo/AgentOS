@@ -166,6 +166,11 @@ function makeState(overrides = {}) {
 const initial = makeState();
 validateCampaignState(initial);
 assert.equal(initial.stage, "BUILDING");
+assert.throws(
+  () => compileProductAcceptance({proof: initial.acceptance.proof, finalCandidateCommit: "commit-drift", finalCandidateTree: "tree-drift"}),
+  /final candidate (?:commit|tree) is not bound to the question-tree change manifest/u,
+  "Product acceptance must bind the final candidate identity to the question-tree manifest",
+);
 
 let platform = initial.platform_pool[0];
 platform = enqueuePlatformRequest(platform, {feature_id: "FEATURE-A", dependency: "api", critical_path_rank: 1, goal_sha256: SHA});

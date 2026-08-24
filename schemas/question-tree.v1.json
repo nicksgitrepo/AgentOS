@@ -113,6 +113,15 @@
       "re-emitting unchanged answers as new events"
     ]
   },
+  "compiled_tree_contract": {
+    "selection_schema": "governance.question_slice_selection.v1",
+    "selection_identity_fields": [
+      "change_manifest_sha256",
+      "change_manifest_commit",
+      "change_manifest_tree"
+    ],
+    "binding_rule": "The final candidate commit and tree accepted by lifecycle must exactly equal the commit and tree carried by the question-tree change manifest; nonempty candidate identifiers alone are insufficient."
+  },
   "answer_lifecycle_contract": {
     "YES": {
       "required_lifecycle": "VERIFIED",

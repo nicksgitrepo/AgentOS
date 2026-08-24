@@ -954,6 +954,10 @@ function validateAcceptance(acceptance, state) {
     "lifecycle Product acceptance is not bound to the executable question-tree result");
   requireString(acceptance.final_candidate_commit, "accepted final commit");
   requireString(acceptance.final_candidate_tree, "accepted final tree");
+  assert(acceptance.final_candidate_commit === acceptance.proof.tree.selection.change_manifest_commit,
+    "accepted final commit is not bound to the question-tree change manifest");
+  assert(acceptance.final_candidate_tree === acceptance.proof.tree.selection.change_manifest_tree,
+    "accepted final tree is not bound to the question-tree change manifest");
   assert(acceptance.product_acceptance.auditor_session_id === acceptance.proof.auditor_attestation.auditor_session_id,
     "Product acceptance Auditor is not bound to its attestation");
   requireSha(acceptance.product_receipt_sha256, "Product acceptance receipt");
@@ -968,6 +972,10 @@ export function compileProductAcceptance({proof, finalCandidateCommit, finalCand
   const productAcceptance = proof.product_acceptance ?? proof.productAcceptance;
   requireRecord(proofBody, "Product acceptance proof body");
   requireRecord(proofBody.tree, "Product acceptance question tree");
+  assert(finalCandidateCommit === proofBody.tree.selection.change_manifest_commit,
+    "final candidate commit is not bound to the question-tree change manifest");
+  assert(finalCandidateTree === proofBody.tree.selection.change_manifest_tree,
+    "final candidate tree is not bound to the question-tree change manifest");
   const expected = verifyProductAcceptanceProof(productAcceptance, proofBody, proofBody.tree.campaign_id);
   const acceptance = {
     schema: "governance.lifecycle_product_acceptance.v1",

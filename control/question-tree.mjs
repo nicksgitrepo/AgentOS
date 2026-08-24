@@ -211,10 +211,15 @@ export function validateQuestionTree(tree) {
   assert(tree.question_tree_version === "2.1rc", "question-tree version mismatch");
   requireString(tree.campaign_id, "campaign ID");
   assert(canonicalJson(tree.roots) === canonicalJson(ROOTS), "ordered acceptance roots are not exact");
-  exactKeys(tree.selection, ["schema", "changed_surfaces", "change_manifest_sha256", "selected_question_ids", "root_non_applicability"], "question slice selection");
+  exactKeys(tree.selection, [
+    "schema", "changed_surfaces", "change_manifest_sha256", "change_manifest_commit", "change_manifest_tree",
+    "selected_question_ids", "root_non_applicability",
+  ], "question slice selection");
   assert(tree.selection.schema === "governance.question_slice_selection.v1", "question-slice schema mismatch");
   sortedUniqueStrings(tree.selection.changed_surfaces, "changed surfaces");
   requireSha(tree.selection.change_manifest_sha256, "change manifest digest");
+  requireString(tree.selection.change_manifest_commit, "change manifest commit");
+  requireString(tree.selection.change_manifest_tree, "change manifest tree");
   sortedUniqueStrings(tree.selection.selected_question_ids, "selected question IDs", {allowEmpty: true});
   exactKeys(tree.selection.root_non_applicability, ROOTS, "root non-applicability map");
   assert(Array.isArray(tree.questions), "questions are required");
@@ -236,6 +241,8 @@ export function compileQuestionTree(input) {
   requireString(input.campaign_id, "campaign ID");
   assert(input.question_tree_version === "2.1rc", "question-tree version mismatch");
   assert(input.change_manifest?.schema === "governance.changed_surface_manifest.v1", "changed-surface manifest is required");
+  requireString(input.change_manifest.commit, "change manifest commit");
+  requireString(input.change_manifest.tree, "change manifest tree");
   const {manifest_sha256: manifestSha, ...manifestBody} = input.change_manifest;
   requireSha(manifestSha, "change manifest digest");
   assert(sha256(manifestBody) === manifestSha, "change manifest identity is invalid");
@@ -282,6 +289,8 @@ export function compileQuestionTree(input) {
       schema: "governance.question_slice_selection.v1",
       changed_surfaces: [...input.change_manifest.changed_surfaces].sort((left, right) => Buffer.from(left).compare(Buffer.from(right))),
       change_manifest_sha256: manifestSha,
+      change_manifest_commit: input.change_manifest.commit,
+      change_manifest_tree: input.change_manifest.tree,
       selected_question_ids: questions.map((question) => question.question_id),
       root_non_applicability: Object.fromEntries(ROOTS.map((root) => [
         root,
