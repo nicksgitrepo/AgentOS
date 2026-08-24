@@ -189,6 +189,9 @@ for (const route of routableRoutes) {
 const atomicPredicateCases = [
   {id: "activation-request", matches: /activation/u, path: "requested_action", value: "activation"},
   {id: "execution-request", matches: /execution/u, path: "requested_action", value: "execution"},
+  {id: "deployment-request", matches: /deployment/u, path: "requested_action", value: "deployment"},
+  {id: "migration-request", matches: /migration/u, path: "requested_action", value: "migration"},
+  {id: "runtime-request", matches: /runtime/u, path: "requested_action", value: "runtime"},
   {id: "unsupported-tool-status", matches: /unsupported[_ ]tool/u, path: "tool_access.status", value: "unsupported"},
   {id: "unsupported-tool-request", matches: /unsupported[_ ]tool/u, path: "requested_action", value: "unsupported"},
   {id: "provider-identity-request", matches: /provider[_ ]identity/u, path: "requested_action", value: "provider identity"},
@@ -207,7 +210,7 @@ for (const route of routableRoutes) {
     }
   }
 }
-assert.equal(atomicPredicateCaseCount, 10, "atomic deny predicate matrix must cover every activation/execution/unsupported/provider identity route case");
+assert.equal(atomicPredicateCaseCount, 15, "atomic deny predicate matrix must cover every activation/execution/deployment/migration/runtime/unsupported/provider identity route case");
 
 const removeContextPath = (context, dottedPath) => {
   const copy = structuredClone(context);

@@ -78,7 +78,7 @@ function contextHas(context, key) {
 
 const FALSE_DENY_VALUES = new Set(["", "false", "no", "none", "null", "undefined", "bound", "declared", "fresh", "valid", "pass", "safe"]);
 const STATUS_DENY_VALUES = /\b(?:absent|ambiguous|conflict(?:ing)?|denied|expired|expanded|forbidden|invalid|missing|pending|stale|superseded|unresolved|unsafe|unverifiable)\b/iu;
-const ACTION_DENY_VALUES = /\b(?:accept(?:ance)?|activate|activation|admit|adoption|credential|deploy|execute|execution|external[-_ ]state|migrate|production|provider[-_ ]identity|publish|secret|self[-_ ]accept(?:ance)?|side[-_ ]effect|unsupported|write)\b/iu;
+const ACTION_DENY_VALUES = /\b(?:accept(?:ance)?|activate|activation|admit|adoption|credential|deploy|deployment|execute|execution|external[-_ ]state|migrate|migration|production|provider[-_ ]identity|publish|runtime|secret|self[-_ ]accept(?:ance)?|side[-_ ]effect|unsupported|write)\b/iu;
 
 function normalizeDenyPath(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9]+/gu, "_").replace(/^_+|_+$/gu, "");
