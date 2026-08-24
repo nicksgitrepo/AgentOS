@@ -535,8 +535,61 @@ function packageDirectories(libraryRoot) {
   return packages;
 }
 
+/**
+ * Bind the discovered package set to the checked-in roster authority before
+ * compiling any generated artifacts.  The roster is the authoritative
+ * candidate inventory: a missing package must not disappear merely because
+ * the compiler can still generate a smaller roster, and an unmanifested
+ * package must not silently become part of a candidate build.  An intentional
+ * edit to an existing package may change its content digest during a governed
+ * regeneration, but it may never change the package identity, role, or
+ * revision without a corresponding roster update.
+ */
+export function validateRosterPackageCoverage({expectedRoster, records, allowDigestDrift = false} = {}) {
+  requireRecord(expectedRoster, "specialist roster authority");
+  assert(expectedRoster.schema === "agentos.specialist_roster.v1" && expectedRoster.version === 1, "specialist roster authority schema mismatch");
+  assert(Array.isArray(expectedRoster.blocks), "specialist roster authority blocks must be an array");
+  assert(Array.isArray(records), "discovered specialist records must be an array");
+
+  const expectedById = new Map();
+  for (const entry of expectedRoster.blocks) {
+    requireRecord(entry, "specialist roster entry");
+    requireString(entry.block_id, "specialist roster entry block_id");
+    requireString(entry.role_kind, `${entry.block_id} roster role_kind`);
+    assert(ROLE_KINDS.includes(entry.role_kind), `${entry.block_id} roster role_kind is invalid`);
+    requireString(entry.revision, `${entry.block_id} roster revision`);
+    requireSha(entry.candidate_digest, `${entry.block_id} roster candidate_digest`);
+    assert(!expectedById.has(entry.block_id), `duplicate roster package: ${entry.block_id}`);
+    expectedById.set(entry.block_id, entry);
+  }
+
+  const discoveredById = new Map();
+  for (const record of records) {
+    requireRecord(record, "discovered specialist record");
+    requireRecord(record.block, "discovered specialist record block");
+    const block = record.block;
+    requireString(block.block_id, "discovered specialist block_id");
+    assert(!discoveredById.has(block.block_id), `duplicate discovered package: ${block.block_id}`);
+    discoveredById.set(block.block_id, record);
+  }
+
+  const missing = [...expectedById.keys()].filter((blockId) => !discoveredById.has(blockId)).sort();
+  assert(missing.length === 0, `missing package coverage: ${missing.join(", ")}`);
+  const extra = [...discoveredById.keys()].filter((blockId) => !expectedById.has(blockId)).sort();
+  assert(extra.length === 0, `extra discovered package: ${extra.join(", ")}`);
+
+  for (const [blockId, expected] of expectedById) {
+    const actual = discoveredById.get(blockId).block;
+    assert(actual.role_kind === expected.role_kind, `${blockId} roster role_kind mismatch`);
+    assert(actual.revision === expected.revision, `${blockId} roster revision mismatch`);
+    if (!allowDigestDrift) assert(actual.block_sha256 === expected.candidate_digest, `${blockId} roster candidate digest mismatch`);
+  }
+  return {expected_count: expectedById.size, discovered_count: discoveredById.size};
+}
+
 export function compileSpecialistLibrary({repositoryRoot = process.cwd(), writeGenerated = false} = {}) {
   const libraryRoot = path.join(repositoryRoot, "specialist-blocks");
+  const expectedRoster = readJson(path.join(libraryRoot, "registry", "roster.v1.json"), "specialist roster authority");
   const packagePaths = packageDirectories(libraryRoot);
   const records = [];
   for (const packageDir of packagePaths) {
@@ -555,6 +608,7 @@ export function compileSpecialistLibrary({repositoryRoot = process.cwd(), writeG
     ids.add(record.block.block_id);
     if (record.block.role_kind === "ATOMIC_SPECIALIST") assert(record.block.required_upstream_router, `${record.block.block_id} atomic block lacks upstream router`);
   }
+  validateRosterPackageCoverage({expectedRoster, records, allowDigestDrift: writeGenerated});
   const roster = compileRoster(records);
   const routing = compileRoutingIndex(records);
   const rawInventory = readJson(path.join(libraryRoot, "registry", "master-inventory.v1.json"), "master inventory");

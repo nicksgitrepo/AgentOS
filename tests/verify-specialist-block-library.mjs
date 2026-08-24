@@ -11,6 +11,7 @@ import {
   canonicalDigest,
   compileSpecialistLibrary,
   evaluateGateAnswer,
+  validateRosterPackageCoverage,
 } from "../control/specialist-block-compiler.mjs";
 import {
   loadSpecialistLibrary,
@@ -32,6 +33,30 @@ assert.equal(first.records.length, 123, "foundation, reusable standard, P0, P1, 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
 const materialized = (value) => JSON.parse(JSON.stringify(value));
+const missingPackageRecords = first.records.slice(0, -1);
+assert.throws(
+  () => validateRosterPackageCoverage({expectedRoster: first.roster, records: missingPackageRecords}),
+  /missing package coverage/u,
+  "removing a roster-bound package must fail closed",
+);
+const missingRosterEntry = materialized(first.roster);
+missingRosterEntry.blocks.pop();
+assert.throws(
+  () => validateRosterPackageCoverage({expectedRoster: missingRosterEntry, records: first.records}),
+  /extra discovered package/u,
+  "an unmanifested discovered package must fail closed",
+);
+const tamperedRosterDigest = materialized(first.roster);
+tamperedRosterDigest.blocks[0].candidate_digest = "0".repeat(64);
+assert.throws(
+  () => validateRosterPackageCoverage({expectedRoster: tamperedRosterDigest, records: first.records}),
+  /roster candidate digest mismatch/u,
+  "a candidate digest mismatch must fail closed outside governed regeneration",
+);
+assert.doesNotThrow(
+  () => validateRosterPackageCoverage({expectedRoster: tamperedRosterDigest, records: first.records, allowDigestDrift: true}),
+  "governed regeneration may refresh an existing package digest without changing roster identity",
+);
 assert.deepEqual(validateSpecialistContextContract({contextSchema: library.contextSchema, routing: library.routing}), library.contextContract, "specialist context schema/routing contract is not deterministic");
 assert.equal(library.contextContract.required_path_count, 155, "all governed dotted and top-level route context paths must remain catalogued");
 const missingContextPath = structuredClone(library.contextSchema);
