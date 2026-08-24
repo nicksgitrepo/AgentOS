@@ -2388,7 +2388,30 @@
     "memory_contact": false,
     "next_action": "REMAIN_PARKED_UNTIL_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY_IS_AVAILABLE"
   },
-  "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
+    "project_agnostic_public_privacy_binding_reconciliation_2026_08_24": {
+      "record_layer": "PROJECT_AGNOSTIC_PUBLIC_PRIVACY_BINDING_RECONCILIATION",
+      "status": "CURRENT_PUBLIC_ATTESTATION_RECONCILED",
+      "supersedes": "privacy_digest_reconciliation_2026_08_11",
+      "manifest_ref": "PRIVATE_CONTROL_EVIDENCE_MANIFEST",
+      "manifest_raw_sha256": "b6e190eb87634505bf145ff8d456f45f25a113b447935dbf1c41fcc97454357a",
+      "manifest_digest_sha256": "86bbbc76543330341d14dc602a736301d1d516e122d69a0236b0480e8a27fea5",
+      "projection_ref": "docs/privacy-public-projection.v1.json",
+      "projection_digest_sha256": "cdf58d2572efa01874c923c7d1dc45c11d1b7223b7a206c218014178f1787f1a",
+      "manifest_digest_count": 69,
+      "manifest_digests_missing_from_projection": 0,
+      "projection_only_digest_count": 2,
+      "reclassified_current_mapping_count": 39,
+      "historical_mapping_count": 2,
+      "unresolved_count": 0,
+      "mismatch_set_sha256": "fb32700e127d766e50e1ab8a493ee83b3c2b92b57b3814b0c203f21e258124ee",
+      "raw_private_payloads_exported": false,
+      "private_manifest_modified": false,
+      "agentos_control_mutated": false,
+      "activation": "PREPARED_NOT_ACTIVATED",
+      "focused_privacy_proof_status": "PASS",
+      "next_action": "INDEPENDENT_AUDITOR_READ_ONLY_REVIEW"
+    },
+    "authoritative_projection_ref": "platform_pipeline.current_gate_native_receipt_materialization_2026_08_11",
     "alias_merge_justification_ref": "docs/platform-handoffs/pyramid-authority-delta-2026-08-09.md"
   },
   "persistence": {
@@ -2402,5 +2425,5 @@
   },
   "final_pre_host_states": ["PRODUCTION_READY_PENDING_REAL_HOST", "PREPARED_NOT_ACTIVATED"],
   "next_action": "READY_TIMER_STOP_REQUEST_RESTART_ONLY_ON_SERIALIZED_RUNTIME_REAL_HOST_CUSTODY",
-  "state_sha256": "40a2c079c47c20edb937c0a22db2c9ef0c640c3ef28a18f947b1b614ef6a3c2f"
+  "state_sha256": "fbff8e1102af70a6ea48c66ce029d26ae8b1380beb74f1f98181ae59bda86831"
 }

@@ -2204,3 +2204,24 @@ exactly `SERIALIZED_RUNTIME_REAL_HOST_CUSTODY`; the durable next action is to
 remain parked until that custody is genuinely available. Cursors, slots,
 consumption, clearance, and release flags remain unchanged, and Memory was not
 contacted.
+
+## Recovery 60 — project-agnostic public privacy binding reconciliation — 2026-08-24
+
+This append-only public readback supersedes only the stale current privacy-binding
+identity recorded by the earlier reconciliation layer. It consumes the
+privacy-safe attestation projection only: raw and internal manifest digests,
+schema/status, counts, opaque digest-set counts, and public reconciliation
+identity. Private payloads were not read, copied, or exported; AgentOS-control
+was not modified.
+
+- Manifest raw SHA-256: `b6e190eb87634505bf145ff8d456f45f25a113b447935dbf1c41fcc97454357a`.
+- Manifest internal SHA-256: `86bbbc76543330341d14dc602a736301d1d516e122d69a0236b0480e8a27fea5`.
+- Public projection digest: `cdf58d2572efa01874c923c7d1dc45c11d1b7223b7a206c218014178f1787f1a`.
+- Current opaque digest count: `69`; missing from projection: `0`; projection-only historical: `2`;
+  reclassified current provenance rows: `39`; unresolved: `0`.
+- Mismatch-set SHA-256: `fb32700e127d766e50e1ab8a493ee83b3c2b92b57b3814b0c203f21e258124ee`.
+- Status remains `PREPARED_NOT_ACTIVATED`; focused public privacy proof is `PASS`.
+
+The historical mapping remains preserved in the prior record, while the current
+successor binds the exact public projection and reconciliation bytes for
+independent read-only review.

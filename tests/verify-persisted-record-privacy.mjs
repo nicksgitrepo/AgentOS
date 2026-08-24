@@ -92,6 +92,39 @@ function scanRecords() {
     assert(entry.historical_origin?.commit);
   }
 
+  const integrationState = JSON.parse(fs.readFileSync(path.join(root, "docs/audit-repair-integration-state.v1.json"), "utf8"));
+  const currentBinding = integrationState.platform_pipeline?.project_agnostic_public_privacy_binding_reconciliation_2026_08_24;
+  assert(currentBinding, "current project-agnostic public privacy binding is missing");
+  assert.equal(currentBinding.status, "CURRENT_PUBLIC_ATTESTATION_RECONCILED");
+  assert.equal(currentBinding.manifest_ref, reconciliation.manifest_binding.ref);
+  assert.equal(currentBinding.manifest_raw_sha256, reconciliation.manifest_binding.raw_sha256);
+  assert.equal(currentBinding.manifest_digest_sha256, reconciliation.manifest_binding.digest_sha256);
+  assert.equal(currentBinding.projection_ref, reconciliation.projection_binding.ref);
+  assert.equal(currentBinding.projection_digest_sha256, reconciliation.projection_binding.digest_sha256);
+  assert.equal(currentBinding.manifest_digest_count, reconciliation.counts.manifest_digest_count);
+  assert.equal(currentBinding.manifest_digests_missing_from_projection, reconciliation.counts.manifest_digests_missing_from_projection);
+  assert.equal(currentBinding.projection_only_digest_count, reconciliation.counts.projection_only_digest_count);
+  assert.equal(currentBinding.unresolved_count, reconciliation.counts.unresolved_count);
+  assert.equal(currentBinding.mismatch_set_sha256, reconciliation.mismatch_set_sha256);
+  assert.equal(currentBinding.reclassified_current_mapping_count, reconciliation.reclassified_current_mappings.length);
+  assert.equal(currentBinding.historical_mapping_count, reconciliation.mapping.length);
+  assert.equal(currentBinding.raw_private_payloads_exported, false);
+  assert.equal(currentBinding.private_manifest_modified, false);
+  assert.equal(currentBinding.agentos_control_mutated, false);
+  assert.equal(currentBinding.activation, "PREPARED_NOT_ACTIVATED");
+  assert.equal(currentBinding.focused_privacy_proof_status, "PASS");
+
+  const currentStateText = fs.readFileSync(path.join(root, "docs/orchestrator-current-state.md"), "utf8");
+  const currentStateMarker = "## Recovery 60 — project-agnostic public privacy binding reconciliation — 2026-08-24";
+  assert(currentStateText.includes(currentStateMarker), "current public privacy readback marker is missing");
+  for (const value of [
+    reconciliation.manifest_binding.raw_sha256,
+    reconciliation.manifest_binding.digest_sha256,
+    reconciliation.projection_binding.digest_sha256,
+    reconciliation.mismatch_set_sha256,
+  ]) assert(currentStateText.includes(value), `current public privacy readback is missing ${value}`);
+  assert(currentStateText.includes("Private payloads were not read, copied, or exported"), "current public privacy readback weakens the payload boundary");
+
   const privateManifestPath = path.join(controlRoot, "handoffs/privacy-public-projection-2026-08-11.json");
   let privateManifestMode = "PUBLIC_ATTESTATION_ONLY";
   let manifestDigests = new Set(privateDigests);
