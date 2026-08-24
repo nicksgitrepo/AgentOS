@@ -43,6 +43,19 @@ for (const route of library.routing.routes) {
   assert.equal(route.route_id, `route.${route.select[0].slice("specialist.".length)}`, `${route.route_id} is not bound to its selected canonical block`);
 }
 assert.equal(taskCompilerCatalog.length, 123, "task-shaped compiler catalog must load every compiled candidate package");
+const catalogById = new Map(taskCompilerCatalog.map((block) => [block.block_id, block]));
+assert.equal(catalogById.size, taskCompilerCatalog.length, "task-shaped compiler catalog contains duplicate block identities");
+for (const {block} of first.records) {
+  const catalogBlock = catalogById.get(block.block_id);
+  assert(catalogBlock, `${block.block_id} is missing from the task-shaped compiler catalog`);
+  assert.equal(catalogBlock.hash, block.block_sha256, `${block.block_id} catalog hash is detached from the package`);
+  assert.equal(catalogBlock.version, block.revision, `${block.block_id} catalog version is detached from the package`);
+  assert.equal(catalogBlock.role_kind, block.role_kind, `${block.block_id} catalog role is detached from the package`);
+  assert.deepEqual(catalogBlock.dependencies, block.dependencies, `${block.block_id} catalog dependencies are stale`);
+  assert.deepEqual(catalogBlock.required_upstream_router ?? null, block.required_upstream_router ?? null, `${block.block_id} catalog upstream-router binding is stale`);
+  assert.deepEqual(catalogBlock.sibling_conflicts ?? [], block.sibling_conflicts ?? [], `${block.block_id} catalog sibling-conflict binding is stale`);
+  assert.deepEqual(catalogBlock.gate_ids, block.gate_pack.ordered_gate_ids, `${block.block_id} catalog gate binding is stale`);
+}
 assert.equal(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
 assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.aws-iam-current", "specialist.standard.cloudflare-cache-current", "specialist.standard.cloudflare-dns-current", "specialist.standard.conventional-commits-1-0-0", "specialist.standard.fmcsa-part-390-2025", "specialist.standard.gao-green-book-2025", "specialist.standard.gltf-2-0-1", "specialist.standard.nist-ai-rmf-1-0", "specialist.standard.nist-genai-profile-1-0", "specialist.standard.nist-ssdf", "specialist.standard.oauth-rfc-9700", "specialist.standard.oidc-core-1-0", "specialist.standard.openapi-3-1-1", "specialist.standard.owasp-api-top10-2023", "specialist.standard.owasp-asvs", "specialist.standard.owasp-top10-2025", "specialist.standard.postgresql-17-rls", "specialist.standard.react-19-2", "specialist.standard.rust-reference", "specialist.standard.semantic-versioning-2-0-0", "specialist.standard.slsa", "specialist.standard.typescript-5-9", "specialist.standard.wcag-2-2"]);
 assert(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").every((block) => block.standard_identity && /^[0-9a-f]{64}$/u.test(block.source_lock_digest)), "loaded standard blocks must retain exact reuse and source-lock identities");
