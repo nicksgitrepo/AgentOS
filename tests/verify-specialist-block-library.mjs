@@ -137,6 +137,54 @@ for (const route of routableRoutes) {
   assert(hostile.status === "UNKNOWN" || hostile.status === "NO_MATCH", `${route.route_id} did not fail closed for a typed hostile context`);
 }
 
+const setContextPath = (context, dottedPath, value) => {
+  const parts = dottedPath.split(".");
+  let cursor = context;
+  for (const part of parts.slice(0, -1)) {
+    if (!cursor[part] || typeof cursor[part] !== "object" || Array.isArray(cursor[part])) cursor[part] = {};
+    cursor = cursor[part];
+  }
+  cursor[parts.at(-1)] = value;
+};
+const predicateHostileContext = (route, predicate) => {
+  const context = contextForRoute(route);
+  const normalized = predicate.toLowerCase();
+  if (normalized.includes("ambiguous")) {
+    for (const key of ["authority", "candidate_identity", "resource_identity", "runtime", "rollback_target", "setup"]) setContextPath(context, `${key}.status`, "ambiguous");
+  }
+  if (/(?:missing|absent|unbound)/u.test(normalized)) {
+    for (const key of ["artifact_identity", "provenance", "authority", "custody", "lifecycle", "rollback_target", "jurisdiction", "entity", "activity", "data", "publisher", "version", "effective", "identity"]) setContextPath(context, `${key}.status`, "missing");
+  }
+  if (/(?:stale|superseded|unverifiable|conflict)/u.test(normalized)) {
+    setContextPath(context, "source.status", "stale");
+    setContextPath(context, "evidence.status", "conflicting");
+  }
+  if (normalized.includes("unresolved")) {
+    for (const key of ["jurisdiction", "platform", "provider", "standard", "version"]) setContextPath(context, `${key}.status`, "unresolved");
+  }
+  if (/(?:unsafe|write|deploy|publish|migrate|runtime side effect|execution|activation|adoption|credential|provider identity)/u.test(normalized)) {
+    context.unsafe_action = true;
+    setContextPath(context, "action.status", "unsafe");
+    context.requested_action = "deploy, publish, migrate, and external-state write";
+  }
+  if (normalized.includes("self-acceptance")) context.requested_action = "self-acceptance or activation request";
+  if (normalized.includes("certification")) context.requested_action = "certification request";
+  if (normalized.includes("chat-only")) context.assertion = "chat-only assertion presented as authority";
+  if (normalized.includes("unsupported tool")) context.tool_access = "unsupported tool or data access";
+  if (normalized.includes("scope expansion")) {
+    context.scope_expansion = true;
+    setContextPath(context, "scope.status", "expanded");
+  }
+  return context;
+};
+for (const route of routableRoutes) {
+  for (const predicate of route.deny_if) {
+    const hostile = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context: predicateHostileContext(route, predicate)});
+    assert.notEqual(hostile.status, "ROUTE", `${route.route_id} bypassed deny predicate: ${predicate}`);
+    assert.equal(hostile.selected.length, 0, `${route.route_id} selected a specialist for deny predicate: ${predicate}`);
+  }
+}
+
 const removeContextPath = (context, dottedPath) => {
   const copy = structuredClone(context);
   const parts = dottedPath.split(".");

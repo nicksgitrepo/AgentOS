@@ -77,8 +77,8 @@ function contextHas(context, key) {
 }
 
 const FALSE_DENY_VALUES = new Set(["", "false", "no", "none", "null", "undefined", "bound", "declared", "fresh", "valid", "pass", "safe"]);
-const STATUS_DENY_VALUES = /\b(?:absent|ambiguous|conflict|denied|expired|forbidden|invalid|missing|pending|stale|superseded|unresolved|unsafe|unverifiable)\b/iu;
-const ACTION_DENY_VALUES = /\b(?:activate|admit|adoption|credential|deploy|execute|external[-_ ]state|migrate|production|publish|secret|side[-_ ]effect|write)\b/iu;
+const STATUS_DENY_VALUES = /\b(?:absent|ambiguous|conflict(?:ing)?|denied|expired|expanded|forbidden|invalid|missing|pending|stale|superseded|unresolved|unsafe|unverifiable)\b/iu;
+const ACTION_DENY_VALUES = /\b(?:accept(?:ance)?|activate|admit|adoption|credential|deploy|execute|external[-_ ]state|migrate|production|publish|secret|self[-_ ]accept(?:ance)?|side[-_ ]effect|write)\b/iu;
 
 function normalizeDenyPath(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9]+/gu, "_").replace(/^_+|_+$/gu, "");
@@ -145,16 +145,23 @@ function contextHasDenyPredicate(context, predicate) {
   }
 
   const actionValues = flattened
-    .filter(([path]) => /(?:^|_)(?:action|request|requested_action|operation|intent)(?:$|_)/u.test(normalizeDenyPath(path)))
+    .filter(([path]) => /(?:^|_)(?:action|request|requested_action|operation|intent|assertion|claim|chat|tool|access|data|scope)(?:$|_)/u.test(normalizeDenyPath(path)))
     .map(([, value]) => String(value));
   if (/(?:unsafe|write|deploy|publish|migrate|runtime|execution|activation|adoption|external_state|side_effect|credential|provider_identity)/u.test(normalized) && actionValues.some((value) => ACTION_DENY_VALUES.test(value))) return true;
 
   const statusValues = flattened
-    .filter(([path]) => /(?:authority|custody|source|lock|jurisdiction|platform|provider|standard|version|scope|evidence)/u.test(normalizeDenyPath(path)))
+    .filter(([path]) => /(?:authority|custody|source|lock|jurisdiction|platform|provider|standard|version|scope|evidence|lifecycle|artifact|provenance|rollback|runtime|candidate|resource|setup|publisher|effective|identity|entity|activity)/u.test(normalizeDenyPath(path)))
     .map(([, value]) => String(value));
+  if (normalized.includes("ambiguous") && flattened.some(([, value]) => STATUS_DENY_VALUES.test(String(value)))) return true;
   if (/(?:stale|superseded|unverifiable|conflicting|conflict)/u.test(normalized) && statusValues.some((value) => STATUS_DENY_VALUES.test(value))) return true;
   if (normalized.includes("unresolved") && statusValues.some((value) => /\b(?:unresolved|unknown|pending|missing|ambiguous)\b/iu.test(value))) return true;
   if (normalized.includes("missing") && statusValues.some((value) => /\b(?:missing|absent|unbound|invalid)\b/iu.test(value))) return true;
+  if (/(?:missing|absent|unbound)/u.test(normalized) && statusValues.some((value) => /\b(?:missing|absent|unbound|invalid)\b/iu.test(value))) return true;
+  if (normalized.includes("applicability") && flattened.some(([path, value]) => /applicability/u.test(normalizeDenyPath(path)) && /\b(?:missing|absent|unbound|invalid)\b/iu.test(String(value)))) return true;
+  if (normalized.includes("unsafe") && flattened.some(([path, value]) => /(?:action|request|status|scope|operation|intent)/u.test(normalizeDenyPath(path)) && STATUS_DENY_VALUES.test(String(value)))) return true;
+  if (normalized.includes("provider_identity") && flattened.some(([path, value]) => /(?:provider|identity|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && ACTION_DENY_VALUES.test(String(value)))) return true;
+  if (normalized.includes("self_acceptance") && flattened.some(([path, value]) => /(?:self|accept|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && ACTION_DENY_VALUES.test(String(value)))) return true;
+  if (normalized.includes("scope_expansion") && flattened.some(([path, value]) => /(?:scope|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && /\b(?:expanded|expansion|broadened|broaden)\b/iu.test(String(value)))) return true;
   if (normalized.includes("certification") && actionValues.some((value) => /\b(?:certif|legal|attest)\w*/iu.test(value))) return true;
   if (normalized.includes("chat_only") && actionValues.some((value) => /\b(?:chat|assertion|claimed)\w*/iu.test(value))) return true;
   if (normalized.includes("unsupported_tool") && actionValues.some((value) => /\b(?:tool|data|access)\w*/iu.test(value))) return true;
