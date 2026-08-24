@@ -108,12 +108,8 @@ const removeContextPath = (context, dottedPath) => {
   return copy;
 };
 
-const controlIds = [
-  "specialist.control.intent-regulator",
-  "specialist.control.project-controller",
-  "specialist.control.resource-scheduler",
-  "specialist.control.runtime-deployment-operator",
-];
+const controlIds = first.records.filter((record) => record.block.role_kind === "CONTROL_PLANE").map((record) => record.block.block_id).sort();
+assert.equal(controlIds.length, 16, "the complete control-plane roster must remain covered");
 for (const blockId of controlIds) {
   const block = first.records.find((record) => record.block.block_id === blockId)?.block;
   assert(block, `${blockId} is missing from the compiled candidate library`);
