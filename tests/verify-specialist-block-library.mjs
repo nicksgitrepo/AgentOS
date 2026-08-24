@@ -75,6 +75,27 @@ for (const record of first.records) {
   }
 }
 
+const contextForRoute = (route) => {
+  const context = {};
+  for (const key of route.required_context) {
+    const parts = key.split(".");
+    let cursor = context;
+    for (let index = 0; index < parts.length - 1; index += 1) {
+      if (!cursor[parts[index]] || typeof cursor[parts[index]] !== "object") cursor[parts[index]] = {};
+      cursor = cursor[parts[index]];
+    }
+    cursor[parts.at(-1)] = "declared";
+  }
+  return context;
+};
+const routableRoutes = first.routing.routes.filter((route) => route.role_kind !== "STANDARD_BLOCK");
+assert.equal(routableRoutes.length, 100, "all non-standard roster routes must remain runtime-routable");
+for (const route of routableRoutes) {
+  const result = routeSpecialists({library, signals: route.signals, context: contextForRoute(route)});
+  assert.equal(result.status, "ROUTE", `${route.route_id} does not produce a deterministic route with complete context`);
+  assert(result.selected.length > 0, `${route.route_id} selected no candidate block`);
+}
+
 const gate = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/foundation/role-intake-classifier/gates/00-intake.gate"), "utf8"));
 const evidence = Object.fromEntries(gate.evidence.map((key) => [key, {present: true}]));
 assert.deepEqual(evaluateGateAnswer(gate, "YES", evidence), {outcome: "YES", dependent_action: "ADVANCES", unrelated_work: "CONTINUES"});
