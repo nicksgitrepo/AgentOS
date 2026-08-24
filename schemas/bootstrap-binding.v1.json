@@ -2354,7 +2354,7 @@
     },
     "existing_task_stop_resume_controller": {
       "path": "control/existing-task-stop-resume.mjs",
-      "sha256": "08f38f04a90d65c6f4886b67f21e7d813e8d57f319fadbf71af81649136338ef"
+      "sha256": "51dcb968d0e154d8a02299a07650889b8c4f4d03a3fb3101eb4264726b4f0653"
     },
     "existing_task_stop_resume_contract": {
       "path": "schemas/existing-task-stop-resume.v1.json",
@@ -2362,7 +2362,7 @@
     },
     "existing_task_stop_resume_verifier": {
       "path": "tests/verify-existing-task-stop-resume.mjs",
-      "sha256": "0f2cf76c7977f5f2ee243c685d096d6640fb086e35bcfa1336e5ca37a0505fa9"
+      "sha256": "e6a8d932fd0577c9dc1448237f15a36ff84e99f9c8acf490b3a6594bfa1d7443"
     }
   },
   "compatibility_only": {
