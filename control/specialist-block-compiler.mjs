@@ -175,6 +175,7 @@ export function validateSpecialistBlock(block) {
   assert(/^P[0-6]$/u.test(block.priority), `${block.block_id} priority is invalid`);
   validateAtomicity(block);
   requireString(block.title, `${block.block_id} title`);
+  requireString(block.family, `${block.block_id} family`);
   assert(["PLANNED", "RESEARCHING", "CANDIDATE", "EVALUATED", "ADMITTED", "DEPRECATED", "NOT_APPLICABLE", "SUSPENDED", "ARCHIVED"].includes(block.lifecycle), `${block.block_id} lifecycle is invalid`);
   assert(block.lifecycle !== "ADMITTED", `${block.block_id} cannot be self-admitted`);
   assert(block.activation === "OFF", `${block.block_id} activation must be OFF`);

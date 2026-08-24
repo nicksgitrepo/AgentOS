@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P2",
   "role_kind": "ROUTER",
+  "family": "privacy",
   "title": "Privacy Data-Lifecycle Router",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -301,5 +302,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "d0e50ede1c5cd69df8944efb7a0fa4356ee878ab7ea22966ea20f656c17778cd"
+  "block_sha256": "a5d075145fcbddeeeefdf48ea38e98c3f7ba72a0948e340ef1b8c5430cedd1b8"
 }

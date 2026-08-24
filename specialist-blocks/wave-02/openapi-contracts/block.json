@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "product-client",
   "title": "OpenAPI HTTP Contract",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -300,5 +301,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "171b4e51575523b9f16e52dad3092b522d3fcd00c1fcd3ac4d27cebc9b55a43c"
+  "block_sha256": "59ad17dd92d24c71715896fa905807a2b7cee9c27070570f6e29d01d9b4317fe"
 }

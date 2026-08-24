@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "software-language-runtime",
   "title": "React Component Runtime",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -298,5 +299,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d"
+  "block_sha256": "ca4020e141fb1a91a2e38692ed2abecc527ea6c32cfd9680dfcc53dc2acd1ddc"
 }

@@ -848,7 +848,7 @@
     },
     {
       "block_id": "specialist.data.postgresql-rls",
-      "candidate_digest": "d5816aeaed7eb621cd7d125e0b8c2aeca296193e4f6702b36492b74c94cf4082",
+      "candidate_digest": "5ca783a11f62c4619357f760a3264f3234382fec3004515bcd895270fcc05c4f",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: PostgreSQL Row-Level Security; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -882,6 +882,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "data",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -1852,7 +1853,7 @@
     },
     {
       "block_id": "specialist.platform.aws-iam-policy",
-      "candidate_digest": "2eab811660cfb09d74b3bbb3607dc251d5264b044422c47674edf65b6ded9016",
+      "candidate_digest": "4183a94c2427d310e90d95198e5e58e9d5a555669452ff9ebac7fbe6d295e48b",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: AWS IAM Policy Elements; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1886,6 +1887,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "platform",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -1910,7 +1912,7 @@
     },
     {
       "block_id": "specialist.platform.cloudflare-cache",
-      "candidate_digest": "f9e5bdccb6c797add9816b0b398a8aeb5622ea2a07a0af6e8f1e357d750f3981",
+      "candidate_digest": "13706a8fef5834013ba68b5f53f364089d8e322d436b0867b64057e1ca56a990",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare Cache Rules; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -1944,6 +1946,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "platform",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -1968,7 +1971,7 @@
     },
     {
       "block_id": "specialist.platform.cloudflare-dns",
-      "candidate_digest": "1a3bffa788c03d2ee2d20796bc59f0ede08688a321e0b6078d30b3af62cc8298",
+      "candidate_digest": "1f053688b0b298a7d2d10b9ab21877ddcd13cd2b59104f5b51dba26eebbf1668",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Cloudflare DNS Records; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -2002,6 +2005,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "platform",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -2079,7 +2083,7 @@
     },
     {
       "block_id": "specialist.privacy.data-lifecycle-router",
-      "candidate_digest": "d0e50ede1c5cd69df8944efb7a0fa4356ee878ab7ea22966ea20f656c17778cd",
+      "candidate_digest": "a5d075145fcbddeeeefdf48ea38e98c3f7ba72a0948e340ef1b8c5430cedd1b8",
       "role_kind": "ROUTER",
       "atomic_scope_statement": "Router-only classification for Privacy Data-Lifecycle Router; it has no downstream Product or acceptance authority.",
       "permitted_decisions": [
@@ -2112,6 +2116,7 @@
         "tool or data custody differs"
       ],
       "priority": "P2",
+      "family": "privacy",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -2372,7 +2377,7 @@
     },
     {
       "block_id": "specialist.product-client.openapi-contracts",
-      "candidate_digest": "171b4e51575523b9f16e52dad3092b522d3fcd00c1fcd3ac4d27cebc9b55a43c",
+      "candidate_digest": "59ad17dd92d24c71715896fa905807a2b7cee9c27070570f6e29d01d9b4317fe",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: OpenAPI HTTP Contract; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -2406,6 +2411,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "product-client",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -2778,7 +2784,7 @@
     },
     {
       "block_id": "specialist.security.access-control-router",
-      "candidate_digest": "d7851c72442d92487fa415521e5b2798892b560353bcf4c6f215a43ce0cb0f14",
+      "candidate_digest": "10528f260c53578f36e252c41496291331a384985a24bef50506c0bc56c94d63",
       "role_kind": "ROUTER",
       "atomic_scope_statement": "Router-only classification for Access-Control Composition Router; it has no downstream Product or acceptance authority.",
       "permitted_decisions": [
@@ -2811,6 +2817,7 @@
         "tool or data custody differs"
       ],
       "priority": "P2",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -3368,7 +3375,7 @@
     },
     {
       "block_id": "specialist.security.oauth-identity",
-      "candidate_digest": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8",
+      "candidate_digest": "8be252b9926a82f78f5449bd632687b0e58477dd6a1a44ad804d4da29c2ac993",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: OAuth Security Identity Flow; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -3402,6 +3409,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -3485,7 +3493,7 @@
     },
     {
       "block_id": "specialist.security.oidc-core",
-      "candidate_digest": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66",
+      "candidate_digest": "ce5280f65cf33fbb8e0cf4b050d8db85209cfe84fa3dca2d3ed9462c376977ce",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: OpenID Connect Core Claims; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -3519,6 +3527,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -4143,7 +4152,7 @@
     },
     {
       "block_id": "specialist.security.owasp-api-top10-router",
-      "candidate_digest": "b0298acf1d545ac342bba74238c44717d8079daa28df98f2038daf58d2e9854e",
+      "candidate_digest": "e5754c93f28ff28c4a46b55b1628c6013f5e0089e335fb7f262a2fc7f428f167",
       "role_kind": "ROUTER",
       "atomic_scope_statement": "Router-only classification for OWASP API Security Top 10 Router; it has no downstream Product or acceptance authority.",
       "permitted_decisions": [
@@ -4176,6 +4185,7 @@
         "tool or data custody differs"
       ],
       "priority": "P2",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -4199,7 +4209,7 @@
     },
     {
       "block_id": "specialist.security.owasp-asvs-router",
-      "candidate_digest": "c0b6c5eb1527dad9160f11d850d087b9675ed171d0ef43dd1216525e8ab2bee0",
+      "candidate_digest": "206cbb4e66ed9adb04dff06bdc9178c6259c3b001e9aeadf5418f7d115752133",
       "role_kind": "ROUTER",
       "atomic_scope_statement": "Router-only classification for OWASP ASVS Applicability Router; it has no downstream Product or acceptance authority.",
       "permitted_decisions": [
@@ -4232,6 +4242,7 @@
         "tool or data custody differs"
       ],
       "priority": "P2",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -4855,7 +4866,7 @@
     },
     {
       "block_id": "specialist.security.owasp-web-top10-router",
-      "candidate_digest": "05ac786b3ff0afaf15610c45b7e673571ae0b5b3eaf867b3779768a81065bbfd",
+      "candidate_digest": "4f13d6dd1eda00c65ef4bbb4997795e5a8555c212a6a82a350adcb2b51cdc109",
       "role_kind": "ROUTER",
       "atomic_scope_statement": "Router-only classification for OWASP Web Top 10 Router; it has no downstream Product or acceptance authority.",
       "permitted_decisions": [
@@ -4888,6 +4899,7 @@
         "tool or data custody differs"
       ],
       "priority": "P2",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -5439,7 +5451,7 @@
     },
     {
       "block_id": "specialist.security.supply-chain-router",
-      "candidate_digest": "e729612259b84f39712f6fffa782cb309f1e539177f4922522301fe093c02f70",
+      "candidate_digest": "8f5d408405db7818f6622d9337ac3eaac165fb7eede51803cb3d21deb941a22f",
       "role_kind": "ROUTER",
       "atomic_scope_statement": "Router-only classification for Secrets, Cryptography, and Supply-Chain Router; it has no downstream Product or acceptance authority.",
       "permitted_decisions": [
@@ -5472,6 +5484,7 @@
         "tool or data custody differs"
       ],
       "priority": "P2",
+      "family": "security",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -5613,7 +5626,7 @@
     },
     {
       "block_id": "specialist.software-language-runtime.react-components",
-      "candidate_digest": "f31d94a7744a50483d8c5649909505a3081dca2c1c25f445b9e8cb1c15e48c5d",
+      "candidate_digest": "ca4020e141fb1a91a2e38692ed2abecc527ea6c32cfd9680dfcc53dc2acd1ddc",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: React Component Runtime; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -5647,6 +5660,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "software-language-runtime",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -5724,7 +5738,7 @@
     },
     {
       "block_id": "specialist.software-language-runtime.rust-backend",
-      "candidate_digest": "a52204f7a2a7e00ce5f7ca5120333a4d3d7ea2956194bdf03eea32d96199d877",
+      "candidate_digest": "61d1d44edda3844e9b2ec407a9de9969a0cd355c49c094ae092c689bd33a05ec",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: Rust Backend Language Semantics; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -5758,6 +5772,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "software-language-runtime",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -5782,7 +5797,7 @@
     },
     {
       "block_id": "specialist.software-language-runtime.typescript-language",
-      "candidate_digest": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5",
+      "candidate_digest": "58c635f8416065e5aeb112d1fa0ac02654f3e4b172df1a7452fdfb65830f2a36",
       "role_kind": "ATOMIC_SPECIALIST",
       "atomic_scope_statement": "One narrow atomic evidence domain: TypeScript Language and Compiler Semantics; unrelated failure modes require sibling blocks.",
       "permitted_decisions": [
@@ -5816,6 +5831,7 @@
         "tool or data custody differs"
       ],
       "priority": "P1",
+      "family": "software-language-runtime",
       "revision": "1.0.0",
       "status": "CANDIDATE",
       "primary_sources": [
@@ -7107,5 +7123,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08"
+  "roster_sha256": "eec86e63558641b59a3416ead4395b29686a4297972f7578c638b9af9561ffb8"
 }

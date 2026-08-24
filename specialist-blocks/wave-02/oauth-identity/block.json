@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "security",
   "title": "OAuth Security Identity Flow",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -302,5 +303,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "8a77124dfd9b34ef96a0b2087e03ecbe4e5cb72f1f0ca714fd32d24105868aa8"
+  "block_sha256": "8be252b9926a82f78f5449bd632687b0e58477dd6a1a44ad804d4da29c2ac993"
 }

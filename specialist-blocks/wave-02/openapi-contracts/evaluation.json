@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.openapi-contracts.v1",
   "block_id": "specialist.product-client.openapi-contracts",
-  "candidate_digest": "171b4e51575523b9f16e52dad3092b522d3fcd00c1fcd3ac4d27cebc9b55a43c",
+  "candidate_digest": "59ad17dd92d24c71715896fa905807a2b7cee9c27070570f6e29d01d9b4317fe",
   "model_requirement": "gpt-5.6-luna/max",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [

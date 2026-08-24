@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P2",
   "role_kind": "ROUTER",
+  "family": "security",
   "title": "OWASP ASVS Applicability Router",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -298,5 +299,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "c0b6c5eb1527dad9160f11d850d087b9675ed171d0ef43dd1216525e8ab2bee0"
+  "block_sha256": "206cbb4e66ed9adb04dff06bdc9178c6259c3b001e9aeadf5418f7d115752133"
 }

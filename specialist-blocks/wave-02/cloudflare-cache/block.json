@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "platform",
   "title": "Cloudflare Cache Rules",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -300,5 +301,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "f9e5bdccb6c797add9816b0b398a8aeb5622ea2a07a0af6e8f1e357d750f3981"
+  "block_sha256": "13706a8fef5834013ba68b5f53f364089d8e322d436b0867b64057e1ca56a990"
 }

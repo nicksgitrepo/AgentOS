@@ -3,7 +3,7 @@
   "version": 1,
   "receipt_id": "specialist-eval.oidc-core.v1",
   "block_id": "specialist.security.oidc-core",
-  "candidate_digest": "1b1486c78dede2e12cdaaff93121adfe1ce52607241234affb4bd53ed5508d66",
+  "candidate_digest": "ce5280f65cf33fbb8e0cf4b050d8db85209cfe84fa3dca2d3ed9462c376977ce",
   "model_requirement": "gpt-5.6-luna/max",
   "harness": "deterministic-static-atomic-p1-harness.v1",
   "cases": [

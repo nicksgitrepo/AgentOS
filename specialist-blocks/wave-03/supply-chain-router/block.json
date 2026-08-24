@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P2",
   "role_kind": "ROUTER",
+  "family": "security",
   "title": "Secrets, Cryptography, and Supply-Chain Router",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -300,5 +301,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "e729612259b84f39712f6fffa782cb309f1e539177f4922522301fe093c02f70"
+  "block_sha256": "8f5d408405db7818f6622d9337ac3eaac165fb7eede51803cb3d21deb941a22f"
 }

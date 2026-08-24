@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P2",
   "role_kind": "ROUTER",
+  "family": "security",
   "title": "OWASP API Security Top 10 Router",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -300,5 +301,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "b0298acf1d545ac342bba74238c44717d8079daa28df98f2038daf58d2e9854e"
+  "block_sha256": "e5754c93f28ff28c4a46b55b1628c6013f5e0089e335fb7f262a2fc7f428f167"
 }

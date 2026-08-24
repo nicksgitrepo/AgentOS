@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P2",
   "role_kind": "ROUTER",
+  "family": "security",
   "title": "OWASP Web Top 10 Router",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -300,5 +301,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "05ac786b3ff0afaf15610c45b7e673571ae0b5b3eaf867b3779768a81065bbfd"
+  "block_sha256": "4f13d6dd1eda00c65ef4bbb4997795e5a8555c212a6a82a350adcb2b51cdc109"
 }

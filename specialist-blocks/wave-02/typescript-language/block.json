@@ -5,6 +5,7 @@
   "revision": "1.0.0",
   "priority": "P1",
   "role_kind": "ATOMIC_SPECIALIST",
+  "family": "software-language-runtime",
   "title": "TypeScript Language and Compiler Semantics",
   "lifecycle": "CANDIDATE",
   "activation": "OFF",
@@ -298,5 +299,5 @@
     "edition_rule": "A material source, version, authority, or gate correction creates a new immutable revision and compatibility/supersession receipt.",
     "freshness_rule": "A non-material publisher refresh creates a freshness receipt only; it does not copy or fork this block."
   },
-  "block_sha256": "60847e4256b25b9ae19b30e384f76297de66b0d9b57ad466a7c07ab0b84f6ca5"
+  "block_sha256": "58c635f8416065e5aeb112d1fa0ac02654f3e4b172df1a7452fdfb65830f2a36"
 }

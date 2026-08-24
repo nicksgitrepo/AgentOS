@@ -70,6 +70,8 @@ for (const row of roster.blocks) {
   assert.equal(block.block_id, row.block_id, `${row.block_id} block identity`);
   assert.equal(block.block_sha256, row.candidate_digest, `${row.block_id} block digest`);
   assert.equal(block.role_kind, row.role_kind, `${row.block_id} role kind`);
+  assert.equal(typeof row.family, "string", `${row.block_id} roster family`);
+  assert.equal(block.family, row.family, `${row.block_id} family parity`);
   assert.equal(block.revision, "1.0.0", `${row.block_id} revision`);
   assert.equal(block.lifecycle, "CANDIDATE", `${row.block_id} lifecycle`);
   assert.equal(block.activation, "OFF", `${row.block_id} activation`);
