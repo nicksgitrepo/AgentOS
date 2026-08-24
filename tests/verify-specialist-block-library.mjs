@@ -96,6 +96,55 @@ for (const route of routableRoutes) {
   assert(result.selected.length > 0, `${route.route_id} selected no candidate block`);
 }
 
+const removeContextPath = (context, dottedPath) => {
+  const copy = structuredClone(context);
+  const parts = dottedPath.split(".");
+  let cursor = copy;
+  for (const part of parts.slice(0, -1)) {
+    if (!cursor || typeof cursor !== "object") return copy;
+    cursor = cursor[part];
+  }
+  if (cursor && typeof cursor === "object") delete cursor[parts.at(-1)];
+  return copy;
+};
+
+const controlIds = [
+  "specialist.control.intent-regulator",
+  "specialist.control.project-controller",
+  "specialist.control.resource-scheduler",
+  "specialist.control.runtime-deployment-operator",
+];
+for (const blockId of controlIds) {
+  const block = first.records.find((record) => record.block.block_id === blockId)?.block;
+  assert(block, `${blockId} is missing from the compiled candidate library`);
+  assert.equal(block.role_kind, "CONTROL_PLANE");
+  assert.equal(block.activation, "OFF");
+  assert.equal(block.lifecycle, "CANDIDATE");
+  assert(String(block.maximum_authority).includes("NO_PRODUCT_WRITE"), `${blockId} lacks the Product-write ceiling`);
+  assert(String(block.maximum_authority).includes("NO_ACTIVATION"), `${blockId} lacks the activation ceiling`);
+  assert(String(block.maximum_authority).includes("NO_SELF_ACCEPTANCE"), `${blockId} lacks the self-acceptance ceiling`);
+  assert.equal(block.controls?.deploy, "DENY", `${blockId} grants deploy capability`);
+  assert.equal(block.controls?.secrets, "DENY", `${blockId} grants secret capability`);
+  assert.equal(block.controls?.acceptance_authority, "INDEPENDENT_AUTHORITY_ONLY", `${blockId} has non-independent acceptance authority`);
+  assert(block.forbidden_decisions.some((decision) => /self[- ]accept|accept or admit|activate or admit/iu.test(decision)), `${blockId} lacks explicit self-admission denial`);
+  assert(block.permitted_decisions.every((decision) => !/\b(?:deploy|publish|execute)\b|write Product|accept or admit|activate or admit/iu.test(decision)), `${blockId} permits an external side effect`);
+}
+
+const controlRoutes = first.routing.routes.filter((route) => route.role_kind === "CONTROL_PLANE");
+const allControlIds = first.records.filter((record) => record.block.role_kind === "CONTROL_PLANE").map((record) => record.block.block_id).sort();
+assert.equal(controlRoutes.length, allControlIds.length, "every control-plane candidate must have one governed route");
+for (const route of controlRoutes) {
+  const completeContext = contextForRoute(route);
+  const complete = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context: completeContext});
+  assert.equal(complete.status, "ROUTE", `${route.route_id} cannot route with its complete typed context`);
+  assert(route.select.every((blockId) => complete.selected.includes(blockId)), `${route.route_id} dropped its declared control-plane candidate`);
+  for (const requiredKey of route.required_context) {
+    const missing = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context: removeContextPath(completeContext, requiredKey)});
+    assert.equal(missing.selected.length, 0, `${route.route_id} routed despite missing ${requiredKey}`);
+    assert(missing.status === "UNKNOWN" || missing.status === "NO_MATCH", `${route.route_id} did not close missing ${requiredKey}`);
+  }
+}
+
 const gate = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/foundation/role-intake-classifier/gates/00-intake.gate"), "utf8"));
 const evidence = Object.fromEntries(gate.evidence.map((key) => [key, {present: true}]));
 assert.deepEqual(evaluateGateAnswer(gate, "YES", evidence), {outcome: "YES", dependent_action: "ADVANCES", unrelated_work: "CONTINUES"});
