@@ -166,22 +166,101 @@ export function validateExistingTaskLifecycle(record) {
   if (record.escalation_reason !== null) requireStable(record.escalation_reason, "lifecycle escalation reason");
   assert(typeof record.old_task_retired === "boolean", "old task retirement flag is invalid");
   assert(isRecord(record.stop) && typeof record.stop.requested === "boolean" && typeof record.stop.event_finalized === "boolean", "lifecycle stop state is invalid");
-  assert(isRecord(record.same_task) && typeof record.same_task.exhausted === "boolean", "same-task state is invalid");
-  assert(isRecord(record.replacement) && typeof record.replacement.authorized === "boolean" && typeof record.replacement.consumed === "boolean", "replacement state is invalid");
+  assert(record.stop.finalized_status === null || typeof record.stop.finalized_status === "string", "lifecycle finalized status is invalid");
+  assert(isRecord(record.same_task) && typeof record.same_task.harmless_probe_attempted === "boolean" && typeof record.same_task.substantive_retry_attempted === "boolean" && typeof record.same_task.exhausted === "boolean", "same-task state is invalid");
+  assert(isRecord(record.replacement) && (record.replacement.role_lock_nonce === null || typeof record.replacement.role_lock_nonce === "string") && typeof record.replacement.authorized === "boolean" && typeof record.replacement.consumed === "boolean", "replacement state is invalid");
   assert(record.replacement_output === null || isRecord(record.replacement_output), "replacement output custody is invalid");
   assert(Number.isInteger(record.recovery_prompt_count) && record.recovery_prompt_count >= 0, "recovery prompt count is invalid");
   validatePacket(record.packet);
   requireSha(record.record_sha256, "lifecycle record digest");
   assert(record.record_sha256 === canonicalDigest(body(record)), "lifecycle record digest mismatch");
-  if (record.replacement.consumed) assert(record.old_task_retired && record.writer_task_id === record.replacement_task_id, "replacement permits duplicate writers");
+  validateStateInvariants(record);
   return record;
+}
+
+function validateStateInvariants(record) {
+  const {state, stop, same_task: sameTask, replacement, replacement_task_id: replacementTaskId} = record;
+  const stopFinalized = stop.event_finalized;
+  const terminal = TERMINAL_EVENTS.has(stop.finalized_status);
+  const preStop = ["OBSERVING", "STUCK_CONFIRMED"];
+  const postStop = ["TURN_ENDED_IDLE", "CUSTODY_REVALIDATED", "RESUME_SENT", "RESUMED_SAME_TASK", "SAME_TASK_RETRY_FAILED", "REPLACEMENT_AUTHORIZED", "REPLACEMENT_ACTIVE", "RETIRED"];
+  const initialReplacement = replacementTaskId === null && !record.old_task_retired && !replacement.authorized && !replacement.consumed && replacement.role_lock_nonce === null;
+  const oldTaskPinned = record.pinned_task_id === record.task_id && record.writer_task_id === record.task_id;
+
+  if (stopFinalized) {
+    assert(stop.requested && terminal, "finalized host event lacks STOP request or terminal status");
+  } else {
+    assert(stop.finalized_status === null, "unfinalized host event carries a terminal status");
+  }
+
+  if (preStop.includes(state)) {
+    assert(!stop.requested && !stopFinalized && initialReplacement && oldTaskPinned, "pre-STOP lifecycle state contains post-STOP mutations");
+    assert(!sameTask.harmless_probe_attempted && !sameTask.substantive_retry_attempted && !sameTask.exhausted, "pre-STOP lifecycle state contains retry evidence");
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (state === "STOP_SENT") {
+    assert(stop.requested && !stopFinalized && initialReplacement && oldTaskPinned, "STOP_SENT lifecycle state is not an unfinalized STOP");
+    assert(!sameTask.harmless_probe_attempted && !sameTask.substantive_retry_attempted && !sameTask.exhausted, "STOP_SENT lifecycle state contains retry evidence");
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (postStop.includes(state)) {
+    assert(stop.requested && stopFinalized && terminal, "post-STOP lifecycle state lacks a finalized terminal host event");
+  }
+
+  if (["TURN_ENDED_IDLE", "CUSTODY_REVALIDATED", "RESUME_SENT"].includes(state)) {
+    assert(initialReplacement && oldTaskPinned, "pre-retry lifecycle state contains replacement metadata");
+    assert(!sameTask.harmless_probe_attempted && !sameTask.substantive_retry_attempted && !sameTask.exhausted, "pre-retry lifecycle state contains retry evidence");
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (state === "RESUMED_SAME_TASK") {
+    assert(initialReplacement && oldTaskPinned, "same-task resume contains replacement metadata");
+    assert(sameTask.harmless_probe_attempted && sameTask.substantive_retry_attempted && !sameTask.exhausted, "same-task resume evidence is incomplete");
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (state === "SAME_TASK_RETRY_FAILED") {
+    assert(sameTask.harmless_probe_attempted && sameTask.substantive_retry_attempted && sameTask.exhausted, "same-task exhaustion evidence is incomplete");
+    if (replacement.consumed) {
+      assert(record.old_task_retired && replacement.authorized && replacementTaskId !== null && record.pinned_task_id === replacementTaskId && record.writer_task_id === replacementTaskId, "consumed replacement lacks retired-task and single-writer evidence");
+    } else {
+      assert(initialReplacement && oldTaskPinned, "unconsumed retry failure contains replacement metadata");
+    }
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (state === "REPLACEMENT_AUTHORIZED") {
+    assert(sameTask.harmless_probe_attempted && sameTask.substantive_retry_attempted && sameTask.exhausted, "replacement authorization lacks same-task exhaustion evidence");
+    assert(replacementTaskId !== null && record.old_task_retired && replacement.authorized && !replacement.consumed && replacement.role_lock_nonce !== null && oldTaskPinned, "replacement authorization is not single, retired, and pinned to the old task");
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (["REPLACEMENT_ACTIVE", "RETIRED"].includes(state)) {
+    assert(sameTask.harmless_probe_attempted && sameTask.substantive_retry_attempted && sameTask.exhausted, "active replacement lacks same-task exhaustion evidence");
+    assert(replacementTaskId !== null && record.old_task_retired && replacement.authorized && replacement.consumed && record.pinned_task_id === replacementTaskId && record.writer_task_id === replacementTaskId, "replacement permits duplicate writers or pin rollback");
+    assert(record.escalation_reason === null, "ordinary lifecycle state contains an escalation reason");
+    return;
+  }
+
+  if (state === "ESCALATED_FAIL_CLOSED") {
+    assert(record.escalation_reason !== null, "fail-closed lifecycle state lacks an escalation reason");
+    assert(initialReplacement && oldTaskPinned && !sameTask.harmless_probe_attempted && !sameTask.substantive_retry_attempted && !sameTask.exhausted, "fail-closed escalation carries replacement or retry authority");
+  }
 }
 
 function transition(record, mutate) {
   validateExistingTaskLifecycle(record);
   const next = structuredClone(record);
   mutate(next);
-  return reseal(next);
+  return validateExistingTaskLifecycle(reseal(next));
 }
 
 export function requestExistingTaskStop(record, {operationId, nonce, taskId} = {}) {
@@ -229,6 +308,7 @@ export function finalizeExistingTaskHostEvent(record, {taskIndex, turnStatus, pr
     assert(TERMINAL_EVENTS.has(turnStatus), "host event is not finalized");
     assert(Array.isArray(processes) && processes.length === 0, "task still owns a live process");
     requireSha(materialReceiptSha256, "material receipt digest");
+    assert(next.last_material_receipt_sha256 === materialReceiptSha256, "finalized host event material receipt is not bound to the latest material evidence");
     assert(taskIndex.active !== true || turnStatus === "systemError", "stale active task index may only be overridden by finalized systemError");
     next.stop.event_finalized = true;
     next.stop.finalized_status = turnStatus;
@@ -278,7 +358,9 @@ export function exhaustExistingTask(record, {taskId, pinnedThreads, harmlessProb
     assert(["PASSED", "FAILED", "UNAVAILABLE"].includes(harmlessProbeOutcome), "harmless same-task probe outcome is invalid");
     assert(["FAILED", "UNAVAILABLE"].includes(substantiveRetryOutcome), "same-task exhaustion is incomplete");
     next.same_task.harmless_probe_attempted = true;
-    next.same_task.substantive_retry_attempted = substantiveRetryOutcome === "FAILED";
+    // UNAVAILABLE is still a completed substantive attempt; it cannot silently
+    // manufacture an exhausted state with a missing retry leg.
+    next.same_task.substantive_retry_attempted = true;
     next.same_task.exhausted = true;
     next.state = "SAME_TASK_RETRY_FAILED";
   });
@@ -364,10 +446,7 @@ export function finalizeReplacementHostRecovery(record, {taskIndex, turnStatus, 
     assert(custodySha256 === next.custody_sha256, "replacement custody changed during host recovery");
     assert(trackedStateSha256 === next.replacement_output.tracked_state_sha256 && untrackedStateSha256 === next.replacement_output.untracked_state_sha256, "tracked or untracked replacement bytes changed");
     requireSha(materialReceiptSha256, "replacement recovery material receipt digest");
-    if (turnStatus === "completed" && materialReceiptSha256 !== next.replacement_output.material_receipt_sha256) {
-      next.state = "REPLACEMENT_ACTIVE";
-      return;
-    }
+    assert(materialReceiptSha256 === next.replacement_output.material_receipt_sha256, "replacement final receipt is not bound to material output evidence");
     next.same_task.harmless_probe_attempted = true;
     next.same_task.substantive_retry_attempted = true;
     next.same_task.exhausted = true;

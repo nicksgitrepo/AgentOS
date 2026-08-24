@@ -68,12 +68,32 @@ const finalized = () => finalizeExistingTaskHostEvent(stopped(), {
   taskIndex: {task_id: "TASK.EXISTING.001", host_id: "HOST.PORTABLE.001", active: false},
   turnStatus: "stopped",
   processes: [],
-  materialReceiptSha256: sha("stop-receipt"),
+  materialReceiptSha256: sha("material-constant"),
 });
 const custody = () => revalidateExistingTaskCustody(finalized(), {custodySha256: sha("custody"), unstagedCount: 0, untrackedCount: 0, processes: []});
 const exhausted = () => exhaustExistingTask(custody(), {taskId: "TASK.EXISTING.001", pinnedThreads: ["TASK.EXISTING.001"], harmlessProbeOutcome: "PASSED", substantiveRetryOutcome: "FAILED"});
 
 validateExistingTaskLifecycle(base());
+
+// A resealed record cannot promote caller-controlled flags into lifecycle
+// authority: every state must agree with the finalized event and its
+// state-dependent retry/replacement invariants.
+const forgedExhaustion = structuredClone(base());
+forgedExhaustion.state = "SAME_TASK_RETRY_FAILED";
+forgedExhaustion.same_task.exhausted = true;
+forgedExhaustion.record_sha256 = canonicalDigest({...forgedExhaustion, record_sha256: null});
+assert.throws(() => validateExistingTaskLifecycle(forgedExhaustion), /post-STOP|exhaustion evidence/u);
+const forgedFinalization = structuredClone(base());
+forgedFinalization.state = "TURN_ENDED_IDLE";
+forgedFinalization.stop.requested = true;
+forgedFinalization.record_sha256 = canonicalDigest({...forgedFinalization, record_sha256: null});
+assert.throws(() => validateExistingTaskLifecycle(forgedFinalization), /post-STOP|finalized host event/u);
+const forgedReplacement = structuredClone(exhausted());
+forgedReplacement.state = "REPLACEMENT_AUTHORIZED";
+forgedReplacement.replacement_task_id = "TASK.REPLACEMENT.FORGED";
+forgedReplacement.replacement.authorized = false;
+forgedReplacement.record_sha256 = canonicalDigest({...forgedReplacement, record_sha256: null});
+assert.throws(() => validateExistingTaskLifecycle(forgedReplacement), /replacement authorization/u);
 
 // A single observation is provisional. Live processes, a new material
 // receipt, or consumption of the recovery prompt cancel STOP eligibility.
@@ -94,10 +114,11 @@ const staleFinal = finalizeExistingTaskHostEvent(stopped(), {
   taskIndex: {task_id: "TASK.EXISTING.001", host_id: "HOST.PORTABLE.001", active: true},
   turnStatus: "systemError",
   processes: [],
-  materialReceiptSha256: sha("system-error"),
+  materialReceiptSha256: sha("material-constant"),
 });
 assert.equal(staleFinal.state, "TURN_ENDED_IDLE");
 assert.equal(staleFinal.stop.finalized_status, "systemError");
+assert.throws(() => finalizeExistingTaskHostEvent(stopped(), {taskIndex: {task_id: "TASK.EXISTING.001", host_id: "HOST.PORTABLE.001", active: false}, turnStatus: "stopped", processes: [], materialReceiptSha256: sha("unrelated-receipt")}), /latest material evidence/u);
 assert.throws(() => finalizeExistingTaskHostEvent(stopped(), {taskIndex: {task_id: "TASK.EXISTING.001", host_id: "HOST.PORTABLE.001", active: true}, turnStatus: "active", processes: [], materialReceiptSha256: sha("active")}), /not finalized/u);
 assert.throws(() => finalizeExistingTaskHostEvent(stopped(), {taskIndex: {task_id: "TASK.EXISTING.001", host_id: "HOST.FORGED.001", active: false}, turnStatus: "systemError", processes: [], materialReceiptSha256: sha("forged")}), /identity mismatch/u);
 
@@ -154,6 +175,7 @@ const promptedReplacement = recordReplacementRecoveryPrompt(materialReplacement,
 assert.equal(promptedReplacement.state, "REPLACEMENT_ACTIVE", "prompt delivery was incorrectly accepted as recovery");
 assert.throws(() => recordReplacementRecoveryPrompt(promptedReplacement, {taskId: "TASK.REPLACEMENT.001", packetSha256: promptedReplacement.packet.packet_sha256, expectedPromptCount: 1}), /duplicate replacement recovery prompt/u);
 assert.throws(() => finalizeReplacementHostRecovery(promptedReplacement, {taskIndex: {task_id: "TASK.REPLACEMENT.001", host_id: "HOST.PORTABLE.001", active: true}, turnStatus: "inProgress", processes: [], custodySha256: sha("material-uncommitted-custody"), trackedStateSha256: trackedEvidenceSha256, untrackedStateSha256: untrackedEvidenceSha256, materialReceiptSha256: sha("material-output-receipt")}), /not finalized/u);
+assert.throws(() => finalizeReplacementHostRecovery(promptedReplacement, {taskIndex: {task_id: "TASK.REPLACEMENT.001", host_id: "HOST.PORTABLE.001", active: false}, turnStatus: "systemError", processes: [], custodySha256: sha("material-uncommitted-custody"), trackedStateSha256: trackedEvidenceSha256, untrackedStateSha256: untrackedEvidenceSha256, materialReceiptSha256: sha("unrelated-receipt")}), /final receipt is not bound/u);
 assert.throws(() => finalizeReplacementHostRecovery(promptedReplacement, {taskIndex: {task_id: "TASK.REPLACEMENT.001", host_id: "HOST.PORTABLE.001", active: false}, turnStatus: "systemError", processes: [], custodySha256: sha("material-uncommitted-custody"), trackedStateSha256: trackedEvidenceSha256, untrackedStateSha256: sha("fixture-lost"), materialReceiptSha256: sha("material-output-receipt")}), /tracked or untracked/u);
 const recurrentFailure = finalizeReplacementHostRecovery(promptedReplacement, {taskIndex: {task_id: "TASK.REPLACEMENT.001", host_id: "HOST.PORTABLE.001", active: false}, turnStatus: "systemError", processes: [], custodySha256: sha("material-uncommitted-custody"), trackedStateSha256: trackedEvidenceSha256, untrackedStateSha256: untrackedEvidenceSha256, materialReceiptSha256: sha("material-output-receipt")});
 assert.equal(recurrentFailure.state, "SAME_TASK_RETRY_FAILED");
