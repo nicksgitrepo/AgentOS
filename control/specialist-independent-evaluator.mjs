@@ -115,6 +115,14 @@ function evaluatePackage(packageDir) {
   const fixturesDir = path.join(packageDir, "fixtures");
   const fixtureNames = fs.readdirSync(fixturesDir).filter((name) => name.endsWith(".json")).map((name) => name.slice(0, -5)).sort();
   if (JSON.stringify(fixtureNames) !== JSON.stringify(expectedClasses)) fail(`${block.block_id} hostile fixture set is incomplete`);
+  for (const caseClass of expectedClasses) {
+    const fixture = readJson(path.join(fixturesDir, `${caseClass}.json`));
+    const evaluationCase = evaluation.cases.find((item) => item.class === caseClass);
+    if (fixture.schema !== "agentos.specialist_fixture.v1" || fixture.version !== 1 || fixture.block_id !== block.block_id || fixture.class !== caseClass) fail(`${block.block_id} ${caseClass} fixture identity/schema is invalid`);
+    if (fixture.hostile !== true) fail(`${block.block_id} ${caseClass} fixture is not marked hostile`);
+    if (!evaluationCase || fixture.expected !== evaluationCase.expected) fail(`${block.block_id} ${caseClass} fixture/evaluation outcome parity is invalid`);
+    if (typeof fixture.note !== "string" || fixture.note.length === 0) fail(`${block.block_id} ${caseClass} fixture note is missing`);
+  }
   const handoff = readJson(path.join(packageDir, "handoff.json"));
   if (handoff.schema !== HANDOFF_SCHEMA || handoff.block_id !== block.block_id || handoff.candidate_digest !== block.block_sha256) fail(`${block.block_id} handoff is not bound to the candidate`);
   if (handoff.authority !== "ISOLATED_CANDIDATE_ONLY;_NO_ACTIVATION_OR_ADMISSION") fail(`${block.block_id} handoff grants admission authority`);
