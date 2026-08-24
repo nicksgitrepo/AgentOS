@@ -29,21 +29,47 @@ function verifyDigest(value, field, label) {
   assert(value[field] === expected, `${label} digest mismatch`);
 }
 
+function sortedUnique(values, label) {
+  const result = [...new Set(values)].sort();
+  assert(result.length === values.length, `${label} contains duplicate values`);
+  return result;
+}
+
+export function validateSpecialistContextContract({contextSchema, routing} = {}) {
+  assert(contextSchema && typeof contextSchema === "object", "specialist context schema is missing");
+  assert(contextSchema.$id === "https://agentos.dev/schemas/specialist-context.v1.json", "specialist context schema identity is invalid");
+  assert(contextSchema.type === "object" && contextSchema.additionalProperties === false, "specialist context schema must deny unknown root fields");
+  const contract = contextSchema.x_agentos_context_contract;
+  assert(contract && contract.version === 1, "specialist context route contract is missing");
+  assert(contract.routing_index === "specialist-blocks/registry/routing-index.v1.json", "specialist context route contract source is invalid");
+  assert(routing && typeof routing === "object", "specialist routing index is missing for context validation");
+  const requiredPaths = [...new Set(routing.routes.flatMap((route) => route.required_context))].sort();
+  assert(JSON.stringify(contract.required_context_paths) === JSON.stringify(requiredPaths), "specialist context route path catalog diverges from routing index");
+  assert(contract.routing_index_sha256 === routing.routing_sha256, "specialist context route contract is bound to a stale routing digest");
+  const roots = sortedUnique(contract.top_level_roots ?? [], "specialist context route roots");
+  for (const root of roots) assert(Object.hasOwn(contextSchema.properties ?? {}, root), `specialist context schema is missing declared root ${root}`);
+  for (const requiredPath of requiredPaths) assert(roots.includes(requiredPath.split(".")[0]), `specialist context schema root is missing for ${requiredPath}`);
+  return {status: "PASS", required_path_count: requiredPaths.length, top_level_root_count: roots.length, routing_index_sha256: routing.routing_sha256};
+}
+
 export function loadSpecialistLibrary({repositoryRoot = process.cwd(), compileIfMissing = true} = {}) {
   const registryRoot = path.join(repositoryRoot, "specialist-blocks", "registry");
   const rosterPath = path.join(registryRoot, "roster.v1.json");
   const routingPath = path.join(registryRoot, "routing-index.v1.json");
   const inventoryPath = path.join(registryRoot, "master-inventory.materialized.v1.json");
+  const contextSchemaPath = path.join(repositoryRoot, "schemas", "specialist-context.v1.json");
   if (compileIfMissing && (!fs.existsSync(rosterPath) || !fs.existsSync(routingPath) || !fs.existsSync(inventoryPath))) compileSpecialistLibrary({repositoryRoot, writeGenerated: true});
   const roster = readJson(rosterPath, "specialist roster");
   const routing = readJson(routingPath, "specialist routing index");
   const inventory = readJson(inventoryPath, "materialized specialist inventory");
+  const contextSchema = readJson(contextSchemaPath, "specialist context schema");
   assert(roster.schema === "agentos.specialist_roster.v1" && roster.status === "COMPILED_CANDIDATE" && roster.activation === "OFF", "specialist roster is not an inactive candidate");
   assert(routing.schema === "agentos.specialist_routing.v1" && routing.status === "COMPILED_CANDIDATE", "specialist routing index is invalid");
   assert(inventory.schema === "agentos.specialist_materialized_inventory.v1" && inventory.status === "COMPILED_CANDIDATE" && inventory.activation === "OFF", "specialist inventory is invalid");
   verifyDigest(roster, "roster_sha256", "specialist roster");
   verifyDigest(routing, "routing_sha256", "specialist routing index");
   verifyDigest(inventory, "inventory_sha256", "materialized specialist inventory");
+  const contextContract = validateSpecialistContextContract({contextSchema, routing});
   const byId = new Map(roster.blocks.map((block) => [block.block_id, block]));
   assert(byId.size === roster.blocks.length, "specialist roster has duplicate block IDs");
   for (const route of routing.routes) {
@@ -57,7 +83,7 @@ export function loadSpecialistLibrary({repositoryRoot = process.cwd(), compileIf
       if (block.role_kind === "ATOMIC_SPECIALIST") assert(block.required_upstream_router, `${route.route_id} selects atomic specialist without upstream router`);
     }
   }
-  return {roster, routing, inventory, byId};
+  return {roster, routing, inventory, contextSchema, contextContract, byId};
 }
 
 function normalizeSignals(signals) {

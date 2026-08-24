@@ -1,16 +1,632 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/specialist-context.v1.json",
-  "title": "AgentOS Specialist Typed Context",
+  "title": "AgentOS Specialist Typed Context (routing-complete)",
   "type": "object",
   "additionalProperties": false,
-  "required": ["request", "signals", "authority", "source_lock", "custody", "requested_action"],
+  "required": [
+    "request",
+    "signals",
+    "authority",
+    "source_lock",
+    "custody",
+    "requested_action"
+  ],
   "properties": {
-    "request": {"type": "string", "minLength": 1},
-    "signals": {"type": "array", "items": {"type": "string", "minLength": 1}},
-    "authority": {"type": "object"},
-    "source_lock": {"type": "object"},
-    "custody": {"type": "object"},
-    "requested_action": {"type": "string", "minLength": 1}
+    "accessibility": {
+      "$ref": "#/$defs/context_value"
+    },
+    "accounting": {
+      "$ref": "#/$defs/context_value"
+    },
+    "activity": {
+      "$ref": "#/$defs/context_value"
+    },
+    "ai": {
+      "$ref": "#/$defs/context_value"
+    },
+    "api": {
+      "$ref": "#/$defs/context_value"
+    },
+    "api_scope": {
+      "$ref": "#/$defs/context_value"
+    },
+    "applicability": {
+      "$ref": "#/$defs/context_value"
+    },
+    "applicability_decision": {
+      "$ref": "#/$defs/context_value"
+    },
+    "application": {
+      "$ref": "#/$defs/context_value"
+    },
+    "approval_receipt": {
+      "$ref": "#/$defs/context_value"
+    },
+    "artifact": {
+      "$ref": "#/$defs/context_value"
+    },
+    "artifact_identity": {
+      "$ref": "#/$defs/context_value"
+    },
+    "asset": {
+      "$ref": "#/$defs/context_value"
+    },
+    "authority": {
+      "$ref": "#/$defs/context_value"
+    },
+    "authorization": {
+      "$ref": "#/$defs/context_value"
+    },
+    "cache": {
+      "$ref": "#/$defs/context_value"
+    },
+    "cache_rule": {
+      "$ref": "#/$defs/context_value"
+    },
+    "cache_scope": {
+      "$ref": "#/$defs/context_value"
+    },
+    "candidate": {
+      "$ref": "#/$defs/context_value"
+    },
+    "candidate_readback": {
+      "$ref": "#/$defs/context_value"
+    },
+    "checkpoint_history": {
+      "$ref": "#/$defs/context_value"
+    },
+    "claims": {
+      "$ref": "#/$defs/context_value"
+    },
+    "client": {
+      "$ref": "#/$defs/context_value"
+    },
+    "client_type": {
+      "$ref": "#/$defs/context_value"
+    },
+    "compiler": {
+      "$ref": "#/$defs/context_value"
+    },
+    "compiler_options": {
+      "$ref": "#/$defs/context_value"
+    },
+    "component": {
+      "$ref": "#/$defs/context_value"
+    },
+    "component_boundary": {
+      "$ref": "#/$defs/context_value"
+    },
+    "concurrency": {
+      "$ref": "#/$defs/context_value"
+    },
+    "content_scope": {
+      "$ref": "#/$defs/context_value"
+    },
+    "contract_scope": {
+      "$ref": "#/$defs/context_value"
+    },
+    "control": {
+      "$ref": "#/$defs/context_value"
+    },
+    "corpus": {
+      "$ref": "#/$defs/context_value"
+    },
+    "custody": {
+      "$ref": "#/$defs/context_value"
+    },
+    "data": {
+      "$ref": "#/$defs/context_value"
+    },
+    "data_class": {
+      "$ref": "#/$defs/context_value"
+    },
+    "database": {
+      "$ref": "#/$defs/context_value"
+    },
+    "dependency": {
+      "$ref": "#/$defs/context_value"
+    },
+    "dns": {
+      "$ref": "#/$defs/context_value"
+    },
+    "edition": {
+      "$ref": "#/$defs/context_value"
+    },
+    "effective_date": {
+      "$ref": "#/$defs/context_value"
+    },
+    "entity": {
+      "$ref": "#/$defs/context_value"
+    },
+    "escalation_target": {
+      "$ref": "#/$defs/context_value"
+    },
+    "evaluation_receipt": {
+      "$ref": "#/$defs/context_value"
+    },
+    "evidence_receipt": {
+      "$ref": "#/$defs/context_value"
+    },
+    "exception_scope": {
+      "$ref": "#/$defs/context_value"
+    },
+    "exceptions": {
+      "$ref": "#/$defs/context_value"
+    },
+    "flow": {
+      "$ref": "#/$defs/context_value"
+    },
+    "framework": {
+      "$ref": "#/$defs/context_value"
+    },
+    "handoff": {
+      "$ref": "#/$defs/context_value"
+    },
+    "iam": {
+      "$ref": "#/$defs/context_value"
+    },
+    "identity": {
+      "$ref": "#/$defs/context_value"
+    },
+    "incident": {
+      "$ref": "#/$defs/context_value"
+    },
+    "integration": {
+      "$ref": "#/$defs/context_value"
+    },
+    "interaction": {
+      "$ref": "#/$defs/context_value"
+    },
+    "issuer": {
+      "$ref": "#/$defs/context_value"
+    },
+    "jurisdiction": {
+      "$ref": "#/$defs/context_value"
+    },
+    "language": {
+      "$ref": "#/$defs/context_value"
+    },
+    "lifecycle_intent": {
+      "$ref": "#/$defs/context_value"
+    },
+    "observability": {
+      "$ref": "#/$defs/context_value"
+    },
+    "observability_readback": {
+      "$ref": "#/$defs/context_value"
+    },
+    "operation": {
+      "$ref": "#/$defs/context_value"
+    },
+    "owner_constraints": {
+      "$ref": "#/$defs/context_value"
+    },
+    "policy": {
+      "$ref": "#/$defs/context_value"
+    },
+    "profile": {
+      "$ref": "#/$defs/context_value"
+    },
+    "project_context": {
+      "$ref": "#/$defs/context_value"
+    },
+    "protocol": {
+      "$ref": "#/$defs/context_value"
+    },
+    "provider": {
+      "$ref": "#/$defs/context_value"
+    },
+    "records": {
+      "$ref": "#/$defs/context_value"
+    },
+    "region": {
+      "$ref": "#/$defs/context_value"
+    },
+    "regulation": {
+      "$ref": "#/$defs/context_value"
+    },
+    "release": {
+      "$ref": "#/$defs/context_value"
+    },
+    "release_readback": {
+      "$ref": "#/$defs/context_value"
+    },
+    "request": {
+      "$ref": "#/$defs/context_value"
+    },
+    "requested_action": {
+      "$ref": "#/$defs/context_value"
+    },
+    "retrieval": {
+      "$ref": "#/$defs/context_value"
+    },
+    "rollback_target": {
+      "$ref": "#/$defs/context_value"
+    },
+    "runtime": {
+      "$ref": "#/$defs/context_value"
+    },
+    "runtime_readback": {
+      "$ref": "#/$defs/context_value"
+    },
+    "runtime_target": {
+      "$ref": "#/$defs/context_value"
+    },
+    "service": {
+      "$ref": "#/$defs/context_value"
+    },
+    "signal": {
+      "$ref": "#/$defs/context_value"
+    },
+    "signals": {
+      "$ref": "#/$defs/context_value"
+    },
+    "source": {
+      "$ref": "#/$defs/context_value"
+    },
+    "source_lock": {
+      "$ref": "#/$defs/context_value"
+    },
+    "standard": {
+      "$ref": "#/$defs/context_value"
+    },
+    "standard_version": {
+      "$ref": "#/$defs/context_value"
+    },
+    "tenant": {
+      "$ref": "#/$defs/context_value"
+    },
+    "tenant_boundary": {
+      "$ref": "#/$defs/context_value"
+    },
+    "test": {
+      "$ref": "#/$defs/context_value"
+    },
+    "timebox": {
+      "$ref": "#/$defs/context_value"
+    },
+    "toolchain": {
+      "$ref": "#/$defs/context_value"
+    },
+    "transport": {
+      "$ref": "#/$defs/context_value"
+    },
+    "typed_intent_provenance": {
+      "$ref": "#/$defs/context_value"
+    },
+    "unrelated_work": {
+      "$ref": "#/$defs/context_value"
+    },
+    "utility_harm_receipt": {
+      "$ref": "#/$defs/context_value"
+    },
+    "version": {
+      "$ref": "#/$defs/context_value"
+    },
+    "web": {
+      "$ref": "#/$defs/context_value"
+    },
+    "web_application_scope": {
+      "$ref": "#/$defs/context_value"
+    },
+    "workflow": {
+      "$ref": "#/$defs/context_value"
+    },
+    "worktree": {
+      "$ref": "#/$defs/context_value"
+    },
+    "zone": {
+      "$ref": "#/$defs/context_value"
+    }
+  },
+  "$defs": {
+    "context_value": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "array"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/context_value"
+          }
+        }
+      ]
+    }
+  },
+  "x_agentos_context_contract": {
+    "version": 1,
+    "routing_index": "specialist-blocks/registry/routing-index.v1.json",
+    "routing_index_sha256": "e3252da5c2243fe0979346a334d632e3c5bc5f00dcf78f40a9642894f129bd20",
+    "required_context_paths": [
+      "accessibility.criteria",
+      "accessibility.scope",
+      "accounting.cost_object",
+      "accounting.entity",
+      "accounting.evidence",
+      "accounting.objective",
+      "accounting.period",
+      "accounting.policy",
+      "activity",
+      "ai.generative_system_scope",
+      "ai.system_scope",
+      "api",
+      "api.category",
+      "api.contract",
+      "api.scope",
+      "api.version",
+      "api_scope",
+      "applicability",
+      "applicability_decision",
+      "application.scope",
+      "artifact.scope",
+      "artifact_identity",
+      "asset.domain",
+      "asset.evidence",
+      "asset.format",
+      "asset.identity",
+      "asset.scope",
+      "asset.stage",
+      "authority",
+      "authorization.boundary",
+      "cache.rule",
+      "cache.scope",
+      "cache_rule",
+      "cache_scope",
+      "candidate.identity",
+      "claims",
+      "client.compose",
+      "client.kotlin",
+      "client.lifecycle",
+      "client.mode",
+      "client.platform",
+      "client.surface",
+      "client.swiftui",
+      "client_type",
+      "compiler.options",
+      "compiler_options",
+      "component.boundary",
+      "component_boundary",
+      "concurrency.scope",
+      "content_scope",
+      "contract_scope",
+      "control.objective_scope",
+      "corpus.authority",
+      "corpus.scope",
+      "custody",
+      "custody.receipt",
+      "data.backup",
+      "data.class",
+      "data.engine",
+      "data.migration",
+      "data.rollback",
+      "data.tenant-boundary",
+      "data_class",
+      "database",
+      "database.engine",
+      "database.version",
+      "dependency.scope",
+      "dns.records",
+      "dns.zone",
+      "edition",
+      "effective_date",
+      "entity",
+      "exception_scope",
+      "flow",
+      "framework",
+      "framework.version",
+      "handoff.receipt",
+      "iam.policy",
+      "identity.claims",
+      "identity.client-type",
+      "identity.flow",
+      "identity.issuer",
+      "identity.model",
+      "identity.protocol",
+      "incident.identity",
+      "integration.candidate",
+      "integration.conflicts",
+      "integration.dependencies",
+      "interaction.scope",
+      "interaction.states",
+      "issuer",
+      "jurisdiction",
+      "language",
+      "language.edition",
+      "language.version",
+      "lifecycle_intent",
+      "observability.evidence",
+      "operation.identity",
+      "policy",
+      "protocol",
+      "provider",
+      "provider.name",
+      "provider.region",
+      "records",
+      "region",
+      "regulation.activity",
+      "regulation.commerce",
+      "regulation.entity",
+      "regulation.exception",
+      "regulation.jurisdiction",
+      "regulation.vehicle",
+      "regulation.version",
+      "release.changes",
+      "release.proof",
+      "release.rollback",
+      "release.version",
+      "request",
+      "requested_action",
+      "retrieval.evaluation",
+      "retrieval.task",
+      "rollback_target",
+      "runtime.toolchain",
+      "runtime_target",
+      "service.identity",
+      "signal.scope",
+      "signals",
+      "source.authority",
+      "source_lock",
+      "standard.edition",
+      "standard_version",
+      "tenant.scope",
+      "tenant_boundary",
+      "test.evidence",
+      "test.scope",
+      "test.strategy",
+      "timebox",
+      "toolchain",
+      "transport.operation_scope",
+      "typed_intent_provenance",
+      "version",
+      "web.application",
+      "web.category",
+      "web.layout",
+      "web.scope",
+      "web.viewports",
+      "web_application_scope",
+      "workflow.dependencies",
+      "workflow.domain",
+      "workflow.operation_scope",
+      "workflow.phase",
+      "workflow.task",
+      "worktree.base",
+      "worktree.changed_paths",
+      "worktree.identity",
+      "zone"
+    ],
+    "optional_context_paths": [
+      "approval_receipt",
+      "candidate_readback",
+      "checkpoint_history",
+      "escalation_target",
+      "evaluation_receipt",
+      "evidence_receipt",
+      "exceptions",
+      "observability_readback",
+      "owner_constraints",
+      "profile",
+      "project_context",
+      "release_readback",
+      "runtime_readback",
+      "unrelated_work",
+      "utility_harm_receipt"
+    ],
+    "top_level_roots": [
+      "accessibility",
+      "accounting",
+      "activity",
+      "ai",
+      "api",
+      "api_scope",
+      "applicability",
+      "applicability_decision",
+      "application",
+      "approval_receipt",
+      "artifact",
+      "artifact_identity",
+      "asset",
+      "authority",
+      "authorization",
+      "cache",
+      "cache_rule",
+      "cache_scope",
+      "candidate",
+      "candidate_readback",
+      "checkpoint_history",
+      "claims",
+      "client",
+      "client_type",
+      "compiler",
+      "compiler_options",
+      "component",
+      "component_boundary",
+      "concurrency",
+      "content_scope",
+      "contract_scope",
+      "control",
+      "corpus",
+      "custody",
+      "data",
+      "data_class",
+      "database",
+      "dependency",
+      "dns",
+      "edition",
+      "effective_date",
+      "entity",
+      "escalation_target",
+      "evaluation_receipt",
+      "evidence_receipt",
+      "exception_scope",
+      "exceptions",
+      "flow",
+      "framework",
+      "handoff",
+      "iam",
+      "identity",
+      "incident",
+      "integration",
+      "interaction",
+      "issuer",
+      "jurisdiction",
+      "language",
+      "lifecycle_intent",
+      "observability",
+      "observability_readback",
+      "operation",
+      "owner_constraints",
+      "policy",
+      "profile",
+      "project_context",
+      "protocol",
+      "provider",
+      "records",
+      "region",
+      "regulation",
+      "release",
+      "release_readback",
+      "request",
+      "requested_action",
+      "retrieval",
+      "rollback_target",
+      "runtime",
+      "runtime_readback",
+      "runtime_target",
+      "service",
+      "signal",
+      "signals",
+      "source",
+      "source_lock",
+      "standard",
+      "standard_version",
+      "tenant",
+      "tenant_boundary",
+      "test",
+      "timebox",
+      "toolchain",
+      "transport",
+      "typed_intent_provenance",
+      "unrelated_work",
+      "utility_harm_receipt",
+      "version",
+      "web",
+      "web_application_scope",
+      "workflow",
+      "worktree",
+      "zone"
+    ],
+    "unknown_root_policy": "DENY"
   }
 }

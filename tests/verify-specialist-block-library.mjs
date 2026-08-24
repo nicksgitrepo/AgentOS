@@ -16,6 +16,7 @@ import {
   loadSpecialistLibrary,
   routeSpecialists,
   validateAtomicSelection,
+  validateSpecialistContextContract,
 } from "../control/specialist-block-loader.mjs";
 import {loadSpecialistBlockCatalog} from "../control/specialist-agent-compiler.mjs";
 
@@ -31,6 +32,17 @@ assert.equal(first.records.length, 123, "foundation, reusable standard, P0, P1, 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
 const materialized = (value) => JSON.parse(JSON.stringify(value));
+assert.deepEqual(validateSpecialistContextContract({contextSchema: library.contextSchema, routing: library.routing}), library.contextContract, "specialist context schema/routing contract is not deterministic");
+assert.equal(library.contextContract.required_path_count, 155, "all governed dotted and top-level route context paths must remain catalogued");
+const missingContextPath = structuredClone(library.contextSchema);
+missingContextPath.x_agentos_context_contract.required_context_paths.pop();
+assert.throws(() => validateSpecialistContextContract({contextSchema: missingContextPath, routing: library.routing}), /route path catalog diverges/u, "a missing route context path must fail closed");
+const staleContextRouting = structuredClone(library.contextSchema);
+staleContextRouting.x_agentos_context_contract.routing_index_sha256 = "0".repeat(64);
+assert.throws(() => validateSpecialistContextContract({contextSchema: staleContextRouting, routing: library.routing}), /stale routing digest/u, "a stale route/context binding must fail closed");
+const missingContextRoot = structuredClone(library.contextSchema);
+delete missingContextRoot.properties["candidate"];
+assert.throws(() => validateSpecialistContextContract({contextSchema: missingContextRoot, routing: library.routing}), /missing declared root candidate/u, "an undeclared route context root must fail closed");
 assert.deepEqual(library.roster, materialized(first.roster), "checked-in specialist roster is stale or detached from compiler output");
 assert.deepEqual(library.routing, materialized(first.routing), "checked-in specialist routing index is stale or detached from compiler output");
 assert.deepEqual(library.inventory, materialized(first.inventory), "checked-in specialist inventory is stale or detached from compiler output");
