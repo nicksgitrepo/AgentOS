@@ -17,7 +17,7 @@ assert.equal(receipt.hostile_fixtures_checked, 123 * 17);
 assert(receipt.results.every((result) => result.status === "PASS" && result.independent_utility_harm === "PENDING_EXTERNAL_AUTHORITY"));
 assert.equal(fs.readFileSync(path.join(root, "specialist-blocks/registry/roster.v1.json"), "utf8"), before, "independent evaluator must be read-only");
 
-const tempParent = process.env.TMPDIR ?? path.resolve(root, "../../..", "Temp");
+const tempParent = path.resolve(root, "../../..", "Temp");
 const mutationRoot = fs.mkdtempSync(path.join(tempParent, "agentos-independent-evaluator-"));
 const sourcePackage = path.join(root, "specialist-blocks/foundation/authority-jurisdiction-gate");
 const tempPackage = path.join(mutationRoot, "specialist-blocks/foundation/authority-jurisdiction-gate");
