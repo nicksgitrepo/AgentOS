@@ -167,6 +167,7 @@ const predicateHostileContext = (route, predicate) => {
     setContextPath(context, "action.status", "unsafe");
     context.requested_action = "deploy, publish, migrate, and external-state write";
   }
+  if (normalized.includes("provider identity")) context.requested_action = "provider identity request";
   if (normalized.includes("self-acceptance")) context.requested_action = "self-acceptance or activation request";
   if (normalized.includes("certification")) context.requested_action = "certification request";
   if (normalized.includes("chat-only")) context.assertion = "chat-only assertion presented as authority";
