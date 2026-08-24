@@ -99,20 +99,26 @@ function scanRecords() {
     const privateManifestRaw = fs.readFileSync(privateManifestPath);
     assert.equal(crypto.createHash("sha256").update(privateManifestRaw).digest("hex"), reconciliation.manifest_binding.raw_sha256);
     const privateManifest = JSON.parse(privateManifestRaw.toString("utf8"));
+    const allowedManifestKeys = new Set([
+      "schema", "version", "status", "record_count", "finding_count", "manifest_digest_sha256",
+      "payload_digests", "supplemental_payload_digests", "payload_policy",
+    ]);
+    assert(Object.keys(privateManifest).every((key) => allowedManifestKeys.has(key)), "private manifest contains non-attestation payload fields");
     assert.equal(privateManifest.schema, "agentos.private_control_evidence_projection_manifest.v1");
     assert.equal(privateManifest.status, "PRESERVED_APPEND_ONLY_PRIVATE_EVIDENCE");
     assert.equal(privateManifest.record_count, projection.private_record_count);
     assert.equal(privateManifest.finding_count, projection.private_finding_count);
     assert.equal(privateManifest.manifest_digest_sha256, reconciliation.manifest_binding.digest_sha256);
     assert.equal(privateManifest.manifest_digest_sha256, crypto.createHash("sha256").update(JSON.stringify({...privateManifest, manifest_digest_sha256: null}), "utf8").digest("hex"));
-    manifestDigests = new Set(privateManifest.payload_digests ?? privateManifest.records.map((record) => {
-      assert.equal(record.opaque_record_ref, `opaque:record:${record.payload_digest_sha256}`);
-      return record.payload_digest_sha256;
-    }));
+    assert(Array.isArray(privateManifest.payload_digests));
+    assert(privateManifest.payload_digests.every((digest) => /^[0-9a-f]{64}$/u.test(digest)));
+    manifestDigests = new Set(privateManifest.payload_digests);
+    assert(Array.isArray(privateManifest.supplemental_payload_digests));
+    assert(privateManifest.supplemental_payload_digests.every((digest) => /^[0-9a-f]{64}$/u.test(digest)));
     for (const digest of privateManifest.supplemental_payload_digests ?? []) manifestDigests.add(digest);
     assert.equal(manifestDigests.size, privateManifest.record_count + (privateManifest.supplemental_payload_digests?.length ?? 0));
     assert.deepEqual([...manifestDigests].sort(), [...privateDigests].sort());
-    privateManifestMode = "PRIVATE_MANIFEST_READBACK";
+    privateManifestMode = "PRIVATE_ATTESTATION_READBACK";
   }
 
   const binding = JSON.parse(fs.readFileSync(path.join(root, "schemas/bootstrap-binding.v1.json"), "utf8"));
@@ -229,7 +235,12 @@ assert.equal(sharedWritePersistedRecordAtomic, writePersistedRecordAtomic);
 assert.equal(scanPersistedRecord("task-" + "A".repeat(20)).safe, true);
 assert.equal(scanPersistedRecord("sk-" + "A".repeat(20)).safe, false);
 
-const outside = fs.mkdtempSync(path.join(fs.realpathSync.native("/tmp"), "agentos-host-config-"));
+const configuredTempRoot = process.env.TMPDIR;
+assert(configuredTempRoot, "TMPDIR must be explicitly supplied under Projects custody");
+const resolvedTempRoot = fs.realpathSync.native(configuredTempRoot);
+const projectsRoot = fs.realpathSync.native(path.resolve(root, "../../../.."));
+assert(resolvedTempRoot === projectsRoot || resolvedTempRoot.startsWith(`${projectsRoot}${path.sep}`), "TMPDIR must remain inside Projects custody");
+const outside = fs.mkdtempSync(path.join(resolvedTempRoot, "agentos-host-config-"));
 const config = path.join(outside, "runtime.json");
 fs.writeFileSync(config, "{}\n", {mode: 0o600});
 try {

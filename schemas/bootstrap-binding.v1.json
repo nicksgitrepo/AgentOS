@@ -58,7 +58,7 @@
     },
     "bootstrap_contract": {
       "path": "schemas/bootstrap-plan.v1.json",
-      "sha256": "af2a1ec037b1beb0145e0ed5a62a5027197f71d00b506e426bdda3015d73016f"
+      "sha256": "6313077f2af216115fe531b4a218d24640ee37799662a8cd201fdc79d527eb07"
     },
     "bootstrap_conversation_controller": {
       "path": "control/bootstrap-conversation.mjs",
@@ -234,7 +234,7 @@
     },
     "kernel_registry": {
       "path": "schemas/kernel.v1.json",
-      "sha256": "4ec559e5a3886bbab0b5f4436bfb3e268739a3ee3a91702fb1b79f4993d737ac"
+      "sha256": "b23697829250f164d8f771dcabc4c5ee81de0560567dc38c0f6b74b01fc60ae8"
     },
     "delivery_closure_records_controller": {
       "path": "control/delivery-closure-records.mjs",
@@ -554,7 +554,7 @@
     },
     "agentos_controller_contract": {
       "path": "schemas/agentos-controller.v1.json",
-      "sha256": "5c7240f9f1edab5f80811db2b52d7b27a432ff57e1c33f29d6a7ec97c4b8468a"
+      "sha256": "113f333164ffee352e2e4ce0f42524c9afb6580b340c6d572ebc46c96191c324"
     },
     "continuous_operating_loop_controller": {
       "path": "control/continuous-operating-loop.mjs",
@@ -714,15 +714,15 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "ab3b6e6016f297090812d52005d4445b7b20c91715e67399f32065ebf6e26902"
+      "sha256": "7904eb4cb7ee281cced86433afd08dc97fa59b19269ce71717422f0c5a4a406f"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "9467ff4a397fc014c5e734e78d6f42c175ee27c7ab6533d937ebf0027a32a9d2"
+      "sha256": "7ee43d780da548717dd51cea856cb89ceb84d0ac7da2868b05044543be2fec3d"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
-      "sha256": "fd4e291b74264f594dc5c896fd11e792c951a14d772a26a42a762c2c0cc3bb16"
+      "sha256": "630fb139bebaa0f2a386912a1805cae2de20b528dd3b2c61656f04d98da0cf2d"
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
@@ -814,7 +814,7 @@
     },
     "controller_supervisor_liveness_verifier": {
       "path": "tests/verify-controller-supervisor-liveness.mjs",
-      "sha256": "73883bc2cafd1adc30564fd952fab94f4bcb1cf1cabeec3c62ed61f8b733669e"
+      "sha256": "d9d7c6a2607bd1de2566932272175f8f9c71ee69032be11f4d233121b9bb7fea"
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",
@@ -998,15 +998,15 @@
     },
     "turn_continuation_gate_controller": {
       "path": "control/turn-continuation-gate.mjs",
-      "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"
+      "sha256": "8d8667740a4d3dfc63711d4e94cda4465797d27f6ced7e06919e66f5243b3496"
     },
     "turn_continuation_gate_contract": {
       "path": "schemas/turn-continuation-gate.v1.json",
-      "sha256": "487d23fbc00c0dbe291641da45ca27276dd0676ae8ca7eeccf2bf81b6989b9e6"
+      "sha256": "6e3399db3991abc40768b506dc4989936a8381537a895d61c519fde9cc16c224"
     },
     "turn_continuation_gate_verifier": {
       "path": "tests/verify-turn-continuation-gate.mjs",
-      "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
+      "sha256": "ce948c2f7cf2b4985ca285674a35ca6365f24f3d8145782b293bfd390108b05e"
     },
     "receipt_serialization_gate_controller": {
       "path": "control/receipt-serialization-gate.mjs",
@@ -1442,7 +1442,7 @@
     },
     "governance_universal_controller": {
       "path": "control/governance-universal.mjs",
-      "sha256": "91b8e82d70bf6d43ac783a2a9f03658e962f007a5b113e9f8f13bb46de8969cb"
+      "sha256": "df071a04f92fbafa85d7b8c2630370766fa8484a90317f5b1a6e4467d8b586f7"
     },
     "governance_library_contract": {
       "path": "schemas/governance-library.v1.json",
@@ -1758,7 +1758,7 @@
     },
     "audited_persisted_record_privacy_verifier": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "e3cdb3a285444c3c00eb65588c621c5255a3547eab19754b474c3762691b2362"
+      "sha256": "5359c10b5165cbeb83e7758db92f67f8b131061f688ac966a7a6549f22ebde97"
     },
     "audited_merge_review": {
       "path": "docs/audited-merge-review.md",
@@ -1950,7 +1950,7 @@
     },
     "native_host_attachment_contract": {
       "path": "schemas/native-host-attachment.v1.json",
-      "sha256": "fa9ec13c6a544c30489fb3c4c1a9803681a9c90f86b22cb17217992d79132adc"
+      "sha256": "c321a9765bae8b4098ebc46480143096898e6266c0acbb88e3ef55a8e3ac2211"
     },
     "apprenticeship_common_contract": {
       "path": "schemas/apprenticeship-common.v1.json",
@@ -2318,15 +2318,15 @@
     },
     "privacy_public_projection_record": {
       "path": "docs/privacy-public-projection.v1.json",
-      "sha256": "89cd4b33a153c29c8f5278b0d12fc25b5f77f2894d7c9e0e118551fbd7a30bb1"
+      "sha256": "0cfdb00374a13ddc8ab8a43d01034d6022191ef57cb4f26eb85f485993710107"
     },
     "privacy_public_proof_selector": {
       "path": "tests/verify-persisted-record-privacy.mjs",
-      "sha256": "e3cdb3a285444c3c00eb65588c621c5255a3547eab19754b474c3762691b2362"
+      "sha256": "5359c10b5165cbeb83e7758db92f67f8b131061f688ac966a7a6549f22ebde97"
     },
     "privacy_digest_reconciliation_record": {
       "path": "docs/privacy-digest-reconciliation-2026-08-11.json",
-      "sha256": "81b45a59675c642e5d3a8ab3bdb9e775bca511943159a74d9f3fa40978c83ee2"
+      "sha256": "32d68d6e9bede14c8726604a8625e873a992cae26b7e7f2686f2070ac5fd31aa"
     },
     "current_gate_native_receipt_materialization_record": {
       "path": "docs/platform-handoffs/current-gate-native-receipt-materialization-2026-08-11.json",
@@ -2348,17 +2348,21 @@
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
       "sha256": "58a5fc4544a2f8322f7be297e60899566975bedefe590f826ca954ca2274f794"
     },
-    "turn_continuation_gate_controller": {
-      "path": "control/turn-continuation-gate.mjs",
-      "sha256": "1334ee7629ba11bd407f15714a3034150d7605d515ad19fd513ce5425621f221"
+    "project_controller_lifecycle_recovery_gate": {
+      "path": "specialist-blocks/wave-01/project-controller/gates/11-lifecycle-recovery-archive.gate",
+      "sha256": "775cea2dbf6d39c3e5507027e5a3d02c519dc8a159cb1cb689958d9ee610eec2"
     },
-    "turn_continuation_gate_contract": {
-      "path": "schemas/turn-continuation-gate.v1.json",
-      "sha256": "487d23fbc00c0dbe291641da45ca27276dd0676ae8ca7eeccf2bf81b6989b9e6"
+    "existing_task_stop_resume_controller": {
+      "path": "control/existing-task-stop-resume.mjs",
+      "sha256": "c0f12a2af77919d8e0d90fd08e0ac2933bfa750ff9089bec20edd4b8b774350d"
     },
-    "turn_continuation_gate_verifier": {
-      "path": "tests/verify-turn-continuation-gate.mjs",
-      "sha256": "dfe8dadd03ef179744a677192e718fb86e97b776126592d0b1e1a1dae5c2d770"
+    "existing_task_stop_resume_contract": {
+      "path": "schemas/existing-task-stop-resume.v1.json",
+      "sha256": "718462d794459023ef136369f900fdb623640bbe6a503ca1f6a1964a3bef95ef"
+    },
+    "existing_task_stop_resume_verifier": {
+      "path": "tests/verify-existing-task-stop-resume.mjs",
+      "sha256": "9848c5f4f371614878c01eaff875ee55831be4fe03ff736b0bdce81eb5ef4cde"
     }
   },
   "compatibility_only": {
@@ -2467,7 +2471,7 @@
     },
     "codex_native_host_adapter_controller": {
       "path": "control/codex-native-host-adapter.mjs",
-      "sha256": "18c3ed451e192c9fa3299c38519829c67d8f6b19f6e0b4a62edbf61b781e7ef1"
+      "sha256": "35e7de5324b42a3a36f56210d5a5c6e3dcfccf6ddab69cc29a36eab814733a01"
     },
     "bootstrap_interview_alias": {
       "path": "control/bootstrap-interview.mjs",

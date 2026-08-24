@@ -62,6 +62,12 @@
       "meaningful_progress_required": true,
       "lifecycle_tools": ["set_thread_pinned", "set_thread_archived"]
     },
+    "existing_task_lifecycle": {
+      "contract": "schemas/existing-task-stop-resume.v1.json",
+      "controller": "control/existing-task-stop-resume.mjs",
+      "pin_acceptance": "Fresh exact pinnedThreads membership is required after every pin or transfer.",
+      "replacement_rule": "Same-task continuation is exhausted before exactly one replacement preserves role, model, effort, worktree custody, queue, seam, basis, and monotonic packet delivery."
+    },
     "implementation_lane_count": 12,
     "implementation_lane_contract": "control/native-session-team.mjs",
     "implementation_roles": [

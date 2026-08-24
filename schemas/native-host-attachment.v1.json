@@ -2,6 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "agentos.native_host_attachment.v1",
   "title": "AgentOS native external host attachment",
+  "x-task-list-readback": {
+    "mode": "NATIVE_HOST_LISTED_TASKS",
+    "pin_acceptance": "The exact task ID must be present in a fresh pinnedThreads membership readback; a successful set_thread_pinned call alone is not acceptance.",
+    "event_finalization": "A finalized host event requires a fresh task-index, turn-status, process-set, and material-receipt reread."
+  },
   "type": "object",
   "additionalProperties": false,
   "required": [

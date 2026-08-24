@@ -45,7 +45,12 @@
     "hard_boundary_rule": "Stop the dependent outcome on protected authority, identity, evidence, credential, destructive, external, or unresolved owner-intent boundaries.",
     "soft_boundary_rule": "Send changed scope or operating choices to campaign Orchestrator review while unrelated safe work continues.",
     "puzzle_rule": "Route one repairable engineering puzzle through campaign custody, then require Auditor and Controller rechecks.",
-    "session_rule": "Campaign roles remain observable through durable local sessions, heartbeats, source-bound commands, and readbacks; a protected hold keeps the Controller Runtime alive without activating dependent work."
+    "session_rule": "Campaign roles remain observable through durable local sessions, heartbeats, source-bound commands, and readbacks; a protected hold keeps the Controller Runtime alive without activating dependent work.",
+    "existing_task_lifecycle": {
+      "controller": "control/existing-task-stop-resume.mjs",
+      "contract": "schemas/existing-task-stop-resume.v1.json",
+      "rule": "Repeated fresh liveness evidence may STOP one task, but recovery must prefer the exact same pinned task after finalized idle and unchanged custody; only exhaustive failure permits one role-locked replacement with exactly-once packet delivery."
+    }
   },
   "operating_loop": {
     "controller": "control/continuous-operating-loop.mjs",

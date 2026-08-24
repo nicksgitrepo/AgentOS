@@ -2,6 +2,10 @@
 
 import assert from "node:assert/strict";
 import {summarizeDurableSessionLiveness} from "../control/local-self-development-supervisor-adapter.mjs";
+import {selectHostLifecycleNextRoute} from "../control/controller-supervisor.mjs";
+import {shouldContinueExistingTaskLifecycleSameTurn} from "../control/controller-supervisor-runtime.mjs";
+import {compileExistingTaskLifecycle} from "../control/existing-task-stop-resume.mjs";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const roles = ["CAMPAIGN_ORCHESTRATOR", "FEATURE_AGENT", "INDEPENDENT_AUDITOR"];
 const healthy = roles.map((role) => ({
@@ -47,4 +51,13 @@ const staleSource = summarizeDurableSessionLiveness({
 assert.equal(staleSource.unhealthy[0].source_aligned, false, "source-stale role must remain a repair finding");
 
 assert.throws(() => summarizeDurableSessionLiveness({snapshots: [], declaredSessionIds: [], requiredRoles: []}), /required durable session roles/u);
+
+const lifecycle = compileExistingTaskLifecycle({
+  operationId: "OP.LIVENESS.001", nonce: "NONCE.LIVENESS.001", projectCampaignId: "PROJECT.CAMPAIGN.LIVENESS", taskId: "TASK.LIVENESS.001", hostId: "HOST.LIVENESS.001", activeTurnId: "TURN.LIVENESS.001", pinnedThreads: ["TASK.LIVENESS.001"],
+  binding: {role: "AGENTOS.CONTROLLER", model: "MODEL.PORTABLE", reasoning_effort: "medium", cwd: "/project/worktree", branch: "branch/liveness", worktree: "/project/worktree", queue_id: "QUEUE.LIVENESS", seam_id: "SEAM.LIVENESS", basis_sha256: canonicalDigest({basis: "liveness"})},
+  custodySha256: canonicalDigest({custody: "liveness"}), packetId: "PACKET.LIVENESS.001", checkpointRef: "CHECKPOINT.LIVENESS.001", checkpointSha256: canonicalDigest({checkpoint: "liveness"}), preservationTerms: "Preserve exact liveness custody.", smallestPendingTransition: "Reread and continue the same task.",
+});
+assert.equal(shouldContinueExistingTaskLifecycleSameTurn(lifecycle), true);
+assert.equal(selectHostLifecycleNextRoute({routeClass: "NEXT_SEAM", laneLead: "AGENTOS.CONTROLLER"}).handler, "AGENTOS.CONTROLLER");
+assert.throws(() => selectHostLifecycleNextRoute({routeClass: "AUDIT", laneLead: "AGENTOS.CONTROLLER", trueBlocked: {classification: "SOFT_BOUNDARY", evidence_sha256: canonicalDigest({blocked: false})}}), /TRUE_BLOCKED/u);
 console.log("PASS Controller liveness: missing, stopped, orphaned, and source-stale roles require a fresh recovery route");

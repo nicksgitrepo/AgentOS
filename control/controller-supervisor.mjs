@@ -14,6 +14,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {validateStopWorkflowDecision} from "./stop-workflow-gate.mjs";
+import {routeExistingTaskLifecycleWork} from "./existing-task-stop-resume.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
@@ -268,6 +269,15 @@ export function selectAutonomousNextTask({tasks = [], boundary, findings = [], a
   }
   if (activeCampaign) return {action: "RECONCILE_LIVENESS", task_id: null, reason: "No queued task is open; reconcile the active campaign and mint the next safe task if needed."};
   return {action: "RECONCILE_LIVENESS", task_id: null, reason: "No campaign is marked active; reconcile the workflow state and recover or mint the next safe control-plane task before any wait."};
+}
+
+/*
+ * Host lifecycle recovery is an ordinary local control-plane route. Keep it
+ * out of the campaign Orchestrator unless the caller supplies a typed,
+ * content-addressed TRUE_BLOCKED finding.
+ */
+export function selectHostLifecycleNextRoute({routeClass, laneLead, trueBlocked = null} = {}) {
+  return routeExistingTaskLifecycleWork({routeClass, laneLead, trueBlocked});
 }
 
 export function validateSupervisorObservation(observation) {

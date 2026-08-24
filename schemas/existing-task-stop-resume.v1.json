@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentos.invalid/schemas/existing-task-stop-resume.v1.json",
+  "title": "AgentOS existing-task STOP, resume, and single-replacement lifecycle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "operation_id", "nonce", "state", "project_campaign_id", "task_id", "host_id", "active_turn_id", "replacement_task_id", "binding", "custody_sha256", "pinned_task_id", "old_task_retired", "writer_task_id", "observations", "last_material_receipt_sha256", "checkpoint", "preservation_terms", "smallest_pending_transition", "escalation_reason", "stop", "same_task", "replacement", "replacement_output", "recovery_prompt_count", "packet", "record_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.existing_task_stop_resume.v1"},
+    "version": {"const": 1},
+    "operation_id": {"type": "string", "minLength": 1},
+    "nonce": {"type": "string", "minLength": 1},
+    "state": {"enum": ["OBSERVING", "STUCK_CONFIRMED", "STOP_SENT", "TURN_ENDED_IDLE", "CUSTODY_REVALIDATED", "RESUME_SENT", "RESUMED_SAME_TASK", "SAME_TASK_RETRY_FAILED", "REPLACEMENT_AUTHORIZED", "REPLACEMENT_ACTIVE", "RETIRED", "ESCALATED_FAIL_CLOSED"]},
+    "project_campaign_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "host_id": {"type": "string", "minLength": 1},
+    "active_turn_id": {"type": "string", "minLength": 1},
+    "replacement_task_id": {"type": ["string", "null"]},
+    "binding": {"$ref": "#/$defs/binding"},
+    "custody_sha256": {"$ref": "#/$defs/sha"},
+    "pinned_task_id": {"type": "string", "minLength": 1},
+    "old_task_retired": {"type": "boolean"},
+    "writer_task_id": {"type": "string", "minLength": 1},
+    "observations": {"type": "array", "items": {"type": "object"}},
+    "last_material_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha"}, {"type": "null"}]},
+    "checkpoint": {"type": "object", "additionalProperties": false, "required": ["reference", "sha256"], "properties": {"reference": {"type": "string"}, "sha256": {"$ref": "#/$defs/sha"}}},
+    "preservation_terms": {"type": "string", "minLength": 1},
+    "smallest_pending_transition": {"type": "string", "minLength": 1},
+    "escalation_reason": {"type": ["string", "null"]},
+    "stop": {"type": "object", "additionalProperties": false, "required": ["requested", "event_finalized", "finalized_status"], "properties": {"requested": {"type": "boolean"}, "event_finalized": {"type": "boolean"}, "finalized_status": {"type": ["string", "null"]}}},
+    "same_task": {"type": "object", "additionalProperties": false, "required": ["harmless_probe_attempted", "substantive_retry_attempted", "exhausted"], "properties": {"harmless_probe_attempted": {"type": "boolean"}, "substantive_retry_attempted": {"type": "boolean"}, "exhausted": {"type": "boolean"}}},
+    "replacement": {"type": "object", "additionalProperties": false, "required": ["role_lock_nonce", "authorized", "consumed"], "properties": {"role_lock_nonce": {"type": ["string", "null"]}, "authorized": {"type": "boolean"}, "consumed": {"type": "boolean"}}},
+    "replacement_output": {"type": ["object", "null"]},
+    "recovery_prompt_count": {"type": "integer", "minimum": 0},
+    "packet": {"$ref": "#/$defs/packet"},
+    "record_sha256": {"$ref": "#/$defs/sha"}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "binding": {"type": "object", "additionalProperties": false, "required": ["role", "model", "reasoning_effort", "cwd", "branch", "worktree", "queue_id", "seam_id", "basis_sha256"], "properties": {"role": {"type": "string"}, "model": {"type": "string"}, "reasoning_effort": {"type": "string"}, "cwd": {"type": "string"}, "branch": {"type": "string"}, "worktree": {"type": "string"}, "queue_id": {"type": "string"}, "seam_id": {"type": "string"}, "basis_sha256": {"$ref": "#/$defs/sha"}}},
+    "packet": {"type": "object", "additionalProperties": false, "required": ["packet_id", "queue_id", "delivery_count", "payload_refs", "packet_sha256"], "properties": {"packet_id": {"type": "string"}, "queue_id": {"type": "string"}, "delivery_count": {"type": "integer", "minimum": 0}, "payload_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}, "packet_sha256": {"$ref": "#/$defs/sha"}}}
+  }
+}

@@ -5,6 +5,13 @@
   "role": "AGENTOS_CONTROLLER",
   "scope": "PROJECT_PERSISTENT_CONTROL_PLANE",
   "purpose": "Wake the project-persistent Controller from typed campaign observations, mint one bounded goal, and route safe work without an outside prompt.",
+  "existing_task_lifecycle": {
+    "controller": "control/existing-task-stop-resume.mjs",
+    "contract": "schemas/existing-task-stop-resume.v1.json",
+    "event_finalization_rule": "After a host event finalizes, reread the exact task index, turn status, process set, and material receipt before progress or recovery is accepted.",
+    "same_task_rule": "STOP, finalized idle, unchanged custody, zero process, harmless probe, and substantive retry are exhausted before one role-locked replacement may be authorized.",
+    "routing_rule": "Candidate, audit, remediation, and next-seam work routes directly to the lane lead; only typed evidence-complete TRUE_BLOCKED crosses to the campaign Orchestrator."
+  },
   "autonomous_task_selection": {
     "controller": "control/controller-supervisor.mjs",
     "rule": "When a project adapter supplies an ordered typed task queue, the Controller selects the first open safe task by priority and stable ID; it never requires an outside task name.",

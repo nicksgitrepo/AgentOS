@@ -9,6 +9,7 @@ import {
 } from "../control/native-host-attachment.mjs";
 import {loadNativeHostAdapter} from "../control/native-host-loader.mjs";
 import {scanPersistedRecord} from "../control/persisted-record-privacy.mjs";
+import {createCodexNativeHostAdapter} from "../control/codex-native-host-adapter.mjs";
 
 const NOW = "2026-08-06T12:00:00.000Z";
 const attachment = compileNativeHostAttachment({
@@ -79,5 +80,22 @@ const malformedProvider = Object.fromEntries(REQUIRED_NATIVE_HOST_ACTIONS.map((a
 const malformedBound = bindNativeHost(malformedProvider, attachment);
 await assert.rejects(() => malformedBound.read_thread({}), /NATIVE_HOST_READBACK_INVALID/u);
 await assert.rejects(() => bound.read_thread({identity: {host_id: "forged-host"}}), /payload host differs/u);
+
+const hostActions = Object.fromEntries(REQUIRED_NATIVE_HOST_ACTIONS.map((action) => [action, async () => ({ok: true})]));
+hostActions.list_threads = async () => ({
+  host_id: "host-lifecycle",
+  project_id: "project-lifecycle",
+  campaign_id: "campaign-lifecycle",
+  pinnedThreads: [{task_id: "task-exact", project_id: "project-lifecycle", campaign_id: "campaign-lifecycle", cwd: "/opaque/.codex/worktrees/task-exact", status: "idle"}],
+  threads: [
+    {task_id: "task-exact", project_id: "project-lifecycle", campaign_id: "campaign-lifecycle", cwd: "/opaque/.codex/worktrees/task-exact", status: "idle"},
+    {task_id: "task-other", project_id: "project-lifecycle", campaign_id: "campaign-lifecycle", cwd: "/opaque/.codex/worktrees/task-other", status: "active"},
+  ],
+});
+const codexAdapter = createCodexNativeHostAdapter(hostActions);
+const lifecycleReadback = await codexAdapter.list_threads({project_id: "project-lifecycle", campaign_id: "campaign-lifecycle", identity: {host_id: "host-lifecycle"}});
+assert.deepEqual(lifecycleReadback.pinned_task_ids, ["task-exact"], "fresh exact pinnedThreads membership was not preserved");
+assert.equal(lifecycleReadback.threads.find((entry) => entry.runtime_task_id === "task-exact")?.pinned, true);
+assert.equal(lifecycleReadback.threads.find((entry) => entry.runtime_task_id === "task-other")?.pinned, false);
 
 console.log("PASS native host attachment: opaque attachment, runtime-only provider identity, project binding, alias normalization, loader, and fail-closed adapter checks verified");

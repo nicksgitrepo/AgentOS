@@ -46,6 +46,15 @@ export const UNIVERSAL_RESPONSE_GATING_POLICY = Object.freeze({
   unknown_behavior: "NEVER_PASSES", not_applicable_behavior: "REQUIRES_APPLICABILITY_JUSTIFICATION", public_payload: "SECRET_FREE_PROJECT_AGNOSTIC",
 });
 export const UNIVERSAL_TASK_CLOSEOUT_APPLICABILITY = Object.freeze([...UNIVERSAL_DEVELOPMENT_MODES, "ALL_DEVELOPMENT_MODES"]);
+export const UNIVERSAL_EXISTING_TASK_RECOVERY_POLICY = Object.freeze({
+  contract: "schemas/existing-task-stop-resume.v1.json",
+  controller: "control/existing-task-stop-resume.mjs",
+  same_task_first: true,
+  exact_pin_membership_required: true,
+  single_replacement_role_lock_required: true,
+  ordinary_orchestrator_bypass: true,
+  archive_before_idle_process_zero_and_custody_preservation: "DENY",
+});
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function isRecord(value) { return value !== null && typeof value === "object" && !Array.isArray(value); }

@@ -78,6 +78,8 @@ function normalizeCodexTaskList(raw, payload = {}) {
   raw = decodeHostReadback(raw, "Codex list_threads readback");
   requireRecord(raw, "Codex list_threads readback");
   const pinned = Array.isArray(raw.pinnedThreads) ? raw.pinnedThreads : [];
+  const pinnedTaskIds = pinned.filter(isRecord).map(taskIdFrom);
+  assert(new Set(pinnedTaskIds).size === pinnedTaskIds.length, "Codex pinnedThreads contains duplicate task identities");
   const listed = Array.isArray(raw.threads) ? raw.threads : taskRosterFrom(raw);
   const combined = [...pinned, ...listed];
   const hostId = raw.host_id
@@ -134,6 +136,7 @@ function normalizeCodexTaskList(raw, payload = {}) {
       visible: typeof task.visible === "boolean" ? task.visible : true,
       active: typeof task.active === "boolean" ? task.active : status === "active",
       archived: typeof task.archived === "boolean" ? task.archived : false,
+      pinned: pinnedTaskIds.includes(runtimeTaskId),
     });
     seen.add(runtimeTaskId);
   }
@@ -146,6 +149,7 @@ function normalizeCodexTaskList(raw, payload = {}) {
     host_id: hostId,
     project_id: projectId,
     campaign_id: campaignId,
+    pinned_task_ids: [...pinnedTaskIds].sort((left, right) => left.localeCompare(right)),
     threads,
   };
 }

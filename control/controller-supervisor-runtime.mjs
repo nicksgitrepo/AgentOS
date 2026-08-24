@@ -27,6 +27,7 @@ import {
 import {canonicalDigest} from "./content-addressing.mjs";
 import {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
 import {redactPersistedText} from "./persisted-record-privacy.mjs";
+import {validateExistingTaskLifecycle} from "./existing-task-stop-resume.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]*$/u;
@@ -282,6 +283,11 @@ export function shouldContinueSupervisorSameTurn(result) {
   if (tick.action === "WAIT_FOR_AUTHORIZED_WORK") return false;
   if (isExplicitAuthorizedEventWait(tick)) return false;
   return true;
+}
+
+export function shouldContinueExistingTaskLifecycleSameTurn(record) {
+  validateExistingTaskLifecycle(record);
+  return !["RESUMED_SAME_TASK", "REPLACEMENT_ACTIVE", "RETIRED", "ESCALATED_FAIL_CLOSED"].includes(record.state);
 }
 
 function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {

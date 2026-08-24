@@ -10,6 +10,7 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {validateExistingTaskLifecycle} from "./existing-task-stop-resume.mjs";
 
 export const TURN_CONTINUATION_GATE_SCHEMA = "agentos.turn_continuation_gate.v1";
 export const TURN_CONTINUATION_GATE_VERSION = 1;
@@ -227,6 +228,14 @@ export function compileTurnContinuationRepair({gateId, authority, turn, observed
   };
   gate.gate_sha256 = digestWithout(gate, "gate_sha256");
   return validateTurnContinuationGate(gate);
+}
+
+export function existingTaskContinuationDisposition(record) {
+  validateExistingTaskLifecycle(record);
+  if (["OBSERVING", "STUCK_CONFIRMED", "STOP_SENT", "TURN_ENDED_IDLE", "CUSTODY_REVALIDATED", "RESUME_SENT"].includes(record.state)) return "CONTINUE_SAME_TASK_LIFECYCLE";
+  if (record.state === "SAME_TASK_RETRY_FAILED" && !record.replacement.consumed) return "AUTHORIZE_EXACT_SINGLE_REPLACEMENT";
+  if (["RESUMED_SAME_TASK", "REPLACEMENT_ACTIVE"].includes(record.state)) return "CONTINUE_MATERIAL_WORK";
+  return "STOP_DEPENDENT_ROUTE";
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Turn continuation gate contract loaded\n");

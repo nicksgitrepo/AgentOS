@@ -101,6 +101,11 @@
     "supervisor": "control/controller-supervisor-runtime.mjs",
     "supervisor_contract": "schemas/controller-supervisor.v1.json",
     "supervisor_rule": "The project-persistent Controller observes every active handoff and liveness finding, mints one bounded goal, routes safe repairs, retains exact failures, and respects every hard boundary while remaining ACTIVE_EVENT_WAIT or ACTIVE_PROTECTED_WAIT rather than idle when the next step is an event or protected clearance.",
+    "existing_task_lifecycle": {
+      "controller": "control/existing-task-stop-resume.mjs",
+      "contract": "schemas/existing-task-stop-resume.v1.json",
+      "rule": "Host task recovery rereads finalized events, exact pin membership, process state, material receipts, and custody; it resumes the same task before authorizing exactly one identity-preserving replacement."
+    },
     "durable_session_controller": "control/local-agent-session.mjs",
     "durable_session_contract": "schemas/local-agent-session.v1.json",
     "durable_session_rule": "Campaign roles remain alive and observable across bounded handoffs through source-bound heartbeats and one-command-at-a-time local sessions.",

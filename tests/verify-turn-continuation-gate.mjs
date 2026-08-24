@@ -8,7 +8,9 @@ import {
   TURN_CONTINUATION_HOSTILE_FIXTURE_REFS,
   compileTurnContinuationRepair,
   validateTurnContinuationGate,
+  existingTaskContinuationDisposition,
 } from "../control/turn-continuation-gate.mjs";
+import {compileExistingTaskLifecycle} from "../control/existing-task-stop-resume.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const authority = {
@@ -92,4 +94,6 @@ incompleteFixtureCoverage.gate_sha256 = canonicalDigest({...incompleteFixtureCov
 assert.throws(() => validateTurnContinuationGate(incompleteFixtureCoverage), /fixture coverage is incomplete/u);
 
 assert.equal(TURN_CONTINUATION_HOSTILE_FIXTURE_REFS.length, 8);
+const lifecycle = compileExistingTaskLifecycle({operationId: "OP.TURN.001", nonce: "NONCE.TURN.001", projectCampaignId: "PROJECT.CAMPAIGN.TURN", taskId: "TASK.TURN.001", hostId: "HOST.TURN.001", activeTurnId: "TURN.TURN.001", pinnedThreads: ["TASK.TURN.001"], binding: {role: "AGENTOS.CONTROLLER", model: "MODEL.PORTABLE", reasoning_effort: "medium", cwd: "/project/worktree", branch: "branch/turn", worktree: "/project/worktree", queue_id: "QUEUE.TURN", seam_id: "SEAM.TURN", basis_sha256: canonicalDigest({basis: "turn"})}, custodySha256: canonicalDigest({custody: "turn"}), packetId: "PACKET.TURN.001", checkpointRef: "CHECKPOINT.TURN.001", checkpointSha256: canonicalDigest({checkpoint: "turn"}), preservationTerms: "Preserve exact task custody.", smallestPendingTransition: "Continue the same task."});
+assert.equal(existingTaskContinuationDisposition(lifecycle), "CONTINUE_SAME_TASK_LIFECYCLE");
 console.log("PASS turn continuation gate: overlong turns require a real same-turn dispatch readback; malformed retries, commentary-only closeouts, null reasons, false protected waits, and timer-only liveness fail closed");
