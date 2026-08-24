@@ -61,11 +61,11 @@ backlog: `123` packages total, consisting of `19` `ROUTER`, `16`
 All 123 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 The on-demand recipe catalog now covers all `621` retained inventory roles:
-`17` recipes are `CANDIDATE` and compileable (`6` P0, `5` P4, and `6` P5), `603` recipes are `PLANNED`,
-explicitly non-compileable, and require a role-specific block with its own
-source lock, twelve gates, hostile fixtures, independent evaluation, and
-admission receipt. The protected Memory lane is retained as `NOT_APPLICABLE`
-and external-only. The catalog preserves all `10` alias mappings and is
+`620` recipes are `CANDIDATE` and compileable, with zero `PLANNED` rows. Every
+compileable candidate still requires a role-specific source lock, twelve gates,
+hostile fixtures, independent evaluation, and admission receipt before
+activation. The protected Memory lane is retained as `NOT_APPLICABLE` and
+external-only. The catalog preserves all `10` alias mappings and is
 content-addressed by `e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74`.
 
 ## Source-locked standard candidates
