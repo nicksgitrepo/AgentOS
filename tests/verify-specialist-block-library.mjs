@@ -212,6 +212,86 @@ for (const route of routableRoutes) {
 }
 assert.equal(atomicPredicateCaseCount, 15, "atomic deny predicate matrix must cover every activation/execution/deployment/migration/runtime/unsupported/provider identity route case");
 
+// The hostile matrix must also cover inflected and plural action values.  A
+// lexical exact-match deny check is insufficient: deployed/deploying,
+// publishing, migrated/migrating, self-accepting, provider identities, and
+// similar variants are all the same prohibited action family.
+const inflectedActionCases = [
+  {id: "deploy-inflections", matches: /deploy/u, values: ["deployed", "deploying", "deployments"]},
+  {id: "publish-inflections", matches: /publish/u, values: ["published", "publishing", "publishers"]},
+  {id: "migrate-inflections", matches: /migrat/u, values: ["migrated", "migrating", "migrations"]},
+  {id: "execute-inflections", matches: /execut/u, values: ["executed", "executing", "executions"]},
+  {id: "activate-inflections", matches: /activat/u, values: ["activated", "activating", "activations"]},
+  {id: "adopt-inflections", matches: /adopt/u, values: ["adopted", "adopting", "adoptions"]},
+  {id: "accept-inflections", matches: /accept/u, values: ["accepted", "accepting", "acceptances"]},
+  {id: "provider-identity-inflections", matches: /provider[_ ]identity/u, values: ["provider identities", "provider identity credentials"]},
+  {id: "self-acceptance-inflections", matches: /self[-_ ]accept/u, values: ["self-accepting", "self-acceptances"]},
+  {id: "unsupported-access-inflections", matches: /unsupported[_ ]tool/u, values: ["unavailable", "inaccessible", "unsupported"]},
+  {id: "certification-inflections", matches: /certification/u, values: ["certified", "certifying", "attestation"]},
+  {id: "scope-expansion-inflections", matches: /scope expansion/u, values: ["widened", "widening", "broadened", "expanding"]},
+];
+let inflectedActionCaseCount = 0;
+for (const route of routableRoutes) {
+  for (const predicate of route.deny_if) {
+    const predicateText = predicate.toLowerCase();
+    for (const actionCase of inflectedActionCases) {
+      if (!actionCase.matches.test(predicateText)) continue;
+      for (const value of actionCase.values) {
+        const context = contextForRoute(route);
+        setContextPath(context, actionCase.id === "scope-expansion-inflections" ? "scope.status" : "requested_action", value);
+        const hostile = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context});
+        inflectedActionCaseCount += 1;
+        assert.notEqual(hostile.status, "ROUTE", `${route.route_id} bypassed ${actionCase.id}: ${value} (${predicate})`);
+        assert.equal(hostile.selected.length, 0, `${route.route_id} selected a specialist for ${actionCase.id}: ${value}`);
+      }
+    }
+  }
+}
+assert(inflectedActionCaseCount >= 41, `inflected/plural hostile matrix is incomplete: ${inflectedActionCaseCount}`);
+
+const semanticStatusCases = [
+  {id: "ambiguous-status-synonyms", matches: /ambiguous/u, path: "authority.status", values: ["uncertain", "omitted", "undetermined", "unavailable"]},
+  {id: "stale-status-synonyms", matches: /stale|superseded|conflict/u, path: "source.status", values: ["outdated", "unverified", "conflicting", "superseded"]},
+  {id: "unresolved-status-synonyms", matches: /unresolved/u, path: "provider.status", values: ["unknown", "undetermined", "uncertain", "omitted", "unavailable"]},
+  {id: "missing-status-synonyms", matches: /missing|absent|unbound/u, path: "authority.status", values: ["omitted", "unavailable", "absent", "unbound"]},
+  {id: "unsafe-status-synonyms", matches: /unsafe/u, path: "action.status", values: ["dangerous", "widened", "unavailable", "untrusted"]},
+  {id: "scope-status-synonyms", matches: /scope expansion/u, path: "scope.status", values: ["widened", "widening", "broadened", "expanding"]},
+];
+let semanticStatusCaseCount = 0;
+for (const route of routableRoutes) {
+  for (const predicate of route.deny_if) {
+    for (const statusCase of semanticStatusCases) {
+      if (!statusCase.matches.test(predicate.toLowerCase())) continue;
+      for (const value of statusCase.values) {
+        const context = contextForRoute(route);
+        setContextPath(context, statusCase.path, value);
+        const hostile = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context});
+        semanticStatusCaseCount += 1;
+        assert.notEqual(hostile.status, "ROUTE", `${route.route_id} bypassed ${statusCase.id}: ${value} (${predicate})`);
+        assert.equal(hostile.selected.length, 0, `${route.route_id} selected a specialist for ${statusCase.id}: ${value}`);
+      }
+    }
+  }
+}
+assert(semanticStatusCaseCount >= 20, `semantic status hostile matrix is incomplete: ${semanticStatusCaseCount}`);
+
+const textPredicateCases = [
+  {id: "chat-asserted", matches: /chat[-_ ]only/u, path: "assertion", value: "asserted authority without a chat boundary"},
+  {id: "unsupported-unavailable", matches: /unsupported[_ ]tool/u, path: "tool_access", value: "unavailable"},
+];
+for (const route of routableRoutes) {
+  for (const predicate of route.deny_if) {
+    for (const textCase of textPredicateCases) {
+      if (!textCase.matches.test(predicate.toLowerCase())) continue;
+      const context = contextForRoute(route);
+      setContextPath(context, textCase.path, textCase.value);
+      const hostile = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context});
+      assert.notEqual(hostile.status, "ROUTE", `${route.route_id} bypassed ${textCase.id}: ${predicate}`);
+      assert.equal(hostile.selected.length, 0, `${route.route_id} selected a specialist for ${textCase.id}`);
+    }
+  }
+}
+
 const removeContextPath = (context, dottedPath) => {
   const copy = structuredClone(context);
   const parts = dottedPath.split(".");

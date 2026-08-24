@@ -77,8 +77,15 @@ function contextHas(context, key) {
 }
 
 const FALSE_DENY_VALUES = new Set(["", "false", "no", "none", "null", "undefined", "bound", "declared", "fresh", "valid", "pass", "safe"]);
-const STATUS_DENY_VALUES = /\b(?:absent|ambiguous|conflict(?:ing)?|denied|expired|expanded|forbidden|invalid|missing|pending|stale|superseded|unresolved|unsafe|unverifiable)\b/iu;
-const ACTION_DENY_VALUES = /\b(?:accept(?:ance)?|activate|activation|admit|adoption|credential|deploy|deployment|execute|execution|external[-_ ]state|migrate|migration|production|provider[-_ ]identity|publish|runtime|secret|self[-_ ]accept(?:ance)?|side[-_ ]effect|unsupported|write)\b/iu;
+// Deny values are intentionally normalized by semantic family instead of only
+// matching a single dictionary form.  A hostile request such as "deployed",
+// "deploying", "identities", or "widened" must be as closed as its canonical
+// form; otherwise a caller can bypass the route's deny_if contract by inflection.
+const STATUS_DENY_VALUES = /\b(?:absent|ambiguous|conflict(?:ing)?|denied|dangerous|expired|expanded|forbidden|incomplete|inaccessible|invalid|missing|omitted|outdated|pending|stale|superseded|undetermined|unknown|unbound|unresolved|unsafe|unavailable|unverifiable|uncertain|untrusted|unverified|widen(?:ed|ing)|broaden(?:ed|ing)|not[-_ ](?:available|bound|present|provided))\b/iu;
+const ACTION_DENY_VALUES = /\b(?:accept(?:ance|ances|ed|ing|s)?|activat(?:e|ed|ing|ion|ions|es)|admi(?:t|tted|tting|ssion|ssions|ts)|adopt(?:ed|ing|ion|ions|s)?|certif(?:y|ied|ication|ications|ying)|credential(?:s|ing)?|deploy(?:ed|ing|ment|ments|s)?|execut(?:e|ed|ing|ion|ions|s)?|external[-_ ]state(?:s)?|migrat(?:e|ed|ing|ion|ions|es)|production(?:s)?|provider[-_ ]identit(?:y|ies)|publish(?:ed|ing|er|ers|ment|ments|es)|runtime(?:s)?|secret(?:s)?|self[-_ ]accept(?:ance|ances|ed|ing|s)?|side[-_ ]effect(?:s)?|unsupported|writ(?:e|es|ing|ten)|attest(?:ed|ing|ation|ations)|legal)\b/iu;
+const UNRESOLVED_STATUS_VALUES = /\b(?:ambiguous|dangerous|inaccessible|invalid|missing|omitted|outdated|pending|uncertain|undetermined|unknown|unbound|unavailable|unresolved|unverifiable|unverified)\b/iu;
+const MISSING_STATUS_VALUES = /\b(?:absent|inaccessible|invalid|missing|omitted|unbound|unavailable|unknown|not[-_ ](?:available|bound|present|provided))\b/iu;
+const SCOPE_EXPANSION_VALUES = /\b(?:broaden(?:ed|ing)|enlarg(?:ed|ing)|expand(?:ed|ing)|widen(?:ed|ing))\b/iu;
 
 function normalizeDenyPath(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9]+/gu, "_").replace(/^_+|_+$/gu, "");
@@ -154,17 +161,17 @@ function contextHasDenyPredicate(context, predicate) {
     .map(([, value]) => String(value));
   if (normalized.includes("ambiguous") && flattened.some(([, value]) => STATUS_DENY_VALUES.test(String(value)))) return true;
   if (/(?:stale|superseded|unverifiable|conflicting|conflict)/u.test(normalized) && statusValues.some((value) => STATUS_DENY_VALUES.test(value))) return true;
-  if (normalized.includes("unresolved") && statusValues.some((value) => /\b(?:unresolved|unknown|pending|missing|ambiguous)\b/iu.test(value))) return true;
-  if (normalized.includes("missing") && statusValues.some((value) => /\b(?:missing|absent|unbound|invalid)\b/iu.test(value))) return true;
-  if (/(?:missing|absent|unbound)/u.test(normalized) && statusValues.some((value) => /\b(?:missing|absent|unbound|invalid)\b/iu.test(value))) return true;
-  if (normalized.includes("applicability") && flattened.some(([path, value]) => /applicability/u.test(normalizeDenyPath(path)) && /\b(?:missing|absent|unbound|invalid)\b/iu.test(String(value)))) return true;
+  if (normalized.includes("unresolved") && statusValues.some((value) => UNRESOLVED_STATUS_VALUES.test(value))) return true;
+  if (normalized.includes("missing") && statusValues.some((value) => MISSING_STATUS_VALUES.test(value))) return true;
+  if (/(?:missing|absent|unbound)/u.test(normalized) && statusValues.some((value) => MISSING_STATUS_VALUES.test(value))) return true;
+  if (normalized.includes("applicability") && flattened.some(([path, value]) => /applicability/u.test(normalizeDenyPath(path)) && MISSING_STATUS_VALUES.test(String(value)))) return true;
   if (normalized.includes("unsafe") && flattened.some(([path, value]) => /(?:action|request|status|scope|operation|intent)/u.test(normalizeDenyPath(path)) && STATUS_DENY_VALUES.test(String(value)))) return true;
-  if (normalized.includes("provider_identity") && flattened.some(([path, value]) => /(?:provider|identity|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && (value === true || /\b(?:identity|provider[-_ ]identity)\b/iu.test(String(value)) || ACTION_DENY_VALUES.test(String(value))))) return true;
+  if (normalized.includes("provider_identity") && flattened.some(([path, value]) => /(?:provider|identity|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && (value === true || /\b(?:identit(?:y|ies)|provider[-_ ]identit(?:y|ies))\b/iu.test(String(value)) || ACTION_DENY_VALUES.test(String(value))))) return true;
   if (normalized.includes("self_acceptance") && flattened.some(([path, value]) => /(?:self|accept|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && ACTION_DENY_VALUES.test(String(value)))) return true;
-  if (normalized.includes("scope_expansion") && flattened.some(([path, value]) => /(?:scope|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && /\b(?:expanded|expansion|broadened|broaden)\b/iu.test(String(value)))) return true;
+  if (normalized.includes("scope_expansion") && flattened.some(([path, value]) => /(?:scope|action|request|operation|intent)/u.test(normalizeDenyPath(path)) && SCOPE_EXPANSION_VALUES.test(String(value)))) return true;
   if (normalized.includes("certification") && actionValues.some((value) => /\b(?:certif|legal|attest)\w*/iu.test(value))) return true;
-  if (normalized.includes("chat_only") && actionValues.some((value) => /\b(?:chat|assertion|claimed)\w*/iu.test(value))) return true;
-  if (normalized.includes("unsupported_tool") && actionValues.some((value) => /\b(?:tool|data|access)\w*/iu.test(value))) return true;
+  if (normalized.includes("chat_only") && actionValues.some((value) => /\b(?:chat|assert(?:ed|ing|ion)|claim(?:ed|ing|s)?)\b/iu.test(value))) return true;
+  if (normalized.includes("unsupported_tool") && actionValues.some((value) => /\b(?:tool|data|access|inaccess|unavail|unsupported)\w*/iu.test(value))) return true;
   return false;
 }
 
