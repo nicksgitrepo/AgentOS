@@ -2354,15 +2354,15 @@
     },
     "existing_task_stop_resume_controller": {
       "path": "control/existing-task-stop-resume.mjs",
-      "sha256": "c0f12a2af77919d8e0d90fd08e0ac2933bfa750ff9089bec20edd4b8b774350d"
+      "sha256": "08f38f04a90d65c6f4886b67f21e7d813e8d57f319fadbf71af81649136338ef"
     },
     "existing_task_stop_resume_contract": {
       "path": "schemas/existing-task-stop-resume.v1.json",
-      "sha256": "718462d794459023ef136369f900fdb623640bbe6a503ca1f6a1964a3bef95ef"
+      "sha256": "d22f760e26de15ddd5a6d2ea4b71eb1812eb31082fad9907fa75ff6bb83e422e"
     },
     "existing_task_stop_resume_verifier": {
       "path": "tests/verify-existing-task-stop-resume.mjs",
-      "sha256": "9848c5f4f371614878c01eaff875ee55831be4fe03ff736b0bdce81eb5ef4cde"
+      "sha256": "0f2cf76c7977f5f2ee243c685d096d6640fb086e35bcfa1336e5ca37a0505fa9"
     }
   },
   "compatibility_only": {
