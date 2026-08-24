@@ -51,8 +51,23 @@ for (const record of first.records) {
   assert.equal(record.block.gate_pack.ordered_gate_ids.length, 12);
   assert.deepEqual(record.block.gate_pack.outcomes, GATE_OUTCOMES);
   assert.equal(fs.readdirSync(path.join(packageDir, "gates")).filter((name) => name.endsWith(".gate")).length, 12);
-  assert.equal(fs.readdirSync(path.join(packageDir, "fixtures")).length, CORE_EVALUATION_CLASSES.length + ATOMIC_EVALUATION_CLASSES.length);
-  assert.deepEqual(new Set(record.evaluation.cases.map((item) => item.class)), new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES]));
+  const expectedFixtureClasses = new Set([...CORE_EVALUATION_CLASSES, ...ATOMIC_EVALUATION_CLASSES]);
+  const evaluationByClass = new Map(record.evaluation.cases.map((item) => [item.class, item]));
+  const fixtureFiles = fs.readdirSync(path.join(packageDir, "fixtures")).filter((name) => name.endsWith(".json")).sort();
+  assert.equal(fixtureFiles.length, expectedFixtureClasses.size);
+  assert.equal(new Set(fixtureFiles).size, fixtureFiles.length);
+  for (const fixtureFile of fixtureFiles) {
+    const fixture = JSON.parse(fs.readFileSync(path.join(packageDir, "fixtures", fixtureFile), "utf8"));
+    assert.equal(fixture.schema, "agentos.specialist_fixture.v1");
+    assert.equal(fixture.version, 1);
+    assert.equal(fixture.block_id, record.block.block_id);
+    assert.equal(fixtureFile, `${fixture.class}.json`);
+    assert(expectedFixtureClasses.has(fixture.class), `${record.block.block_id} fixture class is not governed: ${fixture.class}`);
+    assert.equal(fixture.hostile, true, `${record.block.block_id} fixture is not hostile: ${fixture.class}`);
+    assert.equal(fixture.expected, evaluationByClass.get(fixture.class)?.expected, `${record.block.block_id} fixture/evaluation expected outcome mismatch: ${fixture.class}`);
+    assert(typeof fixture.note === "string" && fixture.note.length > 0, `${record.block.block_id} fixture note is missing: ${fixture.class}`);
+  }
+  assert.deepEqual(new Set(record.evaluation.cases.map((item) => item.class)), expectedFixtureClasses);
   if (record.block.role_kind === "STANDARD_BLOCK") {
     assert.equal(record.standard.requirements.block_id, record.block.block_id);
     assert.equal(record.block.source_manifest_sha256, record.sources.manifest_sha256);
