@@ -26,6 +26,18 @@ const parentHandoffSha256 = "3".repeat(64);
 const sourceSha256 = "4".repeat(64);
 const now = "2026-08-04T12:00:00.000Z";
 
+function routedReadback(overrides = {}) {
+  return {
+    controller_role: "AGENTOS_CONTROLLER",
+    status: "ROUTED",
+    task_id: "TASK-1",
+    route_receipt_sha256: "a".repeat(64),
+    semantic_before_sha256: "b".repeat(64),
+    semantic_after_sha256: "c".repeat(64),
+    ...overrides,
+  };
+}
+
 function boundary(overrides = {}) {
   return {
     hard_stop: false,
@@ -77,16 +89,19 @@ assert.equal(deriveSupervisorAction(puzzle), "ROUTE_REPAIRABLE_PUZZLE");
 const sameObservationLater = observation({observedAtUtc: "2026-08-04T12:00:01.000Z", findings: puzzle.findings});
 assert.equal(sameObservationLater.observation_sha256, puzzle.observation_sha256, "observation identity must ignore the heartbeat clock");
 const sameGoal = compileSupervisorGoal({observation: puzzle});
-const tickAtFirstObservation = compileSupervisorTick({observation: puzzle, goal: sameGoal, routeStatus: "ROUTED", routeReadback: {status: "ROUTED"}});
-const tickAtLaterObservation = compileSupervisorTick({observation: sameObservationLater, goal: compileSupervisorGoal({observation: sameObservationLater}), routeStatus: "ROUTED", routeReadback: {status: "ROUTED"}});
+const tickAtFirstObservation = compileSupervisorTick({observation: puzzle, goal: sameGoal, routeStatus: "ROUTED", routeReadback: routedReadback()});
+const tickAtLaterObservation = compileSupervisorTick({observation: sameObservationLater, goal: compileSupervisorGoal({observation: sameObservationLater}), routeStatus: "ROUTED", routeReadback: routedReadback()});
 assert.equal(tickAtLaterObservation.tick_sha256, tickAtFirstObservation.tick_sha256, "equivalent observations must not collide with timestamp-only tick drift");
+assert.throws(() => compileSupervisorTick({observation: puzzle, goal: sameGoal, routeStatus: "ROUTED", routeReadback: {}}), /Controller identity|route readback/u, "an identity-free route must fail closed");
+assert.throws(() => compileSupervisorTick({observation: puzzle, goal: sameGoal, routeStatus: "ROUTED", routeReadback: routedReadback({handler: "UNKNOWN_HANDLER"})}), /handler is invalid/u, "an unknown route handler must fail closed");
+assert.throws(() => compileSupervisorTick({observation: puzzle, goal: sameGoal, routeStatus: "ROUTED", routeReadback: routedReadback({semantic_progress: true, semantic_before_sha256: null, semantic_after_sha256: null})}), /before\/after digests/u, "semantic_progress alone is not route evidence");
 let routed = 0;
 const routedResult = runSupervisorIteration({
   observation: puzzle,
   route: (goal) => {
     routed += 1;
     assert.equal(goal.action, "ROUTE_REPAIRABLE_PUZZLE");
-    return {status: "ROUTED", task_id: "TASK-1"};
+    return routedReadback();
   },
 });
 assert.equal(routed, 1);
@@ -110,7 +125,7 @@ const soft = observation({
   boundary: boundary({soft_review: true, scope_changed: true}),
 });
 assert.equal(deriveSupervisorAction(soft), "REVIEW_SOFT_BOUNDARY");
-assert.equal(runSupervisorIteration({observation: soft, route: () => ({status: "REVIEWED"})}).goal.action, "REVIEW_SOFT_BOUNDARY");
+assert.equal(runSupervisorIteration({observation: soft, route: () => routedReadback({status: "REVIEWED", next_action: "Await the bounded scope review decision."})}).goal.action, "REVIEW_SOFT_BOUNDARY");
 
 const hardFindingWithSoftScopeChange = observation({
   boundary: boundary({soft_review: true, scope_changed: true}),
@@ -217,7 +232,7 @@ const runtimeAdapter = {
   route: () => {
     routeAttempts += 1;
     if (routeAttempts === 1) throw new Error("stale route adapter");
-    return {status: "ROUTED", attempt: routeAttempts};
+    return routedReadback({attempt: routeAttempts});
   },
 };
 const firstRuntime = await runControllerSupervisorIteration({runtimeRoot, adapter: runtimeAdapter, runtimeId: "SUPERVISOR-RUNTIME-TEST"});
@@ -253,7 +268,7 @@ fs.rmSync(runtimeRoot, {recursive: true, force: true});
 const disappearedRouteRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-disappeared-route-"));
 const firstDisappearedRoute = await runControllerSupervisorIteration({
   runtimeRoot: disappearedRouteRoot,
-  adapter: {observe: () => puzzle, route: () => ({status: "ROUTED", attempt: 1})},
+  adapter: {observe: () => puzzle, route: () => routedReadback({attempt: 1})},
   runtimeId: "SUPERVISOR-DISAPPEARED-ROUTE-TEST",
 });
 const disappearedRoute = await runControllerSupervisorIteration({
@@ -275,7 +290,7 @@ const routeRetryAdapter = {
   route: () => {
     routeRetryAttempts += 1;
     if (routeRetryAttempts === 1) throw new Error("route adapter temporarily unavailable");
-    return {status: "ROUTED", attempt: routeRetryAttempts};
+    return routedReadback({attempt: routeRetryAttempts});
   },
 };
 const firstRouteRetry = await runControllerSupervisorIteration({runtimeRoot: routeRetryRoot, adapter: routeRetryAdapter, runtimeId: "SUPERVISOR-ROUTE-RETRY-TEST"});
@@ -383,7 +398,7 @@ const turnBoundAdapter = {
   route: () => {
     turnBoundRoutes += 1;
     if (turnBoundRoutes >= 2) turnBoundAbort.abort();
-    return {status: "ROUTED", transition: turnBoundRoutes};
+    return routedReadback({transition: turnBoundRoutes});
   },
 };
 const turnBoundTimer = setTimeout(() => turnBoundAbort.abort(), 300);
@@ -410,7 +425,7 @@ const noProgressLoopResults = await runControllerSupervisor({
   runtimeRoot: noProgressLoopRoot,
   adapter: {
     observe: () => puzzle,
-    route: () => ({status: "ROUTED"}),
+    route: () => routedReadback({route_receipt_sha256: null, semantic_before_sha256: null, semantic_after_sha256: null}),
     onBlockedExact: ({error}) => {
       blockedExactCalls += 1;
       assert.equal(error, "BLOCKED_EXACT_AFTER_THREE_IDENTICAL_BOUNDED_RECOVERIES");
@@ -442,7 +457,7 @@ const missingRouteResults = await runControllerSupervisor({
       observe: () => puzzle,
       route: () => {
         missingRouteAbort.abort();
-        return {status: "ROUTED", repaired: true};
+        return routedReadback({repaired: true});
       },
     };
   },
@@ -503,11 +518,7 @@ fs.rmSync(staleRouteRcaRoot, {recursive: true, force: true});
 const authorizedWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-supervisor-authorized-wait-"));
 const authorizedWaitAdapter = {
   observe: () => liveness,
-  route: () => ({
-    status: "WAITING_FOR_AUTHORIZED_WORK",
-    resume_event_id: "OWNER-EVENT-1",
-    resume_condition: "Resume only when the exact owner event arrives.",
-  }),
+  route: () => routedReadback(),
 };
 const authorizedWaitRuntime = await runControllerSupervisorIteration({runtimeRoot: authorizedWaitRoot, adapter: authorizedWaitAdapter, runtimeId: "SUPERVISOR-AUTHORIZED-WAIT-TEST"});
 assert.equal(JSON.parse(fs.readFileSync(path.join(authorizedWaitRoot, "supervisor", "runtime.json"), "utf8")).status, "ROUTED_OR_RECONCILED", "a normal routed result is not a wait without an explicit event action");
@@ -516,16 +527,18 @@ const eventWaitRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agentos-controller-
 const eventWaitObservation = observation({nextAction: "Wait for the exact owner event before continuing."});
 const eventWaitAdapter = {
   observe: () => eventWaitObservation,
-  route: () => ({
-    status: "WAITING_FOR_AUTHORIZED_WORK",
-    resume_event_id: "OWNER-EVENT-1",
-    resume_condition: "Resume only when the exact owner event arrives.",
-  }),
+  route: () => routedReadback(),
 };
 const eventWaitRuntime = await runControllerSupervisorIteration({runtimeRoot: eventWaitRoot, adapter: eventWaitAdapter, runtimeId: "SUPERVISOR-EVENT-WAIT-TEST"});
 const eventWaitGoal = {...eventWaitRuntime.goal, action: "WAIT_FOR_AUTHORIZED_WORK", goal_sha256: null};
 eventWaitGoal.goal_sha256 = supervisorDigest({...eventWaitGoal, created_at_utc: null});
-const reboundEventWaitTick = compileSupervisorTick({observation: eventWaitObservation, goal: eventWaitGoal, routeStatus: "ROUTED", routeReadback: eventWaitRuntime.tick.route_readback});
+const reboundEventWaitTick = compileSupervisorTick({observation: eventWaitObservation, goal: eventWaitGoal, routeStatus: "ROUTED", routeReadback: {
+  controller_role: "AGENTOS_CONTROLLER",
+  status: "WAITING_FOR_AUTHORIZED_WORK",
+  task_id: "TASK-EVENT-WAIT",
+  resume_event_id: "OWNER-EVENT-1",
+  resume_condition: "Resume only when the exact owner event arrives.",
+}});
 fs.writeFileSync(path.join(eventWaitRoot, "supervisor", "goal.json"), `${JSON.stringify(eventWaitGoal)}\n`);
 fs.writeFileSync(path.join(eventWaitRoot, "supervisor", "tick.json"), `${JSON.stringify(reboundEventWaitTick)}\n`);
 // The synthetic route is accepted only when its exact event binding is present; no no-progress RCA is produced.

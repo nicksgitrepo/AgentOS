@@ -2133,6 +2133,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
+      controller_role: "AGENTOS_CONTROLLER",
       status: campaignProgressTask ? "CAMPAIGN_PROGRESS_RECHECKED_AND_ADOPTED" : "ROUTED_CONTROLLER_RECHECKED_AND_ADOPTED",
       task_id: taskId,
       source_commit: sourceCommit,
@@ -2154,6 +2155,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       lifecycle_resolution_path: resolutionPath,
       adopted_commit: finalizerResult.adopted_commit,
       adopted_tree: finalizerResult.adopted_tree,
+      semantic_before_sha256: goal.parent_handoff_sha256,
+      semantic_after_sha256: transitioned.handoff.handoff_sha256,
       handoff_path: `autonomous-supervisor-handoffs/${transitioned.handoff.goal_id}.json`,
       current_handoff_pointer_sha256: transitioned.pointer.pointer_sha256,
       supervised_session_record_paths: currentSessions.map((entry) => path.relative(campaignRoot, entry.target)).sort(),
@@ -2196,6 +2199,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       && JSON.stringify(existingRoles) === JSON.stringify(requiredRoles)
       && existingSessions.every((entry) => sessionIsHealthy({record: entry.record, sourceCommit, sourceTree, observedAtUtc}))) {
       return {
+        controller_role: "AGENTOS_CONTROLLER",
         status: "LIVENESS_HEALTHY",
         source_commit: sourceCommit,
         source_tree: sourceTree,
@@ -2307,6 +2311,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
+      controller_role: "AGENTOS_CONTROLLER",
       status: "LIVENESS_RECONCILED",
       task_id: taskId,
       source_commit: sourceCommit,
@@ -2316,6 +2321,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       stale_session_rca_sha256: orphanedSessionRca?.rca_sha256 ?? null,
       autonomous_task_queue_sha256: taskQueue.queue_sha256,
       controller_recheck_sha256: controllerRecheck.record_sha256,
+      semantic_before_sha256: goal.parent_handoff_sha256,
+      semantic_after_sha256: transitioned.handoff.handoff_sha256,
       task_record_path: taskRecordPath,
       readback_record_paths: [orchestratorRecordPath, featureRecordPath, auditorRecordPath, controllerRecordPath].sort(),
       handoff_path: `autonomous-supervisor-handoffs/${transitioned.handoff.goal_id}.json`,
@@ -2391,6 +2398,7 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
     });
     const transitioned = writeCurrentHandoff(campaignRoot, transitionedHandoff, priorPointer?.pointer_sha256 ?? null);
     return {
+      controller_role: "AGENTOS_CONTROLLER",
       status: "AUTONOMOUS_WORKFLOW_AUDIT_COMPLETED",
       task_id: taskId,
       source_commit: sourceCommit,
@@ -2398,6 +2406,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       audit_sha256: audit.audit_sha256,
       audit_path: `autonomous-supervisor-workflow-audits/${taskId}.json`,
       task_queue_sha256: queueReadback.queue_sha256,
+      semantic_before_sha256: goal.parent_handoff_sha256,
+      semantic_after_sha256: transitioned.handoff.handoff_sha256,
       handoff_path: `autonomous-supervisor-handoffs/${transitioned.handoff.goal_id}.json`,
       current_handoff_pointer_sha256: transitioned.pointer.pointer_sha256,
       protected_boundaries: permissions,
@@ -2419,6 +2429,8 @@ export async function createControllerSupervisorAdapter({runtimeRoot, repoRoot, 
       status: "WAITING_FOR_AUTHORIZED_WORK",
       controller_role: "AGENTOS_CONTROLLER",
       owner_decision_required: false,
+      resume_event_id: `OWNER-EVENT-${goal.goal_sha256.slice(0, 16).toUpperCase()}`,
+      resume_condition: "Resume only when the exact authorized owner event arrives.",
     };
     throw new Error(`local Controller adapter cannot route action ${goal.action}`);
   }

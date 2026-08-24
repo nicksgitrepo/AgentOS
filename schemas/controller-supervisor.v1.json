@@ -45,6 +45,13 @@
     "idle": "Compatibility-only legacy label; an inactive or empty workflow is reconciled before waiting. An unchanged observation after a routed action is a liveness defect: persist a durable no-progress RCA and perform one bounded recovery. ACTIVE_EVENT_WAIT is valid only when the routed tick records an explicit authorized resume event and condition.",
     "event_driven_wait": "Remain alive with zero workers only when the routed readback records an exact resume event and condition or a protected dependency. Otherwise persist a no-progress RCA and repair the workflow before any wait."
   },
+  "routing_readback": {
+    "identity_rule": "A routed tick requires controller_role=AGENTOS_CONTROLLER and a known status. A caller-supplied handler, arbitrary status, or identity-free object is rejected.",
+    "source_binding_rule": "Every routed result binds a task_id or a complete source_commit/source_tree pair; soft review binds an explicit next_action; an authorized wait binds resume_event_id and resume_condition.",
+    "claim_rule": "semantic_progress, repaired, accepted, and approved claims require a content-addressed before/after transition or route receipt; the boolean claim alone is never progress.",
+    "action_rule": "WAIT_FOR_AUTHORIZED_WORK is valid only with the exact event binding, REVIEW_SOFT_BOUNDARY is not same-turn progress, and external_action/product_action claims are denied.",
+    "same_turn_rule": "The runtime continues a routed turn only after the validated readback carries a semantic before/after transition or a non-null route receipt digest."
+  },
   "persistence": {
     "controller": "control/controller-supervisor.mjs",
     "records": "Content-addressed records use compare-and-swap parent checks and regular non-symlink files.",

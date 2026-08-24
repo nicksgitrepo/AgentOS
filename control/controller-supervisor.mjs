@@ -44,6 +44,36 @@ const FINDING_STATUSES = Object.freeze([
   "RESOLVED",
 ]);
 const AUTONOMOUS_TASK_STATUSES = Object.freeze(["OPEN", "IN_PROGRESS", "COMPLETED", "HELD"]);
+const ROUTE_READBACK_STATUSES = Object.freeze([
+  "ROUTED",
+  "REVIEWED",
+  "SOFT_BOUNDARY_REVIEW_REQUIRED",
+  "WAITING_FOR_AUTHORIZED_WORK",
+  "LIVENESS_HEALTHY",
+  "LIVENESS_RECONCILED",
+  "ROUTED_TO_DURABLE_CAMPAIGN_ROLES",
+  "RECONCILING_DURABLE_CAMPAIGN_ROLES",
+  "ROUTED_CONTROLLER_RECHECKED_AND_ADOPTED",
+  "CAMPAIGN_PROGRESS_RECHECKED_AND_ADOPTED",
+  "ADOPTED_AUDITED_FEATURE_CHECKPOINT",
+  "SUPERVISOR_REPAIR_ACCEPTED",
+  "SUPERVISOR_CAMPAIGN_PROGRESS_ACCEPTED",
+  "SUPERVISOR_LIVENESS_RECONCILED",
+  "SUPERVISOR_AUTONOMOUS_TASK_COMPLETED",
+  "AUTONOMOUS_WORKFLOW_AUDIT_COMPLETED",
+]);
+const ROUTE_RECEIPT_FIELDS = Object.freeze([
+  "route_receipt_sha256",
+  "controller_recheck_sha256",
+  "finalizer_sha256",
+  "lifecycle_resolution_sha256",
+  "current_handoff_pointer_sha256",
+  "handoff_sha256",
+  "audit_sha256",
+  "task_queue_sha256",
+  "autonomous_task_queue_sha256",
+  "campaign_progress_sha256",
+]);
 
 const compareUtf8 = (left, right) => Buffer.compare(Buffer.from(left, "utf8"), Buffer.from(right, "utf8"));
 
@@ -280,6 +310,69 @@ export function selectHostLifecycleNextRoute({routeClass, laneLead, trueBlocked 
   return routeExistingTaskLifecycleWork({routeClass, laneLead, trueBlocked});
 }
 
+function hasSemanticTransition(readback) {
+  return typeof readback.semantic_before_sha256 === "string"
+    && SHA256.test(readback.semantic_before_sha256)
+    && typeof readback.semantic_after_sha256 === "string"
+    && SHA256.test(readback.semantic_after_sha256)
+    && readback.semantic_before_sha256 !== readback.semantic_after_sha256;
+}
+
+function hasRouteReceipt(readback) {
+  return ROUTE_RECEIPT_FIELDS.some((field) => typeof readback[field] === "string" && SHA256.test(readback[field]));
+}
+
+/**
+ * Validate the adapter's routed result before it becomes durable tick state.
+ * A status string, a caller-provided handler, or semantic_progress=true is
+ * not evidence of a route.  Every accepted result is Controller-bound and
+ * carries either source/task identity or an explicit event wait binding.
+ */
+export function validateSupervisorRouteReadback(readback, {action = null} = {}) {
+  requireRecord(readback, "supervisor route readback");
+  requireIdentifier(readback.status, "supervisor route readback status");
+  assert(ROUTE_READBACK_STATUSES.includes(readback.status), "supervisor route readback status is unknown");
+  assert(readback.controller_role === CONTROLLER_ROLE, "supervisor route readback Controller identity is invalid");
+  if (readback.handler !== undefined) assert(readback.handler === CONTROLLER_ROLE, "supervisor route readback handler is invalid");
+  if (readback.task_id !== undefined) requireIdentifier(readback.task_id, "supervisor route readback task ID");
+  if (readback.goal_id !== undefined) requireIdentifier(readback.goal_id, "supervisor route readback goal ID");
+  const sourceCommitPresent = readback.source_commit !== undefined;
+  const sourceTreePresent = readback.source_tree !== undefined;
+  assert(sourceCommitPresent === sourceTreePresent, "supervisor route readback source identity is incomplete");
+  if (sourceCommitPresent) {
+    requireGitObject(readback.source_commit, "supervisor route readback source commit");
+    requireGitObject(readback.source_tree, "supervisor route readback source tree");
+  }
+  for (const [key, value] of Object.entries(readback)) {
+    if (key.endsWith("_sha256") && value !== null) requireSha(value, `supervisor route readback ${key}`);
+    if (key.endsWith("_commit") && value !== null) requireGitObject(value, `supervisor route readback ${key}`);
+    if (key.endsWith("_tree") && value !== null) requireGitObject(value, `supervisor route readback ${key}`);
+  }
+  if (readback.owner_decision_required !== undefined) assert(typeof readback.owner_decision_required === "boolean", "supervisor route readback owner-decision flag is invalid");
+  if (readback.semantic_progress === true) assert(hasSemanticTransition(readback), "supervisor route readback semantic progress must bind before/after digests");
+  for (const field of ["accepted", "approved", "repaired"]) {
+    if (readback[field] === true) assert(hasSemanticTransition(readback) || hasRouteReceipt(readback), `supervisor route readback ${field} claim lacks a receipt`);
+  }
+  assert(readback.external_action !== true && readback.product_action !== true, "supervisor route readback cannot claim external or Product action");
+  if (readback.status === "WAITING_FOR_AUTHORIZED_WORK") {
+    assert(action === null || action === "WAIT_FOR_AUTHORIZED_WORK", "authorized event wait is bound to the wrong action");
+    requireIdentifier(readback.resume_event_id, "supervisor route readback resume event");
+    requireString(readback.resume_condition, "supervisor route readback resume condition");
+    assert(readback.resume_condition.trim().length >= 8, "supervisor route readback resume condition is too short");
+  }
+  if (action === "WAIT_FOR_AUTHORIZED_WORK") assert(readback.status === "WAITING_FOR_AUTHORIZED_WORK", "wait action requires an explicit authorized event readback");
+  if (action === "REVIEW_SOFT_BOUNDARY") {
+    assert(["REVIEWED", "SOFT_BOUNDARY_REVIEW_REQUIRED"].includes(readback.status), "soft-review action has an invalid route status");
+    requireString(readback.next_action, "supervisor route readback next action");
+  }
+  if (readback.status === "SOFT_BOUNDARY_REVIEW_REQUIRED" || readback.status === "REVIEWED") requireString(readback.next_action, "supervisor route readback next action");
+  const hasSourceIdentity = sourceCommitPresent;
+  const hasTaskIdentity = readback.task_id !== undefined;
+  const hasExplicitWaitIdentity = readback.status === "WAITING_FOR_AUTHORIZED_WORK";
+  assert(hasSourceIdentity || hasTaskIdentity || hasExplicitWaitIdentity || readback.status === "SOFT_BOUNDARY_REVIEW_REQUIRED" || readback.status === "REVIEWED", "supervisor route readback lacks source-bound task or event identity");
+  return readback;
+}
+
 export function validateSupervisorObservation(observation) {
   const keys = [
     "schema",
@@ -471,7 +564,7 @@ export function compileSupervisorTick({observation, goal, routeStatus, routeRead
   validateSupervisorGoal(goal);
   requireString(routeStatus, "supervisor route status");
   assert(["NOT_ATTEMPTED", "ROUTED", "STOPPED_HARD_BOUNDARY", "ROUTE_FAILED"].includes(routeStatus), "supervisor route status is invalid");
-  if (routeStatus === "ROUTED") requireRecord(routeReadback, "supervisor route readback");
+  if (routeStatus === "ROUTED") validateSupervisorRouteReadback(routeReadback, {action: goal.action});
   if (routeStatus === "ROUTE_FAILED") requireString(routeError, "supervisor route error");
   if (goal.action === "STOP_HARD_BOUNDARY") assert(routeStatus === "STOPPED_HARD_BOUNDARY", "hard-boundary goal must stop before routing");
   if (goal.action !== "STOP_HARD_BOUNDARY") assert(routeStatus !== "STOPPED_HARD_BOUNDARY", "non-boundary goal cannot claim a hard stop");
@@ -503,7 +596,7 @@ export function validateSupervisorTick(tick) {
   requireSha(tick.observation_sha256, "supervisor tick observation digest");
   assert(ACTIONS.includes(tick.action), "supervisor tick action is invalid");
   assert(["NOT_ATTEMPTED", "ROUTED", "STOPPED_HARD_BOUNDARY", "ROUTE_FAILED"].includes(tick.route_status), "supervisor tick route status is invalid");
-  if (tick.route_status === "ROUTED") requireRecord(tick.route_readback, "supervisor tick route readback");
+  if (tick.route_status === "ROUTED") validateSupervisorRouteReadback(tick.route_readback, {action: tick.action});
   else assert(tick.route_readback === null, "supervisor tick has an unexpected route readback");
   if (tick.route_status === "ROUTE_FAILED") requireString(tick.route_error, "supervisor tick route error");
   else assert(tick.route_error === null, "supervisor tick has an unexpected route error");

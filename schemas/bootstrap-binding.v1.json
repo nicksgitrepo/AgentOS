@@ -714,19 +714,19 @@
     },
     "controller_supervisor_controller": {
       "path": "control/controller-supervisor.mjs",
-      "sha256": "7904eb4cb7ee281cced86433afd08dc97fa59b19269ce71717422f0c5a4a406f"
+      "sha256": "e0e10002027e5a8e8f76d14b23c42efbe5d6f5abce261f95b5b8a4bee0adfcd4"
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "7ee43d780da548717dd51cea856cb89ceb84d0ac7da2868b05044543be2fec3d"
+      "sha256": "e86daf75fb97ee55679976a2bd69b50298fb2c1c286b625f8ccb8b017303b312"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
-      "sha256": "630fb139bebaa0f2a386912a1805cae2de20b528dd3b2c61656f04d98da0cf2d"
+      "sha256": "09fb27ecd9db29bbeda96256cc3bd2b9e08b38625bf44990ebebe293aeac9bc6"
     },
     "controller_supervisor_verifier": {
       "path": "tests/verify-controller-supervisor.mjs",
-      "sha256": "e857c2602d2360e4090f7ed0dabd2d6114fe3795cc5e2bcfdd260e6b3f3bc3f6"
+      "sha256": "2760f0521db9a656ba9f47998c4438f15a06b0f6e03ac48021f1cd11c602d7de"
     },
     "stop_workflow_gate_controller": {
       "path": "control/stop-workflow-gate.mjs",
@@ -806,7 +806,7 @@
     },
     "local_supervisor_adapter_controller": {
       "path": "control/local-self-development-supervisor-adapter.mjs",
-      "sha256": "ad36e84fcabb31dbdbd39285468dd5ba85f8779c8be5cb0ad8cd0631249a092e"
+      "sha256": "67b98698d442cb5a59ac1e499d213e3125825a9f22bf45c8e22c3917e2562c06"
     },
     "local_campaign_admission_verifier": {
       "path": "tests/verify-local-campaign-admission.mjs",

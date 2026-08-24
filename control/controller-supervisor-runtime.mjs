@@ -21,6 +21,7 @@ import {
   supervisorDigest,
   validateSupervisorGoal,
   validateSupervisorObservation,
+  validateSupervisorRouteReadback,
   validateSupervisorTick,
   writeSupervisorRecordCompareAndSwap,
 } from "./controller-supervisor.mjs";
@@ -251,6 +252,7 @@ function isExplicitAuthorizedEventWait(tick) {
   const readback = tick?.route_readback;
   return tick?.route_status === "ROUTED"
     && isRecord(readback)
+    && readback.controller_role === "AGENTOS_CONTROLLER"
     && readback.status === "WAITING_FOR_AUTHORIZED_WORK"
     && typeof readback.resume_event_id === "string"
     && /^[A-Z][A-Z0-9._:-]*$/u.test(readback.resume_event_id)
@@ -261,12 +263,17 @@ function isExplicitAuthorizedEventWait(tick) {
 function hasTypedSemanticProgress(result) {
   const readback = result?.tick?.route_readback;
   if (!isRecord(readback)) return false;
-  if (readback.semantic_progress === true) return true;
-  return typeof readback.semantic_before_sha256 === "string"
+  try {
+    validateSupervisorRouteReadback(readback, {action: result.tick.action});
+  } catch {
+    return false;
+  }
+  const semanticTransition = typeof readback.semantic_before_sha256 === "string"
     && SHA256.test(readback.semantic_before_sha256)
     && typeof readback.semantic_after_sha256 === "string"
     && SHA256.test(readback.semantic_after_sha256)
     && readback.semantic_before_sha256 !== readback.semantic_after_sha256;
+  return semanticTransition;
 }
 
 /**
@@ -280,9 +287,9 @@ export function shouldContinueSupervisorSameTurn(result) {
   if (!isRecord(result) || result.reused === true || result.boundedRecovery === true) return false;
   const tick = result.tick;
   if (!isRecord(tick) || tick.route_status !== "ROUTED") return false;
-  if (tick.action === "WAIT_FOR_AUTHORIZED_WORK") return false;
+  if (["WAIT_FOR_AUTHORIZED_WORK", "REVIEW_SOFT_BOUNDARY", "STOP_HARD_BOUNDARY"].includes(tick.action)) return false;
   if (isExplicitAuthorizedEventWait(tick)) return false;
-  return true;
+  return hasTypedSemanticProgress(result);
 }
 
 export function shouldContinueExistingTaskLifecycleSameTurn(record) {
@@ -860,6 +867,16 @@ export async function runControllerSupervisor({runtimeRoot, adapter, adapterFact
           if (hasTypedSemanticProgress(result)) {
             boundedRecoveryFingerprint = null;
             boundedRecoveryCount = 0;
+          }
+          if (!hasTypedSemanticProgress(result)
+            && result.tick.route_status === "ROUTED"
+            && ["ROUTE_REPAIRABLE_PUZZLE", "RECONCILE_LIVENESS"].includes(result.tick.action)
+            && result.tick.route_readback?.status !== "LIVENESS_HEALTHY") {
+            // Persisted route identity without a before/after transition is
+            // not progress. Re-observe immediately so the existing durable
+            // no-progress RCA and bounded recovery path can run this turn.
+            immediateTurnRequested = true;
+            break;
           }
           if (!shouldContinueSupervisorSameTurn(result)) break;
           sameTurnTransitions += 1;
