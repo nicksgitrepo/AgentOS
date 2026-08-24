@@ -73,6 +73,16 @@ for (const row of roster.blocks) {
   assert.equal(block.revision, "1.0.0", `${row.block_id} revision`);
   assert.equal(block.lifecycle, "CANDIDATE", `${row.block_id} lifecycle`);
   assert.equal(block.activation, "OFF", `${row.block_id} activation`);
+  assert.equal(block.controls.secrets, "DENY", `${row.block_id} secret default`);
+  assert.equal(block.controls.deploy, "DENY", `${row.block_id} deploy default`);
+  assert.equal(block.controls.acceptance_authority, "INDEPENDENT_AUTHORITY_ONLY", `${row.block_id} acceptance authority`);
+  assert.equal(block.controls.browser, "READ_ONLY_PRIMARY_SOURCES", `${row.block_id} browser default`);
+  assert(["LOCAL_ISOLATED_CANDIDATE", "LOCAL_READ_ONLY", "DENY"].includes(block.controls.build), `${row.block_id} build default`);
+  assert.equal(block.controls.communication, "TYPED_HANDOFF_ONLY", `${row.block_id} communication default`);
+  assert.equal(block.authority.acceptance_authority, "INDEPENDENT_AUTHORITY_ONLY;_AUTHOR_CANNOT_SELF_ADMIT", `${row.block_id} authority boundary`);
+  assert.equal(block.intake.context_schema, "schemas/specialist-context.v1.json", `${row.block_id} intake schema`);
+  assert.equal(block.output.typed_schema, "schemas/specialist-output.v1.json", `${row.block_id} output schema`);
+  assert.equal(typeof block.lifecycle_rules.candidate_entry, "string", `${row.block_id} lifecycle binding`);
   assert(["STATIC_PASS_REVIEW_REQUIRED", "UTILITY_HARM_PENDING"].includes(block.evaluation.disposition), `${row.block_id} evaluation disposition`);
   assert.equal(block.evaluation.independent_reviewer_required, true, `${row.block_id} independent review requirement`);
   assert.equal(block.evaluation.dossier_path, "evaluation.json", `${row.block_id} evaluation path`);
