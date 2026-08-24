@@ -92,6 +92,33 @@ function normalizeSignals(signals) {
   return normalized;
 }
 
+function hasUsableContextValue(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return Number.isFinite(value) && value !== 0;
+  if (typeof value === "boolean") return value;
+  if (Array.isArray(value)) return value.length > 0 && value.some((item) => hasUsableContextValue(item));
+  if (typeof value === "object") {
+    return Object.entries(value).some(([key, child]) => key.trim().length > 0 && hasUsableContextValue(child));
+  }
+  return false;
+}
+
+export function validateSpecialistRuntimeContext({context, contextSchema} = {}) {
+  if (context === null || context === undefined || typeof context !== "object" || Array.isArray(context)) {
+    return {status: "UNKNOWN", valid: false, reason: "Runtime specialist context must be a non-array object."};
+  }
+  const allowedRoots = Object.keys(contextSchema?.properties ?? {});
+  const unknownRoots = allowedRoots.length > 0 ? Object.keys(context).filter((root) => !allowedRoots.includes(root)).sort() : [];
+  if (unknownRoots.length > 0) {
+    return {status: "UNKNOWN", valid: false, reason: `Runtime specialist context contains unknown root fields: ${unknownRoots.join(", ")}.`};
+  }
+  if (!hasUsableContextValue(context)) {
+    return {status: "UNKNOWN", valid: false, reason: "Runtime specialist context is empty or contains only empty/falsy values."};
+  }
+  return {status: "PASS", valid: true};
+}
+
 function contextHas(context, key) {
   const parts = key.split(".");
   let current = context;
@@ -99,7 +126,7 @@ function contextHas(context, key) {
     if (current === null || current === undefined || typeof current !== "object" || !(part in current)) return false;
     current = current[part];
   }
-  return current !== null && current !== undefined && current !== "";
+  return hasUsableContextValue(current);
 }
 
 const FALSE_DENY_VALUES = new Set(["", "false", "no", "none", "null", "undefined", "bound", "declared", "fresh", "valid", "pass", "safe"]);
@@ -204,6 +231,15 @@ function contextHasDenyPredicate(context, predicate) {
 export function routeSpecialists({library, signals = [], context = {}, requestedBlockIds = []}) {
   assert(library?.routing && library?.byId, "compiled specialist library is required");
   const normalizedSignals = normalizeSignals(signals);
+  const contextValidation = validateSpecialistRuntimeContext({context, contextSchema: library.contextSchema});
+  if (!contextValidation.valid) {
+    return {
+      status: contextValidation.status,
+      selected: [],
+      denials: [{outcome: "UNKNOWN", reason: contextValidation.reason}],
+      signals: normalizedSignals,
+    };
+  }
   const requested = new Set(requestedBlockIds);
   const candidates = [];
   const denials = [];

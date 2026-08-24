@@ -18,6 +18,7 @@ import {
   routeSpecialists,
   validateAtomicSelection,
   validateSpecialistContextContract,
+  validateSpecialistRuntimeContext,
 } from "../control/specialist-block-loader.mjs";
 import {loadSpecialistBlockCatalog} from "../control/specialist-agent-compiler.mjs";
 
@@ -59,6 +60,32 @@ assert.doesNotThrow(
 );
 assert.deepEqual(validateSpecialistContextContract({contextSchema: library.contextSchema, routing: library.routing}), library.contextContract, "specialist context schema/routing contract is not deterministic");
 assert.equal(library.contextContract.required_path_count, 155, "all governed dotted and top-level route context paths must remain catalogued");
+for (const [label, context] of [
+  ["empty object", {}],
+  ["empty array", []],
+  ["false context", false],
+  ["zero context", 0],
+]) {
+  const invalid = validateSpecialistRuntimeContext({context, contextSchema: library.contextSchema});
+  assert.equal(invalid.valid, false, `${label} must fail closed before specialist routing`);
+  const routed = routeSpecialists({library, signals: ["candidate-evaluation"], requestedBlockIds: ["specialist.control.independent-auditor"], context});
+  assert.equal(routed.selected.length, 0, `${label} selected a specialist`);
+  assert.equal(routed.status, "UNKNOWN", `${label} did not return UNKNOWN`);
+}
+const completeContextWithUnknownRoot = {
+  request: "typed",
+  signals: ["candidate-evaluation"],
+  authority: "bound",
+  source_lock: "fresh",
+  custody: "bound",
+  requested_action: "review",
+  unknown_root: "forged",
+};
+const unknownRootValidation = validateSpecialistRuntimeContext({context: completeContextWithUnknownRoot, contextSchema: library.contextSchema});
+assert.equal(unknownRootValidation.valid, false, "unknown top-level context roots must fail closed");
+const unknownRootRoute = routeSpecialists({library, signals: ["candidate-evaluation"], requestedBlockIds: ["specialist.control.independent-auditor"], context: completeContextWithUnknownRoot});
+assert.equal(unknownRootRoute.selected.length, 0, "unknown top-level context root selected a specialist");
+assert.equal(unknownRootRoute.status, "UNKNOWN", "unknown top-level context root did not return UNKNOWN");
 const missingContextPath = structuredClone(library.contextSchema);
 missingContextPath.x_agentos_context_contract.required_context_paths.pop();
 assert.throws(() => validateSpecialistContextContract({contextSchema: missingContextPath, routing: library.routing}), /route path catalog diverges/u, "a missing route context path must fail closed");
