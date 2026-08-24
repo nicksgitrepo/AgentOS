@@ -186,6 +186,29 @@ for (const route of routableRoutes) {
   }
 }
 
+const atomicPredicateCases = [
+  {id: "activation-request", matches: /activation/u, path: "requested_action", value: "activation"},
+  {id: "execution-request", matches: /execution/u, path: "requested_action", value: "execution"},
+  {id: "unsupported-tool-status", matches: /unsupported[_ ]tool/u, path: "tool_access.status", value: "unsupported"},
+  {id: "unsupported-tool-request", matches: /unsupported[_ ]tool/u, path: "requested_action", value: "unsupported"},
+  {id: "provider-identity-request", matches: /provider[_ ]identity/u, path: "requested_action", value: "provider identity"},
+];
+let atomicPredicateCaseCount = 0;
+for (const route of routableRoutes) {
+  for (const predicate of route.deny_if) {
+    for (const atomicCase of atomicPredicateCases) {
+      if (!atomicCase.matches.test(predicate.toLowerCase())) continue;
+      const context = contextForRoute(route);
+      setContextPath(context, atomicCase.path, atomicCase.value);
+      const hostile = routeSpecialists({library, signals: [], requestedBlockIds: route.select, context});
+      atomicPredicateCaseCount += 1;
+      assert.notEqual(hostile.status, "ROUTE", `${route.route_id} bypassed atomic ${atomicCase.id} deny predicate: ${predicate}`);
+      assert.equal(hostile.selected.length, 0, `${route.route_id} selected a specialist for atomic ${atomicCase.id}: ${predicate}`);
+    }
+  }
+}
+assert.equal(atomicPredicateCaseCount, 10, "atomic deny predicate matrix must cover every activation/execution/unsupported/provider identity route case");
+
 const removeContextPath = (context, dottedPath) => {
   const copy = structuredClone(context);
   const parts = dottedPath.split(".");
