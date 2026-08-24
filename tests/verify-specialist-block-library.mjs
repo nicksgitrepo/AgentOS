@@ -30,6 +30,18 @@ assert.equal(first.records.length, 123, "foundation, reusable standard, P0, P1, 
 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
+const materialized = (value) => JSON.parse(JSON.stringify(value));
+assert.deepEqual(library.roster, materialized(first.roster), "checked-in specialist roster is stale or detached from compiler output");
+assert.deepEqual(library.routing, materialized(first.routing), "checked-in specialist routing index is stale or detached from compiler output");
+assert.deepEqual(library.inventory, materialized(first.inventory), "checked-in specialist inventory is stale or detached from compiler output");
+const expectedRouteIds = first.records.map(({block}) => `route.${block.block_id.slice("specialist.".length)}`).sort();
+const actualRouteIds = library.routing.routes.map((route) => route.route_id).sort();
+assert.equal(new Set(actualRouteIds).size, actualRouteIds.length, "checked-in specialist routing index contains duplicate route identities");
+assert.deepEqual(actualRouteIds, expectedRouteIds, "checked-in specialist routing index does not cover the exact roster identities");
+for (const route of library.routing.routes) {
+  assert.equal(route.select.length, 1, `${route.route_id} must select exactly its canonical roster block`);
+  assert.equal(route.route_id, `route.${route.select[0].slice("specialist.".length)}`, `${route.route_id} is not bound to its selected canonical block`);
+}
 assert.equal(taskCompilerCatalog.length, 123, "task-shaped compiler catalog must load every compiled candidate package");
 assert.equal(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
 assert.deepEqual(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK").map((block) => block.block_id), ["specialist.standard.aws-iam-current", "specialist.standard.cloudflare-cache-current", "specialist.standard.cloudflare-dns-current", "specialist.standard.conventional-commits-1-0-0", "specialist.standard.fmcsa-part-390-2025", "specialist.standard.gao-green-book-2025", "specialist.standard.gltf-2-0-1", "specialist.standard.nist-ai-rmf-1-0", "specialist.standard.nist-genai-profile-1-0", "specialist.standard.nist-ssdf", "specialist.standard.oauth-rfc-9700", "specialist.standard.oidc-core-1-0", "specialist.standard.openapi-3-1-1", "specialist.standard.owasp-api-top10-2023", "specialist.standard.owasp-asvs", "specialist.standard.owasp-top10-2025", "specialist.standard.postgresql-17-rls", "specialist.standard.react-19-2", "specialist.standard.rust-reference", "specialist.standard.semantic-versioning-2-0-0", "specialist.standard.slsa", "specialist.standard.typescript-5-9", "specialist.standard.wcag-2-2"]);
