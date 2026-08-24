@@ -392,7 +392,11 @@ export function authorizeSingleReplacement(record, {replacementTaskId, roleLockN
     assert(replacementTaskId !== next.task_id, "replacement task must be distinct");
     assert(roleLockNonce === next.nonce, "replacement role lock nonce mismatch");
     assert(JSON.stringify(immutableBinding(binding)) === JSON.stringify(next.binding), "replacement changed role or custody binding");
-    assert(oldTaskRetired === true && Array.isArray(oldTaskProcesses) && oldTaskProcesses.length === 0, "old task must be retired and inert before replacement");
+    const retirementEvidence = next.stop.event_finalized && TERMINAL_EVENTS.has(next.stop.finalized_status) && next.last_material_receipt_sha256 !== null && Array.isArray(oldTaskProcesses) && oldTaskProcesses.length === 0;
+    assert(retirementEvidence, "old task retirement evidence is missing or not inert");
+    // The caller flag is only a consistency attestation. Retirement authority
+    // comes from the validated finalized event and inert-process reread above.
+    assert(oldTaskRetired === true, "old task retirement attestation contradicts lifecycle evidence");
     sortedUnique(pinnedThreads, "fresh pinnedThreads");
     assert(!pinnedThreads.includes(replacementTaskId), "replacement pin transferred before retirement authorization");
     assert(next.replacement.authorized === false && next.replacement.consumed === false, "replacement role lock already consumed");
