@@ -722,7 +722,7 @@
     },
     "controller_material_liveness_ledger": {
       "path": "control/controller-material-liveness-ledger.mjs",
-      "sha256": "1c2f984ba55fa796ce9d0ba22288398a9dc2c750e9cfc4290a0f005cb4023129"
+      "sha256": "437b87397279821cbdd6827065a0bd8a7e81657c90516eeaa3ad7462a7c39f7e"
     },
     "controller_material_liveness_ledger_verifier": {
       "path": "tests/verify-controller-material-liveness-ledger.mjs",

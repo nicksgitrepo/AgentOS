@@ -419,6 +419,12 @@ function requireDeliveryText(value, label) {
   assert(!/[\u0000-\u001f\u007f]/u.test(value), `${label} contains control characters`);
 }
 
+const DELIVERY_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,191}$/u;
+
+function requireDeliveryIdentifier(value, label) {
+  assert(typeof value === "string" && DELIVERY_IDENTIFIER.test(value), `${label} must be a stable identifier`);
+}
+
 function deliveryIdentity(value) {
   return {
     report_id: value.report_id,
@@ -434,7 +440,7 @@ function deliveryIdentity(value) {
 
 function validateDeliveryIdentity(value, label = "cross-thread delivery") {
   for (const field of ["report_id", "source_task_id", "affected_task_id", "generation", "recipient_role", "recipient_task_id"]) {
-    requireIdentifier(value[field], `${label} ${field}`);
+    requireDeliveryIdentifier(value[field], `${label} ${field}`);
   }
   requireSha(value.stall_signature_sha256, `${label} stall signature`);
   requireSha(value.custody_sha256, `${label} custody`);
@@ -449,7 +455,7 @@ function validateDeliveryAcknowledgement(acknowledgement, attemptId) {
   if (acknowledgement === null) return;
   exactKeys(acknowledgement, ["status", "attempt_id", "at_utc"], "cross-thread delivery acknowledgement");
   assert(CROSS_THREAD_DELIVERY_ACKNOWLEDGEMENT_STATES.includes(acknowledgement.status), "cross-thread acknowledgement status is invalid");
-  requireIdentifier(acknowledgement.attempt_id, "cross-thread acknowledgement attempt");
+  requireDeliveryIdentifier(acknowledgement.attempt_id, "cross-thread acknowledgement attempt");
   assert(acknowledgement.attempt_id === attemptId, "cross-thread acknowledgement attempt mismatch");
   requireUtc(acknowledgement.at_utc, "cross-thread acknowledgement time");
 }
@@ -510,7 +516,7 @@ function validateFallback(fallback, identity) {
   assert(new Set(fallback.errors).size === fallback.errors.length, "cross-thread fallback errors must be unique");
   requireDeliveryText(fallback.preservation, "cross-thread fallback preservation");
   requireDeliveryText(fallback.safe_remaining_work, "cross-thread fallback safe work");
-  requireIdentifier(fallback.owner, "cross-thread fallback owner");
+  requireDeliveryIdentifier(fallback.owner, "cross-thread fallback owner");
   requireDeliveryText(fallback.resume_condition, "cross-thread fallback resume condition");
   requireUtc(fallback.created_at_utc, "cross-thread fallback creation time");
   requireSha(fallback.fallback_sha256, "cross-thread fallback digest");
@@ -534,7 +540,7 @@ export function validateCrossThreadDeliveryState(state) {
   assert(state.schema === CROSS_THREAD_DELIVERY_SCHEMA && state.version === CROSS_THREAD_DELIVERY_VERSION, "cross-thread delivery identity is invalid");
   validateDeliveryIdentity(state);
   assert(CROSS_THREAD_DELIVERY_ROUTES.includes(state.route), "cross-thread delivery route is invalid");
-  requireIdentifier(state.attempt_id, "cross-thread delivery attempt");
+  requireDeliveryIdentifier(state.attempt_id, "cross-thread delivery attempt");
   assert(Number.isSafeInteger(state.retry_count) && state.retry_count >= 0, "cross-thread delivery retry count is invalid");
   assert(Number.isSafeInteger(state.retry_limit) && state.retry_limit >= 0 && state.retry_limit <= 8, "cross-thread delivery retry limit is invalid");
   assert(state.retry_count <= state.retry_limit, "cross-thread delivery retry count exceeds limit");
@@ -586,10 +592,10 @@ export function compileStallReportDeliveryBlockedFallback({
   }, "cross-thread fallback identity");
   assert(reportId === identity.report_id, "cross-thread fallback report identity mismatch");
   assert(originalSignatureSha256 === identity.stall_signature_sha256, "cross-thread fallback signature identity mismatch");
-  requireIdentifier(intendedRecipientRole, "cross-thread fallback recipient role");
-  requireIdentifier(intendedRecipientTaskId, "cross-thread fallback recipient task");
+  requireDeliveryIdentifier(intendedRecipientRole, "cross-thread fallback recipient role");
+  requireDeliveryIdentifier(intendedRecipientTaskId, "cross-thread fallback recipient task");
   const resolvedOwner = owner ?? intendedRecipientRole;
-  requireIdentifier(resolvedOwner, "cross-thread fallback owner");
+  requireDeliveryIdentifier(resolvedOwner, "cross-thread fallback owner");
   requireUtc(createdAtUtc, "cross-thread fallback creation time");
   const routes = [...attemptedRoutes];
   assert(routes.length > 0, "cross-thread fallback attempted routes are required");
@@ -736,7 +742,7 @@ function resultState(state, overrides = {}) {
 export function consumeCrossThreadDeliveryFallback(state, {owner, consumedAtUtc = new Date().toISOString()} = {}) {
   validateCrossThreadDeliveryState(state);
   assert(state.fallback !== null && state.delivery_state === "BLOCKED", "cross-thread fallback is not pending");
-  requireIdentifier(owner, "cross-thread fallback consumer");
+  requireDeliveryIdentifier(owner, "cross-thread fallback consumer");
   assert(owner === state.fallback.owner, "cross-thread fallback consumer is not designated owner");
   requireUtc(consumedAtUtc, "cross-thread fallback consumption time");
   const fallback = {...state.fallback, status: "BLOCKED_CONSUMED", consumption_state: "CONSUMED"};
