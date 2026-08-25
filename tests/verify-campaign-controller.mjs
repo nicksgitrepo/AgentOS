@@ -202,11 +202,20 @@ const platformCloseout = compileUniversalTaskCloseoutReceipts({
     "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
     "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
     "ARCHIVE_VISIBLE_TASK",
-  ].map((step, index) => [step, `opaque:platform-closeout-${index + 1}`])),
+  ].map((step, index) => [step, `digest:${crypto.createHash("sha256").update(`platform-closeout-${index + 1}`).digest("hex")}`])),
 });
 const archivedPlatform = archivePlatformAgent(platform, {universalCloseoutReceipts: platformCloseout});
 assert.equal(archivedPlatform.state, "ARCHIVED_UNPINNED");
 assert.equal(archivedPlatform.universal_closeout_receipts.length, 9);
+assert.throws(() => compileUniversalTaskCloseoutReceipts({
+  mode: "CAMPAIGN",
+  observedAt: nextIso,
+  receiptRefs: Object.fromEntries([
+    "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
+    "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
+    "ARCHIVE_VISIBLE_TASK",
+  ].map((step, index) => [step, `ref:FORGED-CLOSEOUT-${index + 1}`])),
+}), /content-addressed/u, "forged closeout references must fail closed");
 
 const held = setHold(initial, {
   hold_id: "HOLD-1", kind: "EXTERNAL_DEPENDENCY", scope: "FEATURE-A", authority_boundary: "external access",

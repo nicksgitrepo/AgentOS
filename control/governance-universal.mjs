@@ -77,17 +77,37 @@ export function universalTaskCloseoutPolicy(mode = "ALL_DEVELOPMENT_MODES") {
   };
 }
 
-const CLOSEOUT_RECEIPT_REF = /^(?:opaque|ref|sha1|sha256|digest):[A-Za-z0-9._:-]+$/u;
+// Closeout references are content-addressed identities, not labels.  A bare
+// `ref:...` or `opaque:...` token can be forged without resolving any receipt
+// bytes, so only digest-bearing references are admissible at this boundary.
+const CLOSEOUT_RECEIPT_REF = /^(?:(?:digest|sha256):[0-9a-f]{64}|opaque:sha256:[0-9a-f]{64})$/u;
 const CLOSEOUT_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 
-export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false, label = "universal task closeout receipts"} = {}) {
+function closeoutReceiptDigest(reference) {
+  const match = /^(?:digest|sha256):([0-9a-f]{64})$|^opaque:sha256:([0-9a-f]{64})$/u.exec(reference);
+  return match?.[1] ?? match?.[2] ?? null;
+}
+
+function resolveCloseoutReference(reference, {receiptResolver = null, label} = {}) {
+  assert(CLOSEOUT_RECEIPT_REF.test(reference), `${label} receipt reference is not content-addressed`);
+  if (receiptResolver === null) return;
+  assert(typeof receiptResolver === "function", `${label} receipt resolver is invalid`);
+  const resolved = receiptResolver(reference);
+  assert(isRecord(resolved), `${label} receipt reference did not resolve to a record`);
+  assert(resolved.receipt_sha256 === closeoutReceiptDigest(reference), `${label} receipt digest does not match its resolved bytes`);
+  assert(resolved.status === "PROVEN", `${label} resolved receipt is not proven`);
+  assert(typeof resolved.authority === "string" && resolved.authority.length > 0, `${label} resolved receipt authority is missing`);
+}
+
+export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false, label = "universal task closeout receipts", receiptResolver = null} = {}) {
   assert(Array.isArray(receipts), `${label} must be an array`); assert(receipts.length <= UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.length, `${label} contains too many receipts`);
   const seen = new Set();
   receipts.forEach((receipt, index) => {
     exactKeys(receipt, ["sequence", "step", "receipt_ref", "authority", "status", "observed_at"], `${label} ${index}`);
     assert(Number.isSafeInteger(receipt.sequence) && receipt.sequence === index + 1, `${label} ${index} sequence is invalid`);
     const expectedStep = UNIVERSAL_TASK_CLOSEOUT_SEQUENCE[index]; assert(receipt.step === expectedStep, `${label} ${index} must prove ${expectedStep}`);
-    assert(typeof receipt.receipt_ref === "string" && CLOSEOUT_RECEIPT_REF.test(receipt.receipt_ref), `${label} ${index} receipt reference is invalid`);
+    assert(typeof receipt.receipt_ref === "string", `${label} ${index} receipt reference is invalid`);
+    resolveCloseoutReference(receipt.receipt_ref, {receiptResolver, label: `${label} ${index}`});
     assert(receipt.authority === UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[receipt.step], `${label} ${index} authority is invalid for ${receipt.step}`);
     assert(receipt.status === "PROVEN", `${label} ${index} is not proven`);
     assert(typeof receipt.observed_at === "string" && CLOSEOUT_TIMESTAMP.test(receipt.observed_at) && Number.isFinite(Date.parse(receipt.observed_at)), `${label} ${index} timestamp is invalid`);
@@ -97,10 +117,10 @@ export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false,
   return receipts;
 }
 
-export function compileUniversalTaskCloseoutReceipts({mode = "ALL_DEVELOPMENT_MODES", receiptRefs, observedAt, label = "universal task closeout receipts"} = {}) {
+export function compileUniversalTaskCloseoutReceipts({mode = "ALL_DEVELOPMENT_MODES", receiptRefs, observedAt, label = "universal task closeout receipts", receiptResolver = null} = {}) {
   assertUniversalTaskCloseoutMode(mode); exactKeys(receiptRefs, UNIVERSAL_TASK_CLOSEOUT_SEQUENCE, `${label} references`);
   assert(typeof observedAt === "string" && CLOSEOUT_TIMESTAMP.test(observedAt) && Number.isFinite(Date.parse(observedAt)), `${label} observation time is invalid`);
-  return validateUniversalTaskCloseoutReceipts(UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.map((step, index) => ({sequence: index + 1, step, receipt_ref: receiptRefs[step], authority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[step], status: "PROVEN", observed_at: observedAt})), {closed: true, label});
+  return validateUniversalTaskCloseoutReceipts(UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.map((step, index) => ({sequence: index + 1, step, receipt_ref: receiptRefs[step], authority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[step], status: "PROVEN", observed_at: observedAt})), {closed: true, label, receiptResolver});
 }
 export function assertUniversalTaskCloseoutMode(mode) { return universalTaskCloseoutPolicy(mode); }
 export function assertUniversalResponseGatingMode(mode, contexts = UNIVERSAL_RESPONSE_GATING_POLICY.applies_to) {

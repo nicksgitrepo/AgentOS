@@ -40,7 +40,7 @@ const cascadeCloseout = compileCascadeUniversalTaskCloseoutReceipts({
   receiptRefs: Object.fromEntries([
     "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
     "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK",
-  ].map((step) => [step, `opaque:cascade-${step}`])),
+  ].map((step) => [step, `opaque:sha256:${cascadeDigest({kind: "cascade-closeout", step})}`])),
   observedAt: "2026-08-03T00:00:00.000Z",
 });
 assert.equal(cascadeCloseout.length, 9);
