@@ -8,12 +8,26 @@ import {canonicalDigest} from "./content-addressing.mjs";
 
 export const HYGIENE_EXECUTION_SCHEMA = "agentos.hygiene_executor_execution.v1";
 export const HYGIENE_DRY_RUN_SCHEMA = "agentos.hygiene_executor_dry_run.v1";
+export const HYGIENE_AFTER_STATE_SCHEMA = "agentos.hygiene_executor_after_state.v1";
 const SHA256 = /^[0-9a-f]{64}$/u;
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function record(value, label) { assert(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`); }
 function string(value, label) { assert(typeof value === "string" && value.trim().length > 0, `${label} must be a non-empty string`); }
 function sha(value, label) { assert(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`); }
+
+function pathList(value, label) {
+  assert(Array.isArray(value), `${label} must be an array`);
+  const paths = value.map((entry) => safeRelative(entry));
+  assert(new Set(paths).size === paths.length, `${label} contains duplicate paths`);
+  return paths;
+}
+
+function failurePath(failure, label) {
+  if (typeof failure === "string") return safeRelative(failure);
+  record(failure, label);
+  return safeRelative(failure.path);
+}
 
 function safeRelative(target) {
   string(target, "hygiene target");
@@ -100,14 +114,64 @@ export function executeHygiene({manifest, dryRun, authorityRoot, executionAdmitt
   return {schema: HYGIENE_EXECUTION_SCHEMA, version: 1, manifest_sha256: valid.manifest_sha256, dry_run_sha256: dryRun.dry_run_sha256, removed_paths: removed.sort(), failures: [], retained_paths: valid.targets.map((entry) => entry.path).filter((target) => !removed.includes(target)).sort(), execution_admitted: true, execution_sha256: canonicalDigest({manifest_sha256: valid.manifest_sha256, dry_run_sha256: dryRun.dry_run_sha256, removed_paths: removed.sort()})};
 }
 
-export function validateHygieneAfterState({execution, afterTargets = []} = {}) {
+export function validateHygieneAfterState({execution, afterState, afterTargets = [], authorityRoot} = {}) {
   record(execution, "cleanup execution receipt");
   assert(execution.schema === HYGIENE_EXECUTION_SCHEMA && execution.version === 1, "cleanup execution receipt identity is invalid");
   sha(execution.manifest_sha256, "cleanup execution manifest digest");
   sha(execution.dry_run_sha256, "cleanup execution dry-run digest");
   sha(execution.execution_sha256, "cleanup execution digest");
+  assert(execution.execution_admitted === true, "cleanup execution admission is invalid");
+  const removedPaths = pathList(execution.removed_paths, "cleanup execution removed paths");
+  const retainedPaths = pathList(execution.retained_paths, "cleanup execution retained paths");
+  assert(Array.isArray(execution.failures), "cleanup execution failures must be an array");
+  const failurePaths = execution.failures.map((failure) => failurePath(failure, "cleanup execution failure"));
+  assert(new Set([...removedPaths, ...retainedPaths]).size === removedPaths.length + retainedPaths.length, "cleanup execution removed and retained paths overlap");
+  assert(!removedPaths.some((target) => failurePaths.includes(target)), "cleanup execution removed and failed paths overlap");
+  assert(execution.execution_sha256 === canonicalDigest({manifest_sha256: execution.manifest_sha256, dry_run_sha256: execution.dry_run_sha256, removed_paths: [...removedPaths].sort()}), "cleanup execution digest mismatch");
+
+  record(afterState, "cleanup after-state receipt");
+  assert(afterState.schema === HYGIENE_AFTER_STATE_SCHEMA && afterState.version === 1, "cleanup after-state receipt identity is invalid");
+  sha(afterState.manifest_sha256, "cleanup after-state manifest digest");
+  sha(afterState.dry_run_sha256, "cleanup after-state dry-run digest");
+  sha(afterState.execution_sha256, "cleanup after-state execution digest");
+  assert(afterState.manifest_sha256 === execution.manifest_sha256, "cleanup after-state does not bind the manifest");
+  assert(afterState.dry_run_sha256 === execution.dry_run_sha256, "cleanup after-state does not bind the dry run");
+  assert(afterState.execution_sha256 === execution.execution_sha256, "cleanup after-state does not bind the execution");
+  const afterRetained = pathList(afterState.retained_paths, "cleanup after-state retained paths");
+  const afterRemoved = pathList(afterState.removed_paths, "cleanup after-state removed paths");
+  assert(Array.isArray(afterState.failures), "cleanup after-state failures must be an array");
+  const afterFailures = afterState.failures.map((failure) => failurePath(failure, "cleanup after-state failure"));
+  assert(new Set([...afterRemoved, ...afterRetained]).size === afterRemoved.length + afterRetained.length, "cleanup after-state removed and retained paths overlap");
+  assert(!afterRemoved.some((target) => afterFailures.includes(target)), "cleanup after-state removed and failed paths overlap");
+  assert(afterRemoved.length === removedPaths.length && afterRemoved.every((target) => removedPaths.includes(target)), "cleanup after-state removed paths do not match execution");
+  assert(afterRetained.length === retainedPaths.length && afterRetained.every((target) => retainedPaths.includes(target)), "cleanup after-state retained paths do not match execution");
+  assert(afterFailures.length === failurePaths.length && afterFailures.every((target) => failurePaths.includes(target)), "cleanup after-state failures do not match execution");
+  string(authorityRoot, "cleanup authority root");
+  const resolvedRoot = fs.realpathSync.native(path.resolve(authorityRoot));
+  string(afterState.authority_root, "cleanup after-state authority root");
+  assert(afterState.authority_root === resolvedRoot, "cleanup after-state authority root is not bound");
+  assert(afterState.symlink_ancestors_checked === true, "cleanup after-state symlink checks are missing");
+  assert(afterState.fresh_revalidation === true, "cleanup after-state fresh revalidation is missing");
+  sha(afterState.after_state_sha256, "cleanup after-state digest");
+  assert(afterState.after_state_sha256 === canonicalDigest({...afterState, after_state_sha256: null}), "cleanup after-state digest mismatch");
+
+  const expectedPaths = [...new Set([...afterRemoved, ...afterRetained, ...afterFailures])];
   assert(Array.isArray(afterTargets), "cleanup after-target inventory must be an array");
-  return {execution, afterTargets};
+  const targets = afterTargets.map((target) => {
+    record(target, "cleanup after-target");
+    const relative = safeRelative(target.path);
+    assert(typeof target.exists === "boolean", "cleanup after-target existence is invalid");
+    return {...target, path: relative};
+  });
+  assert(new Set(targets.map((target) => target.path)).size === targets.length, "cleanup after-target inventory contains duplicates");
+  assert(targets.length === expectedPaths.length && targets.every((target) => expectedPaths.includes(target.path)), "cleanup after-target inventory does not match execution paths");
+  for (const target of targets) {
+    const shouldExist = afterRemoved.includes(target.path) ? false : true;
+    assert(target.exists === shouldExist, `cleanup after-target state is inconsistent for ${target.path}`);
+    const resolved = resolveTarget(resolvedRoot, target.path);
+    assert(fs.existsSync(resolved.target) === shouldExist, `cleanup after-target filesystem state is inconsistent for ${target.path}`);
+  }
+  return {execution, afterState, afterTargets: targets};
 }
 
 export const planHygiene = compileHygieneDryRun;

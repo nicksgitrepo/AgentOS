@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {compileHygieneDryRun, executeHygiene, validateDeletionManifest, validateHygieneAfterState} from "../control/hygiene-executor.mjs";
+import {HYGIENE_AFTER_STATE_SCHEMA, compileHygieneDryRun, executeHygiene, validateDeletionManifest, validateHygieneAfterState} from "../control/hygiene-executor.mjs";
 
 const tempParent = process.env.TMPDIR;
 assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
@@ -28,7 +28,30 @@ try {
   const execution = executeHygiene({manifest, dryRun: dry, authorityRoot: root, executionAdmitted: true, removeTarget: ({absolutePath, path: relative}) => { fs.rmSync(absolutePath); removed.push(relative); }});
   assert.deepEqual(removed, ["disposable.txt"]);
   assert.equal(fs.existsSync(path.join(root, "disposable.txt")), false);
-  validateHygieneAfterState({execution, afterTargets: []});
+  const authorityRoot = fs.realpathSync.native(root);
+  const afterState = {
+    schema: HYGIENE_AFTER_STATE_SCHEMA,
+    version: 1,
+    manifest_sha256: execution.manifest_sha256,
+    dry_run_sha256: execution.dry_run_sha256,
+    execution_sha256: execution.execution_sha256,
+    authority_root: authorityRoot,
+    symlink_ancestors_checked: true,
+    fresh_revalidation: true,
+    retained_paths: execution.retained_paths,
+    removed_paths: execution.removed_paths,
+    failures: execution.failures,
+    after_state_sha256: null,
+  };
+  afterState.after_state_sha256 = canonicalDigest({...afterState, after_state_sha256: null});
+  validateHygieneAfterState({execution, afterState, authorityRoot, afterTargets: [{path: "disposable.txt", exists: false}]});
+  assert.throws(() => validateHygieneAfterState({execution: {...execution, removed_paths: ["disposable.txt"], retained_paths: [], failures: []}, authorityRoot, afterTargets: [{path: "disposable.txt", exists: true}]}), /after-state receipt must be an object|after-state receipt identity/u);
+  const incompleteAfterState = {...afterState, authority_root: undefined, symlink_ancestors_checked: undefined, fresh_revalidation: undefined, after_state_sha256: null};
+  incompleteAfterState.after_state_sha256 = canonicalDigest({...incompleteAfterState, after_state_sha256: null});
+  assert.throws(() => validateHygieneAfterState({execution, afterState: incompleteAfterState, authorityRoot, afterTargets: [{path: "disposable.txt", exists: false}]}), /after-state authority root|symlink checks|fresh revalidation/u);
+  const inconsistentAfterState = {...afterState, after_state_sha256: null};
+  inconsistentAfterState.after_state_sha256 = canonicalDigest({...inconsistentAfterState, after_state_sha256: null});
+  assert.throws(() => validateHygieneAfterState({execution, afterState: inconsistentAfterState, authorityRoot, afterTargets: [{path: "disposable.txt", exists: true}]}), /after-target state|filesystem state/u);
   assert.throws(() => executeHygiene({manifest, dryRun: dry, authorityRoot: root, executionAdmitted: false, removeTarget: () => {}}), /separate admission/u);
   const broad = {...manifest, targets: [{...manifest.targets[0], path: "**/*"}]};
   broad.manifest_sha256 = canonicalDigest({...broad, manifest_sha256: null});
