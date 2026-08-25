@@ -201,6 +201,19 @@ for (const route of routableRoutes) {
   assert(hostile.status === "UNKNOWN" || hostile.status === "NO_MATCH", `${route.route_id} did not fail closed for a typed hostile context`);
 }
 
+const actionBaseForms = [
+  "publish", "publication", "attest", "provision", "provisioning", "release", "modify", "mutate", "delete", "create", "update",
+];
+const independentAuditorRoute = first.routing.routes.find((route) => route.route_id === "route.control.independent-auditor");
+assert(independentAuditorRoute, "independent auditor route is missing for action-family hostile coverage");
+for (const action of actionBaseForms) {
+  const context = contextForRoute(independentAuditorRoute);
+  context.requested_action = action;
+  const hostile = routeSpecialists({library, signals: [], requestedBlockIds: independentAuditorRoute.select, context});
+  assert.notEqual(hostile.status, "ROUTE", `base/noun action ${action} bypassed unsafe-action denial`);
+  assert.equal(hostile.selected.length, 0, `base/noun action ${action} selected a specialist`);
+}
+
 const setContextPath = (context, dottedPath, value) => {
   const parts = dottedPath.split(".");
   let cursor = context;
