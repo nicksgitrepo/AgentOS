@@ -20,6 +20,24 @@ const process = {pid: 123, start_identity: "start-1", command: "node worker", cw
 const observation = validateLivenessObservation({tasks: [], processes: [process]});
 assert.equal(observation.processes.length, 1);
 assert.throws(() => validateLivenessObservation({tasks: [], processes: [process, process]}), /duplicate identities/u);
+for (const field of ["start_identity", "command", "cwd", "owner"]) {
+  for (const value of [undefined, null, {}, [], false, 42]) {
+    assert.throws(() => validateLivenessObservation({tasks: [], processes: [{...process, [field]: value}]}), new RegExp(`liveness process ${field} must be a non-empty string`, "u"));
+  }
+}
+for (const value of [undefined, null, 0, -1, 1.5, "", "01", "-1", "1.5", "9007199254740992", {}, [], false, Symbol("pid")]) {
+  assert.throws(() => validateLivenessObservation({tasks: [], processes: [{...process, pid: value}]}), /liveness process pid must be a positive safe integer/u);
+}
+for (const field of ["listener", "parent_pid"]) {
+  for (const value of [{}, [], false, () => {}, Symbol(field)]) {
+    assert.throws(() => validateLivenessObservation({tasks: [], processes: [{...process, [field]: value}]}), new RegExp(`liveness process ${field}`, "u"));
+  }
+}
+assert.equal(validateLivenessObservation({tasks: [], processes: [{...process, pid: "123", parent_pid: 456, listener: "socket-1"}]}).processes[0].pid, "123");
+assert.equal(validateLivenessObservation({tasks: [], processes: [{...process, pid: 123}]}).processes[0].pid, "123");
+const invalidSentinel = createLivenessSentinel();
+assert.throws(() => invalidSentinel.observe({tasks: [], processes: [{...process, owner: {}}]}), /liveness process owner must be a non-empty string/u);
+assert.deepEqual(invalidSentinel.read(), {state: "QUIESCENT", sequence: 0, signatures: []});
 
 const taskId = "TASK-037";
 const turnId = "TURN-037";

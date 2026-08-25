@@ -27,6 +27,28 @@ function isRecord(value) {
 
 function requireString(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be a non-empty string`);
+  return value;
+}
+
+function processPid(value, label) {
+  if (typeof value === "number") {
+    assert(Number.isSafeInteger(value) && value > 0, `${label} must be a positive safe integer or canonical digit string`);
+    return String(value);
+  }
+  assert(typeof value === "string" && /^[1-9]\d*$/u.test(value), `${label} must be a positive safe integer or canonical digit string`);
+  const numeric = Number(value);
+  assert(Number.isSafeInteger(numeric) && numeric > 0, `${label} must be a positive safe integer or canonical digit string`);
+  return String(numeric);
+}
+
+function optionalProcessPid(value, label) {
+  if (value === undefined || value === null) return null;
+  return processPid(value, label);
+}
+
+function optionalString(value, label) {
+  if (value === undefined || value === null) return null;
+  return requireString(value, label);
 }
 
 function requireArray(value, label) {
@@ -39,15 +61,14 @@ function sorted(values) {
 
 function processIdentity(process) {
   assert(isRecord(process), "liveness process observation must be an object");
-  for (const field of ["pid", "start_identity", "command", "cwd", "owner"]) requireString(String(process[field]), `liveness process ${field}`);
   return {
-    pid: String(process.pid),
-    start_identity: String(process.start_identity),
-    command: String(process.command),
-    cwd: String(process.cwd),
-    owner: String(process.owner),
-    listener: process.listener === undefined ? null : String(process.listener),
-    parent_pid: process.parent_pid === undefined ? null : String(process.parent_pid),
+    pid: processPid(process.pid, "liveness process pid"),
+    start_identity: requireString(process.start_identity, "liveness process start_identity"),
+    command: requireString(process.command, "liveness process command"),
+    cwd: requireString(process.cwd, "liveness process cwd"),
+    owner: requireString(process.owner, "liveness process owner"),
+    listener: optionalString(process.listener, "liveness process listener"),
+    parent_pid: optionalProcessPid(process.parent_pid, "liveness process parent_pid"),
   };
 }
 
