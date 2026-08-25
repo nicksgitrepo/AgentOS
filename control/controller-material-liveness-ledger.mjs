@@ -116,6 +116,7 @@ function validateCloseout(closeout, executor) {
   assert(closeout.expected_transition === executor.expected_transition, "material liveness closeout transition mismatch");
   requireSha(closeout.post_delivery_readback_sha256, "material liveness closeout readback");
   requireUtc(closeout.closed_at_utc, "material liveness closeout time");
+  assert(executor.consumption_state === "CONSUMED", "material liveness closeout requires consumed executor");
 }
 
 function validateExecutor(executor, parentId, executorIds) {

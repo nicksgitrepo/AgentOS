@@ -722,11 +722,11 @@
     },
     "controller_material_liveness_ledger": {
       "path": "control/controller-material-liveness-ledger.mjs",
-      "sha256": "437b87397279821cbdd6827065a0bd8a7e81657c90516eeaa3ad7462a7c39f7e"
+      "sha256": "f2fb6f64676038207e32c9634d44c4a1c1ddd37d80a9898de4779b8d95699d33"
     },
     "controller_material_liveness_ledger_verifier": {
       "path": "tests/verify-controller-material-liveness-ledger.mjs",
-      "sha256": "26d373bce7633e8c67696bf50ddcca9ef53d227cc06c66bf60956284bd2d1464"
+      "sha256": "49d56bf5de312fcc2ba9f16ad3377e9ca13139b134219d2ed24305417c37b075"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",

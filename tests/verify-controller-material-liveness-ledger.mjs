@@ -91,6 +91,25 @@ assert.deepEqual(consumedResult.closed_executor_ids, ["EXECUTOR.AUDIT.001"]);
 assert.deepEqual(consumedResult.monitoring_executor_ids, ["EXECUTOR.REPAIR.002"]);
 assert.equal(consumedResult.open_stalls.length, 1, "consumption closes only the exact matching executor");
 
+const unconsumedCloseout = structuredClone(admitted[0]);
+unconsumedCloseout.closeout = {
+  executor_id: unconsumedCloseout.executor_id,
+  candidate_sha256: unconsumedCloseout.candidate_sha256,
+  outcome_sha256: unconsumedCloseout.outcome_sha256,
+  consumer_id: unconsumedCloseout.consumer_id,
+  expected_transition: unconsumedCloseout.expected_transition,
+  post_delivery_readback_sha256: sha("EXECUTOR.AUDIT.001:unconsumed-closeout"),
+  closed_at_utc: "2026-08-25T17:02:00.000Z",
+  correlated: true,
+};
+assert.throws(
+  () => compileMaterialLivenessLedger({parent, admittedExecutors: [unconsumedCloseout]}),
+  /closeout requires consumed executor/u,
+  "a correlated closeout cannot bypass consumption"
+);
+assert.equal(first.monitoring_executor_ids.includes("EXECUTOR.AUDIT.001"), true, "unconsumed executor remains monitored");
+assert.equal(first.parent_state, "STALLED", "unconsumed executor keeps the parent stalled");
+
 const staleCandidate = readback(admitted[0], {candidate_sha256: sha("stale-candidate")});
 assert.throws(() => compileMaterialLivenessLedger({parent, admittedExecutors: admitted, consumerReadbacks: [staleCandidate]}), /candidate mismatch/u);
 const staleConsumer = readback(admitted[0], {consumer_id: "CONSUMER.OTHER.999"});
