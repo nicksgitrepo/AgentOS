@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -57,6 +58,7 @@ const treeRef = `sha1:${"2".repeat(40)}`;
 
 const time = (minute) => `2026-08-06T12:${String(minute).padStart(2, "0")}:00.000Z`;
 const ref = (value) => `ref:${value}`;
+const closeoutRef = (value) => `digest:${crypto.createHash("sha256").update(value).digest("hex")}`;
 
 function provenance(overrides = {}) {
   return compileProvenance({
@@ -264,7 +266,7 @@ function completeDrill(proposal) {
   ].entries()) {
     drill = recordDrillCloseoutReceipt(drill, {
       step,
-      receiptRef: ref(`universal-closeout-${index + 1}`),
+      receiptRef: closeoutRef(`universal-closeout-${index + 1}`),
       observedAt: time(14),
     });
   }
