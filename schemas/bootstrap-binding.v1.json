@@ -2408,7 +2408,7 @@
         },
         {
           "path": "control/hygiene-executor.mjs",
-          "sha256": "10409d24a8a1c058e7435691795beb730304a323e0d54f2bef00002ad848f81c"
+          "sha256": "0f79a1c11451fbc0d63e9a54e159b2771897ca8ce018a1599215753ce260f96d"
         },
         {
           "path": "control/liveness-sentinel.mjs",
@@ -2772,7 +2772,7 @@
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
-          "sha256": "a7ddf354c22b2e4a99ce0f1b74fbb7cb6a31a242320748d5783f3f84ed4ee918"
+          "sha256": "0f94594a3bcad73146e13ab3a2710b99b1b7495c266f43d9c444f06a6edd9950"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
@@ -2782,7 +2782,7 @@
       "mechanical_paths": [
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "0b9b6eaadc3407786f58c58910df7eabcd8ccd7a0b15f83eb5cd75f84604267d"
+          "sha256": "7ccb21c8c416118bc4ddf311edc2d8f04dba6434695d492a25e4f47efec60a38"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -2959,7 +2959,7 @@
         },
         {
           "path": "control/hygiene-executor.mjs",
-          "sha256": "10409d24a8a1c058e7435691795beb730304a323e0d54f2bef00002ad848f81c"
+          "sha256": "0f79a1c11451fbc0d63e9a54e159b2771897ca8ce018a1599215753ce260f96d"
         },
         {
           "path": "control/liveness-sentinel.mjs",
@@ -3323,7 +3323,7 @@
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
-          "sha256": "a7ddf354c22b2e4a99ce0f1b74fbb7cb6a31a242320748d5783f3f84ed4ee918"
+          "sha256": "0f94594a3bcad73146e13ab3a2710b99b1b7495c266f43d9c444f06a6edd9950"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
@@ -3395,7 +3395,7 @@
         },
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "0b9b6eaadc3407786f58c58910df7eabcd8ccd7a0b15f83eb5cd75f84604267d"
+          "sha256": "7ccb21c8c416118bc4ddf311edc2d8f04dba6434695d492a25e4f47efec60a38"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",

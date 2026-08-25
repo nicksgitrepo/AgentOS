@@ -44,14 +44,44 @@ try {
     after_state_sha256: null,
   };
   afterState.after_state_sha256 = canonicalDigest({...afterState, after_state_sha256: null});
-  validateHygieneAfterState({execution, afterState, authorityRoot, afterTargets: [{path: "disposable.txt", exists: false}]});
-  assert.throws(() => validateHygieneAfterState({execution: {...execution, removed_paths: ["disposable.txt"], retained_paths: [], failures: []}, authorityRoot, afterTargets: [{path: "disposable.txt", exists: true}]}), /after-state receipt must be an object|after-state receipt identity/u);
+  validateHygieneAfterState({execution, afterState, manifest, dryRun: dry, authorityRoot, afterTargets: [{path: "disposable.txt", exists: false}]});
+  assert.throws(() => validateHygieneAfterState({execution: {...execution, removed_paths: ["disposable.txt"], retained_paths: [], failures: []}, manifest, dryRun: dry, authorityRoot, afterTargets: [{path: "disposable.txt", exists: true}]}), /after-state receipt must be an object|after-state receipt identity/u);
   const incompleteAfterState = {...afterState, authority_root: undefined, symlink_ancestors_checked: undefined, fresh_revalidation: undefined, after_state_sha256: null};
   incompleteAfterState.after_state_sha256 = canonicalDigest({...incompleteAfterState, after_state_sha256: null});
-  assert.throws(() => validateHygieneAfterState({execution, afterState: incompleteAfterState, authorityRoot, afterTargets: [{path: "disposable.txt", exists: false}]}), /after-state authority root|symlink checks|fresh revalidation/u);
+  assert.throws(() => validateHygieneAfterState({execution, afterState: incompleteAfterState, manifest, dryRun: dry, authorityRoot, afterTargets: [{path: "disposable.txt", exists: false}]}), /after-state authority root|symlink checks|fresh revalidation/u);
   const inconsistentAfterState = {...afterState, after_state_sha256: null};
   inconsistentAfterState.after_state_sha256 = canonicalDigest({...inconsistentAfterState, after_state_sha256: null});
-  assert.throws(() => validateHygieneAfterState({execution, afterState: inconsistentAfterState, authorityRoot, afterTargets: [{path: "disposable.txt", exists: true}]}), /after-target state|filesystem state/u);
+  assert.throws(() => validateHygieneAfterState({execution, afterState: inconsistentAfterState, manifest, dryRun: dry, authorityRoot, afterTargets: [{path: "disposable.txt", exists: true}]}), /after-target state|filesystem state/u);
+  const ghostManifest = {...manifest, targets: [{...manifest.targets[0], path: "ghost-not-in-execution.txt"}], manifest_sha256: null};
+  ghostManifest.manifest_sha256 = canonicalDigest({...ghostManifest, manifest_sha256: null});
+  const ghostDryRun = compileHygieneDryRun({manifest: ghostManifest, authorityRoot: root});
+  const ghostExecution = {
+    schema: execution.schema,
+    version: 1,
+    manifest_sha256: ghostManifest.manifest_sha256,
+    dry_run_sha256: ghostDryRun.dry_run_sha256,
+    removed_paths: [],
+    failures: [],
+    retained_paths: ["control/hygiene-executor.mjs"],
+    execution_admitted: true,
+    execution_sha256: canonicalDigest({manifest_sha256: ghostManifest.manifest_sha256, dry_run_sha256: ghostDryRun.dry_run_sha256, removed_paths: []}),
+  };
+  const ghostAfterState = {
+    schema: HYGIENE_AFTER_STATE_SCHEMA,
+    version: 1,
+    manifest_sha256: ghostExecution.manifest_sha256,
+    dry_run_sha256: ghostExecution.dry_run_sha256,
+    execution_sha256: ghostExecution.execution_sha256,
+    authority_root: authorityRoot,
+    symlink_ancestors_checked: true,
+    fresh_revalidation: true,
+    retained_paths: ghostExecution.retained_paths,
+    removed_paths: [],
+    failures: [],
+    after_state_sha256: null,
+  };
+  ghostAfterState.after_state_sha256 = canonicalDigest({...ghostAfterState, after_state_sha256: null});
+  assert.throws(() => validateHygieneAfterState({execution: ghostExecution, afterState: ghostAfterState, manifest: ghostManifest, dryRun: ghostDryRun, authorityRoot, afterTargets: [{path: "control/hygiene-executor.mjs", exists: true}]}), /target set|manifest/u);
   assert.throws(() => executeHygiene({manifest, dryRun: dry, authorityRoot: root, executionAdmitted: false, removeTarget: () => {}}), /separate admission/u);
   const broad = {...manifest, targets: [{...manifest.targets[0], path: "**/*"}]};
   broad.manifest_sha256 = canonicalDigest({...broad, manifest_sha256: null});
