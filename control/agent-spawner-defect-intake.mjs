@@ -329,6 +329,70 @@ export function compileAgentSpawnerDefectIntake({
   return validateAgentSpawnerDefectIntake(intake);
 }
 
+/*
+ * Canonical liveness findings are compiled through the same non-spawnable
+ * intake contract as every other Spawner finding.  The signature is bound in
+ * the source/context evidence and duplicate signatures are rejected before a
+ * route can be selected.  Nothing here can patch mutable runtime policy.
+ */
+export function compileCanonicalLivenessDefect({finding, priorSignatures = []} = {}) {
+  assert(isRecord(finding), "canonical liveness finding must be an object");
+  exactKeys(finding, [
+    "defect_id", "defect_kind", "task_id", "candidate_sha256", "outcome_sha256", "stall_signature_sha256",
+    "expected_transition", "summary", "expected", "observed", "observed_at_utc", "details_sha256", "observation_kind",
+  ], "canonical liveness finding");
+  requireIdentifier(finding.defect_id, "canonical liveness defect ID");
+  assert(AGENT_SPAWNER_DEFECT_KINDS.includes(finding.defect_kind), "canonical liveness defect kind is invalid");
+  requireIdentifier(finding.task_id, "canonical liveness task ID");
+  requireSha(finding.candidate_sha256, "canonical liveness candidate");
+  if (finding.outcome_sha256 !== null) requireSha(finding.outcome_sha256, "canonical liveness outcome");
+  requireSha(finding.stall_signature_sha256, "canonical liveness signature");
+  requireIdentifier(finding.expected_transition, "canonical liveness expected transition");
+  requireString(finding.summary, "canonical liveness summary");
+  requireString(finding.expected, "canonical liveness expected");
+  requireString(finding.observed, "canonical liveness observed");
+  requireUtc(finding.observed_at_utc, "canonical liveness timestamp");
+  requireSha(finding.details_sha256, "canonical liveness details");
+  requireIdentifier(finding.observation_kind, "canonical liveness observation kind");
+  assert(Array.isArray(priorSignatures), "canonical liveness prior signatures must be an array");
+  priorSignatures.forEach((signature, index) => requireSha(signature, `canonical liveness prior signature ${index}`));
+  const duplicate = new Set(priorSignatures).has(finding.stall_signature_sha256);
+  const sourceBinding = {
+    candidate_sha256: finding.candidate_sha256,
+    context_sha256: canonicalDigest({task_id: finding.task_id, expected_transition: finding.expected_transition, observation_kind: finding.observation_kind, stall_signature_sha256: finding.stall_signature_sha256}),
+    roster_projection_sha256: canonicalDigest({defect_id: finding.defect_id, duplicate_signature: duplicate, prior_signature_count: priorSignatures.length}),
+    source_identity_sha256: canonicalDigest({task_id: finding.task_id, defect_kind: finding.defect_kind, observation_kind: finding.observation_kind}),
+  };
+  return compileAgentSpawnerDefectIntake({
+    defectId: finding.defect_id,
+    defectKind: finding.defect_kind,
+    sourceBinding,
+    evidenceRefs: [
+      {evidence_id: "EVIDENCE.LIVENESS.FINDING", kind: "LIVENESS_FINDING", reference: `opaque:liveness-finding:${finding.stall_signature_sha256}`, sha256: finding.details_sha256},
+      {evidence_id: "EVIDENCE.LIVENESS.SIGNATURE", kind: "LIVENESS_SIGNATURE", reference: `opaque:liveness-signature:${finding.stall_signature_sha256}`, sha256: finding.stall_signature_sha256},
+    ],
+    observation: {summary: finding.summary, expected: finding.expected, observed: finding.observed, observed_at_utc: finding.observed_at_utc, details_sha256: finding.details_sha256},
+    classification: duplicate ? "DUPLICATE_OR_STALE_BLOCK" : "ORCHESTRATOR_LIVENESS_FAILURE",
+    rootCause: {
+      category: finding.observation_kind,
+      statement: duplicate ? "The canonical liveness signature was already reported and must be rejected without a duplicate route." : "The Controller observed a canonical material-liveness finding requiring one bounded typed repair route.",
+      evidence_class: "OBSERVED",
+    },
+    blockId: "BLOCK.CONTROLLER.MATERIAL_LIVENESS",
+    gateId: "GATE.CONTROLLER.MATERIAL_LIVENESS.CONSUMPTION",
+    graphId: "GRAPH.CONTROLLER.MATERIAL_LIVENESS",
+    question: "Did the responsible parent consume the exact material-liveness outcome and preserve the expected transition?",
+    requiredEvidence: ["evidence.admission", "evidence.outcome_identity", "evidence.consumer_readback", "evidence.custody"],
+    hostileFixtureRefs: ["FIXTURE.LIVENESS.STALE_CONSUMER", "FIXTURE.LIVENESS.DUPLICATE_SIGNATURE", "FIXTURE.LIVENESS.MALFORMED_ADMISSION"],
+    authorityScope: ["COMPILE_REUSABLE_GATE", "REFRESH_TYPED_BINDINGS", "INVALIDATE_DEPENDENT_ROSTER"],
+    stopConditions: ["MISSING_CONSUMER_READBACK", "STALE_OUTCOME_IDENTITY", "INDEPENDENT_EVALUATION_NOT_CLEARED"],
+    bindingsToRefresh: ["BLOCK_DIGEST", "GATE_DIGEST", "ROSTER_PROJECTION_DIGEST", "CONTROLLER_RUNTIME_DIGEST"],
+    deterministicRule: duplicate ? "Reject an unchanged canonical liveness signature; emit no second Controller route or message." : "Route exactly one non-spawnable governance repair only when the canonical liveness identity, consumer, expected transition, and custody evidence are bound.",
+    detailsSha256: finding.details_sha256,
+    observedAtUtc: finding.observed_at_utc,
+  });
+}
+
 export function acceptAgentSpawnerDefectRepair(intake, {controllerReceiptSha256} = {}) {
   validateAgentSpawnerDefectIntake(intake);
   assert(intake.status === "REPAIR_CANDIDATE_READY", "Only a ready local repair may enter Controller custody");

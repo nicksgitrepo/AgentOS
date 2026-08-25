@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   acceptAgentSpawnerDefectRepair,
+  compileCanonicalLivenessDefect,
   compileAgentSpawnerDefectIntake,
   validateAgentSpawnerDefectIntake,
 } from "../control/agent-spawner-defect-intake.mjs";
@@ -63,6 +64,46 @@ staleHandoff.handoff.route = "REBUILD_DEPENDENT_ROSTER";
 staleHandoff.handoff.handoff_sha256 = canonicalDigest({...staleHandoff.handoff, handoff_sha256: null});
 staleHandoff.defect_sha256 = canonicalDigest({...staleHandoff, defect_sha256: null});
 assert.throws(() => validateAgentSpawnerDefectIntake(staleHandoff), /handoff route is stale/u);
+
+const livenessFinding = {
+  defect_id: "DEFECT.LIVENESS.CANONICAL.001",
+  defect_kind: "NON_PASSING_CHECK",
+  task_id: "TASK.LIVENESS.001",
+  candidate_sha256: hash("liveness-candidate"),
+  outcome_sha256: hash("liveness-outcome"),
+  stall_signature_sha256: hash("liveness-stall"),
+  expected_transition: "CONSUME.EXACT.OUTCOME",
+  summary: "A material outcome remains unconsumed.",
+  expected: "The responsible parent consumes the exact outcome.",
+  observed: "No fresh exact consumer readback exists.",
+  observed_at_utc: "2026-08-16T20:00:00.000Z",
+  details_sha256: hash("liveness-details"),
+  observation_kind: "COMPLETED_OUTCOME_NOT_CONSUMED",
+};
+const liveness = compileCanonicalLivenessDefect({finding: livenessFinding});
+validateAgentSpawnerDefectIntake(liveness);
+assert.equal(liveness.classification, "ORCHESTRATOR_LIVENESS_FAILURE");
+assert.equal(liveness.route, "REPAIR_ORCHESTRATOR_ROUTE");
+assert.equal(liveness.admission.spawnable, false);
+const duplicateLiveness = compileCanonicalLivenessDefect({finding: {...livenessFinding, defect_id: "DEFECT.LIVENESS.CANONICAL.002"}, priorSignatures: [livenessFinding.stall_signature_sha256]});
+assert.equal(duplicateLiveness.classification, "DUPLICATE_OR_STALE_BLOCK");
+assert.equal(duplicateLiveness.route, "REJECT_DUPLICATE");
+assert.equal(duplicateLiveness.status, "REJECTED_DUPLICATE");
+assert.equal(duplicateLiveness.admission.spawnable, false);
+const silentLiveness = compileCanonicalLivenessDefect({finding: {
+  ...livenessFinding,
+  defect_id: "DEFECT.LIVENESS.SILENT.001",
+  candidate_sha256: hash("silent-custody-binding"),
+  outcome_sha256: null,
+  stall_signature_sha256: hash("silent-stall"),
+  observation_kind: "SILENT_COMPLETED_TURN_WITH_PRESERVED_UNFROZEN_CUSTODY",
+  summary: "A completed turn left changed mutable custody without a visible material outcome.",
+  expected: "The same task emits a typed successor or remains explicitly open.",
+  observed: "The turn completed silently and its expected transition remains unresolved.",
+}});
+assert.equal(silentLiveness.classification, "ORCHESTRATOR_LIVENESS_FAILURE");
+assert.equal(silentLiveness.route, "REPAIR_ORCHESTRATOR_ROUTE");
+assert.equal(silentLiveness.admission.spawnable, false);
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 for (const relative of ["control/agent-spawner-defect-intake.mjs", "schemas/agent-spawner-defect-intake.v1.json"]) {

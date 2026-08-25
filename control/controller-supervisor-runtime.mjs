@@ -27,6 +27,7 @@ import {
 } from "./controller-supervisor.mjs";
 import {canonicalDigest} from "./content-addressing.mjs";
 import {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
+import {compileMaterialLivenessLedger, evaluateMaterialLivenessLedger} from "./controller-material-liveness-ledger.mjs";
 import {redactPersistedText} from "./persisted-record-privacy.mjs";
 import {validateExistingTaskLifecycle} from "./existing-task-stop-resume.mjs";
 
@@ -295,6 +296,30 @@ export function shouldContinueSupervisorSameTurn(result) {
 export function shouldContinueExistingTaskLifecycleSameTurn(record) {
   validateExistingTaskLifecycle(record);
   return !["RESUMED_SAME_TASK", "REPLACEMENT_ACTIVE", "RETIRED", "ESCALATED_FAIL_CLOSED"].includes(record.state);
+}
+
+/**
+ * Observe and evaluate the material-liveness universe once per Controller
+ * pass.  Adapters may expose either the ledger directly or an object with a
+ * ledger/readbacks/prior_reports bundle.  No adapter means the legacy
+ * supervisor path remains byte-for-byte behaviorally unchanged.
+ */
+export async function runControllerMaterialLivenessPass({adapter, nowUtc = new Date().toISOString()} = {}) {
+  if (!adapter || typeof adapter.observeMaterialLiveness !== "function") return null;
+  const observed = await adapter.observeMaterialLiveness();
+  assert(isRecord(observed), "material liveness adapter result must be an object");
+  const ledger = observed.ledger ?? (observed.schema === "agentos.controller_material_liveness_ledger.v1" ? observed : null);
+  assert(ledger !== null, "material liveness adapter result lacks a ledger");
+  const readbacks = observed.consumerReadbacks ?? observed.consumer_readbacks ?? ledger.consumer_readbacks;
+  const priorReports = observed.priorReports ?? observed.prior_reports ?? ledger.prior_reports;
+  assert(Array.isArray(readbacks), "material liveness adapter readbacks must be an array");
+  assert(Array.isArray(priorReports), "material liveness adapter prior reports must be an array");
+  const sameReadbacks = JSON.stringify(readbacks) === JSON.stringify(ledger.consumer_readbacks);
+  const sameReports = JSON.stringify(priorReports) === JSON.stringify(ledger.prior_reports);
+  const boundLedger = sameReadbacks && sameReports
+    ? ledger
+    : compileMaterialLivenessLedger({parent: ledger.parent, admittedExecutors: ledger.admitted_executors, consumerReadbacks: readbacks, priorReports});
+  return evaluateMaterialLivenessLedger(boundLedger, {nowUtc});
 }
 
 function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
@@ -568,6 +593,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   const root = canonicalRoot(runtimeRoot);
   const observation = await adapter.observe();
   validateSupervisorObservation(observation);
+  const materialLiveness = await runControllerMaterialLivenessPass({adapter, nowUtc});
   // `reconcile` is an explicit project-agnostic recovery surface.  It is
   // accepted as a route only when the adapter has not yet exposed its normal
   // route, so a startup/configuration defect can repair itself without a
@@ -772,7 +798,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   writeJsonAtomic(safeChild(root, "supervisor/tick.json"), result.tick);
   const status = runtimeStatusForTick(result.tick);
   writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status, observation, goal: result.goal, tick: result.tick, error: result.tick.route_error, nowUtc}));
-  return {...result, observation, reused: false, priorSpawnerDefect};
+  return {...result, observation, reused: false, priorSpawnerDefect, materialLiveness};
 }
 
 function sleep(milliseconds, signal = null) {

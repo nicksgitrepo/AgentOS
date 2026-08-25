@@ -3,9 +3,10 @@
 import assert from "node:assert/strict";
 import {summarizeDurableSessionLiveness} from "../control/local-self-development-supervisor-adapter.mjs";
 import {selectHostLifecycleNextRoute} from "../control/controller-supervisor.mjs";
-import {shouldContinueExistingTaskLifecycleSameTurn} from "../control/controller-supervisor-runtime.mjs";
+import {runControllerMaterialLivenessPass, shouldContinueExistingTaskLifecycleSameTurn} from "../control/controller-supervisor-runtime.mjs";
 import {compileExistingTaskLifecycle} from "../control/existing-task-stop-resume.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
+import {compileMaterialLivenessLedger, materialLivenessSignature} from "../control/controller-material-liveness-ledger.mjs";
 
 const roles = ["CAMPAIGN_ORCHESTRATOR", "FEATURE_AGENT", "INDEPENDENT_AUDITOR"];
 const healthy = roles.map((role) => ({
@@ -60,4 +61,46 @@ const lifecycle = compileExistingTaskLifecycle({
 assert.equal(shouldContinueExistingTaskLifecycleSameTurn(lifecycle), true);
 assert.equal(selectHostLifecycleNextRoute({routeClass: "NEXT_SEAM", laneLead: "AGENTOS.CONTROLLER"}).handler, "AGENTOS.CONTROLLER");
 assert.throws(() => selectHostLifecycleNextRoute({routeClass: "AUDIT", laneLead: "AGENTOS.CONTROLLER", trueBlocked: {classification: "SOFT_BOUNDARY", evidence_sha256: canonicalDigest({blocked: false})}}), /TRUE_BLOCKED/u);
+
+const livenessSha = (label) => canonicalDigest({label});
+const materialExecutor = {
+  executor_id: "EXECUTOR.RUNTIME.001",
+  parent_id: "PARENT.RUNTIME.001",
+  consumer_id: "CONSUMER.RUNTIME.001",
+  depends_on_executor_ids: [],
+  candidate_sha256: livenessSha("runtime-candidate"),
+  outcome_sha256: livenessSha("runtime-outcome"),
+  outcome_kind: "PASS",
+  expected_transition: "CONSUME.RUNTIME.OUTCOME",
+  admitted_at_utc: "2026-08-25T17:00:00.000Z",
+  latest_material_signature_sha256: null,
+  delivery_state: "DELIVERED",
+  consumption_state: "UNCONSUMED",
+  closeout: null,
+};
+materialExecutor.latest_material_signature_sha256 = materialLivenessSignature(materialExecutor);
+const materialLedger = compileMaterialLivenessLedger({
+  parent: {
+    parent_id: "PARENT.RUNTIME.001",
+    state: "ADVANCING",
+    responsible_consumer_id: "CONSUMER.RUNTIME.001",
+    expected_transition: "CONSUME.RUNTIME.OUTCOME",
+    consumer_state: "IDLE",
+  },
+  admittedExecutors: [materialExecutor],
+});
+let materialReads = 0;
+const materialPass = await runControllerMaterialLivenessPass({
+  adapter: {
+    observeMaterialLiveness: () => {
+      materialReads += 1;
+      return {ledger: materialLedger};
+    },
+  },
+  nowUtc: "2026-08-25T17:02:00.000Z",
+});
+assert.equal(materialReads, 1, "the material-liveness universe is read once per pass");
+assert.equal(materialPass.parent_state, "STALLED");
+assert.equal(materialPass.open_stalls[0].reason, "IDLE_AFTER_PASS");
+assert.equal(materialPass.new_reports.length, 1);
 console.log("PASS Controller liveness: missing, stopped, orphaned, and source-stale roles require a fresh recovery route");

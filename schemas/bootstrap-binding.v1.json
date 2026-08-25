@@ -662,7 +662,7 @@
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",
-      "sha256": "53443c1318edd0ba5285c5bfd9fd12729406383b82438743dd0d59ccf5d9520c"
+      "sha256": "2bb98ab3c572ca000661bf526d33dddff02d22d5f8c18d79120c19069855cfda"
     },
     "agent_spawner_defect_intake_contract": {
       "path": "schemas/agent-spawner-defect-intake.v1.json",
@@ -674,7 +674,7 @@
     },
     "agent_spawner_defect_intake_verifier": {
       "path": "tests/verify-agent-spawner-defect-intake.mjs",
-      "sha256": "7f22681bf555a2f76924e8c28f586479765e02bc65f808bc1739786216c0032f"
+      "sha256": "f4ccfa45c254036c81b61e82d45b683f83435ac2d374c60d60b54a6581df1b2d"
     },
     "agent_spawner_controller_bridge_controller": {
       "path": "control/agent-spawner-controller-bridge.mjs",
@@ -718,7 +718,15 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "e86daf75fb97ee55679976a2bd69b50298fb2c1c286b625f8ccb8b017303b312"
+      "sha256": "bef20dc2348c4b2325201670bde5984378df387db65575c2ba5eea6a60ba828a"
+    },
+    "controller_material_liveness_ledger": {
+      "path": "control/controller-material-liveness-ledger.mjs",
+      "sha256": "e4720d311bbf0146dccdd4178c22e700822c029d1d480a756817f952d18d7abe"
+    },
+    "controller_material_liveness_ledger_verifier": {
+      "path": "tests/verify-controller-material-liveness-ledger.mjs",
+      "sha256": "1f7fad528ea099999df1c47f3c5ff5a3edc303fb08520bd8d10afeadd1c3aff1"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
@@ -814,7 +822,7 @@
     },
     "controller_supervisor_liveness_verifier": {
       "path": "tests/verify-controller-supervisor-liveness.mjs",
-      "sha256": "d9d7c6a2607bd1de2566932272175f8f9c71ee69032be11f4d233121b9bb7fea"
+      "sha256": "29eebc0d21dbc41b3cc5d36da1e547a0949b406151c2aa264910aa31ff815099"
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",
