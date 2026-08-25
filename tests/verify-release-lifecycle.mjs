@@ -19,6 +19,7 @@ import {
   parseTestBuildTag,
   transitionReleaseCandidate,
   validateArtifactManifest,
+  validatePromotionReceipt,
   validatePromotionRequest,
   validateRejectionFeedback,
   validateReleaseCandidate,
@@ -348,6 +349,37 @@ const promotionReceipt = compileReleasePromotionReceipt({
 assert.equal(promotionReceipt.status, "PROMOTED_PREPARED");
 assert.equal(promotionReceipt.activation, false);
 assert.equal(promotionReceipt.previous_release_disposition, "RETAINED");
+validatePromotionReceipt(promotionReceipt, {
+  request: promotionRequest,
+  candidate: safetyApprovedCandidate,
+  ownerDecision: safetyBoundDecision,
+  safetyEvidence: safetyBoundEvidence,
+  expectedManifest: sourceManifest,
+  targetManifest: sterileManifest,
+  hostReceiptSha256: "6".repeat(64),
+});
+assert.throws(() => validatePromotionReceipt(promotionReceipt), /originating promotion request/u);
+const forgedPromotionReceipt = {
+  ...promotionReceipt,
+  request_sha256: "a".repeat(64),
+  candidate_sha256: "b".repeat(64),
+  artifact_sha256: "c".repeat(64),
+  manifest_sha256: "d".repeat(64),
+  target_manifest_sha256: "e".repeat(64),
+  host_receipt_sha256: "f".repeat(64),
+  safety_gate_sha256: "1".repeat(64),
+  receipt_sha256: null,
+};
+forgedPromotionReceipt.receipt_sha256 = canonicalDigest({...forgedPromotionReceipt, receipt_sha256: null});
+assert.throws(() => validatePromotionReceipt(forgedPromotionReceipt, {
+  request: promotionRequest,
+  candidate: safetyApprovedCandidate,
+  ownerDecision: safetyBoundDecision,
+  safetyEvidence: safetyBoundEvidence,
+  expectedManifest: sourceManifest,
+  targetManifest: sterileManifest,
+  hostReceiptSha256: "6".repeat(64),
+}), /receipt request differs|receipt artifact differs|receipt safety evidence differs|receipt host evidence differs/u);
 
 const activationTamper = {...promotionRequest, activation: true, request_sha256: null};
 activationTamper.request_sha256 = canonicalDigest({...activationTamper, request_sha256: null});

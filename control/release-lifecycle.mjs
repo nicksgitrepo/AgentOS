@@ -853,7 +853,22 @@ export function compileReleasePromotionRequest({requestId, candidate, ownerDecis
   return validatePromotionRequest(request, {candidate, ownerDecision, safetyEvidence});
 }
 
-export function validatePromotionReceipt(receipt, {request = null, expectedManifest = null, targetManifest = null} = {}) {
+export function validatePromotionReceipt(receipt, {
+  request = null,
+  candidate = null,
+  ownerDecision = null,
+  safetyEvidence = null,
+  expectedManifest = null,
+  targetManifest = null,
+  hostReceiptSha256 = null,
+} = {}) {
+  assert(request !== null, "release promotion receipt requires the originating promotion request");
+  assert(candidate !== null, "release promotion receipt requires the originating candidate");
+  assert(ownerDecision !== null, "release promotion receipt requires the originating owner decision");
+  assert(safetyEvidence !== null, "release promotion receipt requires the originating safety evidence");
+  assert(expectedManifest !== null, "release promotion receipt requires the originating expected manifest");
+  assert(targetManifest !== null, "release promotion receipt requires the originating target manifest");
+  requireSha(hostReceiptSha256, "release promotion receipt expected host evidence");
   exactKeys(receipt, PROMOTION_RECEIPT_KEYS, "release promotion receipt");
   assert(receipt.schema === PROMOTION_RECEIPT_SCHEMA && receipt.version === 1, "release promotion receipt identity is invalid");
   requireIdentifier(receipt.request_id, "release promotion receipt request ID");
@@ -880,8 +895,9 @@ export function validatePromotionReceipt(receipt, {request = null, expectedManif
   requireUtc(receipt.promoted_at_utc, "release promotion receipt time");
   requireSha(receipt.receipt_sha256, "release promotion receipt digest");
   assert(receipt.receipt_sha256 === digestWithout(receipt, "receipt_sha256"), "release promotion receipt digest does not match content");
-  if (request !== null) {
-    validatePromotionRequest(request);
+  assert(receipt.host_receipt_sha256 === hostReceiptSha256, "release promotion receipt host evidence differs");
+  {
+    validatePromotionRequest(request, {candidate, ownerDecision, safetyEvidence});
     assert(receipt.request_id === request.request_id && receipt.request_sha256 === request.request_sha256, "release promotion receipt request differs");
     assert(receipt.candidate_sha256 === request.candidate_sha256, "release promotion receipt candidate differs");
     assert(receipt.release_version === request.release_version && receipt.target_release_version === request.target_release_version && receipt.test_build_tag === request.test_build_tag, "release promotion receipt release differs");
@@ -892,14 +908,15 @@ export function validatePromotionReceipt(receipt, {request = null, expectedManif
     if (request.current_release === null) assert(receipt.previous_release_disposition === "NONE_EXISTED", "release promotion receipt falsely claims a retained release");
     else assert(receipt.previous_release_disposition === "RETAINED", "release promotion receipt did not retain the previous release");
   }
-  if (expectedManifest !== null) {
+  {
     validateArtifactManifest(expectedManifest);
     assert(expectedManifest.manifest_sha256 === receipt.manifest_sha256, "release promotion receipt expected manifest differs");
+    assert(expectedManifest.manifest_sha256 === request.manifest_sha256, "release promotion receipt request manifest differs");
   }
-  if (targetManifest !== null) {
+  {
     validateArtifactManifest(targetManifest);
     assert(targetManifest.root_binding === receipt.target_binding, "release promotion target manifest binding differs");
-    if (expectedManifest !== null) verifyArtifactIdentity({expectedManifest, actualManifest: targetManifest});
+    verifyArtifactIdentity({expectedManifest, actualManifest: targetManifest});
     assert(targetManifest.manifest_sha256 === receipt.target_manifest_sha256, "release promotion target readback differs");
   }
   assertPersistedRecordSafe(receipt);
@@ -942,5 +959,13 @@ export function compileReleasePromotionReceipt({request, candidate, ownerDecisio
     receipt_sha256: null,
   };
   receipt.receipt_sha256 = digestWithout(receipt, "receipt_sha256");
-  return validatePromotionReceipt(receipt, {request, expectedManifest, targetManifest});
+  return validatePromotionReceipt(receipt, {
+    request,
+    candidate,
+    ownerDecision,
+    safetyEvidence,
+    expectedManifest,
+    targetManifest,
+    hostReceiptSha256,
+  });
 }

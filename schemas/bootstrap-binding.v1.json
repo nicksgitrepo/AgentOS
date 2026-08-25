@@ -1862,7 +1862,7 @@
     },
     "release_lifecycle_controller": {
       "path": "control/release-lifecycle.mjs",
-      "sha256": "5e87f9766936ebe047433f466125a005e769532bbef4504c471772c0b108c899"
+      "sha256": "fe4f93859b3e136f01f3e6b97de9d70a846dac77ee08f2e92d52da5653408137"
     },
     "release_lifecycle_contract": {
       "path": "schemas/release-lifecycle.v1.json",
