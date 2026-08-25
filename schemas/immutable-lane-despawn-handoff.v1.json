@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.immutable_lane_despawn_handoff.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "task_id", "lane_id", "source_commit", "source_tree", "manifest_sha256", "state", "memory_receipt_sha256", "controller_verification_sha256", "spawner_precheck_sha256", "handoff_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.immutable_lane_despawn_handoff.v1"},
+    "version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "lane_id": {"type": "string", "minLength": 1},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "source_tree": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"const": "DESPAWN_HANDOFF_READY"},
+    "memory_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "controller_verification_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "spawner_precheck_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "handoff_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "archive_is_not_deletion": {"const": true},
+    "monitoring_drained_last": {"const": true},
+    "future_permanent_task_distinct": {"const": true},
+    "temporary_permanent_overlap": {"const": false}
+  }
+}

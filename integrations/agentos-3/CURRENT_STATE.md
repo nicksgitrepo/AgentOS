@@ -32,11 +32,11 @@ Status: `INDEPENDENTLY_CLEARED_REAL_HOST_TESTABLE_RELEASE_CANDIDATE`
   unknown fields, contradictions, omissions, stale sources, overlapping scope,
   duplicate provenance, malformed digests, ambiguous SemVer, invalid identity
   fields, and context-budget overflow.
-- The specialist library materializes 620 compileable role recipes from 123
+- The specialist library materializes 620 compileable role recipes from 125
   reusable packages, while the protected Memory role remains external.
-- An independent read-only release review cleared all 68 specialist cases that
-  could not be decided by the deterministic pre-screen (12 route, 51 deny,
-  five escalate) and 14 Agent Builder utility/harm cases (four pass, ten
+- An independent read-only release review cleared all 85 specialist cases across five governed blocks that
+  could not be decided by the deterministic pre-screen (15 route, 64 deny,
+  six escalate) and 14 Agent Builder utility/harm cases (four pass, ten
   deny). Both clearances are digest-bound and grant no runtime authority.
 - Main AgentOS, Memory M2, Agent Builder, and the specialist library now appear
   as explicit typed inputs in the inactive combined integration contract.

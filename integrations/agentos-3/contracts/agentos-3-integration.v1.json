@@ -1,13 +1,31 @@
 {
   "schema": "agentos.integration.test-build.v1",
   "build_id": "AGENTOS_3_TEST_BUILD",
-  "classification": ["behavior_plus_correct_placement", "production_hardening"],
+  "classification": [
+    "behavior_plus_correct_placement",
+    "production_hardening"
+  ],
   "lifecycle": "CANDIDATE_INACTIVE",
   "activation": "OFF",
   "authority": {
     "scope": "local_deterministic_test_only",
-    "allowed": ["read_immutable_inputs", "package_isolated_adapter", "run_local_deterministic_proof", "stage_non_activating_import", "rollback_test_build"],
-    "forbidden": ["provider_activation", "production_deploy", "public_release", "consumer_adoption", "project_migration", "external_message", "source_repository_mutation", "self_acceptance"]
+    "allowed": [
+      "read_immutable_inputs",
+      "package_isolated_adapter",
+      "run_local_deterministic_proof",
+      "stage_non_activating_import",
+      "rollback_test_build"
+    ],
+    "forbidden": [
+      "provider_activation",
+      "production_deploy",
+      "public_release",
+      "consumer_adoption",
+      "project_migration",
+      "external_message",
+      "source_repository_mutation",
+      "self_acceptance"
+    ]
   },
   "components": [
     {
@@ -55,18 +73,39 @@
       "role": "reusable_governance_gate_and_role_recipe_library",
       "candidate_commit": "edd6cb5012b052445d623923d304ff7e1906ca51",
       "candidate_tree": "44de1627c475f7c0d64becc5b82f63693dc7a9fb",
-      "roster_sha256": "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08",
+      "roster_sha256": "02d8ac92bda37a4a08d59d559f6ce513dc4cf4bf1d9fb7d0eb5ad8a84bfb801c",
       "state": "IMMUTABLE_INPUT_INDEPENDENTLY_CLEARED",
       "admission": "ACCEPTED_FOR_INACTIVE_TEST_BUILD_ONLY",
       "activation": "OFF",
-      "utility_harm_evaluation": "PASS_2023_PREDETERMINED_AND_68_INDEPENDENTLY_REVIEWED_CASES",
-      "independent_clearance_sha256": "8a641ab119f45fbeaa43be997b1d6242aa137ec5f6f0da0ece1413392782c2c2"
+      "utility_harm_evaluation": "PASS_2023_PREDETERMINED_AND_85_INDEPENDENTLY_REVIEWED_CASES",
+      "independent_clearance_sha256": "bb91d9fbaa8c17ebec376f5dd3295009b25a7fc8df9f3d6c55872fc73563897e"
     }
   ],
   "contracts": {
-    "memory": ["activation_off_by_default", "private_custody", "recipient_authority_required", "replay_verified", "staged_import_non_activating", "fail_closed", "accepted_for_inactive_test_build_only"],
-    "agent_builder": ["authority_effect_grants_empty", "candidate_lifecycle_only", "provenance_required", "unknowns_prohibited_to_infer", "budget_and_stale_source_denial", "independent_deterministic_utility_harm_clearance"],
-    "specialist_block_library": ["123_reusable_packages", "620_compileable_role_recipes", "typed_gate_dependency_closure", "independent_utility_harm_clearance", "inactive_test_build_only"],
+    "memory": [
+      "activation_off_by_default",
+      "private_custody",
+      "recipient_authority_required",
+      "replay_verified",
+      "staged_import_non_activating",
+      "fail_closed",
+      "accepted_for_inactive_test_build_only"
+    ],
+    "agent_builder": [
+      "authority_effect_grants_empty",
+      "candidate_lifecycle_only",
+      "provenance_required",
+      "unknowns_prohibited_to_infer",
+      "budget_and_stale_source_denial",
+      "independent_deterministic_utility_harm_clearance"
+    ],
+    "specialist_block_library": [
+      "125_reusable_packages",
+      "620_compileable_role_recipes",
+      "typed_gate_dependency_closure",
+      "independent_utility_harm_clearance",
+      "inactive_test_build_only"
+    ],
     "rollback": "AGENTOS_3_TEST_BUILD_ROLLBACK",
     "install": "EXTERNAL_SIBLING_ONLY",
     "capability": "externally_supplied_bound_lease_verified_outside_artifact",
@@ -74,6 +113,17 @@
     "main_core_distribution": "main-core/source-manifest.json",
     "agent_builder_package": "agent-builder/package-manifest.json"
   },
-  "purity": {"main_test_fixtures": "synthetic_only", "external_context": "forbidden", "private_control_payload": "excluded"},
-  "proof_ceiling": ["provider_model_quality_evaluation_at_activation", "provider_activation", "consumer_adoption", "real_data_migration", "release_promotion", "public_release"]
+  "purity": {
+    "main_test_fixtures": "synthetic_only",
+    "external_context": "forbidden",
+    "private_control_payload": "excluded"
+  },
+  "proof_ceiling": [
+    "provider_model_quality_evaluation_at_activation",
+    "provider_activation",
+    "consumer_adoption",
+    "real_data_migration",
+    "release_promotion",
+    "public_release"
+  ]
 }

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_archive_result.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "task_id", "lane_id", "precheck_sha256", "status", "closed_at_utc", "result_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_archive_result.v1"},
+    "version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "lane_id": {"type": "string", "minLength": 1},
+    "precheck_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"const": "CLOSED"},
+    "closed_at_utc": {"type": "string", "minLength": 1},
+    "result_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "filesystem_deleted": {"const": false},
+    "supporting_data_preserved": {"const": true},
+    "unaccounted_count": {"const": 0},
+    "live_process_count": {"const": 0}
+  }
+}

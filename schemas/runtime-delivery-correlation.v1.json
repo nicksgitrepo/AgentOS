@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.runtime_delivery_correlation.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "correlation_id", "request_id", "request_digest", "candidate_commit", "candidate_tree", "manifest_sha256", "runtime_ref", "status", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.runtime_delivery_correlation.v1"},
+    "version": {"const": 1},
+    "correlation_id": {"type": "string", "minLength": 1},
+    "request_id": {"type": "string", "minLength": 1},
+    "request_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_tree": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "runtime_ref": {"type": "string", "minLength": 1},
+    "status": {"enum": ["PREPARED", "DELIVERED", "CONSUMED", "FAILED", "UNKNOWN"]},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "deletion_authority": {"const": false},
+    "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

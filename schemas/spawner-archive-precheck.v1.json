@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.spawner_archive_precheck.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "task_id", "lane_id", "manifest_sha256", "process_count", "temporary_count", "unaccounted_count", "status", "precheck_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.spawner_archive_precheck.v1"},
+    "version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "lane_id": {"type": "string", "minLength": 1},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "process_count": {"type": "integer", "minimum": 0},
+    "temporary_count": {"type": "integer", "minimum": 0},
+    "unaccounted_count": {"type": "integer", "minimum": 0},
+    "status": {"enum": ["READY", "BLOCKED", "RECHECK_REQUIRED"]},
+    "precheck_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "archive_is_deletion": {"const": false},
+    "live_processes_block": {"const": true}
+  }
+}

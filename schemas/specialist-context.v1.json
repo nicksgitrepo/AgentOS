@@ -348,7 +348,7 @@
   "x_agentos_context_contract": {
     "version": 1,
     "routing_index": "specialist-blocks/registry/routing-index.v1.json",
-    "routing_index_sha256": "e3252da5c2243fe0979346a334d632e3c5bc5f00dcf78f40a9642894f129bd20",
+    "routing_index_sha256": "e74767229bc97c94fbbf866709477bb27a21b12752e096191bce8e8e1ff93445",
     "required_context_paths": [
       "accessibility.criteria",
       "accessibility.scope",

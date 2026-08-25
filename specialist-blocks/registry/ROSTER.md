@@ -49,16 +49,16 @@ The materialized roster distinguishes these role kinds:
 - `COMPILED_AGENT_PACKAGE` — generated external instance, never a permanent
   roster agent.
 
-Current materialized counts are `ROUTER: 640`, `CONTROL_PLANE: 16`,
+Current materialized counts are `ROUTER: 640`, `CONTROL_PLANE: 17`,
 `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`, and
+`CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 93`, and
 `COMPILED_AGENT_PACKAGE: 0`. The typed atomic overlay separately reports
-`19` routers, `92` atomic specialists, and `16` control-plane roles.
+`19` routers, `93` atomic specialists, and `17` control-plane roles.
 
 The compiled candidate package roster is a separate count from the complete
-backlog: `123` packages total, consisting of `19` `ROUTER`, `16`
-`CONTROL_PLANE`, `65` `ATOMIC_SPECIALIST`, and `23` `STANDARD_BLOCK` packages.
-All 123 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
+backlog: `125` packages total, consisting of `19` `ROUTER`, `17`
+`CONTROL_PLANE`, `66` `ATOMIC_SPECIALIST`, and `23` `STANDARD_BLOCK` packages.
+All 125 remain `CANDIDATE`, `NOT_ADMITTED`, and activation `OFF`.
 
 The on-demand recipe catalog now covers all `621` retained inventory roles:
 `620` recipes are `CANDIDATE` and compileable, with zero `PLANNED` rows. Every
@@ -265,8 +265,8 @@ active wave.
 The current typed atomicity overlay reports exactly:
 
 - `19` routers;
-- `92` atomic specialists;
-- `16` control-plane blocks.
+- `93` atomic specialists;
+- `17` control-plane blocks.
 
 Routers may classify and assemble context but may not write Product or accept a
 result. Atomic specialists must be selected by an upstream router, may return
@@ -304,7 +304,7 @@ human-readable companion `INTEGRATION_HANDOFF.md`; its current disposition is
 The read-only deterministic pre-screen is implemented at
 `control/specialist-utility-harm-prescreen.mjs` and recorded at
 `registry/utility-harm-prescreen.v1.json`. It verifies the declared policy of
-all `123` package dossiers and `2,091` hostile fixtures: `2,023` cases are
+all `125` package dossiers and `2,125` hostile fixtures: `2,023` cases are
 observed `PASS`, `68` remain `PENDING`, and `0` are failed. Its disposition is
 `PRESCREEN_PENDING_EXTERNAL_REVIEW`; an independent reviewer and admission
 authority are still mandatory, and no package is activated or admitted by
@@ -325,3 +325,7 @@ failure mode, evidence, or authority is implicated.
 | `CLIENT.RESPONSIVE_WEB` | `specialist.product-client.responsive-web` / `ATOMIC_SPECIALIST` | [MDN Responsive Design](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design); upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.responsive-web.v1` | 12 gates; `NOT_ADMITTED / OFF` |
 | `CLIENT.IOS_SWIFTUI` | `specialist.product-client.ios-swiftui` / `ATOMIC_SPECIALIST` | [Apple SwiftUI](https://developer.apple.com/documentation/swiftui/); upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.ios-swiftui.v1` | 12 gates; `NOT_ADMITTED / OFF` |
 | `CLIENT.ANDROID_KOTLIN` | `specialist.product-client.android-kotlin` / `ATOMIC_SPECIALIST` | [Jetpack Compose](https://developer.android.com/develop/ui/compose/documentation), [Kotlin](https://kotlinlang.org/docs/home.html); upstream product/client router | `1.0.0`; `STATIC_PASS_REVIEW_REQUIRED`; `specialist-eval.android-kotlin.v1` | 12 gates; `NOT_ADMITTED / OFF` |
+
+## Route-037 full-scope completion
+
+This candidate now includes the two governed Route-037 packages for Hygiene Executor and Liveness Sentinel. Both remain CANDIDATE, NOT_ADMITTED, and activation OFF; the package compiler, twelve-gate pack, hostile fixtures, and typed handoff remain required before any independent admission.

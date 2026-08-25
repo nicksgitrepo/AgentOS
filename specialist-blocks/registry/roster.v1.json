@@ -126,6 +126,66 @@
       "activation": "OFF"
     },
     {
+      "block_id": "specialist.assurance-enterprise.hygiene-executor",
+      "candidate_digest": "12cee483b8c7d8c098b6a31db2ad8340d8441d99be6bd4dc7bfdfae6af7de046",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "atomic_scope_statement": "One narrow atomic evidence domain: Hygiene Executor; unrelated failure modes require sibling blocks.",
+      "permitted_decisions": [
+        "analyze the exact named concern",
+        "escalate missing authority or conflicting evidence",
+        "return NOT_APPLICABLE when the concern is absent",
+        "return evidence-bounded findings"
+      ],
+      "forbidden_decisions": [
+        "activate, admit, deploy, publish, or self-accept",
+        "broaden to a family or sibling concern",
+        "claim another provider, standard, or version",
+        "infer missing authority, applicability, or evidence",
+        "write Product or consumer state"
+      ],
+      "maximum_authority": "ADVISORY_ANALYSIS_AND_TYPED_HANDOFF_ONLY;_NO_PRODUCT_WRITE;_NO_ACCEPTANCE;_NO_SELF_ACCEPTANCE;_NO_CERTIFICATION;_NO_ACTIVATION",
+      "required_upstream_router": "specialist.assurance-enterprise.router",
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "UNKNOWN closes only the dependent action",
+        "compose only with explicitly named dependencies and siblings",
+        "must be selected by the required upstream router",
+        "reuse exact standard block IDs, versions, and hashes"
+      ],
+      "escalation_target": "specialist.foundation.evaluation-admission-gate",
+      "split_required_when": [
+        "authority or source lock differs",
+        "failure mode differs",
+        "knowledge differs",
+        "standard, provider, or version differs",
+        "tool or data custody differs"
+      ],
+      "priority": "P3",
+      "family": "assurance-enterprise",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.atomic-specialization-law",
+        "source.google-sre-testing-reliability"
+      ],
+      "dependencies": [
+        "specialist.assurance-enterprise.router",
+        "specialist.foundation.authority-jurisdiction-gate",
+        "specialist.foundation.evidence-freshness-gate",
+        "specialist.foundation.role-intake-classifier",
+        "specialist.foundation.scope-non-goal-gate",
+        "specialist.foundation.tool-custody-gate",
+        "specialist.standard.nist-ssdf"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.hygiene-executor.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
       "block_id": "specialist.assurance-enterprise.router",
       "candidate_digest": "78505abdafbc6791cd20465d7fde05cc178f334a148d8ecffc68bbb05690331b",
       "role_kind": "ROUTER",
@@ -473,6 +533,65 @@
       "gate_path": "gates/00-intake.gate",
       "schema_path": "schemas/specialist-block.v1.json",
       "evaluator_receipt": "specialist-eval.intent-regulator.v1",
+      "owner": "specialist-library-controller",
+      "lifecycle": "NOT_ADMITTED",
+      "activation": "OFF"
+    },
+    {
+      "block_id": "specialist.control.liveness-sentinel",
+      "candidate_digest": "08c0ccb6c75f36e8f103dd1237614d62d56cdb7285897c0af03c8a51f4654ce8",
+      "role_kind": "CONTROL_PLANE",
+      "atomic_scope_statement": "Governance-only control for a typed Liveness Sentinel request; it maintains intent and routing state but does not perform Product or deployment work.",
+      "permitted_decisions": [
+        "classify a typed control-plane request",
+        "maintain an explicit lifecycle intent without changing activation",
+        "record UNKNOWN and close only the dependent transition",
+        "return NOT_APPLICABLE when the request is outside control-plane lifecycle scope",
+        "route a bounded handoff to a named authority"
+      ],
+      "forbidden_decisions": [
+        "activate or admit any specialist or roster",
+        "change Product files, shared schemas, control files, or registry files",
+        "deploy, publish, migrate, build, or trigger runtime side effects",
+        "handle secrets, protected consumer data, or Memory internals",
+        "infer missing authority, applicability, or lifecycle evidence",
+        "self-accept or override independent evaluation"
+      ],
+      "maximum_authority": "NO_PRODUCT_WRITE;_NO_ACTIVATION;_NO_SELF_ACCEPTANCE;_NO_DEPLOY;_NO_PUBLISH;_TYPED_HANDOFF_ONLY",
+      "required_upstream_router": null,
+      "sibling_conflicts": [],
+      "composition_rules": [
+        "compose only with a typed request, declared authority, custody result, and exact candidate digest",
+        "keep each fifteen-minute checkpoint advisory until the independent authority accepts the transition",
+        "route Product, data, security, delivery, and assurance work to their narrow specialists",
+        "unknown closes only the dependent lifecycle transition"
+      ],
+      "escalation_target": "independent authority or owner review named by the typed control-plane contract",
+      "split_required_when": [
+        "authority or custody differs",
+        "domain work requires a narrow specialist",
+        "failure mode or evidence domain differs",
+        "request includes Product write, deploy, publish, migrate, or runtime actions",
+        "source version or effective-date applicability differs"
+      ],
+      "priority": "P0",
+      "family": "foundation",
+      "revision": "1.0.0",
+      "status": "CANDIDATE",
+      "primary_sources": [
+        "source.agentos-portable-governance",
+        "source.json-schema-2020-12",
+        "source.rfc-2119",
+        "source.rfc-8174"
+      ],
+      "dependencies": [
+        "specialist.foundation.evaluation-admission-gate",
+        "specialist.foundation.role-intake-classifier"
+      ],
+      "conflicts": [],
+      "gate_path": "gates/00-intake.gate",
+      "schema_path": "schemas/specialist-block.v1.json",
+      "evaluator_receipt": "specialist-eval.liveness-sentinel.v1",
       "owner": "specialist-library-controller",
       "lifecycle": "NOT_ADMITTED",
       "activation": "OFF"
@@ -7123,5 +7242,5 @@
   "aliases": [],
   "routing_index": "routing-index.v1.json",
   "activation": "OFF",
-  "roster_sha256": "eec86e63558641b59a3416ead4395b29686a4297972f7578c638b9af9561ffb8"
+  "roster_sha256": "02d8ac92bda37a4a08d59d559f6ce513dc4cf4bf1d9fb7d0eb5ad8a84bfb801c"
 }

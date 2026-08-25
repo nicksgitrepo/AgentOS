@@ -106,7 +106,7 @@ assert.equal(combined.activation, "OFF");
 assert.equal(combined.bootstrap.memory.enabled, false);
 assert.equal(combined.agent_builder.activation, "NOT_ACTIVATED");
 assert.equal(combined.specialist_library.activation, "OFF");
-assert.equal(combined.specialist_library.roster_sha256, "9309836799934070627329157e9f024b1c38d32bb5d1ae59ed879890228aab08");
+assert.equal(combined.specialist_library.roster_sha256, "02d8ac92bda37a4a08d59d559f6ce513dc4cf4bf1d9fb7d0eb5ad8a84bfb801c");
 assert.equal(combined.main_core.identity.candidate_commit, "029ccdb40efaeeae38ec1adabc6d3b44f5316310");
 
 const installed = await installBundle(BUNDLE, { projectRoot, companionRoot });

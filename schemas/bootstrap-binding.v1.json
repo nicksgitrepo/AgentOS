@@ -1674,7 +1674,7 @@
     },
     "architecture_hygiene_verifier": {
       "path": "tests/verify-architecture-hygiene.mjs",
-      "sha256": "0e6448be8e778e7f41d33450d13d45bd310516d1b179bc0ccc0355c1d1f3a2c0"
+      "sha256": "92068b111b4585bb95407777be67f417f76644c63e758fe1b2693ee242f7d68e"
     },
     "bootstrap_output_definitions": {
       "path": "control/bootstrap-output-definitions.mjs",
@@ -2383,6 +2383,1114 @@
     "existing_task_stop_resume_verifier": {
       "path": "tests/verify-existing-task-stop-resume.mjs",
       "sha256": "e6a8d932fd0577c9dc1448237f15a36ff84e99f9c8acf490b3a6594bfa1d7443"
+    },
+    "route_037_full_scope": {
+      "path": "specialist-blocks/registry/routing-index.v1.json",
+      "sha256": "700032db55cb3db5495972ac59f5c2dcc0c931a6946d44b27f520ade8ee04e7f",
+      "authority_sha256": "ab751358e1e6919edd8ea85ba3253a884b9bbd554c718bf28ac6cddd0c3bbec5",
+      "source_parent_commit": "1d16d4d923c8541a7560c4f46fe02fd31a2663da",
+      "source_parent_tree": "277c49a0b5f433fa3d2033fa92da2b2c8961d4bf",
+      "direct_path_count": 96,
+      "mechanical_path_count": 11,
+      "maximum_total_path_count": 123,
+      "direct_paths": [
+        {
+          "path": "control/authoritative-recovery-roster.mjs",
+          "sha256": "b5c417e72e0bc4d5cce5d810776b8d1f58a7d0d4c2b2ce0a84364bec84bd9adf"
+        },
+        {
+          "path": "control/campaign-closeout-contracts.mjs",
+          "sha256": "3ed4d53996eafa109306ec4f862f0235643ebdfac5c8c578e9175d8216ecc936"
+        },
+        {
+          "path": "control/campaign-closeout-lifecycle.mjs",
+          "sha256": "fac733436c9af0c456cd0bdd79d1fc41f2b618b70d485c2e7cf4a74e7e5123a5"
+        },
+        {
+          "path": "control/hygiene-executor.mjs",
+          "sha256": "5b122331d57ded7580674e260cde69aa5c2262e26ce94db1b33d5c7cb3e03867"
+        },
+        {
+          "path": "control/liveness-sentinel.mjs",
+          "sha256": "95e28acc5dbfd176e21fb37d7089ce1f4455d9e3a3d382ccba641e36d51a3a31"
+        },
+        {
+          "path": "docs/campaign-closeout-memory-archive-hygiene.md",
+          "sha256": "dc6697a97c51f12507af88a6ac750337deb1a4b6f00750b7fa1ff52403c65524"
+        },
+        {
+          "path": "schemas/authoritative-roster-recovery-document.v1.json",
+          "sha256": "56e939e74b32c000e814e4e34adca7c0fc80bbadc0fbb9c67c46c0c623c17d41"
+        },
+        {
+          "path": "schemas/authoritative-roster-recovery-manifest.v1.json",
+          "sha256": "f73f0663c928d0c156e23eeec1a3ca2a019a5c1b0b329112a0ff91f3600e5c04"
+        },
+        {
+          "path": "schemas/campaign-closeout-lifecycle.v1.json",
+          "sha256": "6ac1e84563a02b242716a7e95e59ff44204f45c2b494156b102c59f0f707eefc"
+        },
+        {
+          "path": "schemas/cleanup-deletion-manifest.v1.json",
+          "sha256": "597b4813d0223ffe1656af388a4f05bd9b004da26c5cd25aa804403961b2a698"
+        },
+        {
+          "path": "schemas/controller-closeout-verification.v1.json",
+          "sha256": "e564c6e3ee7705ca78e34bb5771883ca444884dbc3bee35925c92daa92afec4b"
+        },
+        {
+          "path": "schemas/hygiene-executor-after-state.v1.json",
+          "sha256": "d23c4c2786e323a2abcaea65832627f92c2ac831fd7893db4c0469776aa35bd0"
+        },
+        {
+          "path": "schemas/hygiene-executor-dry-run.v1.json",
+          "sha256": "2d03548213ee580710bf50800cb423075ce001327b50c535db37d3bf451c0c12"
+        },
+        {
+          "path": "schemas/hygiene-executor-execution.v1.json",
+          "sha256": "38b67fe87aa586df26a4ee103ea36c212a4a04199e5657343c6ca861c37618fb"
+        },
+        {
+          "path": "schemas/immutable-lane-despawn-handoff.v1.json",
+          "sha256": "ea30b253c743114bf17fea3ee02a7a05e1394a286bcc867c341e26b24034db5f"
+        },
+        {
+          "path": "schemas/lane-safe-checkpoint-order.v1.json",
+          "sha256": "8c87028d15df42b6ba8b74d9874efb22db34057f9b31992e11f0b6de7df750ed"
+        },
+        {
+          "path": "schemas/lane-safe-checkpoint-receipt.v1.json",
+          "sha256": "b1fca41d34f094937e059cd91fb67d214972066bbc9f743a1d79a47ee98d65e8"
+        },
+        {
+          "path": "schemas/liveness-sentinel.v1.json",
+          "sha256": "50ab2d89966caa32cbc2587e3f33fe2ed6a491ccaa4cbe201e38d7c98ef3bea5"
+        },
+        {
+          "path": "schemas/memory-consolidation-intake.v1.json",
+          "sha256": "95182618ce214363cf87a2f02dc9333f13d456fb62497c756c259f2fe7b68161"
+        },
+        {
+          "path": "schemas/memory-consolidation-receipt.v1.json",
+          "sha256": "c0b5339c208a93e46d24e719c9d3d6aa40b19d3d4ea0c4c03a982b056cd857ae"
+        },
+        {
+          "path": "schemas/runtime-delivery-correlation.v1.json",
+          "sha256": "332be7f90de9a5c6ce7bc7d398bd20b70577145128e22c411f546e2fa52f862f"
+        },
+        {
+          "path": "schemas/spawner-archive-precheck.v1.json",
+          "sha256": "1445bd7b4b02cf53d8a8f018bb8562b624ec0b8d8398875900fe98b96e10fd62"
+        },
+        {
+          "path": "schemas/spawner-archive-result.v1.json",
+          "sha256": "6536d40ef706ec24bf0bbc98191e43867209989792c7c690b8f4e32e82eda67f"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/block.json",
+          "sha256": "d5937e972fd7e59d41e37d014a9c7b8c7b3ffab8187f6ba00641233b1b32cf69"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/evaluation.json",
+          "sha256": "7bf3d32b31a2d3581853565bc41426e202ef6e1a097139c515806fede362251d"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/authority_conflict.json",
+          "sha256": "871d7b04e99d904b46aaeca0f35b48570ee32edbc870c5bde8e9c73e48be10b0"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/broad_when_narrow_exists.json",
+          "sha256": "afe5de0bc7f14df8e9909b280a9d4c1ec60cfa8aac11657c5c11fcb1bca9e515"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/cross_provider_version_claim.json",
+          "sha256": "650779199524275b0ecdb1ff09d1471d4515723bc76fc67a79c53cd873e5a9be"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/data_limit.json",
+          "sha256": "a7d6f2076a3198326a9d9cce670150286fd143bddb29c2a3e59eb752181c601d"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/duplicate_sibling_authority.json",
+          "sha256": "4507822bc216bb070cef19469afe0548af5040131987a9a86c536f5e77c17220"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/false_positive.json",
+          "sha256": "9d33ff076c85dae0b5854fc359078ca0d29dbf0fe860a0649cb7806d9304a730"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/handoff.json",
+          "sha256": "6c2a6a734f37df84a3d8d2462a52558da43102763c0db25f1605a6f3bbb6b74a"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/missing_context.json",
+          "sha256": "6528437fb2aa297bd9afb0cdf799257d1b3f881e42851e1063f51f0bd06ff88c"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/narrowness.json",
+          "sha256": "8c0518f90e4cb7bf0ef568bf7a3d4ef6a07d6a8a209fbb137be5e202e4f9cde8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/router_self_accept.json",
+          "sha256": "28822ea3c2fdd8c074593e9881475172d9599a07a67c05866f34e37e12a34530"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/routing.json",
+          "sha256": "2a13bcadb6272693c1282a7a9dd0e3ae5b8e8c833ae7e20ce96058368fd71322"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/silent_scope_expansion.json",
+          "sha256": "2ae05022495064428cafc996a0e893b579c54cd5aee2f6072e9393d7371c7674"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/stale_source.json",
+          "sha256": "de8741bc556804d8fe8af89471482ad0202ae80abbdff93f6cad405c6e35a7a0"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/tool_limit.json",
+          "sha256": "fce91487e9e51ecf7e65499b189f95676ff62067cb7b244fe5402656bb8bf7aa"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/umbrella_authority.json",
+          "sha256": "9212329b16580424bea6ad22f3a50578e04cdb544193c379beef100d1c5a22a8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/unrelated_scope.json",
+          "sha256": "a3aeb53d5f00c6af823f47a6906bc80a12124c02226dee24e8f5b5077130e016"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/unsafe_action.json",
+          "sha256": "abd024a123448ca5600f807ab3bdf56a2caca1f240730f9b05aaac4b86ddf2ed"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/00-intake.gate",
+          "sha256": "19b5d74d0fb66119e5dc6bdaf63a9688d8a385091e50a3b5c91c53dd78d55baf"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/01-applicability.gate",
+          "sha256": "8cb2cde590f9a0a53c24598fbea60d56963911dd1b4b5225b0b656186b068192"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/02-authority-precedence.gate",
+          "sha256": "ab6c7b65a8f5af97337a27f36b3134c588c60af41100fa71648a7014553e75a8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/03-scope-nongoals.gate",
+          "sha256": "dd92ef606a82662fed9f89e68b6894f9a302804d79cc0110d83657b32eb461e5"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/04-source-evidence-freshness.gate",
+          "sha256": "c4b311445f1ee701946b40017e3baaa35406420e238dca917bfec7d51ff1ccff"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/05-context-completeness.gate",
+          "sha256": "0b12b524c910b9ede2c8afe8c4c22d64852573fc4e9fd0447bca8d9b6a54319e"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/06-tool-resource-custody.gate",
+          "sha256": "0e0e4c58ec95ba9f13b03aeded1a159b320d866549225d5b51f1017906086bcd"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/07-data-secret-privacy.gate",
+          "sha256": "ad3b2730ea625141042ffe6f9f1ed799338a815b4389ba2e9435909ad7bea3ce"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/08-build-browser-runtime.gate",
+          "sha256": "f42ea660458e3395ef6fd321c1afd79f4e95d63125e433f92b0745813e29790a"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/09-output-handoff.gate",
+          "sha256": "4683eee277513c3c06aebf922ac242e2c730e384183bce748fdbcbd0571ca8f9"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/10-proof-acceptance.gate",
+          "sha256": "fdc0ca01a966ac885ac2c619475eac7a1246b01114d7ba1a800bf603f426c97d"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/11-lifecycle-recovery-archive.gate",
+          "sha256": "2cbf75345ee56deaf06f7693126d6ebbd60c8bc23bbde19efe1e57cb38cc2b9b"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/manifest.json",
+          "sha256": "d881eeaee46ea3c6fb7a9e61f15a5288c76b4215b2264871433845c09c07bf27"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/handoff.json",
+          "sha256": "04140717cd85151793079585d1752fbb8e4176e55b72f7c3c1837add62b56fe8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/sources.lock",
+          "sha256": "b300b5a8a436cc6d8ec05e9befffa5f6d0f614f77d9d9985cb829002d0beecaf"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/block.json",
+          "sha256": "b555d89e8cf27127cec65a9ac5b5c1e343b04e9442a79e1adebc74d9edf86cb7"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/evaluation.json",
+          "sha256": "a9ee084345fc85505b432f2dbbda2020235f9fe95bf25051ac14a2394733db7b"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/authority_conflict.json",
+          "sha256": "dbcabfde92aaf115c1f289d5a748ad2545d26dfedff9ddab897d30fc7e1ff507"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/broad_when_narrow_exists.json",
+          "sha256": "69a32ba2517b1445409ba1e039b70e8e727f909dedfc8b75c749b80e90dcaa77"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/cross_provider_version_claim.json",
+          "sha256": "fd0c0b787a1960f4f89bc0166690926cb5de60e741711771c147b9b447767761"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/data_limit.json",
+          "sha256": "f2dcd930f46f0476bac5ca5463e56c5c6d683daba564b7ad5f244a503d4d87df"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/duplicate_sibling_authority.json",
+          "sha256": "50a69c613119de0d8c34c91dfb5d085da580c60de8f079e98a20f9c0c40c3b74"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/false_positive.json",
+          "sha256": "0eb0c97e97d36ce484541b2c463e7d65ed275c6c75e3905a0c9eb2d204e11f41"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/handoff.json",
+          "sha256": "9aa639b10dda8c25485a5d44a656ea300cb71f6957cdf4ca41a241246a8a6cb6"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/missing_context.json",
+          "sha256": "84426a4e5b1108c34039f98da10914e004ff47783989eb63880ab529d8a6aa1d"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/narrowness.json",
+          "sha256": "9d6e40498a3da88b288a526fe0fd804b2303ac3e0b99aed3b2f4946758112d2a"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/router_self_accept.json",
+          "sha256": "b4cfb4548d5aa8a0207696f00747cd759541420c4aceb1064d3dc967417603e0"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/routing.json",
+          "sha256": "b4a2fb7670f46d1523ad794024755b126ee585632744e15b0b8d579e0885c7d4"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/silent_scope_expansion.json",
+          "sha256": "c01a2d108b3839d4b16bbf20f5b5bbec1c8515d7f6413af3b7a1ca7df6ffad4e"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/stale_source.json",
+          "sha256": "0ce187fcb37ec3bf209ca1222aa495cbd7da7e9c4ce00a9d226864dcedf60dad"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/tool_limit.json",
+          "sha256": "5c74341fde89ddcb54f9b92d79188f8633889fb2206614eca59f0c2ca7f744d3"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/umbrella_authority.json",
+          "sha256": "93e2721e72fab1c95fa09a68ca4f0de3041cca5706a0476affd79919b25b9617"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/unrelated_scope.json",
+          "sha256": "a9485d1fa7f147bb24136317fb2f304fa75bc912f201175655938d1d13f6ac38"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/unsafe_action.json",
+          "sha256": "1c93c86c49806cb69fafaaf084f7b423280d4c76191521c33509b3ae5d6df663"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/00-intake.gate",
+          "sha256": "a55cdf9573481592bdd023e5b44dba50c20a59a79f5e36244bf92d5ee115d08f"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/01-applicability.gate",
+          "sha256": "10dff00e5e2fc4930f126f89413cfd5fb878d69b49cbff42d204257c75eeb68d"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/02-authority-precedence.gate",
+          "sha256": "40dbbc9c540025e6e2d69dc418ab5a9281afb477a69941ff3dfd93b7e3da44be"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/03-scope-nongoals.gate",
+          "sha256": "2332ba70111fc3ec06521606a11b2b082a6bb700396b773e4c5c77f493a54737"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/04-source-evidence-freshness.gate",
+          "sha256": "a064efb0ee9551c2d22ed8377bc55a7949f8962ee379c0ab9fbb6016aaeb9b98"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/05-context-completeness.gate",
+          "sha256": "5240f7aa8deaf308cac9fefcc5aded004f920f731a4e869a237b53d288208f39"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/06-tool-resource-custody.gate",
+          "sha256": "8986ccef7f9f0a5277bad83fc2128dcd0a0588446cc8b7fa9a6102a4b5349bf1"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/07-data-secret-privacy.gate",
+          "sha256": "1ee5b8fcbfb9d79ab57dbc0efda6e54d9aef7084bca85c8232e7196a73def367"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/08-build-browser-runtime.gate",
+          "sha256": "9becf2c4b7a47c43a89809a67dd212f8898592ca91e739072bcd500f244d09bc"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/09-output-handoff.gate",
+          "sha256": "6ebc418aca32b6c978a21ce1cbef50d1f4f89cd037b8949faad18ab8a74a1985"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/10-proof-acceptance.gate",
+          "sha256": "22b2a69d0d24dfba34624a1116479eec052a6ffdbb73183bb82edc18dff74d32"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/11-lifecycle-recovery-archive.gate",
+          "sha256": "21a37dfbb40ef6401e4293d39a9db41ab00b3317ef0d32b6d5e0d89bea1978ae"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/manifest.json",
+          "sha256": "7af04c767fbab163870432c7d6841033a77dc3bc68300222442a734438f9e859"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/handoff.json",
+          "sha256": "5fa78e48b31da9ee09c8fc2c36bbf3c643f5d9909205eb14eb184a4b42c05d85"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/sources.lock",
+          "sha256": "32c0a693f0e1c2d0edb4a3e350e49963a1474f966a05532d012a10dcc351ce78"
+        },
+        {
+          "path": "tests/verify-authoritative-recovery-roster.mjs",
+          "sha256": "7dba96e8b26cc0bb61a9f5598e0b6dbceb4ef214ef5352e5b3ac9997bbebb079"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-contracts.mjs",
+          "sha256": "8c22e1196181383ea82c6ff4bd822310969c1f71478318d4d2260dff2e266df2"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-lifecycle.mjs",
+          "sha256": "de6a83e04c2613ccda5c440883cd74879aee27cd2ab42a2a19c9bf9692fb3772"
+        },
+        {
+          "path": "tests/verify-hygiene-executor.mjs",
+          "sha256": "e711d6b485f7c427a26d3d19905542092792a7eb18bf472c8a7252dc0a97f53f"
+        },
+        {
+          "path": "tests/verify-liveness-sentinel.mjs",
+          "sha256": "bf0807417f87690978a22563af7acde5fa707899debff4f418224a1b938903f1"
+        }
+      ],
+      "mechanical_paths": [
+        {
+          "path": "schemas/bootstrap-binding.v1.json",
+          "sha256": "0866f5413ec26b644349a526d2f6b5e3c37620fad574ba8883190b5a27f07489"
+        },
+        {
+          "path": "specialist-blocks/CURRENT_STATE.md",
+          "sha256": "2e7689225035a6dd7c01d59e871fb067d4693ded7156196cbdb3e98e2d71d147"
+        },
+        {
+          "path": "specialist-blocks/INTEGRATION_HANDOFF.md",
+          "sha256": "baf98f271a4a8c647a83a43697d4514585817b2b42e47a2c12d76314a6211c8c"
+        },
+        {
+          "path": "specialist-blocks/registry/ROSTER.md",
+          "sha256": "0d0dcc3e3bcfd4a15a813e83ac2c878702f21f9088acd04484ccae62f361fd9d"
+        },
+        {
+          "path": "specialist-blocks/registry/atomic-inventory.v1.json",
+          "sha256": "8d57091c0a8f1e528849efc856791dc1a2b06fb86cbc9d1b24e8b5e56b093bcb"
+        },
+        {
+          "path": "specialist-blocks/registry/integration-handoff.v1.json",
+          "sha256": "e643bb33352e1931a3cf22f910491d91c64b5884c1b1edbed47440c5ef977d5c"
+        },
+        {
+          "path": "specialist-blocks/registry/master-inventory.materialized.v1.json",
+          "sha256": "bd9aafe99cae0a21935aa2b6d591746fd56a29622079b4f82ab5f80a94e501c7"
+        },
+        {
+          "path": "specialist-blocks/registry/master-inventory.v1.json",
+          "sha256": "4bb4b13e112010ed4d0bf558586a758690ed02941335ca8b1726f501f6da9b24"
+        },
+        {
+          "path": "specialist-blocks/registry/priority-roster.v1.json",
+          "sha256": "b089587ca54de3afb5fdb270ad45b9320a034cf7d6c1de486213c2457739ab72"
+        },
+        {
+          "path": "specialist-blocks/registry/roster.v1.json",
+          "sha256": "3e9bedb19bc569eab5105f4e04374311c14f8a04ef72fdd14d5c1411489e2bd6"
+        },
+        {
+          "path": "specialist-blocks/registry/routing-index.v1.json",
+          "sha256": "700032db55cb3db5495972ac59f5c2dcc0c931a6946d44b27f520ade8ee04e7f"
+        }
+      ],
+      "regenerated_mechanical_paths": [
+        {
+          "path": "specialist-blocks/CURRENT_STATE.md",
+          "sha256": "2e7689225035a6dd7c01d59e871fb067d4693ded7156196cbdb3e98e2d71d147"
+        },
+        {
+          "path": "specialist-blocks/INTEGRATION_HANDOFF.md",
+          "sha256": "baf98f271a4a8c647a83a43697d4514585817b2b42e47a2c12d76314a6211c8c"
+        },
+        {
+          "path": "specialist-blocks/registry/ROSTER.md",
+          "sha256": "0d0dcc3e3bcfd4a15a813e83ac2c878702f21f9088acd04484ccae62f361fd9d"
+        },
+        {
+          "path": "specialist-blocks/registry/atomic-inventory.v1.json",
+          "sha256": "8d57091c0a8f1e528849efc856791dc1a2b06fb86cbc9d1b24e8b5e56b093bcb"
+        },
+        {
+          "path": "specialist-blocks/registry/integration-handoff.v1.json",
+          "sha256": "e643bb33352e1931a3cf22f910491d91c64b5884c1b1edbed47440c5ef977d5c"
+        },
+        {
+          "path": "specialist-blocks/registry/master-inventory.materialized.v1.json",
+          "sha256": "bd9aafe99cae0a21935aa2b6d591746fd56a29622079b4f82ab5f80a94e501c7"
+        },
+        {
+          "path": "specialist-blocks/registry/master-inventory.v1.json",
+          "sha256": "4bb4b13e112010ed4d0bf558586a758690ed02941335ca8b1726f501f6da9b24"
+        },
+        {
+          "path": "specialist-blocks/registry/priority-roster.v1.json",
+          "sha256": "b089587ca54de3afb5fdb270ad45b9320a034cf7d6c1de486213c2457739ab72"
+        },
+        {
+          "path": "specialist-blocks/registry/roster.v1.json",
+          "sha256": "3e9bedb19bc569eab5105f4e04374311c14f8a04ef72fdd14d5c1411489e2bd6"
+        },
+        {
+          "path": "specialist-blocks/registry/routing-index.v1.json",
+          "sha256": "700032db55cb3db5495972ac59f5c2dcc0c931a6946d44b27f520ade8ee04e7f"
+        }
+      ],
+      "bootstrap_binding_last": true,
+      "package_count": 125,
+      "package_ids": [
+        "specialist.assurance-enterprise.hygiene-executor",
+        "specialist.control.liveness-sentinel"
+      ],
+      "status": "PREPARED_NOT_ACTIVATED",
+      "dependency_closure_authority_sha256": "80f52c841fabeb0559a9f81b8c886b61c0fc7a3eb70e6d26d64b4e6ece153fbf",
+      "context_fixed_point_authority_sha256": "cd71786f80ebaa79e6dc722252f5978b5b5e52b5a5485c1072a006ccb6d9aff6",
+      "additional_existing_dependency_path_count": 16,
+      "required_final_path_manifest_count": 123,
+      "additional_existing_paths": [
+        {
+          "path": "schemas/specialist-integration-handoff.v1.json",
+          "sha256": "7acf79f5945d928bbdd6789dba63df4fdc396c9c9f3384e04b99783a69d1005a"
+        },
+        {
+          "path": "tests/verify-specialist-agent-compiler.mjs",
+          "sha256": "bdbea59ad387702aaed8beb13ebd4bbeb44245cfd1f995855d987548b103e529"
+        },
+        {
+          "path": "tests/verify-specialist-block-library.mjs",
+          "sha256": "316856a226ff054779561384fc97c71c9b2da908c321245c64b7a002018ca617"
+        },
+        {
+          "path": "tests/verify-specialist-independent-evaluator.mjs",
+          "sha256": "c65b3c82838234598fd8135df2b27d8165a3b21b86030c5d88287b077406b493"
+        },
+        {
+          "path": "tests/verify-specialist-package-completeness.mjs",
+          "sha256": "25122aeaf40ad7343bc060605126bef4e1afb5d4e9e6e811695143267a825591"
+        },
+        {
+          "path": "schemas/specialist-context.v1.json",
+          "sha256": "f6ad671ecbfb31b55a2b79a95552bb10ccb6e03a20c47a553b84dd0b9125403a"
+        },
+        {
+          "path": "integrations/agentos-3/tools/review-specialist-utility-harm.mjs",
+          "sha256": "6ac6c6a2d583685bb586c9ab84421696db2c1fc06ef52ddbf243ac63f9e562bc"
+        },
+        {
+          "path": "integrations/agentos-3/contracts/specialist-independent-clearance.v1.json",
+          "sha256": "7789e98309d1e85e579cd3bb69718a203624b55c5c219cf52381121a8b648781"
+        },
+        {
+          "path": "integrations/agentos-3/tests/independent-clearance-test.mjs",
+          "sha256": "b983343371d524112c15cb5d409a2b46b6e180556029b79f71780bcd7aee14d7"
+        },
+        {
+          "path": "integrations/agentos-3/contracts/agentos-3-integration.v1.json",
+          "sha256": "71a92b1fc4ee1bcf110ddad6f344f8ea7307fce4de7f1ff19d906e408d3b0716"
+        },
+        {
+          "path": "integrations/agentos-3/contracts/test-build-receipt.json",
+          "sha256": "419bc9824ea2d94afbad06ed3da60b94ce05a307cb5b25c0e7a9188d4ddc7c88"
+        },
+        {
+          "path": "integrations/agentos-3/tests/integration-test.mjs",
+          "sha256": "2c41340d81b02f6283a043c2be07dcc5a803f280702aab5748c4f8549dcac22a"
+        },
+        {
+          "path": "integrations/agentos-3/CURRENT_STATE.md",
+          "sha256": "d168df4b2eb6e6a5b11899378b9668e223cb1ce256c51b2ec7ece8c1b21e5eaf"
+        },
+        {
+          "path": "tests/verify-architecture-hygiene.mjs",
+          "sha256": "92068b111b4585bb95407777be67f417f76644c63e758fe1b2693ee242f7d68e"
+        },
+        {
+          "path": "specialist-blocks/registry/utility-harm-prescreen.v1.json",
+          "sha256": "967a43534e14b90df715d5628b1206d386da79e0d7fca19d119258b3ac2e2635"
+        },
+        {
+          "path": "tests/verify-specialist-utility-harm-prescreen.mjs",
+          "sha256": "364abf3b8ac564ab092201df5680611c91894f3bdb00f8ca0b3cc088628c6a89"
+        }
+      ],
+      "path_union": [
+        {
+          "path": "control/authoritative-recovery-roster.mjs",
+          "sha256": "b5c417e72e0bc4d5cce5d810776b8d1f58a7d0d4c2b2ce0a84364bec84bd9adf"
+        },
+        {
+          "path": "control/campaign-closeout-contracts.mjs",
+          "sha256": "3ed4d53996eafa109306ec4f862f0235643ebdfac5c8c578e9175d8216ecc936"
+        },
+        {
+          "path": "control/campaign-closeout-lifecycle.mjs",
+          "sha256": "fac733436c9af0c456cd0bdd79d1fc41f2b618b70d485c2e7cf4a74e7e5123a5"
+        },
+        {
+          "path": "control/hygiene-executor.mjs",
+          "sha256": "5b122331d57ded7580674e260cde69aa5c2262e26ce94db1b33d5c7cb3e03867"
+        },
+        {
+          "path": "control/liveness-sentinel.mjs",
+          "sha256": "95e28acc5dbfd176e21fb37d7089ce1f4455d9e3a3d382ccba641e36d51a3a31"
+        },
+        {
+          "path": "docs/campaign-closeout-memory-archive-hygiene.md",
+          "sha256": "dc6697a97c51f12507af88a6ac750337deb1a4b6f00750b7fa1ff52403c65524"
+        },
+        {
+          "path": "schemas/authoritative-roster-recovery-document.v1.json",
+          "sha256": "56e939e74b32c000e814e4e34adca7c0fc80bbadc0fbb9c67c46c0c623c17d41"
+        },
+        {
+          "path": "schemas/authoritative-roster-recovery-manifest.v1.json",
+          "sha256": "f73f0663c928d0c156e23eeec1a3ca2a019a5c1b0b329112a0ff91f3600e5c04"
+        },
+        {
+          "path": "schemas/campaign-closeout-lifecycle.v1.json",
+          "sha256": "6ac1e84563a02b242716a7e95e59ff44204f45c2b494156b102c59f0f707eefc"
+        },
+        {
+          "path": "schemas/cleanup-deletion-manifest.v1.json",
+          "sha256": "597b4813d0223ffe1656af388a4f05bd9b004da26c5cd25aa804403961b2a698"
+        },
+        {
+          "path": "schemas/controller-closeout-verification.v1.json",
+          "sha256": "e564c6e3ee7705ca78e34bb5771883ca444884dbc3bee35925c92daa92afec4b"
+        },
+        {
+          "path": "schemas/hygiene-executor-after-state.v1.json",
+          "sha256": "d23c4c2786e323a2abcaea65832627f92c2ac831fd7893db4c0469776aa35bd0"
+        },
+        {
+          "path": "schemas/hygiene-executor-dry-run.v1.json",
+          "sha256": "2d03548213ee580710bf50800cb423075ce001327b50c535db37d3bf451c0c12"
+        },
+        {
+          "path": "schemas/hygiene-executor-execution.v1.json",
+          "sha256": "38b67fe87aa586df26a4ee103ea36c212a4a04199e5657343c6ca861c37618fb"
+        },
+        {
+          "path": "schemas/immutable-lane-despawn-handoff.v1.json",
+          "sha256": "ea30b253c743114bf17fea3ee02a7a05e1394a286bcc867c341e26b24034db5f"
+        },
+        {
+          "path": "schemas/lane-safe-checkpoint-order.v1.json",
+          "sha256": "8c87028d15df42b6ba8b74d9874efb22db34057f9b31992e11f0b6de7df750ed"
+        },
+        {
+          "path": "schemas/lane-safe-checkpoint-receipt.v1.json",
+          "sha256": "b1fca41d34f094937e059cd91fb67d214972066bbc9f743a1d79a47ee98d65e8"
+        },
+        {
+          "path": "schemas/liveness-sentinel.v1.json",
+          "sha256": "50ab2d89966caa32cbc2587e3f33fe2ed6a491ccaa4cbe201e38d7c98ef3bea5"
+        },
+        {
+          "path": "schemas/memory-consolidation-intake.v1.json",
+          "sha256": "95182618ce214363cf87a2f02dc9333f13d456fb62497c756c259f2fe7b68161"
+        },
+        {
+          "path": "schemas/memory-consolidation-receipt.v1.json",
+          "sha256": "c0b5339c208a93e46d24e719c9d3d6aa40b19d3d4ea0c4c03a982b056cd857ae"
+        },
+        {
+          "path": "schemas/runtime-delivery-correlation.v1.json",
+          "sha256": "332be7f90de9a5c6ce7bc7d398bd20b70577145128e22c411f546e2fa52f862f"
+        },
+        {
+          "path": "schemas/spawner-archive-precheck.v1.json",
+          "sha256": "1445bd7b4b02cf53d8a8f018bb8562b624ec0b8d8398875900fe98b96e10fd62"
+        },
+        {
+          "path": "schemas/spawner-archive-result.v1.json",
+          "sha256": "6536d40ef706ec24bf0bbc98191e43867209989792c7c690b8f4e32e82eda67f"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/block.json",
+          "sha256": "d5937e972fd7e59d41e37d014a9c7b8c7b3ffab8187f6ba00641233b1b32cf69"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/evaluation.json",
+          "sha256": "7bf3d32b31a2d3581853565bc41426e202ef6e1a097139c515806fede362251d"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/authority_conflict.json",
+          "sha256": "871d7b04e99d904b46aaeca0f35b48570ee32edbc870c5bde8e9c73e48be10b0"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/broad_when_narrow_exists.json",
+          "sha256": "afe5de0bc7f14df8e9909b280a9d4c1ec60cfa8aac11657c5c11fcb1bca9e515"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/cross_provider_version_claim.json",
+          "sha256": "650779199524275b0ecdb1ff09d1471d4515723bc76fc67a79c53cd873e5a9be"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/data_limit.json",
+          "sha256": "a7d6f2076a3198326a9d9cce670150286fd143bddb29c2a3e59eb752181c601d"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/duplicate_sibling_authority.json",
+          "sha256": "4507822bc216bb070cef19469afe0548af5040131987a9a86c536f5e77c17220"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/false_positive.json",
+          "sha256": "9d33ff076c85dae0b5854fc359078ca0d29dbf0fe860a0649cb7806d9304a730"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/handoff.json",
+          "sha256": "6c2a6a734f37df84a3d8d2462a52558da43102763c0db25f1605a6f3bbb6b74a"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/missing_context.json",
+          "sha256": "6528437fb2aa297bd9afb0cdf799257d1b3f881e42851e1063f51f0bd06ff88c"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/narrowness.json",
+          "sha256": "8c0518f90e4cb7bf0ef568bf7a3d4ef6a07d6a8a209fbb137be5e202e4f9cde8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/router_self_accept.json",
+          "sha256": "28822ea3c2fdd8c074593e9881475172d9599a07a67c05866f34e37e12a34530"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/routing.json",
+          "sha256": "2a13bcadb6272693c1282a7a9dd0e3ae5b8e8c833ae7e20ce96058368fd71322"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/silent_scope_expansion.json",
+          "sha256": "2ae05022495064428cafc996a0e893b579c54cd5aee2f6072e9393d7371c7674"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/stale_source.json",
+          "sha256": "de8741bc556804d8fe8af89471482ad0202ae80abbdff93f6cad405c6e35a7a0"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/tool_limit.json",
+          "sha256": "fce91487e9e51ecf7e65499b189f95676ff62067cb7b244fe5402656bb8bf7aa"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/umbrella_authority.json",
+          "sha256": "9212329b16580424bea6ad22f3a50578e04cdb544193c379beef100d1c5a22a8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/unrelated_scope.json",
+          "sha256": "a3aeb53d5f00c6af823f47a6906bc80a12124c02226dee24e8f5b5077130e016"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/unsafe_action.json",
+          "sha256": "abd024a123448ca5600f807ab3bdf56a2caca1f240730f9b05aaac4b86ddf2ed"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/00-intake.gate",
+          "sha256": "19b5d74d0fb66119e5dc6bdaf63a9688d8a385091e50a3b5c91c53dd78d55baf"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/01-applicability.gate",
+          "sha256": "8cb2cde590f9a0a53c24598fbea60d56963911dd1b4b5225b0b656186b068192"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/02-authority-precedence.gate",
+          "sha256": "ab6c7b65a8f5af97337a27f36b3134c588c60af41100fa71648a7014553e75a8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/03-scope-nongoals.gate",
+          "sha256": "dd92ef606a82662fed9f89e68b6894f9a302804d79cc0110d83657b32eb461e5"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/04-source-evidence-freshness.gate",
+          "sha256": "c4b311445f1ee701946b40017e3baaa35406420e238dca917bfec7d51ff1ccff"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/05-context-completeness.gate",
+          "sha256": "0b12b524c910b9ede2c8afe8c4c22d64852573fc4e9fd0447bca8d9b6a54319e"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/06-tool-resource-custody.gate",
+          "sha256": "0e0e4c58ec95ba9f13b03aeded1a159b320d866549225d5b51f1017906086bcd"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/07-data-secret-privacy.gate",
+          "sha256": "ad3b2730ea625141042ffe6f9f1ed799338a815b4389ba2e9435909ad7bea3ce"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/08-build-browser-runtime.gate",
+          "sha256": "f42ea660458e3395ef6fd321c1afd79f4e95d63125e433f92b0745813e29790a"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/09-output-handoff.gate",
+          "sha256": "4683eee277513c3c06aebf922ac242e2c730e384183bce748fdbcbd0571ca8f9"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/10-proof-acceptance.gate",
+          "sha256": "fdc0ca01a966ac885ac2c619475eac7a1246b01114d7ba1a800bf603f426c97d"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/11-lifecycle-recovery-archive.gate",
+          "sha256": "2cbf75345ee56deaf06f7693126d6ebbd60c8bc23bbde19efe1e57cb38cc2b9b"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/gates/manifest.json",
+          "sha256": "d881eeaee46ea3c6fb7a9e61f15a5288c76b4215b2264871433845c09c07bf27"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/handoff.json",
+          "sha256": "04140717cd85151793079585d1752fbb8e4176e55b72f7c3c1837add62b56fe8"
+        },
+        {
+          "path": "specialist-blocks/wave-04/hygiene-executor/sources.lock",
+          "sha256": "b300b5a8a436cc6d8ec05e9befffa5f6d0f614f77d9d9985cb829002d0beecaf"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/block.json",
+          "sha256": "b555d89e8cf27127cec65a9ac5b5c1e343b04e9442a79e1adebc74d9edf86cb7"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/evaluation.json",
+          "sha256": "a9ee084345fc85505b432f2dbbda2020235f9fe95bf25051ac14a2394733db7b"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/authority_conflict.json",
+          "sha256": "dbcabfde92aaf115c1f289d5a748ad2545d26dfedff9ddab897d30fc7e1ff507"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/broad_when_narrow_exists.json",
+          "sha256": "69a32ba2517b1445409ba1e039b70e8e727f909dedfc8b75c749b80e90dcaa77"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/cross_provider_version_claim.json",
+          "sha256": "fd0c0b787a1960f4f89bc0166690926cb5de60e741711771c147b9b447767761"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/data_limit.json",
+          "sha256": "f2dcd930f46f0476bac5ca5463e56c5c6d683daba564b7ad5f244a503d4d87df"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/duplicate_sibling_authority.json",
+          "sha256": "50a69c613119de0d8c34c91dfb5d085da580c60de8f079e98a20f9c0c40c3b74"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/false_positive.json",
+          "sha256": "0eb0c97e97d36ce484541b2c463e7d65ed275c6c75e3905a0c9eb2d204e11f41"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/handoff.json",
+          "sha256": "9aa639b10dda8c25485a5d44a656ea300cb71f6957cdf4ca41a241246a8a6cb6"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/missing_context.json",
+          "sha256": "84426a4e5b1108c34039f98da10914e004ff47783989eb63880ab529d8a6aa1d"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/narrowness.json",
+          "sha256": "9d6e40498a3da88b288a526fe0fd804b2303ac3e0b99aed3b2f4946758112d2a"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/router_self_accept.json",
+          "sha256": "b4cfb4548d5aa8a0207696f00747cd759541420c4aceb1064d3dc967417603e0"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/routing.json",
+          "sha256": "b4a2fb7670f46d1523ad794024755b126ee585632744e15b0b8d579e0885c7d4"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/silent_scope_expansion.json",
+          "sha256": "c01a2d108b3839d4b16bbf20f5b5bbec1c8515d7f6413af3b7a1ca7df6ffad4e"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/stale_source.json",
+          "sha256": "0ce187fcb37ec3bf209ca1222aa495cbd7da7e9c4ce00a9d226864dcedf60dad"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/tool_limit.json",
+          "sha256": "5c74341fde89ddcb54f9b92d79188f8633889fb2206614eca59f0c2ca7f744d3"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/umbrella_authority.json",
+          "sha256": "93e2721e72fab1c95fa09a68ca4f0de3041cca5706a0476affd79919b25b9617"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/unrelated_scope.json",
+          "sha256": "a9485d1fa7f147bb24136317fb2f304fa75bc912f201175655938d1d13f6ac38"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/fixtures/unsafe_action.json",
+          "sha256": "1c93c86c49806cb69fafaaf084f7b423280d4c76191521c33509b3ae5d6df663"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/00-intake.gate",
+          "sha256": "a55cdf9573481592bdd023e5b44dba50c20a59a79f5e36244bf92d5ee115d08f"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/01-applicability.gate",
+          "sha256": "10dff00e5e2fc4930f126f89413cfd5fb878d69b49cbff42d204257c75eeb68d"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/02-authority-precedence.gate",
+          "sha256": "40dbbc9c540025e6e2d69dc418ab5a9281afb477a69941ff3dfd93b7e3da44be"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/03-scope-nongoals.gate",
+          "sha256": "2332ba70111fc3ec06521606a11b2b082a6bb700396b773e4c5c77f493a54737"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/04-source-evidence-freshness.gate",
+          "sha256": "a064efb0ee9551c2d22ed8377bc55a7949f8962ee379c0ab9fbb6016aaeb9b98"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/05-context-completeness.gate",
+          "sha256": "5240f7aa8deaf308cac9fefcc5aded004f920f731a4e869a237b53d288208f39"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/06-tool-resource-custody.gate",
+          "sha256": "8986ccef7f9f0a5277bad83fc2128dcd0a0588446cc8b7fa9a6102a4b5349bf1"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/07-data-secret-privacy.gate",
+          "sha256": "1ee5b8fcbfb9d79ab57dbc0efda6e54d9aef7084bca85c8232e7196a73def367"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/08-build-browser-runtime.gate",
+          "sha256": "9becf2c4b7a47c43a89809a67dd212f8898592ca91e739072bcd500f244d09bc"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/09-output-handoff.gate",
+          "sha256": "6ebc418aca32b6c978a21ce1cbef50d1f4f89cd037b8949faad18ab8a74a1985"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/10-proof-acceptance.gate",
+          "sha256": "22b2a69d0d24dfba34624a1116479eec052a6ffdbb73183bb82edc18dff74d32"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/11-lifecycle-recovery-archive.gate",
+          "sha256": "21a37dfbb40ef6401e4293d39a9db41ab00b3317ef0d32b6d5e0d89bea1978ae"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/gates/manifest.json",
+          "sha256": "7af04c767fbab163870432c7d6841033a77dc3bc68300222442a734438f9e859"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/handoff.json",
+          "sha256": "5fa78e48b31da9ee09c8fc2c36bbf3c643f5d9909205eb14eb184a4b42c05d85"
+        },
+        {
+          "path": "specialist-blocks/wave-01/liveness-sentinel/sources.lock",
+          "sha256": "32c0a693f0e1c2d0edb4a3e350e49963a1474f966a05532d012a10dcc351ce78"
+        },
+        {
+          "path": "tests/verify-authoritative-recovery-roster.mjs",
+          "sha256": "7dba96e8b26cc0bb61a9f5598e0b6dbceb4ef214ef5352e5b3ac9997bbebb079"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-contracts.mjs",
+          "sha256": "8c22e1196181383ea82c6ff4bd822310969c1f71478318d4d2260dff2e266df2"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-lifecycle.mjs",
+          "sha256": "de6a83e04c2613ccda5c440883cd74879aee27cd2ab42a2a19c9bf9692fb3772"
+        },
+        {
+          "path": "tests/verify-hygiene-executor.mjs",
+          "sha256": "e711d6b485f7c427a26d3d19905542092792a7eb18bf472c8a7252dc0a97f53f"
+        },
+        {
+          "path": "tests/verify-liveness-sentinel.mjs",
+          "sha256": "bf0807417f87690978a22563af7acde5fa707899debff4f418224a1b938903f1"
+        },
+        {
+          "path": "schemas/specialist-integration-handoff.v1.json",
+          "sha256": "7acf79f5945d928bbdd6789dba63df4fdc396c9c9f3384e04b99783a69d1005a"
+        },
+        {
+          "path": "tests/verify-specialist-agent-compiler.mjs",
+          "sha256": "bdbea59ad387702aaed8beb13ebd4bbeb44245cfd1f995855d987548b103e529"
+        },
+        {
+          "path": "tests/verify-specialist-block-library.mjs",
+          "sha256": "316856a226ff054779561384fc97c71c9b2da908c321245c64b7a002018ca617"
+        },
+        {
+          "path": "tests/verify-specialist-independent-evaluator.mjs",
+          "sha256": "c65b3c82838234598fd8135df2b27d8165a3b21b86030c5d88287b077406b493"
+        },
+        {
+          "path": "tests/verify-specialist-package-completeness.mjs",
+          "sha256": "25122aeaf40ad7343bc060605126bef4e1afb5d4e9e6e811695143267a825591"
+        },
+        {
+          "path": "schemas/specialist-context.v1.json",
+          "sha256": "f6ad671ecbfb31b55a2b79a95552bb10ccb6e03a20c47a553b84dd0b9125403a"
+        },
+        {
+          "path": "integrations/agentos-3/tools/review-specialist-utility-harm.mjs",
+          "sha256": "6ac6c6a2d583685bb586c9ab84421696db2c1fc06ef52ddbf243ac63f9e562bc"
+        },
+        {
+          "path": "integrations/agentos-3/contracts/specialist-independent-clearance.v1.json",
+          "sha256": "7789e98309d1e85e579cd3bb69718a203624b55c5c219cf52381121a8b648781"
+        },
+        {
+          "path": "integrations/agentos-3/tests/independent-clearance-test.mjs",
+          "sha256": "b983343371d524112c15cb5d409a2b46b6e180556029b79f71780bcd7aee14d7"
+        },
+        {
+          "path": "integrations/agentos-3/contracts/agentos-3-integration.v1.json",
+          "sha256": "71a92b1fc4ee1bcf110ddad6f344f8ea7307fce4de7f1ff19d906e408d3b0716"
+        },
+        {
+          "path": "integrations/agentos-3/contracts/test-build-receipt.json",
+          "sha256": "419bc9824ea2d94afbad06ed3da60b94ce05a307cb5b25c0e7a9188d4ddc7c88"
+        },
+        {
+          "path": "integrations/agentos-3/tests/integration-test.mjs",
+          "sha256": "2c41340d81b02f6283a043c2be07dcc5a803f280702aab5748c4f8549dcac22a"
+        },
+        {
+          "path": "integrations/agentos-3/CURRENT_STATE.md",
+          "sha256": "d168df4b2eb6e6a5b11899378b9668e223cb1ce256c51b2ec7ece8c1b21e5eaf"
+        },
+        {
+          "path": "tests/verify-architecture-hygiene.mjs",
+          "sha256": "92068b111b4585bb95407777be67f417f76644c63e758fe1b2693ee242f7d68e"
+        },
+        {
+          "path": "specialist-blocks/registry/utility-harm-prescreen.v1.json",
+          "sha256": "967a43534e14b90df715d5628b1206d386da79e0d7fca19d119258b3ac2e2635"
+        },
+        {
+          "path": "tests/verify-specialist-utility-harm-prescreen.mjs",
+          "sha256": "364abf3b8ac564ab092201df5680611c91894f3bdb00f8ca0b3cc088628c6a89"
+        },
+        {
+          "path": "schemas/bootstrap-binding.v1.json",
+          "sha256": "0866f5413ec26b644349a526d2f6b5e3c37620fad574ba8883190b5a27f07489"
+        },
+        {
+          "path": "specialist-blocks/CURRENT_STATE.md",
+          "sha256": "2e7689225035a6dd7c01d59e871fb067d4693ded7156196cbdb3e98e2d71d147"
+        },
+        {
+          "path": "specialist-blocks/INTEGRATION_HANDOFF.md",
+          "sha256": "baf98f271a4a8c647a83a43697d4514585817b2b42e47a2c12d76314a6211c8c"
+        },
+        {
+          "path": "specialist-blocks/registry/ROSTER.md",
+          "sha256": "0d0dcc3e3bcfd4a15a813e83ac2c878702f21f9088acd04484ccae62f361fd9d"
+        },
+        {
+          "path": "specialist-blocks/registry/atomic-inventory.v1.json",
+          "sha256": "8d57091c0a8f1e528849efc856791dc1a2b06fb86cbc9d1b24e8b5e56b093bcb"
+        },
+        {
+          "path": "specialist-blocks/registry/integration-handoff.v1.json",
+          "sha256": "e643bb33352e1931a3cf22f910491d91c64b5884c1b1edbed47440c5ef977d5c"
+        },
+        {
+          "path": "specialist-blocks/registry/master-inventory.materialized.v1.json",
+          "sha256": "bd9aafe99cae0a21935aa2b6d591746fd56a29622079b4f82ab5f80a94e501c7"
+        },
+        {
+          "path": "specialist-blocks/registry/master-inventory.v1.json",
+          "sha256": "4bb4b13e112010ed4d0bf558586a758690ed02941335ca8b1726f501f6da9b24"
+        },
+        {
+          "path": "specialist-blocks/registry/priority-roster.v1.json",
+          "sha256": "b089587ca54de3afb5fdb270ad45b9320a034cf7d6c1de486213c2457739ab72"
+        },
+        {
+          "path": "specialist-blocks/registry/roster.v1.json",
+          "sha256": "3e9bedb19bc569eab5105f4e04374311c14f8a04ef72fdd14d5c1411489e2bd6"
+        },
+        {
+          "path": "specialist-blocks/registry/routing-index.v1.json",
+          "sha256": "700032db55cb3db5495972ac59f5c2dcc0c931a6946d44b27f520ade8ee04e7f"
+        }
+      ],
+      "path_union_count": 123,
+      "package_role_counts": {
+        "ROUTER": 19,
+        "CONTROL_PLANE": 17,
+        "ATOMIC_SPECIALIST": 66,
+        "STANDARD_BLOCK": 23
+      },
+      "inventory_role_counts": {
+        "CONTROL_PLANE": 17,
+        "ATOMIC_SPECIALIST": 93
+      },
+      "gate_file_count": 1500,
+      "hostile_fixture_count": 2125,
+      "roster_sha256": "02d8ac92bda37a4a08d59d559f6ce513dc4cf4bf1d9fb7d0eb5ad8a84bfb801c",
+      "routing_sha256": "e74767229bc97c94fbbf866709477bb27a21b12752e096191bce8e8e1ff93445",
+      "inventory_sha256": "8d57091c0a8f1e528849efc856791dc1a2b06fb86cbc9d1b24e8b5e56b093bcb",
+      "bootstrap_self_digest_exclusion": {
+        "entry_path": "schemas/bootstrap-binding.v1.json",
+        "field": "sha256",
+        "rule": "RAW_SHA256_WITH_SELF_ENTRY_NULL",
+        "bootstrap_binding_last": true
+      },
+      "successor_060_authority_sha256": "69413900179b3df5f15f9f361b39ec482018aaf0fe64a7055d458f1c8ced34fb",
+      "agentos3_integration_path_count": 7,
+      "agentos3_pending_case_count": 85,
+      "agentos3_pending_block_count": 5,
+      "agentos3_roster_count": 125,
+      "agentos3_roster_sha256": "02d8ac92bda37a4a08d59d559f6ce513dc4cf4bf1d9fb7d0eb5ad8a84bfb801c",
+      "agentos3_clearance_sha256": "bb91d9fbaa8c17ebec376f5dd3295009b25a7fc8df9f3d6c55872fc73563897e",
+      "agentos3_clearance_raw_sha256": "7789e98309d1e85e579cd3bb69718a203624b55c5c219cf52381121a8b648781",
+      "agentos3_block_digests": [
+        {
+          "block_id": "specialist.control.intent-regulator",
+          "block_sha256": "71441ddf25454906c9f837963fbbd19c4b030e63e4268f01e169167d4623e09d"
+        },
+        {
+          "block_id": "specialist.control.liveness-sentinel",
+          "block_sha256": "08c0ccb6c75f36e8f103dd1237614d62d56cdb7285897c0af03c8a51f4654ce8"
+        },
+        {
+          "block_id": "specialist.control.project-controller",
+          "block_sha256": "f64d87b164eb10c27acc20bde40eadae24f9ad47adf689229029265a75f80113"
+        },
+        {
+          "block_id": "specialist.control.resource-scheduler",
+          "block_sha256": "aed36489964cb314b432e2b0a481fed2d14067bce476c246b56945abd27f3d87"
+        },
+        {
+          "block_id": "specialist.control.runtime-deployment-operator",
+          "block_sha256": "2810585365c17d3bc02fafaf567b7aa4f533acddafebb49808623684665b6859"
+        }
+      ],
+      "successor_061_authority_sha256": "52dfd00e902917f02a60a7f03394d09a18903d1b6b281164041e6177a78c563c"
     }
   },
   "compatibility_only": {

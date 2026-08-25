@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.lane_safe_checkpoint_order.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "sequence", "required_terminal_state", "late_material_disposition", "families"],
+  "properties": {
+    "schema": {"const": "agentos.lane_safe_checkpoint_order.v1"},
+    "version": {"const": 1},
+    "sequence": {"type": "array", "items": {"enum": ["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "DELIVERED", "CONSUMED", "CLOSED"]}, "minItems": 1},
+    "required_terminal_state": {"const": "DELIVERED_AND_CONSUMED_AND_ATOMIC_NO_NEXT_WORK"},
+    "late_material_disposition": {"const": "POST_CHECKPOINT_MATERIAL_PRESERVED"},
+    "families": {"type": "array", "items": {"type": "string"}, "minItems": 2},
+    "no_next_work": {"const": true},
+    "atomic": {"const": true}
+  }
+}

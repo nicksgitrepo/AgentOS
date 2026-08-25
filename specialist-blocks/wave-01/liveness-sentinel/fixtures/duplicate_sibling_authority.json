@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.control.liveness-sentinel",
+  "class": "duplicate_sibling_authority",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for duplicate_sibling_authority; liveness sentinel must preserve custody, reject coercion, and avoid lifecycle authority."
+}

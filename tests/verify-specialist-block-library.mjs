@@ -29,7 +29,7 @@ const second = compileSpecialistLibrary({repositoryRoot: root, writeGenerated: f
 assert.deepEqual(first.roster, second.roster, "specialist roster compilation is not deterministic");
 assert.deepEqual(first.routing, second.routing, "specialist routing compilation is not deterministic");
 assert.deepEqual(first.inventory, second.inventory, "specialist inventory materialization is not deterministic");
-assert.equal(first.records.length, 123, "foundation, reusable standard, P0, P1, P2, P3, P4, and P5 package count is wrong");
+assert.equal(first.records.length, 125, "foundation, reusable standard, P0, P1, P2, P3, P4, and P5 package count is wrong");
 
 const library = loadSpecialistLibrary({repositoryRoot: root, compileIfMissing: false});
 const taskCompilerCatalog = loadSpecialistBlockCatalog({repositoryRoot: root});
@@ -106,7 +106,7 @@ for (const route of library.routing.routes) {
   assert.equal(route.select.length, 1, `${route.route_id} must select exactly its canonical roster block`);
   assert.equal(route.route_id, `route.${route.select[0].slice("specialist.".length)}`, `${route.route_id} is not bound to its selected canonical block`);
 }
-assert.equal(taskCompilerCatalog.length, 123, "task-shaped compiler catalog must load every compiled candidate package");
+assert.equal(taskCompilerCatalog.length, 125, "task-shaped compiler catalog must load every compiled candidate package");
 const catalogById = new Map(taskCompilerCatalog.map((block) => [block.block_id, block]));
 assert.equal(catalogById.size, taskCompilerCatalog.length, "task-shaped compiler catalog contains duplicate block identities");
 for (const {block} of first.records) {
@@ -126,14 +126,14 @@ assert(taskCompilerCatalog.filter((block) => block.role_kind === "STANDARD_BLOCK
 assert.equal(library.roster.activation, "OFF");
 assert.equal(library.roster.lifecycle ?? "NOT_ADMITTED", "NOT_ADMITTED");
 assert.equal(library.roster.blocks.every((block) => block.lifecycle === "NOT_ADMITTED" && block.activation === "OFF"), true);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "CONTROL_PLANE").length, 16);
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "CONTROL_PLANE").length, 17);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "STANDARD_BLOCK").length, 23);
 assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ROUTER").length, 19);
-assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST").length, 65);
-assert.deepEqual(library.inventory.counts, {ROUTER: 640, CONTROL_PLANE: 16, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 92, COMPILED_AGENT_PACKAGE: 0});
+assert.equal(library.roster.blocks.filter((block) => block.role_kind === "ATOMIC_SPECIALIST").length, 66);
+assert.deepEqual(library.inventory.counts, {ROUTER: 640, CONTROL_PLANE: 17, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 93, COMPILED_AGENT_PACKAGE: 0});
 assert.equal(library.inventory.entries.length, 621);
-assert.equal(library.inventory.typed_overlay_entries.length, 127, "typed router/atomic/control overlay must be inspectable alongside the expanded backlog");
-assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 19, CONTROL_PLANE: 16, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 92, COMPILED_AGENT_PACKAGE: 0});
+assert.equal(library.inventory.typed_overlay_entries.length, 129, "typed router/atomic/control overlay must be inspectable alongside the expanded backlog");
+assert.deepEqual(library.inventory.typed_overlay_counts, {ROUTER: 19, CONTROL_PLANE: 17, KNOWLEDGE_BLOCK: 0, GOVERNANCE_BLOCK: 0, STANDARD_BLOCK: 0, CONTEXT_BLOCK: 0, ATOMIC_SPECIALIST: 93, COMPILED_AGENT_PACKAGE: 0});
 
 for (const record of first.records) {
   const packageDir = record.packageDir;
@@ -178,7 +178,7 @@ const contextForRoute = (route) => {
   return context;
 };
 const routableRoutes = first.routing.routes.filter((route) => route.role_kind !== "STANDARD_BLOCK");
-assert.equal(routableRoutes.length, 100, "all non-standard roster routes must remain runtime-routable");
+assert.equal(routableRoutes.length, 102, "all non-standard roster routes must remain runtime-routable");
 for (const route of routableRoutes) {
   const result = routeSpecialists({library, signals: route.signals, context: contextForRoute(route)});
   assert.equal(result.status, "ROUTE", `${route.route_id} does not produce a deterministic route with complete context`);
@@ -287,7 +287,7 @@ for (const route of routableRoutes) {
     }
   }
 }
-assert.equal(atomicPredicateCaseCount, 15, "atomic deny predicate matrix must cover every activation/execution/deployment/migration/runtime/unsupported/provider identity route case");
+assert.equal(atomicPredicateCaseCount, 17, "atomic deny predicate matrix must cover every activation/execution/deployment/migration/runtime/unsupported/provider identity route case");
 
 // The hostile matrix must also cover inflected and plural action values.  A
 // lexical exact-match deny check is insufficient: deployed/deploying,
@@ -382,7 +382,7 @@ const removeContextPath = (context, dottedPath) => {
 };
 
 const controlIds = first.records.filter((record) => record.block.role_kind === "CONTROL_PLANE").map((record) => record.block.block_id).sort();
-assert.equal(controlIds.length, 16, "the complete control-plane roster must remain covered");
+assert.equal(controlIds.length, 17, "the complete control-plane roster must remain covered");
 for (const blockId of controlIds) {
   const block = first.records.find((record) => record.block.block_id === blockId)?.block;
   assert(block, `${blockId} is missing from the compiled candidate library`);
@@ -591,7 +591,7 @@ assert.equal(costRoute.status, "ROUTE");
 assert.deepEqual(costRoute.selected, ["specialist.finance.accounting-router", "specialist.finance.job-cost-accounting"]);
 assert.deepEqual(validateAtomicSelection({library, selected: costRoute.selected}).status, "PASS");
 
-assert.deepEqual(overlay.counts, {ROUTER: 19, ATOMIC_SPECIALIST: 92, CONTROL_PLANE: 16});
+assert.deepEqual(overlay.counts, {ROUTER: 19, ATOMIC_SPECIALIST: 93, CONTROL_PLANE: 17});
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "SEC.OWASP_API_2023_OBJECT_AUTHORIZATION"), true);
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "SEC.ACCESS_CONTROL_TENANT_ISOLATION"), true);
 assert.equal(overlay.atomic_specialists.some((item) => item.generic_id === "EDGE.CLOUDFLARE_ZERO_TRUST"), true);

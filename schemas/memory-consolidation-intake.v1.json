@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory_consolidation_intake.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "intake_id", "task_id", "lane_id", "source_manifest_sha256", "filter_policy", "payload_digest", "status"],
+  "properties": {
+    "schema": {"const": "agentos.memory_consolidation_intake.v1"},
+    "version": {"const": 1},
+    "intake_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "lane_id": {"type": "string", "minLength": 1},
+    "source_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "filter_policy": {"enum": ["PUBLIC_GOVERNANCE_ONLY", "PUBLIC_TYPED_RECEIPTS_ONLY"]},
+    "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["PREPARED", "ACCEPTED", "REJECTED"]},
+    "private_payload_included": {"const": false},
+    "cross_product_write": {"const": false}
+  }
+}

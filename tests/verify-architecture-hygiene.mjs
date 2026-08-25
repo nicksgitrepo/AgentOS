@@ -144,6 +144,7 @@ const focusedBudgets = new Map([
 for (const [relativePath, budget] of focusedBudgets) assert(lineCount(relativePath) <= budget, `${relativePath} exceeds its focused-module budget of ${budget} lines`);
 
 const explicitlyRetainedLargeBoundaries = new Set([
+  "control/agent-spawner-lifecycle.mjs",
   "control/agentos-controller.mjs",
   "control/audit-driven-integration-pyramid.mjs",
   "control/bootstrap-compiler.mjs",

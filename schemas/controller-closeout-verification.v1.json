@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.controller_closeout_verification.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "task_id", "turn_id", "lane_id", "state", "authority_sha256", "candidate_tree", "manifest_sha256", "process_custody", "memory_receipt_sha256", "runtime_correlation_sha256", "verification_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.controller_closeout_verification.v1"},
+    "version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "turn_id": {"type": "string", "minLength": 1},
+    "lane_id": {"type": "string", "minLength": 1},
+    "state": {"enum": ["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "AUDIT_CONSUMED", "CLOSED", "STALLED"]},
+    "authority_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_tree": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "process_custody": {"type": "object", "required": ["checked", "live_process_count", "entries"], "properties": {"checked": {"const": true}, "live_process_count": {"type": "integer", "minimum": 0}, "entries": {"type": "array"}}},
+    "memory_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "runtime_correlation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verification_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "parent_transition_allowed": {"type": "boolean"},
+    "next_work": {"enum": ["NONE", "BLOCKED", "EXPLICITLY_AUTHORIZED"]}
+  }
+}

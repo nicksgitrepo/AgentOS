@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.assurance-enterprise.hygiene-executor",
+  "class": "stale_source",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for stale_source; hygiene executor must remain manifest-bound and deny unsafe or unscoped action."
+}

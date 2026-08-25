@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.cleanup_deletion_manifest.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "authority_root", "manifest_sha256", "entries", "mode", "created_at_utc"],
+  "properties": {
+    "schema": {"const": "agentos.cleanup_deletion_manifest.v1"},
+    "version": {"const": 1},
+    "authority_root": {"type": "string", "minLength": 1},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "entries": {"type": "array", "items": {"type": "object", "required": ["path", "sha256", "kind", "disposition"], "properties": {"path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "kind": {"enum": ["file", "directory", "metadata"]}, "disposition": {"enum": ["RETAIN", "DELETE"]}}}},
+    "mode": {"enum": ["DRY_RUN", "AUTHORIZED_EXECUTION"]},
+    "created_at_utc": {"type": "string", "minLength": 1},
+    "deletion_authority": {"const": "CONTROLLER_CLEANUP_ONLY"},
+    "live_process_policy": {"const": "FAIL_CLOSED"}
+  }
+}

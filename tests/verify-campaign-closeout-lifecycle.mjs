@@ -16,8 +16,8 @@ import {
 } from "../control/campaign-closeout-lifecycle.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
-const taskId = "01a037a6-c7b9-7783-ad85-04aeb3d95da8";
-const turnId = "01a03a6b-21a7-7cc0-a6f0-4f5d17bc0189";
+const taskId = "TASK-SYNTHETIC-037";
+const turnId = "TURN-SYNTHETIC-037";
 const itemId = "msg-final-pass";
 const item = {
   item_id: itemId,

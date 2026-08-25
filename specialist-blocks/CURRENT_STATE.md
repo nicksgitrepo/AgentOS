@@ -73,15 +73,15 @@ artifacts only; `bootstrap.md` is never the authority and cannot be edited as a
 standalone contract.
 
 Current materialized role-kind counts are `ROUTER: 640`,
-`CONTROL_PLANE: 16`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
-`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`, and
+`CONTROL_PLANE: 17`, `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`,
+`STANDARD_BLOCK: 0`, `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 93`, and
 `COMPILED_AGENT_PACKAGE: 0`. The current typed atomic overlay contains `19`
-routers, `92` atomic specialists, and `16` control-plane roles after the P4
+routers, `93` atomic specialists, and `17` control-plane roles after the P4
 client/UX and P5 domain/AI/3D/regulatory/finance source-backed slices.
 
 The compiled candidate package count is separate from the backlog materialized
-count: `123` packages are validated (`16` `CONTROL_PLANE`, `23`
-`STANDARD_BLOCK`, `19` `ROUTER`, and `65` `ATOMIC_SPECIALIST`). These are
+count: `125` packages are validated (`17` `CONTROL_PLANE`, `23`
+`STANDARD_BLOCK`, `19` `ROUTER`, and `66` `ATOMIC_SPECIALIST`). These are
 source-locked inactive candidates and do not change the unexpanded backlog
 count.
 
@@ -469,17 +469,17 @@ remain external gates.
   `FIN.JOB_COST_ACCOUNTING` — plus five classification-only routers and five
   reusable exact-edition `STANDARD_BLOCK` authorities. No router substitutes
   for an atomic specialist.
-- Verified totals are `123` compiled package candidates (`16` controls,
-  `23` standards, `19` routers, `65` atoms), `640` materialized router roles,
-  `92` materialized atomic roles, and `127` typed overlay entries (`19`
-  routers, `16` controls, `92` atoms). The recipe catalog contains `621`
+- Verified totals are `125` compiled package candidates (`17` controls,
+  `23` standards, `19` routers, `66` atoms), `640` materialized router roles,
+  `93` materialized atomic roles, and `129` typed overlay entries (`19`
+  routers, `17` controls, `93` atoms). The recipe catalog contains `621`
   entries: `17` candidates (`6` P0, `5` P4, `6` P5), `603` planned, `1`
   `NOT_APPLICABLE`, and `10` aliases. The two added workflow roles are
   generic discovered additions; all 619 baseline roles remain retained. The
   regenerated catalog digest is `e3c2594b923a6c7e8257c609cfc0751af410bbc385930769ef9c62e9827f2c74`.
 - Focused library/compiler checks pass. The independent read-only evaluator
   reports `STATIC_PASS_REVIEW_REQUIRED` with all package-level checks passing:
-  `123` packages, `1,476` twelve-gate files, and `2,091` hostile fixtures.
+  `125` packages, `1,500` twelve-gate files, and `2,125` hostile fixtures.
   The deterministic utility/harm pre-screen also passes its declared policy
   checks with `2,023` observed passes, `68` pending cases, and zero failures;
   its receipt is `PRESCREEN_PENDING_EXTERNAL_REVIEW`. Independent utility/harm
@@ -490,3 +490,7 @@ remain external gates.
   heavyweight proof or new heavyweight admission was run.
 - Next cursor: consume the refreshed typed handoff, obtain independent
   utility/harm/admission review, and only then consider P6 source-backed work.
+
+## Route-037 full-scope completion
+
+This candidate now includes the two governed Route-037 packages for Hygiene Executor and Liveness Sentinel. Both remain CANDIDATE, NOT_ADMITTED, and activation OFF; the package compiler, twelve-gate pack, hostile fixtures, and typed handoff remain required before any independent admission.

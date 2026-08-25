@@ -77,6 +77,41 @@
       "priority": 5
     },
     {
+      "route_id": "route.assurance-enterprise.hygiene-executor",
+      "family": "assurance-enterprise",
+      "role_kind": "ATOMIC_SPECIALIST",
+      "signals": [
+        "after state",
+        "cleanup manifest",
+        "dry run",
+        "hygiene",
+        "lane cleanup"
+      ],
+      "required_context": [
+        "authority",
+        "candidate.identity",
+        "custody",
+        "request",
+        "signals",
+        "source_lock",
+        "test.evidence",
+        "test.scope",
+        "test.strategy"
+      ],
+      "select": [
+        "specialist.assurance-enterprise.hygiene-executor"
+      ],
+      "deny_if": [
+        "missing authority",
+        "missing source lock",
+        "scope expansion",
+        "stale or superseded source",
+        "unresolved standard version",
+        "unsafe action"
+      ],
+      "priority": 3
+    },
+    {
       "route_id": "route.assurance-enterprise.router",
       "family": "assurance-enterprise",
       "role_kind": "ROUTER",
@@ -258,6 +293,36 @@
         "self-acceptance is requested",
         "stale source",
         "unsupported tool or data access"
+      ],
+      "priority": 0
+    },
+    {
+      "route_id": "route.control.liveness-sentinel",
+      "family": "foundation",
+      "role_kind": "CONTROL_PLANE",
+      "signals": [
+        "active monitoring",
+        "liveness",
+        "process custody",
+        "quiescent",
+        "recovery correlation"
+      ],
+      "required_context": [
+        "authority",
+        "custody",
+        "lifecycle_intent",
+        "request",
+        "source_lock",
+        "timebox"
+      ],
+      "select": [
+        "specialist.control.liveness-sentinel"
+      ],
+      "deny_if": [
+        "ambiguous authority or routing target",
+        "missing custody or lifecycle evidence",
+        "Product write, deploy, publish, migrate, or runtime side effect",
+        "self-acceptance or activation request"
       ],
       "priority": 0
     },
@@ -3850,5 +3915,5 @@
     }
   ],
   "default_rule": "SELECT_THE_SMALLEST_SUFFICIENT_SET;_DENY_AMBIGUITY_AND_UNSUPPORTED_APPLICABILITY",
-  "routing_sha256": "e3252da5c2243fe0979346a334d632e3c5bc5f00dcf78f40a9642894f129bd20"
+  "routing_sha256": "e74767229bc97c94fbbf866709477bb27a21b12752e096191bce8e8e1ff93445"
 }

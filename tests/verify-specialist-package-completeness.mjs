@@ -35,7 +35,7 @@ assert.equal(roster.schema, "agentos.specialist_roster.v1");
 assert.equal(roster.version, 1);
 assert.equal(roster.status, "COMPILED_CANDIDATE");
 assert.equal(roster.activation, "OFF");
-assert.equal(roster.blocks.length, 123);
+assert.equal(roster.blocks.length, 125);
 
 const rosterIds = new Set();
 for (const row of roster.blocks) {

@@ -1,0 +1,39 @@
+{
+  "schema": "agentos.specialist_gate.v1",
+  "version": 1,
+  "gate_id": "11-lifecycle-recovery-archive",
+  "block_id": "specialist.control.liveness-sentinel",
+  "status": "EXECUTABLE",
+  "answer_type": "FOUR_VALUED",
+  "allowed_outcomes": [
+    "YES",
+    "NO",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "question": "Liveness Sentinel: does the declared 11-lifecycle-recovery-archive condition pass with exact typed evidence?",
+  "evidence": [
+    "archive_intent",
+    "exact_pin_membership_readback",
+    "finalized_event_and_process_readback",
+    "gate.11-lifecycle-recovery-archive.answer",
+    "lifecycle_state",
+    "packet_delivery_count_and_digest",
+    "recovery_receipt"
+  ],
+  "next": {
+    "YES": "OUTCOME:ROUTE",
+    "NO": "OUTCOME:DENY",
+    "UNKNOWN": "OUTCOME:UNKNOWN_DEPENDENT_ONLY",
+    "NOT_APPLICABLE": "OUTCOME:NOT_APPLICABLE"
+  },
+  "rules": {
+    "ambiguity": "DENY",
+    "missing_evidence": "DENY",
+    "stale_source": "DENY",
+    "authority_conflict": "ESCALATE",
+    "unsafe_action": "DENY",
+    "unknown_scope": "DEPENDENT_ACTION_ONLY"
+  },
+  "gate_sha256": "03937d2c1c3926f71e0274cb39d7fab408592d3a3e77e2c70372c7b6065cef9e"
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.hygiene_executor_after_state.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "manifest_sha256", "dry_run_sha256", "execution_sha256", "retained_paths", "removed_paths", "failures", "after_state_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.hygiene_executor_after_state.v1"},
+    "version": {"const": 1},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dry_run_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "execution_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "retained_paths": {"type": "array", "items": {"type": "string"}},
+    "removed_paths": {"type": "array", "items": {"type": "string"}},
+    "failures": {"type": "array"},
+    "after_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority_root": {"type": "string", "minLength": 1},
+    "symlink_ancestors_checked": {"const": true},
+    "fresh_revalidation": {"const": true}
+  }
+}

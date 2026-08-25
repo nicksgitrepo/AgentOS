@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.memory_consolidation_receipt.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "intake_id", "payload_digest", "stored_digest", "status", "receipt_sha256"],
+  "properties": {
+    "schema": {"const": "agentos.memory_consolidation_receipt.v1"},
+    "version": {"const": 1},
+    "intake_id": {"type": "string", "minLength": 1},
+    "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stored_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["STORED", "FILTERED", "REJECTED"]},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_private_payload_read": {"const": false},
+    "memory_write_authority": {"const": "EXTERNAL_MEMORY_OWNER"}
+  }
+}

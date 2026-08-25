@@ -1,0 +1,9 @@
+{
+  "schema": "agentos.specialist_fixture.v1",
+  "version": 1,
+  "block_id": "specialist.assurance-enterprise.hygiene-executor",
+  "class": "authority_conflict",
+  "expected": "DENY",
+  "hostile": true,
+  "note": "Synthetic hostile fixture for authority_conflict; hygiene executor must remain manifest-bound and deny unsafe or unscoped action."
+}

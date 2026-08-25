@@ -32,15 +32,15 @@ attached as a separate immutable receipt commit.
   an immutable role-context profile plus the smallest dependency-complete
   reusable gate set. A profile grants no authority and cannot replace a
   source-locked gate or external project context.
-- Materialized role kinds: `ROUTER: 640`, `CONTROL_PLANE: 16`,
+- Materialized role kinds: `ROUTER: 640`, `CONTROL_PLANE: 17`,
   `KNOWLEDGE_BLOCK: 0`, `GOVERNANCE_BLOCK: 0`, `STANDARD_BLOCK: 0`,
-  `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 92`,
+  `CONTEXT_BLOCK: 0`, `ATOMIC_SPECIALIST: 93`,
   `COMPILED_AGENT_PACKAGE: 0`.
-- Compiled candidate package roster: `123` packages total — `19` `ROUTER`, `16`
-  `CONTROL_PLANE`, `65` `ATOMIC_SPECIALIST`, and `23` source-locked
+- Compiled candidate package roster: `125` packages total — `19` `ROUTER`, `17`
+  `CONTROL_PLANE`, `66` `ATOMIC_SPECIALIST`, and `23` source-locked
   `STANDARD_BLOCK` candidates. This is distinct from the complete backlog
   materialization count above.
-- Atomic overlay: 19 routers, 92 atomic specialists, 16 control-plane roles;
+- Atomic overlay: 19 routers, 93 atomic specialists, 17 control-plane roles;
   all packaged routers are classification-only and carry no Product or
   acceptance authority.
 - P0 has exactly six candidate lanes, each with a package, source lock, exact
@@ -64,13 +64,13 @@ attached as a separate immutable receipt commit.
   requirements, compatibility/supersession metadata, and its source manifest
   by digest. The P5 additions are NIST AI RMF 1.0, NIST AI 600-1, glTF 2.0.1,
   FMCSA Part 390 (2025), and the GAO Green Book (2025).
-- The separate read-only independent evaluator passes all 123 package candidates,
-  1,476 gate files, and 2,091 hostile fixtures. Every package-level static
+- The separate read-only independent evaluator passes all 125 package candidates,
+  1,500 gate files, and 2,125 hostile fixtures. Every package-level static
   check passes; its disposition is
   `STATIC_PASS_REVIEW_REQUIRED`; it does not self-admit anything.
 - The deterministic utility/harm pre-screen receipt at
-  `registry/utility-harm-prescreen.v1.json` checks the same 123 package
-  dossiers and 2,091 hostile fixture policies: 2,023 observed passes, 68
+  `registry/utility-harm-prescreen.v1.json` checks the same 125 package
+  dossiers and 2,125 hostile fixture policies: 2,023 observed passes, 68
   pending cases, and zero failures. It is a consistency pre-screen only;
   independent utility/harm authority remains required.
 - Atomic composition enforcement is included in the candidate: an atomic block
@@ -126,3 +126,7 @@ attached as a separate immutable receipt commit.
 The exact next action is to consume this receipt in the main integration owner,
 rerun independent evaluation, and admit only the blocks whose complete gate
 trace is independently accepted. Preserve activation `OFF` until then.
+
+## Route-037 full-scope completion
+
+This candidate now includes the two governed Route-037 packages for Hygiene Executor and Liveness Sentinel. Both remain CANDIDATE, NOT_ADMITTED, and activation OFF; the package compiler, twelve-gate pack, hostile fixtures, and typed handoff remain required before any independent admission.

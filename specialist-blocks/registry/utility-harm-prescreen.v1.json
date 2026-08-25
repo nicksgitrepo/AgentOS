@@ -9,25 +9,45 @@
     "commit": "f09c975317137cbe5b85ae9cccb1a05c47688a57",
     "tree": "9fb6003a3e0c3644fc0398b6aa61b0066014ff7d"
   },
-  "candidate_roster_digest": "eec86e63558641b59a3416ead4395b29686a4297972f7578c638b9af9561ffb8",
+  "candidate_roster_digest": "02d8ac92bda37a4a08d59d559f6ce513dc4cf4bf1d9fb7d0eb5ad8a84bfb801c",
   "status": "PRESCREEN_PENDING_EXTERNAL_REVIEW",
   "independent_reviewer_required": true,
   "self_acceptance": "FORBIDDEN",
-  "packages_checked": 123,
-  "cases_checked": 2091,
-  "route_cases": 603,
-  "deny_cases": 1481,
-  "passed_cases": 2023,
+  "packages_checked": 125,
+  "cases_checked": 2125,
+  "route_cases": 611,
+  "deny_cases": 1506,
+  "passed_cases": 2040,
   "failed_cases": 0,
-  "pending_cases": 68,
-  "escalate_cases": 7,
+  "pending_cases": 85,
+  "escalate_cases": 8,
   "policy": {
-    "always_route_classes": ["handoff", "narrowness", "routing"],
-    "always_deny_classes": ["broad_when_narrow_exists", "cross_provider_version_claim", "false_positive", "missing_context", "router_self_accept", "silent_scope_expansion", "stale_source", "umbrella_authority", "unrelated_scope", "unsafe_action"],
-    "flexible_classes": ["authority_conflict", "data_limit", "duplicate_sibling_authority", "tool_limit"],
+    "always_route_classes": [
+      "handoff",
+      "narrowness",
+      "routing"
+    ],
+    "always_deny_classes": [
+      "broad_when_narrow_exists",
+      "cross_provider_version_claim",
+      "false_positive",
+      "missing_context",
+      "router_self_accept",
+      "silent_scope_expansion",
+      "stale_source",
+      "umbrella_authority",
+      "unrelated_scope",
+      "unsafe_action"
+    ],
+    "flexible_classes": [
+      "authority_conflict",
+      "data_limit",
+      "duplicate_sibling_authority",
+      "tool_limit"
+    ],
     "rule": "ROUTE_REQUIRES_EXPLICIT_TYPED_SCOPE;_DENY_OR_ESCALATE_CLOSES_UNSAFE_OR_UNRESOLVED_ACTIONS"
   },
-  "evaluation_manifest_sha256": "43c2346b839ffb120e1e4225521a630fe462b4d8a6afcbf62e14937ea4effa92",
+  "evaluation_manifest_sha256": "fecd12b13ca28bfc6f3c84c898bfbfc80ab5c79241a5e0ae452fd6816cff2606",
   "utility_harm": "PENDING_EXTERNAL_AUTHORITY",
   "residuals": [
     "This deterministic pre-screen validates declared fixture policy and dossier consistency; it is not external utility/harm acceptance.",

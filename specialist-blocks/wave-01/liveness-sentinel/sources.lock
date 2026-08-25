@@ -1,0 +1,61 @@
+{
+  "schema": "agentos.specialist_source_manifest.v1",
+  "version": 1,
+  "block_id": "specialist.control.liveness-sentinel",
+  "sources": [
+    {
+      "source_id": "source.agentos-portable-governance",
+      "title": "AgentOS Portable Specialist Governance Contract",
+      "publisher": "AgentOS Portable Kernel",
+      "url": "PORTABLE_KERNEL:agentos-portable-specialist-governance-2.1rc",
+      "version": "2.1rc",
+      "effective_date": null,
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "agentos-portable-specialist-governance-2.1rc-inactive",
+      "content_sha256": null,
+      "authority_class": "AGENTOS_PORTABLE",
+      "scope": "Portable candidate lifecycle, typed custody, four-valued gate, and independent-admission boundaries; immutable identity is sufficient and content_sha256 is null."
+    },
+    {
+      "source_id": "source.json-schema-2020-12",
+      "title": "JSON Schema 2020-12",
+      "publisher": "JSON Schema",
+      "url": "https://json-schema.org/draft/2020-12",
+      "version": "2020-12",
+      "effective_date": "2020-12-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "json-schema-draft-2020-12",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Machine-readable typed contract validation; immutable draft identity is sufficient and content_sha256 is null."
+    },
+    {
+      "source_id": "source.rfc-2119",
+      "title": "Key words for use in RFCs to Indicate Requirement Levels",
+      "publisher": "Internet Engineering Task Force",
+      "url": "https://www.rfc-editor.org/rfc/rfc2119.html",
+      "version": "RFC 2119",
+      "effective_date": "1997-03-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "RFC-2119;rfc-editor-rfc2119-html",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Requirement-level language used by typed governance rules; RFC number and official URL are sufficient immutable identity and content_sha256 is null."
+    },
+    {
+      "source_id": "source.rfc-8174",
+      "title": "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words",
+      "publisher": "Internet Engineering Task Force",
+      "url": "https://www.rfc-editor.org/rfc/rfc8174.html",
+      "version": "RFC 8174",
+      "effective_date": "2017-03-01",
+      "retrieved_date": "2026-08-11",
+      "immutable_identity": "RFC-8174;rfc-editor-rfc8174-html",
+      "content_sha256": null,
+      "authority_class": "PRIMARY_NORMATIVE",
+      "scope": "Clarifies requirement-word interpretation in normative text; RFC number and official URL are sufficient immutable identity and content_sha256 is null."
+    }
+  ],
+  "freshness_rule": "DENY dependent action when a source is stale, superseded, unverifiable, or missing effective/applicability identity; refresh or escalate.",
+  "manifest_sha256": "2cca41ab663f8e44012f98e80f5131ec689ca8c1a1208ef5a4167cf8dda45af8"
+}

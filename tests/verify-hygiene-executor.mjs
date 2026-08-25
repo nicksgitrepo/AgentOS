@@ -6,7 +6,10 @@ import path from "node:path";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {compileHygieneDryRun, executeHygiene, validateDeletionManifest, validateHygieneAfterState} from "../control/hygiene-executor.mjs";
 
-const tempParent = "/Users/nicholaspacheco/Projects/AgentOS/Temp";
+const tempParent = process.env.TMPDIR;
+assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
+assert.ok(tempParent.length > 0, "TMPDIR must be nonempty");
+assert.ok(path.isAbsolute(tempParent), "TMPDIR must be absolute");
 fs.mkdirSync(tempParent, {recursive: true});
 const root = fs.mkdtempSync(path.join(tempParent, "route037-hygiene-"));
 let outside;

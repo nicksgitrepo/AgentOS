@@ -257,6 +257,14 @@
       "title": "Intent Regulator"
     },
     {
+      "generic_id": "AGENT.LIVENESS_SENTINEL",
+      "block_id": "specialist.control.liveness-sentinel",
+      "title": "Liveness Sentinel",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.liveness-sentinel.v1"
+    },
+    {
       "generic_id": "AGENT.PROJECT_CONTROLLER",
       "block_id": "specialist.control.project-controller",
       "title": "Global Project Controller"
@@ -632,6 +640,16 @@
       "package_status": "COMPILED_CANDIDATE",
       "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
       "evaluator_receipt": "specialist-eval.job-cost-accounting.v1"
+    },
+    {
+      "generic_id": "GOV.HYGIENE_EXECUTOR",
+      "title": "Hygiene Executor",
+      "version": "1.0.0",
+      "router": "specialist.assurance-enterprise.router",
+      "block_id": "specialist.assurance-enterprise.hygiene-executor",
+      "package_status": "COMPILED_CANDIDATE",
+      "evaluator_status": "STATIC_PASS_REVIEW_REQUIRED",
+      "evaluator_receipt": "specialist-eval.hygiene-executor.v1"
     },
     {
       "generic_id": "GRAPHICS.INDUSTRIAL_3D",
@@ -1137,8 +1155,8 @@
   ],
   "counts": {
     "ROUTER": 19,
-    "ATOMIC_SPECIALIST": 92,
-    "CONTROL_PLANE": 16
+    "ATOMIC_SPECIALIST": 93,
+    "CONTROL_PLANE": 17
   },
   "evaluator_failure_classes": [
     "umbrella_authority",

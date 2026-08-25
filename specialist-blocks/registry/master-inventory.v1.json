@@ -8,8 +8,8 @@
   "atomicity_rule": "Family labels route only. Routers classify and assemble context; atomic specialists own one narrow concern; control-plane blocks own governance mechanics. No router or family label receives Product-writing or acceptance authority.",
   "role_kind_counts": {
     "ROUTER": 7,
-    "ATOMIC_SPECIALIST": 92,
-    "CONTROL_PLANE": 16
+    "ATOMIC_SPECIALIST": 93,
+    "CONTROL_PLANE": 17
   },
   "entry_defaults": {
     "purpose": "Provide a narrow, evidence-bounded specialist route for the named responsibility.",

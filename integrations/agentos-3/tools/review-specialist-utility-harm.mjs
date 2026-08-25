@@ -93,7 +93,7 @@ export function reviewSpecialistUtilityHarm({ repositoryRoot = process.cwd() } =
     }
   }
   reviewed.sort((left, right) => left.case_id.localeCompare(right.case_id));
-  if (reviewed.length !== 68 || new Set(reviewed.map((item) => item.case_id)).size !== reviewed.length) fail("pending-case-coverage");
+  if (reviewed.length !== 85 || new Set(reviewed.map((item) => item.case_id)).size !== reviewed.length) fail("pending-case-coverage");
   const blockDigests = [...new Map(reviewed.map((item) => [item.block_id, item.block_sha256])).entries()]
     .map(([block_id, block_sha256]) => ({ block_id, block_sha256 }))
     .sort((left, right) => left.block_id.localeCompare(right.block_id));

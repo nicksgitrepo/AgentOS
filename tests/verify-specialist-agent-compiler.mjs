@@ -58,7 +58,7 @@ assert.equal(integrationHandoff.schema, "agentos.specialist_library_integration_
 assert.equal(integrationHandoff.status, "WAITING_WITH_RECEIPT");
 assert.equal(execFileSync("git", ["rev-parse", `${integrationHandoff.candidate.commit}^{tree}`], {cwd: root, encoding: "utf8"}).trim(), integrationHandoff.candidate.tree, "handoff candidate tree must match its commit");
 assert.deepEqual(integrationHandoff.inventory.recipe_counts, {total: 621, CANDIDATE: 620, PLANNED: 0, NOT_APPLICABLE: 1, alias_mappings: 10, catalog_sha256: recipeCatalog.recipes_sha256}, "handoff recipe receipt must match the compiled catalog");
-assert.deepEqual(integrationHandoff.inventory.compiled_package_counts, {total: 123, ROUTER: 19, CONTROL_PLANE: 16, ATOMIC_SPECIALIST: 65, STANDARD_BLOCK: 23}, "handoff package receipt must match the compiled roster");
+assert.deepEqual(integrationHandoff.inventory.compiled_package_counts, {total: 125, ROUTER: 19, CONTROL_PLANE: 17, ATOMIC_SPECIALIST: 66, STANDARD_BLOCK: 23}, "handoff package receipt must match the compiled roster");
 assert.equal(integrationHandoff.inventory.raw_role_mentions, 627, "handoff raw role receipt must match the complete master inventory");
 assert.equal(integrationHandoff.inventory.unique_role_titles, 621, "handoff inventory receipt must include discovered additions");
 assert.equal(integrationHandoff.outputs.utility_harm_prescreen, "specialist-blocks/registry/utility-harm-prescreen.v1.json", "handoff must expose the deterministic utility/harm prescreen receipt");

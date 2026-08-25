@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import path from "node:path";
 import {createLivenessSentinel, classifySilentTurn, validateLivenessObservation} from "../control/liveness-sentinel.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -16,7 +17,7 @@ assert.equal(quiet.state, "QUIESCENT");
 assert.equal(quiet.lifecycle_action_taken, false);
 assert.equal(quiet.custody_mutated, false);
 
-const process = {pid: 123, start_identity: "start-1", command: "node worker", cwd: "/Users/nicholaspacheco/Projects", owner: "TASK-037"};
+const process = {pid: 123, start_identity: "start-1", command: "node worker", cwd: path.resolve("fixture-worktree"), owner: "TASK-037"};
 const observation = validateLivenessObservation({tasks: [], processes: [process]});
 assert.equal(observation.processes.length, 1);
 assert.throws(() => validateLivenessObservation({tasks: [], processes: [process, process]}), /duplicate identities/u);
