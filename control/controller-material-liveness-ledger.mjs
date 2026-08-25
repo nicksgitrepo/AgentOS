@@ -396,3 +396,446 @@ export function evaluateSilentCompletion(input, {nowUtc = new Date().toISOString
 }
 
 export const evaluateControllerSilentCompletion = evaluateSilentCompletion;
+
+/*
+ * Cross-thread stall-report delivery is deliberately modelled separately
+ * from material-liveness detection.  Detection produces a canonical stall
+ * signature; this contract governs only how that already-existing report is
+ * transported, correlated, retried, deduplicated, and consumed.  The route
+ * names are capabilities, not providers, so projects may supply either the
+ * normal collaboration tree or a host-supported cross-thread adapter.
+ */
+export const CROSS_THREAD_DELIVERY_SCHEMA = "agentos.controller_cross_thread_delivery.v1";
+export const CROSS_THREAD_DELIVERY_VERSION = 1;
+export const CROSS_THREAD_DELIVERY_ROUTES = Object.freeze(["COLLABORATION_TREE", "HOST_CROSS_THREAD", "FALLBACK"]);
+export const CROSS_THREAD_DELIVERY_STATES = Object.freeze(["PENDING", "DELIVERED", "BLOCKED"]);
+export const CROSS_THREAD_DELIVERY_CONSUMPTION_STATES = Object.freeze(["UNCONSUMED", "CONSUMED"]);
+export const CROSS_THREAD_DELIVERY_ACKNOWLEDGEMENT_STATES = Object.freeze(["ACKNOWLEDGED"]);
+export const CROSS_THREAD_DELIVERY_FALLBACK_SCHEMA = "agentos.controller_stall_report_delivery_blocked.v1";
+export const CROSS_THREAD_DELIVERY_FALLBACK_STATES = Object.freeze(["BLOCKED_UNCONSUMED", "BLOCKED_CONSUMED"]);
+
+function requireDeliveryText(value, label) {
+  assert(typeof value === "string" && value.trim().length > 0, `${label} must be a nonempty string`);
+  assert(!/[\u0000-\u001f\u007f]/u.test(value), `${label} contains control characters`);
+}
+
+function deliveryIdentity(value) {
+  return {
+    report_id: value.report_id,
+    stall_signature_sha256: value.stall_signature_sha256,
+    source_task_id: value.source_task_id,
+    affected_task_id: value.affected_task_id,
+    custody_sha256: value.custody_sha256,
+    generation: value.generation,
+    recipient_role: value.recipient_role,
+    recipient_task_id: value.recipient_task_id,
+  };
+}
+
+function validateDeliveryIdentity(value, label = "cross-thread delivery") {
+  for (const field of ["report_id", "source_task_id", "affected_task_id", "generation", "recipient_role", "recipient_task_id"]) {
+    requireIdentifier(value[field], `${label} ${field}`);
+  }
+  requireSha(value.stall_signature_sha256, `${label} stall signature`);
+  requireSha(value.custody_sha256, `${label} custody`);
+}
+
+export function crossThreadDeliverySignature(value) {
+  validateDeliveryIdentity(value, "cross-thread delivery identity");
+  return canonicalDigest(deliveryIdentity(value));
+}
+
+function validateDeliveryAcknowledgement(acknowledgement, attemptId) {
+  if (acknowledgement === null) return;
+  exactKeys(acknowledgement, ["status", "attempt_id", "at_utc"], "cross-thread delivery acknowledgement");
+  assert(CROSS_THREAD_DELIVERY_ACKNOWLEDGEMENT_STATES.includes(acknowledgement.status), "cross-thread acknowledgement status is invalid");
+  requireIdentifier(acknowledgement.attempt_id, "cross-thread acknowledgement attempt");
+  assert(acknowledgement.attempt_id === attemptId, "cross-thread acknowledgement attempt mismatch");
+  requireUtc(acknowledgement.at_utc, "cross-thread acknowledgement time");
+}
+
+function validateDeliveryReceipt(receipt, identity, attemptId) {
+  if (receipt === null) return;
+  exactKeys(receipt, ["report_id", "stall_signature_sha256", "recipient_task_id", "generation", "attempt_id", "delivered_at_utc"], "cross-thread delivery receipt");
+  assert(receipt.report_id === identity.report_id, "cross-thread receipt report mismatch");
+  assert(receipt.stall_signature_sha256 === identity.stall_signature_sha256, "cross-thread receipt signature mismatch");
+  assert(receipt.recipient_task_id === identity.recipient_task_id, "cross-thread receipt recipient mismatch");
+  assert(receipt.generation === identity.generation, "cross-thread receipt generation mismatch");
+  assert(receipt.attempt_id === attemptId, "cross-thread receipt attempt mismatch");
+  requireUtc(receipt.delivered_at_utc, "cross-thread receipt time");
+}
+
+function validateDeliveryReadback(readback, identity, attemptId) {
+  if (readback === null) return;
+  exactKeys(readback, [
+    "report_id", "stall_signature_sha256", "recipient_task_id", "source_task_id", "custody_sha256",
+    "generation", "attempt_id", "readback_sha256", "read_at_utc", "fresh",
+  ], "cross-thread recipient readback");
+  assert(readback.report_id === identity.report_id, "cross-thread readback report mismatch");
+  assert(readback.stall_signature_sha256 === identity.stall_signature_sha256, "cross-thread readback signature mismatch");
+  assert(readback.recipient_task_id === identity.recipient_task_id, "cross-thread readback recipient mismatch");
+  assert(readback.source_task_id === identity.source_task_id, "cross-thread readback source mismatch");
+  assert(readback.custody_sha256 === identity.custody_sha256, "cross-thread readback custody mismatch");
+  assert(readback.generation === identity.generation, "cross-thread readback generation mismatch");
+  assert(readback.attempt_id === attemptId, "cross-thread readback attempt mismatch");
+  requireSha(readback.readback_sha256, "cross-thread readback digest");
+  requireUtc(readback.read_at_utc, "cross-thread readback time");
+  assert(readback.fresh === true, "cross-thread recipient readback must be fresh");
+}
+
+function validateFallback(fallback, identity) {
+  if (fallback === null) return;
+  exactKeys(fallback, [
+    "schema", "version", "status", "consumption_state", "report_id", "original_signature_sha256",
+    "intended_recipient_role", "intended_recipient_task_id", "attempted_routes", "errors", "preservation",
+    "safe_remaining_work", "owner", "resume_condition", "created_at_utc", "fallback_sha256",
+  ], "cross-thread delivery fallback");
+  assert(fallback.schema === CROSS_THREAD_DELIVERY_FALLBACK_SCHEMA && fallback.version === 1, "cross-thread fallback identity is invalid");
+  assert(CROSS_THREAD_DELIVERY_FALLBACK_STATES.includes(fallback.status), "cross-thread fallback status is invalid");
+  assert(CROSS_THREAD_DELIVERY_CONSUMPTION_STATES.includes(fallback.consumption_state), "cross-thread fallback consumption state is invalid");
+  assert((fallback.status === "BLOCKED_CONSUMED") === (fallback.consumption_state === "CONSUMED"), "cross-thread fallback status/consumption mismatch");
+  assert(fallback.report_id === identity.report_id, "cross-thread fallback report mismatch");
+  assert(fallback.original_signature_sha256 === identity.stall_signature_sha256, "cross-thread fallback signature mismatch");
+  assert(fallback.intended_recipient_role === identity.recipient_role, "cross-thread fallback role mismatch");
+  assert(fallback.intended_recipient_task_id === identity.recipient_task_id, "cross-thread fallback recipient mismatch");
+  assert(Array.isArray(fallback.attempted_routes) && fallback.attempted_routes.length > 0, "cross-thread fallback routes are required");
+  const routes = new Set();
+  fallback.attempted_routes.forEach((route, index) => {
+    assert(["COLLABORATION_TREE", "HOST_CROSS_THREAD"].includes(route), `cross-thread fallback route ${index} is invalid`);
+    assert(!routes.has(route), "cross-thread fallback routes must be unique");
+    routes.add(route);
+  });
+  assert(Array.isArray(fallback.errors) && fallback.errors.length > 0, "cross-thread fallback errors are required");
+  fallback.errors.forEach((error, index) => requireDeliveryText(error, `cross-thread fallback error ${index}`));
+  assert(new Set(fallback.errors).size === fallback.errors.length, "cross-thread fallback errors must be unique");
+  requireDeliveryText(fallback.preservation, "cross-thread fallback preservation");
+  requireDeliveryText(fallback.safe_remaining_work, "cross-thread fallback safe work");
+  requireIdentifier(fallback.owner, "cross-thread fallback owner");
+  requireDeliveryText(fallback.resume_condition, "cross-thread fallback resume condition");
+  requireUtc(fallback.created_at_utc, "cross-thread fallback creation time");
+  requireSha(fallback.fallback_sha256, "cross-thread fallback digest");
+  const body = structuredClone(fallback);
+  body.fallback_sha256 = null;
+  assert(fallback.fallback_sha256 === canonicalDigest(body), "cross-thread fallback digest mismatch");
+}
+
+function deliveryStateBody(value) {
+  const body = structuredClone(value);
+  body.state_sha256 = null;
+  return body;
+}
+
+export function validateCrossThreadDeliveryState(state) {
+  exactKeys(state, [
+    "schema", "version", "report_id", "stall_signature_sha256", "source_task_id", "affected_task_id", "custody_sha256",
+    "generation", "recipient_role", "recipient_task_id", "route", "attempt_id", "retry_count", "retry_limit",
+    "acknowledgement", "receipt", "recipient_readback", "consumption_state", "fallback", "delivery_state", "state_sha256",
+  ], "cross-thread delivery state");
+  assert(state.schema === CROSS_THREAD_DELIVERY_SCHEMA && state.version === CROSS_THREAD_DELIVERY_VERSION, "cross-thread delivery identity is invalid");
+  validateDeliveryIdentity(state);
+  assert(CROSS_THREAD_DELIVERY_ROUTES.includes(state.route), "cross-thread delivery route is invalid");
+  requireIdentifier(state.attempt_id, "cross-thread delivery attempt");
+  assert(Number.isSafeInteger(state.retry_count) && state.retry_count >= 0, "cross-thread delivery retry count is invalid");
+  assert(Number.isSafeInteger(state.retry_limit) && state.retry_limit >= 0 && state.retry_limit <= 8, "cross-thread delivery retry limit is invalid");
+  assert(state.retry_count <= state.retry_limit, "cross-thread delivery retry count exceeds limit");
+  assert(CROSS_THREAD_DELIVERY_CONSUMPTION_STATES.includes(state.consumption_state), "cross-thread delivery consumption state is invalid");
+  assert(CROSS_THREAD_DELIVERY_STATES.includes(state.delivery_state), "cross-thread delivery state is invalid");
+  validateDeliveryAcknowledgement(state.acknowledgement, state.attempt_id);
+  validateDeliveryReceipt(state.receipt, state, state.attempt_id);
+  validateDeliveryReadback(state.recipient_readback, state, state.attempt_id);
+  validateFallback(state.fallback, state);
+  if (state.delivery_state === "BLOCKED") {
+    assert(state.route === "FALLBACK" && state.fallback !== null, "blocked delivery must carry a fallback");
+  } else {
+    assert(state.fallback === null && state.route !== "FALLBACK", "non-blocked delivery cannot use fallback route");
+  }
+  if (state.receipt === null) assert(state.delivery_state !== "DELIVERED", "delivered state requires a receipt");
+  if (state.recipient_readback !== null) assert(state.receipt !== null, "recipient readback requires a receipt");
+  if (state.consumption_state === "CONSUMED") {
+    const consumedFallback = state.delivery_state === "BLOCKED" && state.fallback?.consumption_state === "CONSUMED";
+    assert(consumedFallback || (state.delivery_state === "DELIVERED" && state.receipt !== null && state.recipient_readback !== null), "consumed delivery lacks exact receipt/readback");
+  }
+  requireSha(state.state_sha256, "cross-thread delivery state digest");
+  assert(state.state_sha256 === canonicalDigest(deliveryStateBody(state)), "cross-thread delivery state digest mismatch");
+  return state;
+}
+
+export const validateControllerCrossThreadDelivery = validateCrossThreadDeliveryState;
+
+export function compileStallReportDeliveryBlockedFallback({
+  state,
+  reportId = state?.report_id,
+  originalSignatureSha256 = state?.stall_signature_sha256,
+  intendedRecipientRole = state?.recipient_role,
+  intendedRecipientTaskId = state?.recipient_task_id,
+  attemptedRoutes = ["COLLABORATION_TREE", "HOST_CROSS_THREAD"],
+  errors = ["DELIVERY_ROUTE_UNAVAILABLE"],
+  preservation = "Preserve the original typed stall report, signature, custody, and unconsumed state.",
+  safeRemainingWork = "Keep the owning Controller route open and retry only through an admitted route.",
+  owner = null,
+  resumeCondition = "A supported route and exact recipient readback become available.",
+  createdAtUtc = new Date().toISOString(),
+} = {}) {
+  const identity = state ?? {report_id: reportId, stall_signature_sha256: originalSignatureSha256, recipient_role: intendedRecipientRole, recipient_task_id: intendedRecipientTaskId};
+  validateDeliveryIdentity({
+    ...identity,
+    source_task_id: identity.source_task_id ?? "TASK.UNKNOWN.SOURCE",
+    affected_task_id: identity.affected_task_id ?? "TASK.UNKNOWN.AFFECTED",
+    custody_sha256: identity.custody_sha256 ?? "0".repeat(64),
+    generation: identity.generation ?? "GENERATION.UNKNOWN",
+  }, "cross-thread fallback identity");
+  assert(reportId === identity.report_id, "cross-thread fallback report identity mismatch");
+  assert(originalSignatureSha256 === identity.stall_signature_sha256, "cross-thread fallback signature identity mismatch");
+  requireIdentifier(intendedRecipientRole, "cross-thread fallback recipient role");
+  requireIdentifier(intendedRecipientTaskId, "cross-thread fallback recipient task");
+  const resolvedOwner = owner ?? intendedRecipientRole;
+  requireIdentifier(resolvedOwner, "cross-thread fallback owner");
+  requireUtc(createdAtUtc, "cross-thread fallback creation time");
+  const routes = [...attemptedRoutes];
+  assert(routes.length > 0, "cross-thread fallback attempted routes are required");
+  const errorsCopy = [...errors];
+  const fallback = {
+    schema: CROSS_THREAD_DELIVERY_FALLBACK_SCHEMA,
+    version: 1,
+    status: "BLOCKED_UNCONSUMED",
+    consumption_state: "UNCONSUMED",
+    report_id: reportId,
+    original_signature_sha256: originalSignatureSha256,
+    intended_recipient_role: intendedRecipientRole,
+    intended_recipient_task_id: intendedRecipientTaskId,
+    attempted_routes: routes,
+    errors: errorsCopy,
+    preservation,
+    safe_remaining_work: safeRemainingWork,
+    owner: resolvedOwner,
+    resume_condition: resumeCondition,
+    created_at_utc: createdAtUtc,
+    fallback_sha256: null,
+  };
+  fallback.fallback_sha256 = canonicalDigest({...fallback, fallback_sha256: null});
+  validateFallback(fallback, identity);
+  return fallback;
+}
+
+export const compileControllerStallReportDeliveryBlockedFallback = compileStallReportDeliveryBlockedFallback;
+
+export function compileCrossThreadDeliveryState({
+  reportId,
+  stallSignatureSha256,
+  sourceTaskId,
+  affectedTaskId,
+  custodySha256,
+  generation,
+  recipientRole,
+  recipientTaskId,
+  route = null,
+  attemptId,
+  retryCount,
+  retryLimit,
+  acknowledgement,
+  receipt,
+  recipientReadback,
+  consumptionState,
+  fallback,
+  deliveryState,
+  ...aliases
+} = {}) {
+  const normalizedFallback = fallback ?? aliases.fallback ?? null;
+  const normalizedRoute = route ?? aliases.route ?? (normalizedFallback === null ? "COLLABORATION_TREE" : "FALLBACK");
+  const normalizedAttemptId = attemptId ?? aliases.attempt_id ?? "ATTEMPT.001";
+  const normalizedRetryCount = retryCount ?? aliases.retry_count ?? 0;
+  const normalizedRetryLimit = retryLimit ?? aliases.retry_limit ?? 2;
+  const normalizedAcknowledgement = acknowledgement ?? aliases.acknowledgement ?? null;
+  const normalizedReceipt = receipt ?? aliases.receipt ?? null;
+  const normalizedReadback = recipientReadback ?? aliases.recipient_readback ?? aliases.recipientReadback ?? null;
+  const normalizedConsumption = consumptionState ?? aliases.consumption_state ?? "UNCONSUMED";
+  const normalizedDelivery = deliveryState ?? aliases.delivery_state ?? (normalizedFallback === null ? (normalizedReceipt === null ? "PENDING" : "DELIVERED") : "BLOCKED");
+  const value = {
+    schema: CROSS_THREAD_DELIVERY_SCHEMA,
+    version: CROSS_THREAD_DELIVERY_VERSION,
+    report_id: reportId ?? aliases.report_id,
+    stall_signature_sha256: stallSignatureSha256 ?? aliases.stall_signature_sha256,
+    source_task_id: sourceTaskId ?? aliases.source_task_id,
+    affected_task_id: affectedTaskId ?? aliases.affected_task_id,
+    custody_sha256: custodySha256 ?? aliases.custody_sha256,
+    generation: generation ?? aliases.generation,
+    recipient_role: recipientRole ?? aliases.recipient_role,
+    recipient_task_id: recipientTaskId ?? aliases.recipient_task_id,
+    route: normalizedRoute,
+    attempt_id: normalizedAttemptId,
+    retry_count: normalizedRetryCount,
+    retry_limit: normalizedRetryLimit,
+    acknowledgement: structuredClone(normalizedAcknowledgement),
+    receipt: structuredClone(normalizedReceipt),
+    recipient_readback: structuredClone(normalizedReadback),
+    consumption_state: normalizedConsumption,
+    fallback: structuredClone(normalizedFallback),
+    delivery_state: normalizedDelivery,
+    state_sha256: null,
+  };
+  validateDeliveryIdentity(value);
+  value.state_sha256 = canonicalDigest(deliveryStateBody(value));
+  return validateCrossThreadDeliveryState(value);
+}
+
+export const compileControllerCrossThreadDeliveryState = compileCrossThreadDeliveryState;
+
+function nextAttemptId(state) {
+  return `ATTEMPT.${String(state.retry_count + 1).padStart(3, "0")}`;
+}
+
+function receiptFrom(result) {
+  if (result?.receipt !== undefined) return result.receipt;
+  if (result && ["report_id", "stall_signature_sha256", "recipient_task_id", "generation", "attempt_id", "delivered_at_utc"].every((key) => Object.prototype.hasOwnProperty.call(result, key))) return result;
+  return null;
+}
+
+function readbackFrom(result) {
+  if (result?.recipient_readback !== undefined) return result.recipient_readback;
+  if (result?.recipientReadback !== undefined) return result.recipientReadback;
+  return null;
+}
+
+function acknowledgementFrom(result) {
+  if (result?.acknowledgement !== undefined) return result.acknowledgement;
+  if (result?.ack !== undefined) return result.ack;
+  return null;
+}
+
+function callDeliveryAdapter(adapter, payload) {
+  if (typeof adapter === "function") return adapter(payload);
+  if (adapter && typeof adapter.deliverCrossThread === "function") return adapter.deliverCrossThread(payload);
+  if (adapter && typeof adapter.sendCrossThread === "function") return adapter.sendCrossThread(payload);
+  return null;
+}
+
+function resultState(state, overrides = {}) {
+  return compileCrossThreadDeliveryState({
+    report_id: state.report_id,
+    stall_signature_sha256: state.stall_signature_sha256,
+    source_task_id: state.source_task_id,
+    affected_task_id: state.affected_task_id,
+    custody_sha256: state.custody_sha256,
+    generation: state.generation,
+    recipient_role: state.recipient_role,
+    recipient_task_id: state.recipient_task_id,
+    route: state.route,
+    attempt_id: state.attempt_id,
+    retryCount: state.retry_count,
+    retryLimit: state.retry_limit,
+    acknowledgement: state.acknowledgement,
+    receipt: state.receipt,
+    recipientReadback: state.recipient_readback,
+    consumptionState: state.consumption_state,
+    fallback: state.fallback,
+    deliveryState: state.delivery_state,
+    ...overrides,
+  });
+}
+
+export function consumeCrossThreadDeliveryFallback(state, {owner, consumedAtUtc = new Date().toISOString()} = {}) {
+  validateCrossThreadDeliveryState(state);
+  assert(state.fallback !== null && state.delivery_state === "BLOCKED", "cross-thread fallback is not pending");
+  requireIdentifier(owner, "cross-thread fallback consumer");
+  assert(owner === state.fallback.owner, "cross-thread fallback consumer is not designated owner");
+  requireUtc(consumedAtUtc, "cross-thread fallback consumption time");
+  const fallback = {...state.fallback, status: "BLOCKED_CONSUMED", consumption_state: "CONSUMED"};
+  fallback.fallback_sha256 = canonicalDigest({...fallback, fallback_sha256: null});
+  return resultState(state, {consumptionState: "CONSUMED", fallback});
+}
+
+export function applyCrossThreadDeliveryReadback(state, recipientReadback) {
+  validateCrossThreadDeliveryState(state);
+  assert(state.receipt !== null, "cross-thread readback requires a delivery receipt");
+  return resultState(state, {
+    recipientReadback: structuredClone(recipientReadback),
+    consumptionState: "CONSUMED",
+    deliveryState: "DELIVERED",
+  });
+}
+
+export const consumeCrossThreadDeliveryReadback = applyCrossThreadDeliveryReadback;
+
+export function evaluateCrossThreadDelivery(state, {
+  collaborationTreeAvailable = true,
+  recipientVisible = true,
+  collaborationTreeAdapter = null,
+  hostAdapter = null,
+  retry = false,
+  fallbackOwner = null,
+  fallbackReadback = null,
+  nowUtc = new Date().toISOString(),
+} = {}) {
+  validateCrossThreadDeliveryState(state);
+  requireUtc(nowUtc, "cross-thread delivery evaluation time");
+  const key = crossThreadDeliverySignature(state);
+  if (state.fallback !== null) {
+    if (fallbackReadback !== null || fallbackOwner !== null) {
+      const owner = fallbackOwner ?? fallbackReadback?.owner;
+      const consumed = consumeCrossThreadDeliveryFallback(state, {owner, consumedAtUtc: fallbackReadback?.consumed_at_utc ?? nowUtc});
+      return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: "FALLBACK_CONSUMED", state: consumed};
+    }
+    return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: "DEDUPLICATED", state: structuredClone(state)};
+  }
+  if (state.consumption_state === "CONSUMED") {
+    return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: "ALREADY_CONSUMED", state: structuredClone(state)};
+  }
+  let route = null;
+  let adapter = null;
+  if (collaborationTreeAvailable && recipientVisible) {
+    route = "COLLABORATION_TREE";
+    adapter = collaborationTreeAdapter;
+  } else {
+    route = "HOST_CROSS_THREAD";
+    adapter = hostAdapter;
+  }
+  if (route === "COLLABORATION_TREE" && adapter === null && state.receipt === null) {
+    return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: "ROUTE_SELECTED", state: resultState(state, {route})};
+  }
+  if (state.receipt !== null || state.recipient_readback !== null || state.acknowledgement !== null) {
+    const existing = resultState(state, {route});
+    const consumed = existing.receipt !== null && existing.recipient_readback !== null;
+    return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: consumed ? "CONSUMED" : existing.acknowledgement !== null ? "ACKNOWLEDGED_UNCONSUMED" : "DELIVERED_UNCONSUMED", state: consumed ? resultState(existing, {consumptionState: "CONSUMED", deliveryState: "DELIVERED"}) : existing};
+  }
+  const attemptId = nextAttemptId(state);
+  const payload = structuredClone(state);
+  payload.attempt_id = attemptId;
+  payload.delivery_key_sha256 = key;
+  let result;
+  try {
+    result = callDeliveryAdapter(adapter, payload);
+  } catch (error) {
+    result = {available: false, error: String(error?.message ?? error)};
+  }
+  if (result && typeof result.then === "function") throw new Error("cross-thread delivery adapter must be synchronous");
+  const unavailable = result === null || result === undefined || result.available === false || result.status === "UNAVAILABLE" || result.status === "REJECTED" || result.status === "AMBIGUOUS";
+  if (unavailable) {
+    if (retry === true && state.retry_count < state.retry_limit) {
+      const retryState = resultState(state, {route, attemptId, retryCount: state.retry_count + 1});
+      return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: "RETRY_RETAINED", state: retryState};
+    }
+    const errors = [result?.error ?? result?.message ?? "DELIVERY_ROUTE_UNAVAILABLE"];
+    const fallback = compileStallReportDeliveryBlockedFallback({state, attemptedRoutes: route === "HOST_CROSS_THREAD" ? ["COLLABORATION_TREE", "HOST_CROSS_THREAD"] : ["COLLABORATION_TREE"], errors, createdAtUtc: nowUtc, owner: fallbackOwner ?? state.recipient_role});
+    const blocked = resultState(state, {route: "FALLBACK", attemptId, fallback, deliveryState: "BLOCKED"});
+    return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: "EMIT_STALL_REPORT_DELIVERY_BLOCKED", state: blocked};
+  }
+  const receipt = receiptFrom(result);
+  const readback = readbackFrom(result);
+  const acknowledgement = acknowledgementFrom(result);
+  if (result && (Object.prototype.hasOwnProperty.call(result, "receipt") || Object.prototype.hasOwnProperty.call(result, "recipient_readback") || Object.prototype.hasOwnProperty.call(result, "recipientReadback"))) {
+    if (receipt === null) throw new Error("cross-thread adapter returned a malformed receipt");
+  }
+  const next = resultState(state, {
+    route,
+    attemptId,
+    retryCount: state.retry_count + (attemptId === state.attempt_id ? 0 : 1),
+    acknowledgement,
+    receipt,
+    recipientReadback: readback,
+    deliveryState: receipt === null ? "PENDING" : "DELIVERED",
+    consumptionState: receipt !== null && readback !== null ? "CONSUMED" : "UNCONSUMED",
+  });
+  return {schema: CROSS_THREAD_DELIVERY_SCHEMA, version: CROSS_THREAD_DELIVERY_VERSION, delivery_key_sha256: key, report_action: next.consumption_state === "CONSUMED" ? "CONSUMED" : receipt !== null ? "DELIVERED_UNCONSUMED" : acknowledgement !== null ? "ACKNOWLEDGED_UNCONSUMED" : "ROUTE_ATTEMPTED", state: next};
+}
+
+export const evaluateControllerCrossThreadDelivery = evaluateCrossThreadDelivery;

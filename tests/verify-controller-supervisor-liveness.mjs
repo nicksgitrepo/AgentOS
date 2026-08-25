@@ -3,10 +3,10 @@
 import assert from "node:assert/strict";
 import {summarizeDurableSessionLiveness} from "../control/local-self-development-supervisor-adapter.mjs";
 import {selectHostLifecycleNextRoute} from "../control/controller-supervisor.mjs";
-import {runControllerMaterialLivenessPass, shouldContinueExistingTaskLifecycleSameTurn} from "../control/controller-supervisor-runtime.mjs";
+import {runControllerMaterialLivenessPass, runControllerStallReportDeliveryPass, shouldContinueExistingTaskLifecycleSameTurn} from "../control/controller-supervisor-runtime.mjs";
 import {compileExistingTaskLifecycle} from "../control/existing-task-stop-resume.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {compileMaterialLivenessLedger, materialLivenessSignature} from "../control/controller-material-liveness-ledger.mjs";
+import {compileMaterialLivenessLedger, compileCrossThreadDeliveryState, materialLivenessSignature} from "../control/controller-material-liveness-ledger.mjs";
 
 const roles = ["CAMPAIGN_ORCHESTRATOR", "FEATURE_AGENT", "INDEPENDENT_AUDITOR"];
 const healthy = roles.map((role) => ({
@@ -103,4 +103,30 @@ assert.equal(materialReads, 1, "the material-liveness universe is read once per 
 assert.equal(materialPass.parent_state, "STALLED");
 assert.equal(materialPass.open_stalls[0].reason, "IDLE_AFTER_PASS");
 assert.equal(materialPass.new_reports.length, 1);
+
+const deliveryDigest = (label) => canonicalDigest({delivery: label});
+const deliveryState = compileCrossThreadDeliveryState({
+  reportId: "REPORT.RUNTIME.DELIVERY.001",
+  stallSignatureSha256: deliveryDigest("runtime-stall"),
+  sourceTaskId: "TASK.RUNTIME.SOURCE.001",
+  affectedTaskId: "TASK.RUNTIME.AFFECTED.001",
+  custodySha256: deliveryDigest("runtime-custody"),
+  generation: "GENERATION.RUNTIME.001",
+  recipientRole: "AGENTOS.CONTROLLER",
+  recipientTaskId: "TASK.RUNTIME.CONTROLLER.001",
+});
+let deliveryReads = 0;
+const deliveryPass = await runControllerStallReportDeliveryPass({
+  adapter: {
+    observeStallReportDelivery: () => {
+      deliveryReads += 1;
+      return {state: deliveryState, collaborationTreeAvailable: false, recipientVisible: false};
+    },
+  },
+  report: {stall_signature_sha256: deliveryState.stall_signature_sha256},
+  nowUtc: "2026-08-25T17:03:00.000Z",
+});
+assert.equal(deliveryReads, 1, "stall delivery state is observed once per pass");
+assert.equal(deliveryPass.report_action, "EMIT_STALL_REPORT_DELIVERY_BLOCKED");
+assert.equal(deliveryPass.state.delivery_state, "BLOCKED");
 console.log("PASS Controller liveness: missing, stopped, orphaned, and source-stale roles require a fresh recovery route");

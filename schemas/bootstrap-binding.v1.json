@@ -662,7 +662,7 @@
     },
     "agent_spawner_defect_intake_controller": {
       "path": "control/agent-spawner-defect-intake.mjs",
-      "sha256": "2bb98ab3c572ca000661bf526d33dddff02d22d5f8c18d79120c19069855cfda"
+      "sha256": "e28c041308e9ce1836c7f3d26b74f62be154bcd042729e2c2fd0601020f43738"
     },
     "agent_spawner_defect_intake_contract": {
       "path": "schemas/agent-spawner-defect-intake.v1.json",
@@ -674,7 +674,7 @@
     },
     "agent_spawner_defect_intake_verifier": {
       "path": "tests/verify-agent-spawner-defect-intake.mjs",
-      "sha256": "f4ccfa45c254036c81b61e82d45b683f83435ac2d374c60d60b54a6581df1b2d"
+      "sha256": "d17c3ff9faba2fea644c9b34f9b5bb416b0873061593301e3b2255d537540d39"
     },
     "agent_spawner_controller_bridge_controller": {
       "path": "control/agent-spawner-controller-bridge.mjs",
@@ -718,15 +718,15 @@
     },
     "controller_supervisor_runtime": {
       "path": "control/controller-supervisor-runtime.mjs",
-      "sha256": "bef20dc2348c4b2325201670bde5984378df387db65575c2ba5eea6a60ba828a"
+      "sha256": "f9fe9fb7006bf58bf9ba1e4f73ed3d0aca3b4c9495b489608f0b1809b22d63f0"
     },
     "controller_material_liveness_ledger": {
       "path": "control/controller-material-liveness-ledger.mjs",
-      "sha256": "e4720d311bbf0146dccdd4178c22e700822c029d1d480a756817f952d18d7abe"
+      "sha256": "1c2f984ba55fa796ce9d0ba22288398a9dc2c750e9cfc4290a0f005cb4023129"
     },
     "controller_material_liveness_ledger_verifier": {
       "path": "tests/verify-controller-material-liveness-ledger.mjs",
-      "sha256": "1f7fad528ea099999df1c47f3c5ff5a3edc303fb08520bd8d10afeadd1c3aff1"
+      "sha256": "26d373bce7633e8c67696bf50ddcca9ef53d227cc06c66bf60956284bd2d1464"
     },
     "controller_supervisor_contract": {
       "path": "schemas/controller-supervisor.v1.json",
@@ -822,7 +822,7 @@
     },
     "controller_supervisor_liveness_verifier": {
       "path": "tests/verify-controller-supervisor-liveness.mjs",
-      "sha256": "29eebc0d21dbc41b3cc5d36da1e547a0949b406151c2aa264910aa31ff815099"
+      "sha256": "727717aede59fe51600d438b6dc3035e9d90a92f11e8d5d1f02995760bc24e12"
     },
     "agentos_controller_verifier": {
       "path": "tests/verify-agentos-controller.mjs",

@@ -7,6 +7,11 @@ import {
   evaluateSilentCompletion,
   materialLivenessSignature,
   validateMaterialLivenessLedger,
+  compileCrossThreadDeliveryState,
+  crossThreadDeliverySignature,
+  evaluateCrossThreadDelivery,
+  applyCrossThreadDeliveryReadback,
+  validateCrossThreadDeliveryState,
 } from "../control/controller-material-liveness-ledger.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -150,4 +155,143 @@ assert.throws(() => evaluateSilentCompletion({...silentBase, fresh_closeout: {
   stall_signature_sha256: silent.stall_signature_sha256,
   readback_sha256: sha("silent-readback"),
 }}), /task mismatch/u);
+
+const deliveryHash = (label) => canonicalDigest({delivery: label});
+const deliveryBase = compileCrossThreadDeliveryState({
+  reportId: "REPORT.STALL.001",
+  stallSignatureSha256: deliveryHash("stall"),
+  sourceTaskId: "TASK.SOURCE.001",
+  affectedTaskId: "TASK.AFFECTED.001",
+  custodySha256: deliveryHash("custody"),
+  generation: "GENERATION.001",
+  recipientRole: "AGENTOS.CONTROLLER",
+  recipientTaskId: "TASK.CONTROLLER.001",
+  retryLimit: 2,
+});
+assert.equal(crossThreadDeliverySignature(deliveryBase).length, 64);
+let hostAttempt;
+const hostDelivered = evaluateCrossThreadDelivery(deliveryBase, {
+  collaborationTreeAvailable: false,
+  recipientVisible: false,
+  hostAdapter: (payload) => {
+    hostAttempt = payload.attempt_id;
+    return {
+      receipt: {
+        report_id: payload.report_id,
+        stall_signature_sha256: payload.stall_signature_sha256,
+        recipient_task_id: payload.recipient_task_id,
+        generation: payload.generation,
+        attempt_id: payload.attempt_id,
+        delivered_at_utc: "2026-08-25T18:20:00.000Z",
+      },
+      recipient_readback: {
+        report_id: payload.report_id,
+        stall_signature_sha256: payload.stall_signature_sha256,
+        recipient_task_id: payload.recipient_task_id,
+        source_task_id: payload.source_task_id,
+        custody_sha256: payload.custody_sha256,
+        generation: payload.generation,
+        attempt_id: payload.attempt_id,
+        readback_sha256: deliveryHash("readback"),
+        read_at_utc: "2026-08-25T18:20:01.000Z",
+        fresh: true,
+      },
+    };
+  },
+});
+assert.equal(hostDelivered.report_action, "CONSUMED");
+assert.equal(hostDelivered.state.route, "HOST_CROSS_THREAD");
+assert.equal(hostDelivered.state.consumption_state, "CONSUMED");
+assert.equal(hostAttempt, "ATTEMPT.001");
+
+const ackOnly = evaluateCrossThreadDelivery(deliveryBase, {
+  collaborationTreeAvailable: false,
+  recipientVisible: false,
+  hostAdapter: (payload) => ({acknowledgement: {status: "ACKNOWLEDGED", attempt_id: payload.attempt_id, at_utc: "2026-08-25T18:20:00.000Z"}}),
+});
+assert.equal(ackOnly.report_action, "ACKNOWLEDGED_UNCONSUMED");
+assert.equal(ackOnly.state.consumption_state, "UNCONSUMED");
+assert.equal(ackOnly.state.receipt, null);
+
+const deliveredOnly = evaluateCrossThreadDelivery(deliveryBase, {
+  collaborationTreeAvailable: false,
+  recipientVisible: false,
+  hostAdapter: (payload) => ({receipt: {
+    report_id: payload.report_id,
+    stall_signature_sha256: payload.stall_signature_sha256,
+    recipient_task_id: payload.recipient_task_id,
+    generation: payload.generation,
+    attempt_id: payload.attempt_id,
+    delivered_at_utc: "2026-08-25T18:20:00.000Z",
+  }}),
+});
+assert.equal(deliveredOnly.report_action, "DELIVERED_UNCONSUMED");
+const exactReadback = applyCrossThreadDeliveryReadback(deliveredOnly.state, {
+  report_id: deliveryBase.report_id,
+  stall_signature_sha256: deliveryBase.stall_signature_sha256,
+  recipient_task_id: deliveryBase.recipient_task_id,
+  source_task_id: deliveryBase.source_task_id,
+  custody_sha256: deliveryBase.custody_sha256,
+  generation: deliveryBase.generation,
+  attempt_id: deliveredOnly.state.attempt_id,
+  readback_sha256: deliveryHash("later-readback"),
+  read_at_utc: "2026-08-25T18:20:02.000Z",
+  fresh: true,
+});
+assert.equal(exactReadback.consumption_state, "CONSUMED");
+assert.throws(() => compileCrossThreadDeliveryState({...deliveryBase, recipient_task_id: null}), /recipient_task_id/u);
+
+assert.throws(() => evaluateCrossThreadDelivery(deliveryBase, {
+  collaborationTreeAvailable: false,
+  recipientVisible: false,
+  hostAdapter: (payload) => ({
+    receipt: {
+      report_id: payload.report_id,
+      stall_signature_sha256: payload.stall_signature_sha256,
+      recipient_task_id: payload.recipient_task_id,
+      generation: payload.generation,
+      attempt_id: payload.attempt_id,
+      delivered_at_utc: "2026-08-25T18:20:00.000Z",
+    },
+    recipient_readback: {
+      report_id: payload.report_id,
+      stall_signature_sha256: deliveryHash("wrong-signature"),
+      recipient_task_id: payload.recipient_task_id,
+      source_task_id: payload.source_task_id,
+      custody_sha256: payload.custody_sha256,
+      generation: payload.generation,
+      attempt_id: payload.attempt_id,
+      readback_sha256: deliveryHash("readback"),
+      read_at_utc: "2026-08-25T18:20:01.000Z",
+      fresh: true,
+    },
+  }),
+}), /readback signature mismatch/u);
+
+const blocked = evaluateCrossThreadDelivery(deliveryBase, {collaborationTreeAvailable: false, recipientVisible: false});
+assert.equal(blocked.report_action, "EMIT_STALL_REPORT_DELIVERY_BLOCKED");
+assert.equal(blocked.state.delivery_state, "BLOCKED");
+assert.equal(blocked.state.fallback.original_signature_sha256, deliveryBase.stall_signature_sha256);
+const malformedBlocked = structuredClone(blocked);
+malformedBlocked.state.fallback.errors[0] = "";
+assert.throws(() => validateCrossThreadDeliveryState(malformedBlocked.state), /fallback error/u);
+const dedupedBlocked = evaluateCrossThreadDelivery(blocked.state, {collaborationTreeAvailable: false, recipientVisible: false});
+assert.equal(dedupedBlocked.report_action, "DEDUPLICATED");
+const consumedFallback = evaluateCrossThreadDelivery(blocked.state, {fallbackOwner: "AGENTOS.CONTROLLER", nowUtc: "2026-08-25T18:20:02.000Z"});
+assert.equal(consumedFallback.report_action, "FALLBACK_CONSUMED");
+assert.equal(consumedFallback.state.fallback.consumption_state, "CONSUMED");
+validateCrossThreadDeliveryState(consumedFallback.state);
+
+const retryable = evaluateCrossThreadDelivery(deliveryBase, {
+  collaborationTreeAvailable: false,
+  recipientVisible: false,
+  retry: true,
+  hostAdapter: () => ({available: false, error: "TEMPORARY_ROUTE_UNAVAILABLE"}),
+});
+assert.equal(retryable.report_action, "RETRY_RETAINED");
+assert.equal(retryable.state.retry_count, 1);
+const collaborationPending = evaluateCrossThreadDelivery(deliveryBase, {collaborationTreeAvailable: true, recipientVisible: true});
+assert.equal(collaborationPending.report_action, "ROUTE_SELECTED");
+assert.equal(collaborationPending.state.route, "COLLABORATION_TREE");
+
 console.log("PASS Controller material-liveness ledger: admitted executors, immutable outcomes, idle/pass stalls, exact consumption, deduplication, malformed evidence, dependency cycles, and correlated monitoring closure verified");

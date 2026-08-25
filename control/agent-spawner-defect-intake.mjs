@@ -393,6 +393,19 @@ export function compileCanonicalLivenessDefect({finding, priorSignatures = []} =
   });
 }
 
+/*
+ * Transport failures are canonical liveness findings, not spawnable work.
+ * Keep a named wrapper so callers cannot accidentally route a delivery
+ * fallback through a generic QA/repair path or drop its exact signature.
+ */
+export function compileCanonicalDeliveryBlockedDefect({finding, priorSignatures = []} = {}) {
+  assert(isRecord(finding), "canonical delivery-blocked finding must be an object");
+  assert(finding.observation_kind === "STALL_REPORT_DELIVERY_BLOCKED", "canonical delivery-blocked finding kind is invalid");
+  return compileCanonicalLivenessDefect({finding, priorSignatures});
+}
+
+export const compileControllerStallReportDeliveryBlockedDefect = compileCanonicalDeliveryBlockedDefect;
+
 export function acceptAgentSpawnerDefectRepair(intake, {controllerReceiptSha256} = {}) {
   validateAgentSpawnerDefectIntake(intake);
   assert(intake.status === "REPAIR_CANDIDATE_READY", "Only a ready local repair may enter Controller custody");

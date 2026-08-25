@@ -27,7 +27,12 @@ import {
 } from "./controller-supervisor.mjs";
 import {canonicalDigest} from "./content-addressing.mjs";
 import {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake} from "./agent-spawner-defect-intake.mjs";
-import {compileMaterialLivenessLedger, evaluateMaterialLivenessLedger} from "./controller-material-liveness-ledger.mjs";
+import {
+  compileMaterialLivenessLedger,
+  evaluateMaterialLivenessLedger,
+  compileCrossThreadDeliveryState,
+  evaluateCrossThreadDelivery,
+} from "./controller-material-liveness-ledger.mjs";
 import {redactPersistedText} from "./persisted-record-privacy.mjs";
 import {validateExistingTaskLifecycle} from "./existing-task-stop-resume.mjs";
 
@@ -322,6 +327,35 @@ export async function runControllerMaterialLivenessPass({adapter, nowUtc = new D
   return evaluateMaterialLivenessLedger(boundLedger, {nowUtc});
 }
 
+/**
+ * Deliver one already-canonical Controller stall report.  The adapter owns
+ * observation of its durable delivery state; this runtime owns one bounded
+ * route-selection/evaluation pass and never invents a recipient or provider.
+ * A missing hook preserves the legacy supervisor behavior byte-for-byte.
+ */
+export async function runControllerStallReportDeliveryPass({adapter, report = null, nowUtc = new Date().toISOString()} = {}) {
+  if (!adapter || typeof adapter.observeStallReportDelivery !== "function") return null;
+  const observed = await adapter.observeStallReportDelivery(report);
+  assert(isRecord(observed), "stall-report delivery adapter result must be an object");
+  const stateInput = observed.state ?? observed.deliveryState ?? (observed.schema === "agentos.controller_cross_thread_delivery.v1" ? observed : null);
+  assert(stateInput !== null, "stall-report delivery adapter result lacks a delivery state");
+  const state = stateInput.schema === "agentos.controller_cross_thread_delivery.v1"
+    ? stateInput
+    : compileCrossThreadDeliveryState(stateInput);
+  return evaluateCrossThreadDelivery(state, {
+    collaborationTreeAvailable: observed.collaborationTreeAvailable ?? observed.collaboration_tree_available ?? true,
+    recipientVisible: observed.recipientVisible ?? observed.recipient_visible ?? true,
+    collaborationTreeAdapter: observed.collaborationTreeAdapter ?? observed.collaboration_tree_adapter ?? null,
+    hostAdapter: observed.hostAdapter ?? observed.host_adapter ?? (typeof adapter.deliverCrossThread === "function" || typeof adapter.sendCrossThread === "function" ? adapter : null),
+    retry: observed.retry === true,
+    fallbackOwner: observed.fallbackOwner ?? observed.fallback_owner ?? null,
+    fallbackReadback: observed.fallbackReadback ?? observed.fallback_readback ?? null,
+    nowUtc,
+  });
+}
+
+export const runControllerCrossThreadDeliveryPass = runControllerStallReportDeliveryPass;
+
 function compileRouteFailureRca({runtimeId, priorGoal, priorTick, currentObservation, observedAtUtc}) {
   const rca = {
     schema: "agentos.controller_supervisor_route_failure_rca.v1",
@@ -594,6 +628,11 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   const observation = await adapter.observe();
   validateSupervisorObservation(observation);
   const materialLiveness = await runControllerMaterialLivenessPass({adapter, nowUtc});
+  const stallReportDelivery = await runControllerStallReportDeliveryPass({
+    adapter,
+    report: materialLiveness?.new_reports?.[0] ?? null,
+    nowUtc,
+  });
   // `reconcile` is an explicit project-agnostic recovery surface.  It is
   // accepted as a route only when the adapter has not yet exposed its normal
   // route, so a startup/configuration defect can repair itself without a
@@ -798,7 +837,7 @@ export async function runControllerSupervisorIteration({runtimeRoot, adapter, ru
   writeJsonAtomic(safeChild(root, "supervisor/tick.json"), result.tick);
   const status = runtimeStatusForTick(result.tick);
   writeJsonAtomic(safeChild(root, "supervisor/runtime.json"), compileRuntimeState({runtimeId, status, observation, goal: result.goal, tick: result.tick, error: result.tick.route_error, nowUtc}));
-  return {...result, observation, reused: false, priorSpawnerDefect, materialLiveness};
+  return {...result, observation, reused: false, priorSpawnerDefect, materialLiveness, stallReportDelivery};
 }
 
 function sleep(milliseconds, signal = null) {

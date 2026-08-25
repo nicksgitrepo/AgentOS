@@ -8,6 +8,7 @@ import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   acceptAgentSpawnerDefectRepair,
   compileCanonicalLivenessDefect,
+  compileCanonicalDeliveryBlockedDefect,
   compileAgentSpawnerDefectIntake,
   validateAgentSpawnerDefectIntake,
 } from "../control/agent-spawner-defect-intake.mjs";
@@ -104,6 +105,25 @@ const silentLiveness = compileCanonicalLivenessDefect({finding: {
 assert.equal(silentLiveness.classification, "ORCHESTRATOR_LIVENESS_FAILURE");
 assert.equal(silentLiveness.route, "REPAIR_ORCHESTRATOR_ROUTE");
 assert.equal(silentLiveness.admission.spawnable, false);
+
+const deliveryBlockedFinding = {
+  ...livenessFinding,
+  defect_id: "DEFECT.LIVENESS.DELIVERY_BLOCKED.001",
+  stall_signature_sha256: hash("delivery-blocked-stall"),
+  observation_kind: "STALL_REPORT_DELIVERY_BLOCKED",
+  summary: "The exact stall report could not be delivered through an admitted route.",
+  expected: "The Controller records one exact delivery-blocked fallback for its intended recipient.",
+  observed: "The collaboration tree was unavailable and the host cross-thread adapter was rejected.",
+};
+const deliveryBlocked = compileCanonicalDeliveryBlockedDefect({finding: deliveryBlockedFinding});
+validateAgentSpawnerDefectIntake(deliveryBlocked);
+assert.equal(deliveryBlocked.classification, "ORCHESTRATOR_LIVENESS_FAILURE");
+assert.equal(deliveryBlocked.route, "REPAIR_ORCHESTRATOR_ROUTE");
+assert.equal(deliveryBlocked.admission.spawnable, false);
+const duplicateDeliveryBlocked = compileCanonicalDeliveryBlockedDefect({finding: {...deliveryBlockedFinding, defect_id: "DEFECT.LIVENESS.DELIVERY_BLOCKED.002"}, priorSignatures: [deliveryBlockedFinding.stall_signature_sha256]});
+assert.equal(duplicateDeliveryBlocked.classification, "DUPLICATE_OR_STALE_BLOCK");
+assert.equal(duplicateDeliveryBlocked.status, "REJECTED_DUPLICATE");
+assert.throws(() => compileCanonicalDeliveryBlockedDefect({finding: {...deliveryBlockedFinding, observation_kind: "COMPLETED_OUTCOME_NOT_CONSUMED"}}), /delivery-blocked finding kind/u);
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 for (const relative of ["control/agent-spawner-defect-intake.mjs", "schemas/agent-spawner-defect-intake.v1.json"]) {
