@@ -47,7 +47,23 @@ function resolveTarget(root, relative) {
   const resolvedRoot = fs.realpathSync.native(path.resolve(root));
   const target = path.resolve(resolvedRoot, relative);
   assert(target.startsWith(`${resolvedRoot}${path.sep}`), "cleanup target escapes authority root");
-  if (fs.existsSync(target)) assert(!fs.lstatSync(target).isSymbolicLink(), "cleanup target may not be a symlink");
+  const components = path.relative(resolvedRoot, target).split(path.sep).filter(Boolean);
+  let current = resolvedRoot;
+  for (const component of components) {
+    current = path.join(current, component);
+    let stat;
+    try {
+      stat = fs.lstatSync(current);
+    } catch (error) {
+      if (error?.code === "ENOENT") break;
+      throw error;
+    }
+    assert(!stat.isSymbolicLink(), "cleanup target path may not contain a symlinked component");
+  }
+  if (fs.existsSync(target)) {
+    const realTarget = fs.realpathSync.native(target);
+    assert(realTarget.startsWith(`${resolvedRoot}${path.sep}`), "cleanup target realpath escapes authority root");
+  }
   return {root: resolvedRoot, target};
 }
 
@@ -76,7 +92,9 @@ export function executeHygiene({manifest, dryRun, authorityRoot, executionAdmitt
   for (const entry of valid.targets) {
     const resolved = resolveTarget(authorityRoot, entry.path);
     if (!fs.existsSync(resolved.target)) continue;
-    removeTarget({path: entry.path, absolutePath: resolved.target, kind: entry.kind});
+    const validated = resolveTarget(authorityRoot, entry.path);
+    if (!fs.existsSync(validated.target)) continue;
+    removeTarget({path: entry.path, absolutePath: validated.target, kind: entry.kind});
     removed.push(entry.path);
   }
   return {schema: HYGIENE_EXECUTION_SCHEMA, version: 1, manifest_sha256: valid.manifest_sha256, dry_run_sha256: dryRun.dry_run_sha256, removed_paths: removed.sort(), failures: [], retained_paths: valid.targets.map((entry) => entry.path).filter((target) => !removed.includes(target)).sort(), execution_admitted: true, execution_sha256: canonicalDigest({manifest_sha256: valid.manifest_sha256, dry_run_sha256: dryRun.dry_run_sha256, removed_paths: removed.sort()})};
