@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {independentlyEvaluateSpecialistLibrary} from "../control/specialist-independent-evaluator.mjs";
+import {canonicalDigest} from "../control/specialist-block-compiler.mjs";
 
 const root = path.resolve(new URL("..", import.meta.url).pathname);
 const before = fs.readFileSync(path.join(root, "specialist-blocks/registry/roster.v1.json"), "utf8");
@@ -25,8 +26,41 @@ fs.cpSync(sourcePackage, tempPackage, {recursive: true});
 const tempRosterDir = path.join(mutationRoot, "specialist-blocks/registry");
 fs.mkdirSync(tempRosterDir, {recursive: true});
 const sourceBlock = JSON.parse(fs.readFileSync(path.join(sourcePackage, "block.json"), "utf8"));
-fs.writeFileSync(path.join(tempRosterDir, "roster.v1.json"), JSON.stringify({schema: "agentos.specialist_roster.v1", version: 1, status: "COMPILED_CANDIDATE", activation: "OFF", roster_sha256: "0".repeat(64), blocks: [{block_id: sourceBlock.block_id}]}, null, 2) + "\n");
+const canonicalRoster = JSON.parse(fs.readFileSync(path.join(root, "specialist-blocks/registry/roster.v1.json"), "utf8"));
+const sourceRow = canonicalRoster.blocks.find((row) => row.block_id === sourceBlock.block_id);
+assert(sourceRow, "independent evaluator hostile test source row is missing");
+const makeRoster = (rows) => {
+  const roster = {
+    schema: canonicalRoster.schema,
+    version: canonicalRoster.version,
+    status: canonicalRoster.status,
+    governance_version: canonicalRoster.governance_version,
+    blocks: structuredClone(rows),
+    aliases: [],
+    routing_index: canonicalRoster.routing_index,
+    activation: canonicalRoster.activation,
+    roster_sha256: null,
+  };
+  roster.roster_sha256 = canonicalDigest({...roster, roster_sha256: null});
+  return roster;
+};
+const baselineRoster = makeRoster([sourceRow]);
+const writeRoster = (roster) => fs.writeFileSync(path.join(tempRosterDir, "roster.v1.json"), JSON.stringify(roster, null, 2) + "\n");
+writeRoster(baselineRoster);
 try {
+  const expectRosterFailure = (mutate, expectedMessage, {recomputeDigest = false} = {}) => {
+    const mutatedRoster = structuredClone(baselineRoster);
+    mutate(mutatedRoster);
+    if (recomputeDigest) mutatedRoster.roster_sha256 = canonicalDigest({...mutatedRoster, roster_sha256: null});
+    writeRoster(mutatedRoster);
+    assert.throws(() => independentlyEvaluateSpecialistLibrary({repositoryRoot: mutationRoot}), expectedMessage);
+    writeRoster(baselineRoster);
+  };
+  expectRosterFailure((roster) => { roster.blocks[0].status = "ADMITTED"; }, /roster self digest mismatch/u);
+  expectRosterFailure((roster) => { roster.blocks[0].status = "ADMITTED"; }, /roster status mismatch/u, {recomputeDigest: true});
+  expectRosterFailure((roster) => { roster.blocks[0].lifecycle = "ADMITTED"; }, /roster lifecycle mismatch/u, {recomputeDigest: true});
+  expectRosterFailure((roster) => { roster.blocks[0].activation = "ON"; }, /roster activation mismatch/u, {recomputeDigest: true});
+  expectRosterFailure((roster) => { roster.blocks[0].candidate_digest = "f".repeat(64); }, /roster candidate digest mismatch/u, {recomputeDigest: true});
   const expectMutationFailure = (relativePath, mutate, expectedMessage) => {
     const filePath = path.join(tempPackage, relativePath);
     const original = JSON.parse(fs.readFileSync(filePath, "utf8"));

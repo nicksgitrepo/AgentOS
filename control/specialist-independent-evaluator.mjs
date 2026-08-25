@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
-import {ATOMIC_EVALUATION_CLASSES, CORE_EVALUATION_CLASSES, GATE_OUTCOMES, SPECIALIST_GATE_IDS} from "./specialist-block-compiler.mjs";
+import {ATOMIC_EVALUATION_CLASSES, CORE_EVALUATION_CLASSES, GATE_OUTCOMES, SPECIALIST_GATE_IDS, canonicalDigest} from "./specialist-block-compiler.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GATE_SCHEMA = "agentos.specialist_gate.v1";
@@ -135,7 +135,7 @@ function evaluatePackage(packageDir) {
     if (typeof block.required_upstream_router !== "string" || block.required_upstream_router.length === 0) fail(`${block.block_id} atomic specialist lacks upstream router`);
     if (!block.forbidden_decisions.some((decision) => /(?:broaden|sibling|family|provider|version)/iu.test(decision))) fail(`${block.block_id} atomic specialist lacks anti-broadening denial`);
   }
-  return {block_id: block.block_id, role_kind: block.role_kind, candidate_digest: block.block_sha256, dependencies: block.dependencies, required_upstream_router: block.required_upstream_router, sibling_conflicts: block.sibling_conflicts, candidate_standard_dependencies: block.dependencies.filter((dependency) => dependency.startsWith("specialist.standard.")), status: "PASS", checked_gate_count: SPECIALIST_GATE_IDS.length, checked_fixture_count: expectedClasses.length, independent_utility_harm: "PENDING_EXTERNAL_AUTHORITY"};
+  return {block_id: block.block_id, role_kind: block.role_kind, revision: block.revision, lifecycle: block.lifecycle, activation: block.activation, candidate_digest: block.block_sha256, dependencies: block.dependencies, required_upstream_router: block.required_upstream_router, sibling_conflicts: block.sibling_conflicts, candidate_standard_dependencies: block.dependencies.filter((dependency) => dependency.startsWith("specialist.standard.")), status: "PASS", checked_gate_count: SPECIALIST_GATE_IDS.length, checked_fixture_count: expectedClasses.length, independent_utility_harm: "PENDING_EXTERNAL_AUTHORITY"};
 }
 
 function packageDirectories(libraryRoot) {
@@ -154,14 +154,33 @@ function packageDirectories(libraryRoot) {
 export function independentlyEvaluateSpecialistLibrary({repositoryRoot = process.cwd()} = {}) {
   const libraryRoot = path.join(repositoryRoot, "specialist-blocks");
   const roster = readJson(path.join(libraryRoot, "registry", "roster.v1.json"));
+  if (roster.schema !== "agentos.specialist_roster.v1" || roster.version !== 1) fail("roster schema or version mismatch");
   if (roster.status !== "COMPILED_CANDIDATE" || roster.activation !== "OFF") fail("roster is active or not a candidate");
+  assertDigest(roster.roster_sha256, "roster.roster_sha256");
+  if (canonicalDigest({...roster, roster_sha256: null}) !== roster.roster_sha256) fail("roster self digest mismatch");
+  if (!Array.isArray(roster.blocks)) fail("roster blocks are not an array");
+  const rosterById = new Map();
+  for (const entry of roster.blocks) {
+    if (!isRecord(entry) || typeof entry.block_id !== "string" || entry.block_id.length === 0) fail("roster entry identity is invalid");
+    if (rosterById.has(entry.block_id)) fail(`duplicate roster package: ${entry.block_id}`);
+    assertDigest(entry.candidate_digest, `${entry.block_id} roster candidate_digest`);
+    rosterById.set(entry.block_id, entry);
+  }
   const packageDirs = packageDirectories(libraryRoot);
   const results = packageDirs.map(evaluatePackage).sort((left, right) => left.block_id.localeCompare(right.block_id));
-  const rosterIds = new Set(roster.blocks.map((block) => block.block_id));
+  const rosterIds = new Set(rosterById.keys());
   for (const result of results) if (!rosterIds.has(result.block_id)) fail(`${result.block_id} is absent from the roster`);
   if (results.length !== roster.blocks.length) fail("roster/package count mismatch");
   const byId = new Map(results.map((result) => [result.block_id, result]));
   for (const result of results) {
+    const entry = rosterById.get(result.block_id);
+    if (entry.role_kind !== result.role_kind) fail(`${result.block_id} roster role_kind mismatch`);
+    if (entry.revision !== result.revision) fail(`${result.block_id} roster revision mismatch`);
+    if (entry.candidate_digest !== result.candidate_digest) fail(`${result.block_id} roster candidate digest mismatch`);
+    const expectedStatus = result.lifecycle === "EVALUATED" ? "EVALUATED" : "CANDIDATE";
+    if (entry.status !== expectedStatus) fail(`${result.block_id} roster status mismatch`);
+    if (entry.lifecycle !== "NOT_ADMITTED") fail(`${result.block_id} roster lifecycle mismatch`);
+    if (entry.activation !== result.activation || result.activation !== "OFF") fail(`${result.block_id} roster activation mismatch`);
     for (const dependency of result.dependencies) {
       if (!byId.has(dependency)) fail(`${result.block_id} depends on missing package ${dependency}`);
     }
