@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.campaign_closeout_lifecycle.v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "task_id", "turn_id", "lane_id", "state", "transition_sequence", "idempotency_key"],
+  "properties": {
+    "schema": {"const": "agentos.campaign_closeout_lifecycle.v1"},
+    "version": {"const": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "turn_id": {"type": "string", "minLength": 1},
+    "lane_id": {"type": "string", "minLength": 1},
+    "state": {"enum": ["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "AUDIT_CONSUMED", "CLOSED"]},
+    "transition_sequence": {"type": "integer", "minimum": 0},
+    "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "x-projection-divergence-rule": "An empty API items projection never proves absence when an injected read-only durable final_agent_item_id resolves exactly to the requested task and turn.",
+  "x-no-replay-rule": "Recovered results are consumed once and never wake, rerun, redeliver, or duplicate-route completed work."
+}

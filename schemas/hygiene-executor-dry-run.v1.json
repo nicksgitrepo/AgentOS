@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.hygiene_executor_dry_run.v1",
+  "type": "object",
+  "required": ["schema", "version", "manifest_sha256", "dry_run_sha256", "targets"],
+  "properties": {"schema": {"const": "agentos.hygiene_executor_dry_run.v1"}, "version": {"const": 1}, "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "dry_run_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "targets": {"type": "array"}},
+  "additionalProperties": true
+}

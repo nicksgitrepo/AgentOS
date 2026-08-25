@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.liveness_sentinel.v1",
+  "type": "object",
+  "required": ["schema", "version", "state", "classification", "signature", "duplicate", "lifecycle_action_taken", "custody_mutated"],
+  "properties": {"schema": {"const": "agentos.liveness_sentinel.v1"}, "version": {"const": 1}, "state": {"enum": ["ACTIVE_MONITORING", "QUIESCENT"]}, "classification": {"type": "string"}, "signature": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "duplicate": {"type": "boolean"}, "lifecycle_action_taken": {"const": false}, "custody_mutated": {"const": false}},
+  "additionalProperties": true
+}

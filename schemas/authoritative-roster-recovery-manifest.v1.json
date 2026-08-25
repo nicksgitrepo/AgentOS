@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.authoritative_recovery_manifest.v1",
+  "type": "object",
+  "required": ["schema", "version", "roster_sha256", "paths", "path_count", "manifest_sha256"],
+  "properties": {"schema": {"const": "agentos.authoritative_recovery_manifest.v1"}, "version": {"const": 1}, "roster_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "paths": {"type": "array", "items": {"type": "string"}}, "path_count": {"type": "integer", "minimum": 0}, "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+  "additionalProperties": true
+}
