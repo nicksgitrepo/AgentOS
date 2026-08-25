@@ -58,7 +58,14 @@ const treeRef = `sha1:${"2".repeat(40)}`;
 
 const time = (minute) => `2026-08-06T12:${String(minute).padStart(2, "0")}:00.000Z`;
 const ref = (value) => `ref:${value}`;
-const closeoutRef = (value) => `digest:${crypto.createHash("sha256").update(value).digest("hex")}`;
+const closeoutBindings = new Map();
+const closeoutRef = (value) => {
+  const receipt_sha256 = crypto.createHash("sha256").update(value).digest("hex");
+  const reference = `digest:${receipt_sha256}`;
+  closeoutBindings.set(reference, {bytes: value, receipt_sha256, status: "PROVEN"});
+  return reference;
+};
+const closeoutResolver = (reference, {authority}) => ({...closeoutBindings.get(reference), authority});
 
 function provenance(overrides = {}) {
   return compileProvenance({
@@ -268,6 +275,7 @@ function completeDrill(proposal) {
       step,
       receiptRef: closeoutRef(`universal-closeout-${index + 1}`),
       observedAt: time(14),
+      receiptResolver: closeoutResolver,
     });
   }
   drill = closeWorkflowDrill(drill, {
@@ -280,10 +288,11 @@ function completeDrill(proposal) {
     },
     universalCloseoutReceipts: drill.universal_closeout_receipts,
     closedAt: time(15),
+    receiptResolver: closeoutResolver,
   });
   assert.equal(drill.schema, WORKFLOW_AUDITOR_DRILL_SCHEMA);
   assert.equal(drill.status, "CLOSED_NON_ACCEPTING");
-  validateWorkflowDrill(drill, {proposal});
+  validateWorkflowDrill(drill, {proposal, receiptResolver: closeoutResolver});
   return drill;
 }
 
@@ -298,10 +307,11 @@ function buildReproduction(proposal, drill) {
     drill,
     provenance: reproductionProvenance,
     createdAt: time(16),
+    receiptResolver: closeoutResolver,
   });
   assert.equal(packet.schema, REPRODUCTION_PACKET_SCHEMA);
   assert.equal(packet.fresh_context.private_context_included, false);
-  validateReproductionPacket(packet, {proposal, drill});
+  validateReproductionPacket(packet, {proposal, drill, receiptResolver: closeoutResolver});
   const gateResponses = packet.gate_source.gates.map((gate, index) => ({
     sequence: index + 1,
     gate_id: gate.gate_id,
@@ -355,9 +365,10 @@ function buildReview(proposal, drill, packet, result, reproductionProvenance) {
     },
     findings: [],
     reviewedAt: time(18),
+    receiptResolver: closeoutResolver,
   });
   assert.equal(review.schema, INDEPENDENT_REVIEW_SCHEMA);
-  validateIndependentReview(review, {proposal, drill, packet, reproduction: result});
+  validateIndependentReview(review, {proposal, drill, packet, reproduction: result, receiptResolver: closeoutResolver});
   return {review, reviewProvenance};
 }
 
@@ -415,10 +426,11 @@ const handoff = compileApprenticeshipHandoff({
   uncertainty: [],
   hostileFindings: [],
   createdAt: time(20),
+  receiptResolver: closeoutResolver,
 });
 assert.equal(handoff.schema, HANDOFF_SCHEMA);
 assert.equal(handoff.status, "OWNER_APPROVED_PENDING_ACTIVATION");
-validateApprenticeshipHandoff(handoff, {proposal, drill, packet, reproduction: result, review, ownerDecision});
+validateApprenticeshipHandoff(handoff, {proposal, drill, packet, reproduction: result, review, ownerDecision, receiptResolver: closeoutResolver});
 
 const failureObservation = compileTaskObservation({
   ...{
@@ -504,7 +516,7 @@ unsafePacket.fresh_context.private_context_included = true;
 assert.throws(() => validateReproductionPacket(unsafePacket), /forbidden learner context/u, "private learner context cannot enter a reproduction packet");
 const syntheticReceiptDrill = structuredClone(drill);
 syntheticReceiptDrill.lifecycle_receipts[0].authority = "SYNTHETIC";
-assert.throws(() => validateWorkflowDrill(syntheticReceiptDrill), /authoritative host readback/u, "synthetic receipts cannot validate lifecycle");
+assert.throws(() => validateWorkflowDrill(syntheticReceiptDrill, {receiptResolver: closeoutResolver}), /authoritative host readback/u, "synthetic receipts cannot validate lifecycle");
 const selfReviewProvenance = provenance({
   reproductionRef: reproductionProvenance.reproduction_ref,
   reproductionSessionRef: reproductionProvenance.reproduction_session_ref,
@@ -529,6 +541,7 @@ assert.throws(() => compileIndependentReview({
     quality: "PASS",
   },
   reviewedAt: time(25),
+  receiptResolver: closeoutResolver,
 }), /cannot be the worker/u, "worker cannot independently review its own proposal");
 const activationProposal = structuredClone(proposal);
 activationProposal.activation_allowed = true;

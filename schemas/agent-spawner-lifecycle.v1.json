@@ -27,7 +27,8 @@
     "execution": {"$ref": "#/$defs/execution"},
     "protected_hold_event_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
     "next_action": {"enum": ["START_COMPILER", "COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE", "ADMIT_GOVERNED_SPAWN", "START_GOVERNED_SPAWN", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "NONE"]},
-    "lifecycle_sha256": {"$ref": "#/$defs/sha256"}
+    "lifecycle_sha256": {"$ref": "#/$defs/sha256"},
+    "storage_decision": {"$ref": "#/$defs/storage_decision"}
   },
   "allOf": [
     {"if": {"properties": {"state": {"enum": ["SPAWN_ADMITTED", "SPAWN_ACTIVE"]}}}, "then": {"properties": {"qa": {"properties": {
@@ -86,6 +87,46 @@
         "heavyweight_process_count": {"type": "integer", "minimum": 0},
         "timer_count": {"type": "integer", "minimum": 0},
         "polling": {"type": "boolean"}
+      }
+    },
+    "storage_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "receipt_id", "monitor_role", "observed_at_utc", "free_gib", "threshold_class",
+        "policy", "current_issue", "next_issue", "cleanup", "ordinary_agents", "custody", "previous_receipt_sha256",
+        "hostile_fixture_refs", "receipt_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.agent_spawner_storage_governance.v1"},
+        "version": {"const": 1},
+        "receipt_id": {"$ref": "#/$defs/identifier"},
+        "monitor_role": {"const": "CONTROLLER"},
+        "observed_at_utc": {"type": "string", "format": "date-time"},
+        "free_gib": {"type": "number", "minimum": 0},
+        "threshold_class": {"enum": ["HARD_FLOOR", "OWNER_WARNING", "BELOW_CLEANUP_TARGET", "CLEANUP_TARGET", "ABOVE_CLEANUP_TARGET"]},
+        "policy": {
+          "type": "object", "additionalProperties": false,
+          "required": ["monitor_owner", "monitor_interval_hours", "ordinary_agents_poll_storage", "cleanup_target_free_gib", "owner_warning_at_or_below_free_gib", "hard_operating_floor_at_or_below_free_gib", "below_target_current_issue_transition", "cleanup_safety"],
+          "properties": {
+            "monitor_owner": {"const": "CONTROLLER_ONLY"},
+            "monitor_interval_hours": {"const": 24},
+            "ordinary_agents_poll_storage": {"const": false},
+            "cleanup_target_free_gib": {"type": "object", "additionalProperties": false, "required": ["minimum", "maximum", "work_stopping_floor"], "properties": {"minimum": {"const": 80}, "maximum": {"const": 100}, "work_stopping_floor": {"const": false}}},
+            "owner_warning_at_or_below_free_gib": {"const": 50},
+            "hard_operating_floor_at_or_below_free_gib": {"const": 25},
+            "below_target_current_issue_transition": {"type": "array", "const": ["FINISH_AND_VERIFY_CURRENT_ISSUE", "FREEZE_EXACT_CANDIDATE", "HANDOFF_AND_COMPLETE_AUTHORIZED_RUNTIME_DELIVERY", "ADMIT_NO_NEXT_ISSUE", "CONTROLLER_RUNS_CUSTODY_SAFE_CLEANUP_TOWARD_80_TO_100_GIB", "RESUME_NEXT_ISSUE_AFTER_CLEANUP_TRANSITION_CLOSES"]},
+            "cleanup_safety": {"type": "object", "additionalProperties": false, "required": ["preserve_active_or_unmerged_work", "ambiguous_custody_cleanup_forbidden", "allowed_classes"], "properties": {"preserve_active_or_unmerged_work": {"const": true}, "ambiguous_custody_cleanup_forbidden": {"const": true}, "allowed_classes": {"type": "array", "const": ["PROVEN_SAFE_DISPOSABLE_DATA", "STALE_CACHES", "REDUNDANT_BUILD_OUTPUTS", "CLEAN_RELEASED_WORKTREES"]}}}
+          }
+        },
+        "current_issue": {"type": "object", "additionalProperties": false, "required": ["status", "work_allowed", "storage_heavy_work_allowed", "finish_verify_freeze_handoff_required", "runtime_delivery_allowed"], "properties": {"status": {"type": "string", "minLength": 1}, "work_allowed": {"type": "boolean"}, "storage_heavy_work_allowed": {"type": "boolean"}, "finish_verify_freeze_handoff_required": {"type": "boolean"}, "runtime_delivery_allowed": {"type": "boolean"}}},
+        "next_issue": {"type": "object", "additionalProperties": false, "required": ["admission", "allowed", "blocked_reason"], "properties": {"admission": {"enum": ["ADMIT_AFTER_DAILY_TRANSITION", "DENY_DURING_CLEANUP", "DENY_HARD_OPERATING_FLOOR"]}, "allowed": {"type": "boolean"}, "blocked_reason": {"type": ["string", "null"]}}},
+        "cleanup": {"type": "object", "additionalProperties": false, "required": ["required", "action", "target_min_gib", "target_max_gib", "attempted", "reached_target", "owner_alert", "resume_above_gib"], "properties": {"required": {"type": "boolean"}, "action": {"enum": ["NO_CLEANUP_REQUIRED", "CONTROLLER_RUNS_CUSTODY_SAFE_CLEANUP_TOWARD_80_TO_100_GIB", "ALERT_OWNER_AND_WAIT_FOR_RECOVERY_AUTHORITY"]}, "target_min_gib": {"const": 80}, "target_max_gib": {"const": 100}, "attempted": {"type": "boolean"}, "reached_target": {"type": ["boolean", "null"]}, "owner_alert": {"type": "boolean"}, "resume_above_gib": {"const": 25}}},
+        "ordinary_agents": {"type": "object", "additionalProperties": false, "required": ["polling_allowed", "decision"], "properties": {"polling_allowed": {"const": false}, "decision": {"const": "REJECT_REPEATED_STORAGE_POLL"}}},
+        "custody": {"type": "object", "additionalProperties": false, "required": ["active_or_unmerged_preserved", "ambiguous_custody_cleanup_forbidden", "cleanup_allowed"], "properties": {"active_or_unmerged_preserved": {"const": true}, "ambiguous_custody_cleanup_forbidden": {"const": true}, "cleanup_allowed": {"type": "boolean"}}},
+        "previous_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "hostile_fixture_refs": {"type": "array", "const": ["FIXTURE.STORAGE.79_GIB_ORDINARY_COMPILE_AND_TEST", "FIXTURE.STORAGE.79_GIB_CONTROLLER_DAILY_CLEANUP", "FIXTURE.STORAGE.CLEANUP_FAILURE_ALERT_RESUME_ABOVE_25", "FIXTURE.STORAGE.50_GIB_OWNER_WARNING", "FIXTURE.STORAGE.25_GIB_HARD_STOP", "FIXTURE.STORAGE.ORDINARY_AGENT_POLL_REJECTED", "FIXTURE.STORAGE.DUPLICATE_DAILY_CHECK_REJECTED", "FIXTURE.STORAGE.AMBIGUOUS_CUSTODY_CLEANUP_REJECTED", "FIXTURE.STORAGE.NEXT_ISSUE_DURING_CLEANUP_REJECTED", "FIXTURE.STORAGE.HISTORICAL_RECEIPT_CANNOT_OVERRIDE"]},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
       }
     }
   }

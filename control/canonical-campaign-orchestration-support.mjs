@@ -561,7 +561,7 @@ function validateDeliveryResult(delivery, {status = "CLOSED"} = {}) {
   return delivery;
 }
 
-export function validateCanonicalCampaignClosure(closure) {
+export function validateCanonicalCampaignClosure(closure, {receiptResolver} = {}) {
   if (closure === null) return null;
   exactKeys(closure, CLOSURE_KEYS, "canonical campaign closure");
   assert(closure.schema === CANONICAL_CAMPAIGN_CLOSURE_SCHEMA && closure.version === CANONICAL_CAMPAIGN_VERSION, "canonical campaign closure identity is invalid");
@@ -577,7 +577,11 @@ export function validateCanonicalCampaignClosure(closure) {
   assert(closure.exact_worker_closure === true, "canonical campaign closure is not exact");
   requireBoolean(closure.evidence_identity_ok, "canonical campaign closure evidence identity");
   assert(closure.evidence_identity_ok === true, "canonical campaign closure evidence identity is not exact");
-  validateUniversalTaskCloseoutReceipts(closure.universal_closeout_receipts, {closed: true, label: "canonical campaign universal closeout receipts"});
+  validateUniversalTaskCloseoutReceipts(closure.universal_closeout_receipts, {
+    closed: true,
+    label: "canonical campaign universal closeout receipts",
+    receiptResolver: receiptResolver ?? closure.__receiptResolver,
+  });
   exactKeys(closure.protected_actions, Object.keys(PROTECTED_ACTIONS), "canonical campaign closure protected actions");
   for (const value of Object.values(closure.protected_actions)) assert(value === false, "canonical campaign closure enabled a protected action");
   requireUtc(closure.closed_at_utc, "canonical campaign closure time");
@@ -587,7 +591,7 @@ export function validateCanonicalCampaignClosure(closure) {
   return closure;
 }
 
-export function validateCanonicalCampaignOrchestration(result) {
+export function validateCanonicalCampaignOrchestration(result, {receiptResolver} = {}) {
   exactKeys(result, ORCHESTRATION_KEYS, "canonical campaign orchestration result");
   assert(result.schema === CANONICAL_CAMPAIGN_ORCHESTRATION_SCHEMA && result.version === CANONICAL_CAMPAIGN_VERSION, "canonical campaign orchestration identity is invalid");
   assert(["CLOSED", "BLOCKED"].includes(result.status), "canonical campaign orchestration status is invalid");
@@ -600,7 +604,7 @@ export function validateCanonicalCampaignOrchestration(result) {
   result.workers.forEach(validateWorkerResult);
   validateAcceptanceResult(result.acceptance, {status: result.status});
   validateDeliveryResult(result.delivery, {status: result.status});
-  validateCanonicalCampaignClosure(result.closure);
+  validateCanonicalCampaignClosure(result.closure, {receiptResolver: receiptResolver ?? result.__receiptResolver});
   if (result.status === "CLOSED") assert(result.closure !== null, "closed orchestration lacks exact closure");
   if (result.status === "BLOCKED") assert(result.closure === null, "blocked orchestration cannot claim closure");
   if (result.status === "CLOSED") {
@@ -623,7 +627,7 @@ export function validateCanonicalCampaignOrchestration(result) {
   return result;
 }
 
-function compileResult({status, admission, runtimeResult, workers, acceptance, delivery, closure = null}) {
+function compileResult({status, admission, runtimeResult, workers, acceptance, delivery, closure = null, receiptResolver} = {}) {
   const result = {
     schema: CANONICAL_CAMPAIGN_ORCHESTRATION_SCHEMA,
     version: CANONICAL_CAMPAIGN_VERSION,
@@ -639,7 +643,9 @@ function compileResult({status, admission, runtimeResult, workers, acceptance, d
     closure,
     result_sha256: null,
   };
-  return validateCanonicalCampaignOrchestration(seal(result, "result_sha256"));
+  const sealed = seal(result, "result_sha256");
+  if (receiptResolver !== undefined) Object.defineProperty(sealed, "__receiptResolver", {value: receiptResolver, enumerable: false});
+  return validateCanonicalCampaignOrchestration(sealed, {receiptResolver});
 }
 
 function finalAcceptanceDigest(state) {
@@ -665,8 +671,16 @@ export function compileCanonicalCampaignUniversalCloseoutReceipts({admission, ca
   assert(nativeClosures.length === campaignState.workers.length * 2, "campaign universal closeout lacks one native closure per worker and Auditor task");
   const nativeClosureDigests = nativeClosures.map((value) => value.receipt_sha256).sort(compareUtf8);
   assert(nativeClosureDigests.every((value) => typeof value === "string" && SHA256.test(value)), "campaign universal closeout has an unbound native closure");
-  const opaque = (kind, value) => `opaque:sha256:${canonicalDigest({kind, value})}`;
-  return compileUniversalTaskCloseoutReceipts({
+  const bindings = new Map();
+  const opaque = (kind, value) => {
+    const payload = {kind, value};
+    const receipt_sha256 = canonicalDigest(payload);
+    const reference = `opaque:sha256:${receipt_sha256}`;
+    bindings.set(reference, {payload, receipt_sha256, status: "PROVEN"});
+    return reference;
+  };
+  const receiptResolver = (reference, {authority}) => ({...bindings.get(reference), authority});
+  const receipts = compileUniversalTaskCloseoutReceipts({
     mode: "CAMPAIGN",
     observedAt: closedAtUtc,
     label: "canonical campaign universal closeout receipts",
@@ -681,11 +695,14 @@ export function compileCanonicalCampaignUniversalCloseoutReceipts({admission, ca
       MARK_CHAT_OUT_OF_SCOPE: opaque("MARK_CHAT_OUT_OF_SCOPE", {campaign_id: admission.campaign_id, nativeClosureDigests, status: "OUT_OF_SCOPE_AFTER_ARCHIVE"}),
       ARCHIVE_VISIBLE_TASK: opaque("ARCHIVE_VISIBLE_TASK", nativeClosures.map((value) => ({receipt_sha256: value.receipt_sha256, lifecycle: value.lifecycle}))),
     },
+    receiptResolver,
   });
+  Object.defineProperty(receipts, "__receiptResolver", {value: receiptResolver, enumerable: false});
+  return receipts;
 }
 
-function buildClosedClosure({admission, campaignState, runtimeState, runtimeCheckpoint, acceptanceDigest, delivery, closedAtUtc, universalCloseoutReceipts}) {
-  validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "canonical campaign universal closeout receipts"});
+function buildClosedClosure({admission, campaignState, runtimeState, runtimeCheckpoint, acceptanceDigest, delivery, closedAtUtc, universalCloseoutReceipts, receiptResolver}) {
+  validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "canonical campaign universal closeout receipts", receiptResolver});
   const closure = {
     schema: CANONICAL_CAMPAIGN_CLOSURE_SCHEMA,
     version: CANONICAL_CAMPAIGN_VERSION,
@@ -711,7 +728,9 @@ function buildClosedClosure({admission, campaignState, runtimeState, runtimeChec
     closed_at_utc: closedAtUtc,
     closure_sha256: null,
   };
-  return validateCanonicalCampaignClosure(seal(closure, "closure_sha256"));
+  const sealed = seal(closure, "closure_sha256");
+  if (receiptResolver !== undefined) Object.defineProperty(sealed, "__receiptResolver", {value: receiptResolver, enumerable: false});
+  return validateCanonicalCampaignClosure(sealed, {receiptResolver});
 }
 
 function blockedDelivery(admission) {

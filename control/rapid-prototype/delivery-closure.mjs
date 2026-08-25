@@ -428,7 +428,7 @@ async function invokeHost(host, method, payload, operation, threadId, hostId) {
   }
 }
 
-export async function completeTemporaryWorker({threadId, hostId, handoff, activeRoster, host, universalCloseoutEvidence = null} = {}) {
+export async function completeTemporaryWorker({threadId, hostId, handoff, activeRoster, host, universalCloseoutEvidence = null, universalCloseoutReceiptResolver} = {}) {
   assertUniversalDevelopmentMode("RAPID_PROTOTYPE", ["HANDOFF", "CLOSURE"]);
   if (handoff === undefined || handoff === null) {
     return failureResult({status: "HARD_STOP", code: "MISSING_TYPED_HANDOFF", reason: "typed handoff is required", phase: "PRESERVE_TYPED_HANDOFF", activeRoster});
@@ -478,10 +478,28 @@ export async function completeTemporaryWorker({threadId, hostId, handoff, active
     return failureResult({status, code, reason: error instanceof ClosureError ? error.message : "active roster is invalid", phase: "PRESERVE_TYPED_HANDOFF", preservedReceipt, activeRoster});
   }
 
+  const closeoutBindings = new Map();
+  const resolveCloseoutReceipt = (reference, context) => {
+    const local = closeoutBindings.get(reference);
+    if (local !== undefined) return {...local, authority: context.authority};
+    assert(typeof universalCloseoutReceiptResolver === "function", "rapid-prototype closeout receipt resolver is missing");
+    const resolved = universalCloseoutReceiptResolver(reference, context);
+    assert(isRecord(resolved), "rapid-prototype closeout receipt did not resolve");
+    return resolved;
+  };
+  closeoutBindings.set(`digest:${preservedReceipt.receipt_sha256}`, {
+    payload: {...preservedReceipt, receipt_sha256: null},
+    receipt_sha256: preservedReceipt.receipt_sha256,
+    status: "PROVEN",
+  });
+
   let unpinReceiptRef;
+  let unpinPayload;
   try {
     await invokeHost(host, "set_thread_pinned", {threadId, pinned: false}, "pinned", threadId, hostId);
-    unpinReceiptRef = `digest:${closureDigest({mode: "RAPID_PROTOTYPE", step: "UNPIN_SESSION", thread_id: threadId, host_id: hostId, status: "PROVEN"})}`;
+    unpinPayload = {mode: "RAPID_PROTOTYPE", step: "UNPIN_SESSION", thread_id: threadId, host_id: hostId, status: "PROVEN"};
+    unpinReceiptRef = `digest:${closureDigest(unpinPayload)}`;
+    closeoutBindings.set(unpinReceiptRef, {payload: unpinPayload, receipt_sha256: unpinReceiptRef.slice("digest:".length), status: "PROVEN"});
   } catch (error) {
     return failureResult({
       status: error instanceof ClosureError ? error.status : "HARD_STOP",
@@ -494,9 +512,12 @@ export async function completeTemporaryWorker({threadId, hostId, handoff, active
   }
 
   let archiveReceiptRef;
+  let archivePayload;
   try {
     await invokeHost(host, "set_thread_archived", {threadId, hostId, archived: true}, "archived", threadId, hostId);
-    archiveReceiptRef = `digest:${closureDigest({mode: "RAPID_PROTOTYPE", step: "ARCHIVE_VISIBLE_TASK", thread_id: threadId, host_id: hostId, status: "PROVEN"})}`;
+    archivePayload = {mode: "RAPID_PROTOTYPE", step: "ARCHIVE_VISIBLE_TASK", thread_id: threadId, host_id: hostId, status: "PROVEN"};
+    archiveReceiptRef = `digest:${closureDigest(archivePayload)}`;
+    closeoutBindings.set(archiveReceiptRef, {payload: archivePayload, receipt_sha256: archiveReceiptRef.slice("digest:".length), status: "PROVEN"});
   } catch (error) {
     return failureResult({
       status: error instanceof ClosureError ? error.status : "HARD_STOP",
@@ -538,8 +559,9 @@ export async function completeTemporaryWorker({threadId, hostId, handoff, active
       },
       observedAt: new Date().toISOString(),
       label: "rapid-prototype universal closeout receipts",
+      receiptResolver: resolveCloseoutReceipt,
     });
-    validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "rapid-prototype universal closeout receipts"});
+    validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "rapid-prototype universal closeout receipts", receiptResolver: resolveCloseoutReceipt});
     const receipt = compileClosureReceipt({
       threadId,
       hostId,

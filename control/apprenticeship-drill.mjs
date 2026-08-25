@@ -241,8 +241,9 @@ export function recordDrillCloseoutReceipt(drill, {
   step,
   receiptRef,
   observedAt,
+  receiptResolver,
 } = {}) {
-  validateWorkflowDrill(drill);
+  validateWorkflowDrill(drill, {receiptResolver});
   assert(!["CLOSED_NON_ACCEPTING"].includes(drill.status), "closed drill cannot receive universal closeout receipts");
   assert(UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.includes(step), `unknown universal closeout step ${step}`);
   requireSafeReference(receiptRef, "universal closeout receipt reference");
@@ -258,10 +259,10 @@ export function recordDrillCloseoutReceipt(drill, {
     status: "PROVEN",
     observed_at: observedAt,
   });
-  validateUniversalTaskCloseoutReceipts(next.universal_closeout_receipts, {label: "drill universal closeout receipts"});
+  validateUniversalTaskCloseoutReceipts(next.universal_closeout_receipts, {label: "drill universal closeout receipts", receiptResolver});
   next.updated_at = observedAt;
   const result = withDigest(next);
-  validateWorkflowDrill(result);
+  validateWorkflowDrill(result, {receiptResolver});
   return result;
 }
 
@@ -415,13 +416,13 @@ export function reopenWorkflowDrill(drill, {questionId, repairRef, repairedAt} =
   return result;
 }
 
-export function closeWorkflowDrill(drill, {typedHandoff, universalCloseoutReceipts, closedAt} = {}) {
-  validateWorkflowDrill(drill);
+export function closeWorkflowDrill(drill, {typedHandoff, universalCloseoutReceipts, closedAt, receiptResolver} = {}) {
+  validateWorkflowDrill(drill, {receiptResolver});
   assert(["DRILL_COMPLETE_NON_ACCEPTING", "DRILL_INCOMPLETE", "UNKNOWN_BLOCKED"].includes(drill.status), "drill must have a terminal learning result before closure");
   validateTypedDrillHandoff(typedHandoff);
   assert(typedHandoff.status === drill.final_status, "drill handoff status differs from final drill status");
   validateLifecycleReceipts(drill.lifecycle_receipts, {closed: true});
-  validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "drill universal closeout receipts"});
+  validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "drill universal closeout receipts", receiptResolver});
   validateTimestamp(closedAt, "drill close timestamp");
   const next = clone(drill);
   next.status = "CLOSED_NON_ACCEPTING";
@@ -430,11 +431,11 @@ export function closeWorkflowDrill(drill, {typedHandoff, universalCloseoutReceip
   next.closed_at = closedAt;
   next.updated_at = closedAt;
   const result = withDigest(next);
-  validateWorkflowDrill(result);
+  validateWorkflowDrill(result, {receiptResolver});
   return result;
 }
 
-export function validateWorkflowDrill(drill, {proposal = null} = {}) {
+export function validateWorkflowDrill(drill, {proposal = null, receiptResolver} = {}) {
   assertUniversalDevelopmentMode("APPRENTICESHIP");
   exactKeys(drill, [
     "schema",
@@ -501,7 +502,7 @@ export function validateWorkflowDrill(drill, {proposal = null} = {}) {
     validateTimestamp(record.repaired_at, `drill repair record ${index} timestamp`);
   });
   validateLifecycleReceipts(drill.lifecycle_receipts, {closed: drill.status === "CLOSED_NON_ACCEPTING"});
-  validateUniversalTaskCloseoutReceipts(drill.universal_closeout_receipts, {closed: drill.status === "CLOSED_NON_ACCEPTING", label: "drill universal closeout receipts"});
+  validateUniversalTaskCloseoutReceipts(drill.universal_closeout_receipts, {closed: drill.status === "CLOSED_NON_ACCEPTING", label: "drill universal closeout receipts", receiptResolver});
   if (drill.typed_handoff !== null) validateTypedDrillHandoff(drill.typed_handoff);
   if (drill.status === "CLOSED_NON_ACCEPTING") {
     assert(drill.final_status === "DRILL_COMPLETE_NON_ACCEPTING" || drill.final_status === "DRILL_INCOMPLETE" || drill.final_status === "UNKNOWN_BLOCKED", "closed drill final status is invalid");

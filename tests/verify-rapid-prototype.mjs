@@ -37,14 +37,23 @@ const ROLE_ADMISSION = Object.freeze({
 
 const THREAD_ID = "rapid-slice-builder-thread";
 const HOST_ID = "rapid-slice-builder-host";
+const closeoutEvidenceBindings = new Map();
+function closeoutEvidenceRef(step) {
+  const payload = {kind: "rapid-prearchive-closeout", step};
+  const receipt_sha256 = canonicalDigest(payload);
+  const reference = `digest:${receipt_sha256}`;
+  closeoutEvidenceBindings.set(reference, {payload, receipt_sha256, status: "PROVEN"});
+  return reference;
+}
 const CLOSEOUT_EVIDENCE = Object.freeze({
-  PERSIST_HANDOFF: `digest:${"1".repeat(64)}`,
-  AUDIT_CANDIDATE: `digest:${"2".repeat(64)}`,
-  INTEGRATE_ACCEPTED_WORK: `digest:${"3".repeat(64)}`,
-  CLOSE_STALE_WORKTREE: `digest:${"4".repeat(64)}`,
-  REMOVE_ACTIVE_TASK_SCOPE: `digest:${"5".repeat(64)}`,
-  MARK_CHAT_OUT_OF_SCOPE: `digest:${"6".repeat(64)}`,
+  PERSIST_HANDOFF: closeoutEvidenceRef("PERSIST_HANDOFF"),
+  AUDIT_CANDIDATE: closeoutEvidenceRef("AUDIT_CANDIDATE"),
+  INTEGRATE_ACCEPTED_WORK: closeoutEvidenceRef("INTEGRATE_ACCEPTED_WORK"),
+  CLOSE_STALE_WORKTREE: closeoutEvidenceRef("CLOSE_STALE_WORKTREE"),
+  REMOVE_ACTIVE_TASK_SCOPE: closeoutEvidenceRef("REMOVE_ACTIVE_TASK_SCOPE"),
+  MARK_CHAT_OUT_OF_SCOPE: closeoutEvidenceRef("MARK_CHAT_OUT_OF_SCOPE"),
 });
+const closeoutEvidenceResolver = (reference, {authority}) => ({...closeoutEvidenceBindings.get(reference), authority});
 const REQUEST_ID = "rapid-slice-verification";
 const SCHEDULER_ADMISSION = Object.freeze(compileSchedulerAdmissionReceipt({
   requestId: REQUEST_ID,
@@ -184,6 +193,7 @@ function baseInput(calls = []) {
       activeRoster: makeRoster(),
       host: makeHost(calls),
       universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+      universalCloseoutReceiptResolver: closeoutEvidenceResolver,
     },
   };
 }

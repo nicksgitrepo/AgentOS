@@ -6,18 +6,28 @@ import {
   completeTemporaryWorker,
   compileClosureReceipt,
 } from "../../control/rapid-prototype/delivery-closure.mjs";
+import {canonicalDigest} from "../../control/content-addressing.mjs";
 
 const NOW = "2026-08-04T12:00:00.000Z";
 const THREAD_ID = "thread-1";
 const HOST_ID = "host-1";
+const closeoutEvidenceBindings = new Map();
+function closeoutEvidenceRef(step) {
+  const payload = {kind: "rapid-delivery-closure-test", step};
+  const receipt_sha256 = canonicalDigest(payload);
+  const reference = `digest:${receipt_sha256}`;
+  closeoutEvidenceBindings.set(reference, {payload, receipt_sha256, status: "PROVEN"});
+  return reference;
+}
 const CLOSEOUT_EVIDENCE = Object.freeze({
-  PERSIST_HANDOFF: `digest:${"1".repeat(64)}`,
-  AUDIT_CANDIDATE: `digest:${"2".repeat(64)}`,
-  INTEGRATE_ACCEPTED_WORK: `digest:${"3".repeat(64)}`,
-  CLOSE_STALE_WORKTREE: `digest:${"4".repeat(64)}`,
-  REMOVE_ACTIVE_TASK_SCOPE: `digest:${"5".repeat(64)}`,
-  MARK_CHAT_OUT_OF_SCOPE: `digest:${"6".repeat(64)}`,
+  PERSIST_HANDOFF: closeoutEvidenceRef("PERSIST_HANDOFF"),
+  AUDIT_CANDIDATE: closeoutEvidenceRef("AUDIT_CANDIDATE"),
+  INTEGRATE_ACCEPTED_WORK: closeoutEvidenceRef("INTEGRATE_ACCEPTED_WORK"),
+  CLOSE_STALE_WORKTREE: closeoutEvidenceRef("CLOSE_STALE_WORKTREE"),
+  REMOVE_ACTIVE_TASK_SCOPE: closeoutEvidenceRef("REMOVE_ACTIVE_TASK_SCOPE"),
+  MARK_CHAT_OUT_OF_SCOPE: closeoutEvidenceRef("MARK_CHAT_OUT_OF_SCOPE"),
 });
+const closeoutEvidenceResolver = (reference, {authority}) => ({...closeoutEvidenceBindings.get(reference), authority});
 
 function makeHandoff(overrides = {}) {
   return {
@@ -100,6 +110,7 @@ const result = await completeTemporaryWorker({
   activeRoster: roster,
   host: makeHost(calls),
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(result.status, "CLOSED");
 assert.deepEqual(calls, [
@@ -124,6 +135,7 @@ const unpinFailure = await completeTemporaryWorker({
   activeRoster: makeRoster(),
   host: makeHost(unpinFailureCalls, {pin: {throw: true}}),
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(unpinFailure.status, "HARD_STOP");
 assert.equal(unpinFailure.code, "HOST_FAILURE");
@@ -140,6 +152,7 @@ const preservedFailure = await completeTemporaryWorker({
   activeRoster: makeRoster(),
   host: makeHost(preservedFailureCalls, {archive: {throw: true}}),
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(preservedFailure.status, "HARD_STOP");
 assert.equal(preservedFailure.phase, "ARCHIVE");
@@ -178,6 +191,7 @@ const identityMismatch = await completeTemporaryWorker({
   activeRoster: [{threadId: THREAD_ID, hostId: "different-host", active: true}],
   host: makeHost(identityCalls),
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(identityMismatch.status, "HARD_STOP");
 assert.equal(identityMismatch.code, "IDENTITY_MISMATCH");
@@ -190,6 +204,7 @@ const unavailable = await completeTemporaryWorker({
   activeRoster: makeRoster(),
   host: {},
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(unavailable.status, "UNAVAILABLE");
 assert.equal(unavailable.code, "HOST_CAPABILITY_UNAVAILABLE");
@@ -212,6 +227,7 @@ const badOrder = await completeTemporaryWorker({
     },
   },
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(badOrder.status, "HARD_STOP");
 assert.equal(badOrder.code, "BAD_ORDER");
@@ -236,6 +252,7 @@ const nonzeroActive = await completeTemporaryWorker({
     },
   },
   universalCloseoutEvidence: CLOSEOUT_EVIDENCE,
+  universalCloseoutReceiptResolver: closeoutEvidenceResolver,
 });
 assert.equal(nonzeroActive.status, "HARD_STOP");
 assert.equal(nonzeroActive.code, "ROSTER_REMOVAL_FAILED");

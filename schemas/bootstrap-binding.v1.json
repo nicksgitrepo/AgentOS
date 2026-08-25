@@ -398,7 +398,7 @@
     },
     "campaign_lifecycle_controller": {
       "path": "control/campaign-lifecycle.mjs",
-      "sha256": "fb4f22913ec9a8c9d9e3ed16c1d15409e4c360bc8a9335b5ed13fa1db0360924"
+      "sha256": "b0378028473f3fb332a45bad0057ccef70ba30dc4414b7dd95f8d6c6010ecc73"
     },
     "campaign_lifecycle_contract": {
       "path": "schemas/campaign-lifecycle.v1.json",
@@ -406,7 +406,7 @@
     },
     "campaign_controller_verifier": {
       "path": "tests/verify-campaign-controller.mjs",
-      "sha256": "d242ddf0cc6f718dde836557792c38a6737b5bfa3743dac3f29a1c8c58c82435"
+      "sha256": "39a93519adf46e591df1bbb7f607c67fcd48c312d73b37da08af6231e319afa3"
     },
     "continuous_audit_sentinel_controller": {
       "path": "control/continuous-audit-sentinel.mjs",
@@ -434,7 +434,7 @@
     },
     "campaign_cascade": {
       "path": "control/campaign-cascade.mjs",
-      "sha256": "12e93099bee6dae043c6d0b2158e914aeca6c97379f467b55bfd6bbc174901b0"
+      "sha256": "3c55de7f9f36c0983289eb4baf1b0376cd9e63a782563d58c4e7f9ea5816156b"
     },
     "campaign_cascade_contract": {
       "path": "schemas/campaign-cascade.v1.json",
@@ -442,11 +442,11 @@
     },
     "campaign_cascade_verifier": {
       "path": "tests/verify-campaign-cascade.mjs",
-      "sha256": "80a0ca3d569a3bc10a39fd6a7cd55fb67e2e83042a2a27f2d67d71ec60aaf1d9"
+      "sha256": "d25aa6ef9a71ba744a912b371245cba3f6de160d48516e9910a1f70897c49236"
     },
     "apprenticeship_drill_controller": {
       "path": "control/apprenticeship-drill.mjs",
-      "sha256": "c47c3e88a89fa204d33112471cbc9ce39fb3d51ac8b7dc4fdaa107580271661a"
+      "sha256": "c9164d06f42ca4cb1587e3f31b4446d046ed2ac7deb2bdc42e432c70be140b5f"
     },
     "workflow_auditor_drill_contract": {
       "path": "schemas/workflow-auditor-drill.v1.json",
@@ -454,7 +454,7 @@
     },
     "apprenticeship_contract_verifier": {
       "path": "tests/verify-apprenticeship-contracts.mjs",
-      "sha256": "3c31dc3bf018fa23cef10ef789e053106a73836f9a7950789dfa33515ae52f1f"
+      "sha256": "e0f7824f615b3695a6ff55c83d7dbf30e7e5d0a235aab042f39842e7a887f3fb"
     },
     "apprenticeship_role_packet_controller": {
       "path": "control/apprenticeship-role-packet.mjs",
@@ -466,7 +466,7 @@
     },
     "apprenticeship_native_runner_controller": {
       "path": "control/apprenticeship-native-runner.mjs",
-      "sha256": "70f7f8794ecaf47f6249d2203cdb255181025775e0037521ba22773cba0481b2"
+      "sha256": "1aaa7a0cc3134742479abfdff043981957c7d010f66084328f099601e6b5a6f0"
     },
     "apprenticeship_native_runner_contract": {
       "path": "schemas/apprenticeship-native-run.v1.json",
@@ -1118,7 +1118,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "f95d2d459b5ed974b893a6dc22781f539c9957133de6ccee9bbabd6f8ee51421"
+      "sha256": "aa9ecc8f051891e35a1e1c26e833da395859e2fc02e8a2c00b24f021498494c4"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1130,15 +1130,27 @@
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "33e11d2fc4d07804e53e14abf78f0e0a27326ffb4e476666ed259474d3d4e7e6"
+      "sha256": "0ac67bcb5f4d571da07bb459b78a86d616b2460582fbdb054f5e955064b967a1"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "1d5853685445115125ba574aedb19a0cfcde4c4d08a15cb0e8c9af3e57b44997"
+      "sha256": "60206e7b0f584a97b94ebf79ccb36066992ef1db7dd7676c2627b0a4dfb4cc70"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
-      "sha256": "9b40453dc215d5d559d45e8af08eae7743bde9da2d60109d8f776a3d537b8bec"
+      "sha256": "f65d7525167a06921d9a63a52ddf77e8881eabad304a07604cbcf3095868f50d"
+    },
+    "controller_spawner_authority_gate_controller": {
+      "path": "control/controller-spawner-authority-gate.mjs",
+      "sha256": "721e5c2a7683277e65ada5464e0a7ce8732833cd7a922637bcc0fccd0762c1db"
+    },
+    "controller_spawner_authority_gate_contract": {
+      "path": "schemas/controller-spawner-authority-gate.v1.json",
+      "sha256": "949496f51810a5c3476c5cd2abeccdfffb4de68c47caf062bf866bdc83b8b79a"
+    },
+    "controller_spawner_authority_gate_verifier": {
+      "path": "tests/verify-controller-spawner-authority-gate.mjs",
+      "sha256": "70fdb11e2ba3dfcd6e7dc9c00e034e815261bf2e1e04f1d627e21aa4819ce3f2"
     },
     "persistent_intent_runtime_primitives_controller": {
       "path": "control/persistent-intent-runtime-primitives.mjs",
@@ -1442,7 +1454,7 @@
     },
     "governance_universal_controller": {
       "path": "control/governance-universal.mjs",
-      "sha256": "df071a04f92fbafa85d7b8c2630370766fa8484a90317f5b1a6e4467d8b586f7"
+      "sha256": "9a79cd3384bb67c50a6838a45bda7c8a0a4a84c1db19aa41e49bc47f3f89acd0"
     },
     "governance_library_contract": {
       "path": "schemas/governance-library.v1.json",
@@ -1574,15 +1586,15 @@
     },
     "rapid_prototype_controller": {
       "path": "control/rapid-prototype/index.mjs",
-      "sha256": "6733fdb151c9131b2a4eff8baafe91231ada4310b7e3385e13f30aa9436e8c22"
+      "sha256": "65cc17869351a25bd264bd6745e78516bc0640f87b03602779f6bee6fc4b7369"
     },
     "rapid_delivery_closure_controller": {
       "path": "control/rapid-prototype/delivery-closure.mjs",
-      "sha256": "76be75284e0dc2008a0a9a373fe02a894a1dfd8efba60e3dc971c6d9533d64aa"
+      "sha256": "0bcbe4cc06782528da18dc883114cb63ce8f8b481106cef80d72936ab81dab2a"
     },
     "rapid_delivery_closure_verifier": {
       "path": "tests/rapid-prototype/delivery-closure.mjs",
-      "sha256": "b5fef7649874914a56fbf0fb2145624e0830140a48a9b6eb366e5a95c30823f6"
+      "sha256": "1fa8b5bc10d5a071c9389f9d0d6398415e1295bbed871cc0529432adcf518932"
     },
     "rapid_evidence_identity_controller": {
       "path": "control/rapid-prototype/evidence-identity.mjs",
@@ -1594,7 +1606,7 @@
     },
     "rapid_prototype_verifier": {
       "path": "tests/verify-rapid-prototype.mjs",
-      "sha256": "68e04c41e1146b5c9b324f21ffe2f95d5203f5a0fb75d4dd7587ca1e29f681fb"
+      "sha256": "a820c561a7519e9435e83c2ed01b4c983f9b676de27b1cffe3df28e3c9510cdc"
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
@@ -1730,11 +1742,11 @@
     },
     "audited_canonical_campaign_orchestration_adapter": {
       "path": "control/canonical-campaign-orchestration-adapter.mjs",
-      "sha256": "de4bbfe8f7454e19d77627eb04663b5c0a163db526a7e9b4e82c78022498d400"
+      "sha256": "ed401364c086f903085ac594068d7e37a7d7883e94e47b181c45eb77fd30ea3e"
     },
     "audited_canonical_campaign_orchestration_support": {
       "path": "control/canonical-campaign-orchestration-support.mjs",
-      "sha256": "dbfef6ecd4b32f289f29f9e0b2b60fe9b29c31cd12cfea6cf791cf0a3614d074"
+      "sha256": "237ce6a13cdb4ef87fcd1438a52311253b2d9ccb5392c7cdbc3781a225cc30cc"
     },
     "hybrid_scheduler_controller": {
       "path": "control/hybrid-scheduler.mjs",
@@ -1934,7 +1946,7 @@
     },
     "apprenticeship_reproduction_controller": {
       "path": "control/apprenticeship-reproduction.mjs",
-      "sha256": "2f917ea40706a5181bbd35dd929667f152ab0acc2e08f915d1df20d326d1d229"
+      "sha256": "7bcbf138e7b92f2e4a6eaf6acec532f4194613c58a06a7f25d012924893edb33"
     },
     "native_host_attachment_controller": {
       "path": "control/native-host-attachment.mjs",

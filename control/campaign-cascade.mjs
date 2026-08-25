@@ -1224,8 +1224,8 @@ export function validateRollingAudit(entry) {
   return entry;
 }
 
-export function attachRollingAudit(state, entry) {
-  validateCascadeState(state);
+export function attachRollingAudit(state, entry, {receiptResolver} = {}) {
+  validateCascadeState(state, {receiptResolver});
   validateRollingAudit(entry);
   assert(state.checkpoint_ledger.entries.some((candidate) => candidate.candidate_id === entry.candidate_id
     && candidate.candidate_commit === entry.candidate_commit && candidate.candidate_tree === entry.candidate_tree),
@@ -1238,7 +1238,7 @@ export function attachRollingAudit(state, entry) {
   const body = structuredClone(next);
   delete body.cascade_sha256;
   next.cascade_sha256 = cascadeDigest(body);
-  validateCascadeState(next);
+  validateCascadeState(next, {receiptResolver});
   return next;
 }
 
@@ -1321,7 +1321,7 @@ function validateCascadeTransitionJournal(journal, currentStage) {
   assert(journal.at(-1).to_stage === currentStage, "cascade transition journal does not end at the current stage");
 }
 
-function sealCascadeState(state) {
+function sealCascadeState(state, {receiptResolver} = {}) {
   const next = structuredClone(state);
   if (!Array.isArray(next.transition_journal) || next.transition_journal.length === 0) {
     assert(next.stage === "FIRST_PASS_BUILDING", "a new cascade state must begin at FIRST_PASS_BUILDING");
@@ -1338,7 +1338,7 @@ function sealCascadeState(state) {
   }
   delete next.cascade_sha256;
   next.cascade_sha256 = cascadeDigest(next);
-  return validateCascadeState(next);
+  return validateCascadeState(next, {receiptResolver});
 }
 
 export function createCascadeState(input) {
@@ -1371,7 +1371,7 @@ export function createCascadeState(input) {
     universal_closeout_receipts: structuredClone(input.universal_closeout_receipts ?? []),
     transition_journal: [],
     cascade_sha256: "",
-  });
+  }, {receiptResolver: input.receiptResolver});
 }
 
 export function validateCascadeState(state, options = {}) {
@@ -1392,6 +1392,7 @@ export function validateCascadeState(state, options = {}) {
   validateUniversalTaskCloseoutForMode("CASCADE", state.universal_closeout_receipts, {
     closed: state.stage === "READY_FOR_ACCEPTANCE",
     label: "campaign cascade universal closeout receipts",
+    receiptResolver: options.receiptResolver,
   });
   assert(Array.isArray(state.rolling_audits), "rolling audits are required");
   let previousRollingCandidate = null;
@@ -1478,17 +1479,18 @@ export function validateCascadeState(state, options = {}) {
   return state;
 }
 
-export function compileCascadeUniversalTaskCloseoutReceipts({receiptRefs, observedAt, label = "campaign cascade universal closeout receipts"} = {}) {
+export function compileCascadeUniversalTaskCloseoutReceipts({receiptRefs, observedAt, label = "campaign cascade universal closeout receipts", receiptResolver} = {}) {
   return compileUniversalTaskCloseoutReceipts({
     mode: "CASCADE",
     receiptRefs,
     observedAt,
     label,
+    receiptResolver,
   });
 }
 
-export function validateAcceptedLiveCascadeBinding({cascade, acceptedLive, productAcceptance, productAcceptanceProof}) {
-  validateCascadeState(cascade, {productAcceptance, productAcceptanceProof});
+export function validateAcceptedLiveCascadeBinding({cascade, acceptedLive, productAcceptance, productAcceptanceProof, receiptResolver}) {
+  validateCascadeState(cascade, {productAcceptance, productAcceptanceProof, receiptResolver});
   exactKeys(acceptedLive, ["status", "final_candidate_commit", "final_candidate_tree", "product_acceptance_sha256", "deployed_identity", "rollback_identity", "independent_audit_identity", "deployment_receipt_sha256", "independent_audit_receipt_sha256", "closure_receipt_sha256", "deployment_receipt", "independent_audit_receipt", "closure_receipt", "cascade_state_sha256"], "accepted-live cascade binding");
   assert(acceptedLive.status === "VERIFIED", "accepted-live cascade binding requires VERIFIED status");
   requireSha(acceptedLive.product_acceptance_sha256, "accepted-live Product acceptance");
@@ -1515,9 +1517,9 @@ export function validateAcceptedLiveCascadeBinding({cascade, acceptedLive, produ
   return true;
 }
 
-export function applyCascadeTransition(previous, next, event = {}) {
-  validateCascadeState(previous);
-  validateCascadeState(next, event.productAcceptance === undefined ? {} : {productAcceptance: event.productAcceptance, productAcceptanceProof: event.productAcceptanceProof});
+export function applyCascadeTransition(previous, next, event = {}, {receiptResolver} = {}) {
+  validateCascadeState(previous, {receiptResolver});
+  validateCascadeState(next, event.productAcceptance === undefined ? {receiptResolver} : {productAcceptance: event.productAcceptance, productAcceptanceProof: event.productAcceptanceProof, receiptResolver});
   assert(previous.campaign_id === next.campaign_id && previous.campaign_version === next.campaign_version && previous.logical_lineage_id === next.logical_lineage_id, "cascade transition changed campaign lineage");
   assert(previous.policy_epoch === next.policy_epoch && previous.policy_state_sha256 === next.policy_state_sha256 && previous.acceptance_contract_sha256 === next.acceptance_contract_sha256, "cascade transition changed policy or acceptance without a new admitted campaign");
   assert(next.next_campaign_ledger.length >= previous.next_campaign_ledger.length, "cascade transition removed next-campaign ledger entries");
@@ -1557,11 +1559,11 @@ export function applyCascadeTransition(previous, next, event = {}) {
   requireString(eventBody.event_type, "cascade transition event type");
   requireUtc(eventBody.at_utc, "cascade transition event time");
   next.transition_journal.push({...eventBody, event_sha256: cascadeDigest({...eventBody, event_sha256: null})});
-  return sealCascadeState(next);
+  return sealCascadeState(next, {receiptResolver});
 }
 
-export function clearCascadeHold(state, holdId, resolution) {
-  validateCascadeState(state);
+export function clearCascadeHold(state, holdId, resolution, {receiptResolver} = {}) {
+  validateCascadeState(state, {receiptResolver});
   requireString(holdId, "cascade hold ID");
   exactKeys(resolution, ["condition_sha256", "affected_outcome_ids", "evidence_sha256", "resolved_at_utc"], "cascade hold resolution");
   requireSha(resolution.condition_sha256, "cascade hold resolution condition");
@@ -1585,11 +1587,11 @@ export function clearCascadeHold(state, holdId, resolution) {
       condition_sha256: resolution.condition_sha256,
       resolution_evidence_sha256: resolution.evidence_sha256,
     },
-  });
+  }, {receiptResolver});
 }
 
-export function recordNextCampaignLedgerItem(state, {entryId, summary, references, createdAtUtc}) {
-  validateCascadeState(state);
+export function recordNextCampaignLedgerItem(state, {entryId, summary, references, createdAtUtc}, {receiptResolver} = {}) {
+  validateCascadeState(state, {receiptResolver});
   requireString(entryId, "next-campaign ledger entry ID");
   requireString(summary, "next-campaign ledger summary");
   sortedUniqueStrings(references, "next-campaign ledger references");
@@ -1610,7 +1612,7 @@ export function recordNextCampaignLedgerItem(state, {entryId, summary, reference
   const body = structuredClone(next);
   delete body.cascade_sha256;
   next.cascade_sha256 = cascadeDigest(body);
-  return validateCascadeState(next);
+  return validateCascadeState(next, {receiptResolver});
 }
 
 export function recordCascadeTelemetry(telemetry, record) {

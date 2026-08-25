@@ -9,6 +9,10 @@ import {
   CONTROLLER_SPAWNER_HOSTILE_FIXTURE_REFS,
   compileControllerSpawnerAuthorityGate,
   validateControllerSpawnerAuthorityGate,
+  CONTROLLER_STORAGE_DECISION_SCHEMA,
+  CONTROLLER_STORAGE_HOSTILE_FIXTURE_REFS,
+  compileControllerDailyStorageReceipt,
+  validateControllerDailyStorageReceipt,
 } from "../control/controller-spawner-authority-gate.mjs";
 
 const digest = (value) => canonicalDigest({value});
@@ -95,3 +99,33 @@ assert.equal(schema.properties.spawner_sole_authority.const, true);
 assert.deepEqual(Object.keys(schema.$defs.mutations.properties).sort(compareUtf8), [...CONTROLLER_SPAWNER_FORBIDDEN_MUTATIONS].sort(compareUtf8));
 
 console.log("PASS Controller/Spawner authority gate: custody-only Controller allowlist, Spawner sole authority, typed readback/successor requirement, forbidden ordinary-agent/roster mutations, and hostile coverage");
+
+const storageReceipt = compileControllerDailyStorageReceipt({
+  receiptId: "STORAGE.CONTROLLER.AUTHORITY.GATE",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+});
+validateControllerDailyStorageReceipt(storageReceipt);
+assert.equal(storageReceipt.schema, CONTROLLER_STORAGE_DECISION_SCHEMA);
+assert.equal(storageReceipt.monitor_role, "CONTROLLER");
+assert.equal(storageReceipt.current_issue.work_allowed, true);
+assert.equal(storageReceipt.next_issue.allowed, false);
+assert.equal(storageReceipt.cleanup.owner_alert, false);
+assert.deepEqual(storageReceipt.hostile_fixture_refs, CONTROLLER_STORAGE_HOSTILE_FIXTURE_REFS);
+assert.equal(CONTROLLER_STORAGE_HOSTILE_FIXTURE_REFS.length, 10);
+
+const hardStopReceipt = compileControllerDailyStorageReceipt({
+  receiptId: "STORAGE.CONTROLLER.AUTHORITY.HARD_FLOOR",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 25,
+});
+assert.equal(hardStopReceipt.next_issue.admission, "DENY_HARD_OPERATING_FLOOR");
+assert.equal(hardStopReceipt.current_issue.storage_heavy_work_allowed, false);
+assert.throws(() => compileControllerDailyStorageReceipt({
+  receiptId: "STORAGE.CONTROLLER.AUTHORITY.POLL",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+  actorRole: "AGENT_SPAWNER",
+}), /Only the Controller|storage polling/u);
+
+console.log("PASS Controller-owned daily storage decision aliases: 10 hostile refs, ordinary-agent poll denial, 79 GiB continuation, and 25 GiB hard-floor routing");

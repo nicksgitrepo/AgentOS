@@ -455,6 +455,7 @@ export async function runCanonicalCampaign({
       acceptanceDigest,
       closedAtUtc: campaignState.closed_at_utc,
     });
+    const universalCloseoutReceiptResolver = universalCloseoutReceipts.__receiptResolver;
     const closure = buildClosedClosure({
       admission,
       campaignState,
@@ -464,6 +465,7 @@ export async function runCanonicalCampaign({
       delivery,
       closedAtUtc: campaignState.closed_at_utc,
       universalCloseoutReceipts,
+      receiptResolver: universalCloseoutReceiptResolver,
     });
     return compileResult({
       status: "CLOSED",
@@ -480,6 +482,7 @@ export async function runCanonicalCampaign({
       acceptance: {status: "ACCEPTED", accepted_worker_count: campaignState.workers.length, final_evidence_sha256: acceptanceDigest},
       delivery,
       closure,
+      receiptResolver: universalCloseoutReceiptResolver,
     });
   } catch (error) {
     const cleanupErrors = await cleanupNativeSessions();

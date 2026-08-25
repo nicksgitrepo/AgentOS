@@ -26,3 +26,32 @@ The executable contract is in
 `control/agent-spawner-lifecycle.mjs`; the machine-readable contract is
 `schemas/agent-spawner-lifecycle.v1.json`. The focused hostile coverage is
 `tests/verify-agent-spawner-lifecycle.mjs`.
+
+## Controller-owned storage decision tree
+
+Storage is a Controller observation, not an ordinary-agent polling loop.  The
+Controller emits at most one content-addressed daily receipt per 24-hour
+window (`agentos.agent_spawner_storage_governance.v1`); ordinary agents must
+not poll the host or use a disk threshold as a routine test gate.
+
+The cleanup target is 80–100 GiB free space and is not a work-stopping floor.
+When a daily reading is below 80 GiB, the Controller may finish and verify the
+current issue, freeze the exact candidate, complete its authorized handoff and
+Runtime delivery, deny admission of the next issue while it performs
+custody-safe cleanup, and resume next-issue admission only after that
+transition closes.  A 79 GiB ordinary compile or test therefore continues.
+
+At or below 50 GiB the receipt adds a subtle owner warning.  At or below 25
+GiB the Controller fails closed for new or storage-heavy work, preserves and
+freezes active or unmerged custody with only minimum required writes, alerts
+the owner, and waits for recovery authority.  If cleanup cannot reach 80 GiB,
+the owner is alerted and ordinary work may resume once the cleanup transition
+has closed and free space is above 25 GiB.  Active or ambiguous custody is
+never deleted or cleaned; only proven-safe disposable data, stale caches,
+redundant build outputs, and clean released worktrees are eligible.
+
+The decision receipt carries all ten hostile fixture identifiers, its policy
+snapshot, the current-issue transition, next-issue admission decision,
+cleanup result, custody-preservation flags, and a parent receipt digest.  A
+duplicate or stale daily check, historical receipt, ordinary-agent poll, or
+next-issue request during cleanup is rejected by the validator.

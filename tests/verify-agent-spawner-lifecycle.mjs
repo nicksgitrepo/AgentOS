@@ -8,7 +8,13 @@ import {
   AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256,
   runAgentSpawnerCompilerTick,
   validateAgentSpawnerLifecycle,
+  AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA,
+  AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS,
+  AGENT_SPAWNER_STORAGE_POLICY,
+  compileControllerStorageDecision,
+  validateControllerStorageDecision,
 } from "../control/agent-spawner-lifecycle.mjs";
+import fs from "node:fs";
 
 const HASH = (value) => canonicalDigest({value});
 const common = {
@@ -247,3 +253,105 @@ assert.throws(
 );
 
 console.log("PASS Agent Spawner lifecycle: persistent PREPARED/QA_READY/COMPILER_ACTIVE/ADMITTED/ACTIVE/STALLED/RETIRED state, compiler-only safe mode, separate wave activation, and hostile gate checks");
+
+const storageAt = (freeGib, options = {}) => compileControllerStorageDecision({
+  receiptId: `STORAGE.CHECK.${String(freeGib).replaceAll(".", "_")}`,
+  observedAtUtc: options.observedAtUtc ?? "2026-08-25T00:00:00.000Z",
+  freeGib,
+  ...options,
+});
+
+const ordinary79 = storageAt(79);
+assert.equal(ordinary79.schema, AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA);
+assert.equal(ordinary79.threshold_class, "BELOW_CLEANUP_TARGET");
+assert.equal(ordinary79.current_issue.work_allowed, true, "79 GiB ordinary compile/test must not stall");
+assert.equal(ordinary79.current_issue.storage_heavy_work_allowed, true);
+assert.equal(ordinary79.current_issue.finish_verify_freeze_handoff_required, true);
+assert.equal(ordinary79.next_issue.allowed, false);
+assert.equal(ordinary79.next_issue.admission, "DENY_DURING_CLEANUP");
+assert.equal(ordinary79.cleanup.action, "CONTROLLER_RUNS_CUSTODY_SAFE_CLEANUP_TOWARD_80_TO_100_GIB");
+
+const withinTarget = storageAt(80);
+assert.equal(withinTarget.threshold_class, "CLEANUP_TARGET");
+assert.equal(withinTarget.next_issue.allowed, true);
+assert.equal(withinTarget.cleanup.required, false);
+
+const warning50 = storageAt(50);
+assert.equal(warning50.threshold_class, "OWNER_WARNING");
+assert.equal(warning50.cleanup.owner_alert, true);
+assert.equal(warning50.current_issue.work_allowed, true, "50 GiB warning must not be an early hard stop");
+assert.equal(warning50.current_issue.storage_heavy_work_allowed, true);
+
+const hard25 = storageAt(25);
+assert.equal(hard25.threshold_class, "HARD_FLOOR");
+assert.equal(hard25.current_issue.work_allowed, false);
+assert.equal(hard25.current_issue.storage_heavy_work_allowed, false);
+assert.equal(hard25.current_issue.finish_verify_freeze_handoff_required, true);
+assert.equal(hard25.next_issue.admission, "DENY_HARD_OPERATING_FLOOR");
+assert.equal(hard25.cleanup.action, "ALERT_OWNER_AND_WAIT_FOR_RECOVERY_AUTHORITY");
+
+const cleanupFailed = storageAt(40, {currentIssueCustody: "FROZEN", cleanupAttempted: true, cleanupReachedTarget: false, cleanupFailed: true});
+assert.equal(cleanupFailed.cleanup.owner_alert, true);
+assert.equal(cleanupFailed.cleanup.resume_above_gib, 25);
+assert.equal(cleanupFailed.next_issue.allowed, false);
+assert.throws(() => compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.ACTIVE_CUSTODY",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+  currentIssueCustody: "ACTIVE",
+  cleanupAttempted: true,
+}), /Ambiguous or active custody cleanup/u);
+
+assert.throws(() => compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.ORDINARY_AGENT",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+  actorRole: "AGENT",
+}), /Only the Controller|repeated storage polling/u);
+assert.throws(() => compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.POLL",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+  storagePoll: true,
+}), /repeated storage polling/u);
+assert.throws(() => compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.AMBIGUOUS",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+  currentIssueCustody: "AMBIGUOUS",
+  cleanupAttempted: true,
+}), /Ambiguous or active custody cleanup/u);
+assert.throws(() => compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.NEXT",
+  observedAtUtc: "2026-08-25T00:00:00.000Z",
+  freeGib: 79,
+  nextIssueRequested: true,
+}), /Next issue admission/u);
+
+const nextDaily = compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.NEXT_DAY",
+  observedAtUtc: "2026-08-26T00:00:00.000Z",
+  freeGib: 79,
+  previousReceiptSha256: ordinary79.receipt_sha256,
+  previousReceipt: ordinary79,
+});
+validateControllerStorageDecision(nextDaily, {previousReceipt: ordinary79});
+assert.throws(() => compileControllerStorageDecision({
+  receiptId: "STORAGE.CHECK.DUPLICATE",
+  observedAtUtc: ordinary79.observed_at_utc,
+  freeGib: 79,
+  previousReceipt: ordinary79,
+}), /duplicated or too early/u);
+const historical = structuredClone(ordinary79);
+historical.free_gib = 100;
+historical.threshold_class = "CLEANUP_TARGET";
+historical.receipt_sha256 = canonicalDigest({...historical, receipt_sha256: null});
+assert.throws(() => validateControllerStorageDecision(historical, {previousReceipt: ordinary79}), /parent is stale|too early/u);
+
+const lifecycleSchema = JSON.parse(fs.readFileSync(new URL("../schemas/agent-spawner-lifecycle.v1.json", import.meta.url), "utf8"));
+assert.equal(lifecycleSchema.$defs.storage_decision.properties.policy.properties.cleanup_target_free_gib.properties.minimum.const, 80);
+assert.equal(lifecycleSchema.$defs.storage_decision.properties.policy.properties.hard_operating_floor_at_or_below_free_gib.const, 25);
+assert.deepEqual(lifecycleSchema.$defs.storage_decision.properties.hostile_fixture_refs.const, AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS);
+assert.deepEqual(AGENT_SPAWNER_STORAGE_POLICY.cleanup_target_free_gib, {minimum: 80, maximum: 100, work_stopping_floor: false});
+
+console.log(`PASS Controller storage decision tree: ${AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS.length} hostile cases, 79 GiB ordinary work, <=50 GiB warning, <=25 GiB hard floor, daily exactly-once and custody-safe cleanup`);

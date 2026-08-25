@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import crypto from "node:crypto";
+import {canonicalDigest} from "./content-addressing.mjs";
 import {findPrivateContextLeaks} from "./private-context-detector.mjs";
 
 export const GOVERNANCE_ARCHITECTURE_PLAN_SCHEMA = "agentos.governance_architecture_plan.v1";
@@ -88,18 +90,27 @@ function closeoutReceiptDigest(reference) {
   return match?.[1] ?? match?.[2] ?? null;
 }
 
-function resolveCloseoutReference(reference, {receiptResolver = null, label} = {}) {
+function resolveCloseoutReference(reference, {receiptResolver, expectedStep, expectedAuthority, label} = {}) {
   assert(CLOSEOUT_RECEIPT_REF.test(reference), `${label} receipt reference is not content-addressed`);
-  if (receiptResolver === null) return;
   assert(typeof receiptResolver === "function", `${label} receipt resolver is invalid`);
-  const resolved = receiptResolver(reference);
+  const resolved = receiptResolver(reference, {step: expectedStep, authority: expectedAuthority});
   assert(isRecord(resolved), `${label} receipt reference did not resolve to a record`);
-  assert(resolved.receipt_sha256 === closeoutReceiptDigest(reference), `${label} receipt digest does not match its resolved bytes`);
+  const digest = closeoutReceiptDigest(reference);
+  assert(resolved.receipt_sha256 === digest, `${label} receipt digest does not match its resolved bytes`);
+  let recomputed;
+  if (Object.prototype.hasOwnProperty.call(resolved, "payload")) {
+    recomputed = canonicalDigest(resolved.payload);
+  } else if (typeof resolved.bytes === "string" || resolved.bytes instanceof Uint8Array) {
+    recomputed = crypto.createHash("sha256").update(resolved.bytes).digest("hex");
+  } else {
+    assert(false, `${label} resolved receipt is missing immutable bytes or payload`);
+  }
+  assert(recomputed === digest, `${label} resolved receipt bytes do not match its reference digest`);
   assert(resolved.status === "PROVEN", `${label} resolved receipt is not proven`);
-  assert(typeof resolved.authority === "string" && resolved.authority.length > 0, `${label} resolved receipt authority is missing`);
+  assert(resolved.authority === expectedAuthority, `${label} resolved receipt authority is invalid for ${expectedStep}`);
 }
 
-export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false, label = "universal task closeout receipts", receiptResolver = null} = {}) {
+export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false, label = "universal task closeout receipts", receiptResolver} = {}) {
   assert(Array.isArray(receipts), `${label} must be an array`); assert(receipts.length <= UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.length, `${label} contains too many receipts`);
   const seen = new Set();
   receipts.forEach((receipt, index) => {
@@ -107,7 +118,12 @@ export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false,
     assert(Number.isSafeInteger(receipt.sequence) && receipt.sequence === index + 1, `${label} ${index} sequence is invalid`);
     const expectedStep = UNIVERSAL_TASK_CLOSEOUT_SEQUENCE[index]; assert(receipt.step === expectedStep, `${label} ${index} must prove ${expectedStep}`);
     assert(typeof receipt.receipt_ref === "string", `${label} ${index} receipt reference is invalid`);
-    resolveCloseoutReference(receipt.receipt_ref, {receiptResolver, label: `${label} ${index}`});
+    resolveCloseoutReference(receipt.receipt_ref, {
+      receiptResolver,
+      expectedStep: receipt.step,
+      expectedAuthority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[receipt.step],
+      label: `${label} ${index}`,
+    });
     assert(receipt.authority === UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[receipt.step], `${label} ${index} authority is invalid for ${receipt.step}`);
     assert(receipt.status === "PROVEN", `${label} ${index} is not proven`);
     assert(typeof receipt.observed_at === "string" && CLOSEOUT_TIMESTAMP.test(receipt.observed_at) && Number.isFinite(Date.parse(receipt.observed_at)), `${label} ${index} timestamp is invalid`);
@@ -117,7 +133,7 @@ export function validateUniversalTaskCloseoutReceipts(receipts, {closed = false,
   return receipts;
 }
 
-export function compileUniversalTaskCloseoutReceipts({mode = "ALL_DEVELOPMENT_MODES", receiptRefs, observedAt, label = "universal task closeout receipts", receiptResolver = null} = {}) {
+export function compileUniversalTaskCloseoutReceipts({mode = "ALL_DEVELOPMENT_MODES", receiptRefs, observedAt, label = "universal task closeout receipts", receiptResolver} = {}) {
   assertUniversalTaskCloseoutMode(mode); exactKeys(receiptRefs, UNIVERSAL_TASK_CLOSEOUT_SEQUENCE, `${label} references`);
   assert(typeof observedAt === "string" && CLOSEOUT_TIMESTAMP.test(observedAt) && Number.isFinite(Date.parse(observedAt)), `${label} observation time is invalid`);
   return validateUniversalTaskCloseoutReceipts(UNIVERSAL_TASK_CLOSEOUT_SEQUENCE.map((step, index) => ({sequence: index + 1, step, receipt_ref: receiptRefs[step], authority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES[step], status: "PROVEN", observed_at: observedAt})), {closed: true, label, receiptResolver});
@@ -131,4 +147,4 @@ export function assertUniversalDevelopmentMode(mode, contexts = UNIVERSAL_RESPON
   assert(UNIVERSAL_DEVELOPMENT_MODES.includes(mode), `universal development mode is invalid: ${mode}`); assertUniversalTaskCloseoutMode(mode); assertUniversalResponseGatingMode(mode, contexts);
   return {mode, closeout: universalTaskCloseoutPolicy(mode), response_handoff_gating: {...structuredClone(UNIVERSAL_RESPONSE_GATING_POLICY), applies_to_modes: [...UNIVERSAL_RESPONSE_GATING_POLICY.applies_to_modes], applies_to: [...contexts]}};
 }
-export function validateUniversalTaskCloseoutForMode(mode, receipts, {closed = false, label = null} = {}) { assertUniversalTaskCloseoutMode(mode); return validateUniversalTaskCloseoutReceipts(receipts, {closed, label: label ?? `${mode} universal task closeout receipts`}); }
+export function validateUniversalTaskCloseoutForMode(mode, receipts, {closed = false, label = null, receiptResolver} = {}) { assertUniversalTaskCloseoutMode(mode); return validateUniversalTaskCloseoutReceipts(receipts, {closed, label: label ?? `${mode} universal task closeout receipts`, receiptResolver}); }

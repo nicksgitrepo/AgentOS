@@ -831,6 +831,7 @@ const coreReady = bootstrap.status === "READY"
           ?? input.universalCloseoutEvidence
           ?? input.universal_closeout_evidence
           ?? null,
+        universalCloseoutReceiptResolver: closureInput.universalCloseoutReceiptResolver ?? closureInput.universal_closeout_receipt_resolver ?? input.universalCloseoutReceiptResolver ?? input.universal_closeout_receipt_resolver,
       });
     }
   }

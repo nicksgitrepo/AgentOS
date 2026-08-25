@@ -294,7 +294,7 @@ function validateNativeRunReceipt(receipt, index) {
   assertPortableRecord(receipt, `apprenticeship native run receipt ${index}`);
 }
 
-function compileNativeRun({runId, packet, provenance, hostAttachment, receipts, attestations, universalCloseoutReceipts, observation, resultRef, status, startedAt, completedAt}) {
+function compileNativeRun({runId, packet, provenance, hostAttachment, receipts, attestations, universalCloseoutReceipts, observation, resultRef, status, startedAt, completedAt, receiptResolver}) {
   const run = withDigest({
     schema: APPRENTICESHIP_NATIVE_RUN_SCHEMA,
     version: APPRENTICESHIP_VERSION,
@@ -316,11 +316,12 @@ function compileNativeRun({runId, packet, provenance, hostAttachment, receipts, 
     completed_at: completedAt,
     digest: null,
   });
-  validateApprenticeshipNativeRun(run, {packet, observation});
+  if (typeof receiptResolver === "function") Object.defineProperty(run, "__receiptResolver", {value: receiptResolver, enumerable: false});
+  validateApprenticeshipNativeRun(run, {packet, observation, receiptResolver});
   return run;
 }
 
-export function validateApprenticeshipNativeRun(run, {packet = null, observation = null} = {}) {
+export function validateApprenticeshipNativeRun(run, {packet = null, observation = null, receiptResolver = null} = {}) {
   exactKeys(run, [
     "schema",
     "version",
@@ -353,7 +354,11 @@ export function validateApprenticeshipNativeRun(run, {packet = null, observation
   run.lifecycle_receipts.forEach(validateNativeRunReceipt);
   const operations = run.lifecycle_receipts.map((receipt) => receipt.operation);
   ["create_thread", "pin", "send", "wait", "read", "unpin", "archive", "post_close_read", "active_list_absent"].forEach((operation) => assert(operations.includes(operation), `apprenticeship native run is missing ${operation} receipt`));
-  validateUniversalTaskCloseoutReceipts(run.universal_closeout_receipts, {closed: true, label: "apprenticeship native universal closeout receipts"});
+  validateUniversalTaskCloseoutReceipts(run.universal_closeout_receipts, {
+    closed: true,
+    label: "apprenticeship native universal closeout receipts",
+    receiptResolver: receiptResolver ?? run.__receiptResolver,
+  });
   validateEvidenceRefs(run.evidence_attestation_refs, "apprenticeship native evidence attestations");
   requireSha256(run.observation_digest, "apprenticeship native observation digest");
   requireSafeReference(run.result_ref, "apprenticeship native result reference");
@@ -395,47 +400,80 @@ async function controllerCloseoutReceipt(closeout, callbackName, step, context, 
     status: "PROVEN",
     observed_at: observed,
   };
+  const binding = {};
+  if (Object.prototype.hasOwnProperty.call(result, "payload")) binding.payload = structuredClone(result.payload);
+  if (Object.prototype.hasOwnProperty.call(result, "bytes")) binding.bytes = typeof result.bytes === "string" ? result.bytes : new Uint8Array(result.bytes);
+  if (result.receipt_sha256 !== undefined) binding.receipt_sha256 = result.receipt_sha256;
+  else {
+    const match = /^(?:digest|sha256):([0-9a-f]{64})$|^opaque:sha256:([0-9a-f]{64})$/u.exec(receiptRef);
+    if (match !== null) binding.receipt_sha256 = match[1] ?? match[2];
+  }
+  binding.status = "PROVEN";
+  binding.authority = receipt.authority;
+  Object.defineProperty(receipt, "__receiptBinding", {
+    value: Object.prototype.hasOwnProperty.call(binding, "payload") || Object.prototype.hasOwnProperty.call(binding, "bytes") ? binding : null,
+    enumerable: false,
+  });
   return receipt;
 }
 
 async function closeSession({boundHost, session, runtimeBinding, receipts, attestations, provenance, observedAt, handoffSha256, closeout}) {
   const universalCloseoutReceipts = [];
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "preserveHandoff", "PRESERVE_HANDOFF", {session: structuredClone(session), handoff_sha256: handoffSha256}, 1));
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "persistHandoff", "PERSIST_HANDOFF", {session: structuredClone(session), handoff_sha256: handoffSha256}, 2));
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "auditCandidate", "AUDIT_CANDIDATE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 3));
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "integrateAcceptedWork", "INTEGRATE_ACCEPTED_WORK", {session: structuredClone(session), handoff_sha256: handoffSha256}, 4));
+  const bindings = new Map();
+  const pushControllerReceipt = (receipt) => {
+    if (receipt.__receiptBinding !== null) bindings.set(receipt.receipt_ref, receipt.__receiptBinding);
+    universalCloseoutReceipts.push(receipt);
+  };
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "preserveHandoff", "PRESERVE_HANDOFF", {session: structuredClone(session), handoff_sha256: handoffSha256}, 1));
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "persistHandoff", "PERSIST_HANDOFF", {session: structuredClone(session), handoff_sha256: handoffSha256}, 2));
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "auditCandidate", "AUDIT_CANDIDATE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 3));
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "integrateAcceptedWork", "INTEGRATE_ACCEPTED_WORK", {session: structuredClone(session), handoff_sha256: handoffSha256}, 4));
 
   const unpinned = await boundHost.set_thread_pinned({threadId: session.thread_id, pinned: false});
   validateThreadActionReadback(unpinned, session, runtimeBinding, "unpin", {pinned: false, archived: false});
   let evidence = compileHostEvidence({operation: "unpin", readback: unpinned, provenance, hostAttachment: session.host_attachment, workerSessionRef: session.session_ref, observedAt, sequence: receipts.length + 1});
   receipts.push(evidence.receipt);
   attestations.push(evidence.attestation);
-  universalCloseoutReceipts.push({
+  const unpinReceipt = {
     sequence: 5,
     step: "UNPIN_SESSION",
     receipt_ref: `digest:${evidence.attestation.digest}`,
     authority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES.UNPIN_SESSION,
     status: "PROVEN",
     observed_at: observedAt,
+  };
+  bindings.set(unpinReceipt.receipt_ref, {
+    payload: {...evidence.attestation, digest: null},
+    receipt_sha256: evidence.attestation.digest,
+    status: "PROVEN",
+    authority: unpinReceipt.authority,
   });
+  universalCloseoutReceipts.push(unpinReceipt);
 
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "closeStaleWorktree", "CLOSE_STALE_WORKTREE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 6));
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "removeActiveTaskScope", "REMOVE_ACTIVE_TASK_SCOPE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 7));
-  universalCloseoutReceipts.push(await controllerCloseoutReceipt(closeout, "markChatOutOfScope", "MARK_CHAT_OUT_OF_SCOPE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 8));
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "closeStaleWorktree", "CLOSE_STALE_WORKTREE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 6));
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "removeActiveTaskScope", "REMOVE_ACTIVE_TASK_SCOPE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 7));
+  pushControllerReceipt(await controllerCloseoutReceipt(closeout, "markChatOutOfScope", "MARK_CHAT_OUT_OF_SCOPE", {session: structuredClone(session), handoff_sha256: handoffSha256}, 8));
 
   const archived = await boundHost.set_thread_archived({threadId: session.thread_id, archived: true});
   validateThreadActionReadback(archived, session, runtimeBinding, "archive", {pinned: false, archived: true});
   evidence = compileHostEvidence({operation: "archive", readback: archived, provenance, hostAttachment: session.host_attachment, workerSessionRef: session.session_ref, observedAt, sequence: receipts.length + 1});
   receipts.push(evidence.receipt);
   attestations.push(evidence.attestation);
-  universalCloseoutReceipts.push({
+  const archiveReceipt = {
     sequence: 9,
     step: "ARCHIVE_VISIBLE_TASK",
     receipt_ref: `digest:${evidence.attestation.digest}`,
     authority: UNIVERSAL_TASK_CLOSEOUT_AUTHORITIES.ARCHIVE_VISIBLE_TASK,
     status: "PROVEN",
     observed_at: observedAt,
+  };
+  bindings.set(archiveReceipt.receipt_ref, {
+    payload: {...evidence.attestation, digest: null},
+    receipt_sha256: evidence.attestation.digest,
+    status: "PROVEN",
+    authority: archiveReceipt.authority,
   });
+  universalCloseoutReceipts.push(archiveReceipt);
 
   const postClose = await boundHost.read_thread({threadId: session.thread_id});
   validateThreadActionReadback(postClose, session, runtimeBinding, "post_close_read", {pinned: false, archived: true});
@@ -448,7 +486,17 @@ async function closeSession({boundHost, session, runtimeBinding, receipts, attes
   evidence = compileHostEvidence({operation: "active_list_absent", readback: roster, provenance, hostAttachment: session.host_attachment, workerSessionRef: session.session_ref, observedAt, sequence: receipts.length + 1});
   receipts.push(evidence.receipt);
   attestations.push(evidence.attestation);
-  validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {closed: true, label: "apprenticeship native universal closeout receipts"});
+  const receiptResolver = (reference, {authority} = {}) => {
+    const binding = bindings.get(reference);
+    if (binding === undefined || binding.authority !== authority) return null;
+    return {...binding};
+  };
+  validateUniversalTaskCloseoutReceipts(universalCloseoutReceipts, {
+    closed: true,
+    label: "apprenticeship native universal closeout receipts",
+    receiptResolver,
+  });
+  Object.defineProperty(universalCloseoutReceipts, "__receiptResolver", {value: receiptResolver, enumerable: false});
   return universalCloseoutReceipts;
 }
 
@@ -591,6 +639,7 @@ export async function runApprenticeshipNativeObservation({
     actions.push(compileActionRecord({sequence: actions.length + 1, operation: "read", action: "Read back the final typed handoff and result digest.", packet, resultRef: `digest:${completion.handoff_sha256}`, evidenceRefs: [evidence.receipt.evidence_attestation_ref], observedAt}));
 
     const universalCloseoutReceipts = await closeSession({boundHost, session, runtimeBinding, receipts, attestations, provenance, observedAt, handoffSha256: completion.handoff_sha256, closeout});
+    const universalCloseoutReceiptResolver = universalCloseoutReceipts.__receiptResolver;
     const allEvidenceRefs = receipts.map((receipt) => receipt.evidence_attestation_ref);
     const meaningful = completion.meaningful_progress === true;
     const resultKind = resultKindFor(completion);
@@ -621,7 +670,7 @@ export async function runApprenticeshipNativeObservation({
       completedAt: observedAt,
     });
     const status = compiledObservation.meaningful_progress ? "REAL_RESULT_OBSERVED" : "NO_MEANINGFUL_RESULT";
-    const run = compileNativeRun({runId, packet, provenance, hostAttachment, receipts, attestations, universalCloseoutReceipts, observation: compiledObservation, resultRef, status, startedAt: observedAt, completedAt: observedAt});
+    const run = compileNativeRun({runId, packet, provenance, hostAttachment, receipts, attestations, universalCloseoutReceipts, observation: compiledObservation, resultRef, status, startedAt: observedAt, completedAt: observedAt, receiptResolver: universalCloseoutReceiptResolver});
     return {
       run,
       observation: compiledObservation,

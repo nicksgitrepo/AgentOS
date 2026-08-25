@@ -623,3 +623,306 @@ export function runAgentSpawnerCompilerTick(lifecycle, {onCompileBlock = null, o
   assert(SAFE_COMPILER_ACTIONS.has(lifecycle.next_action), "Compiler tick has an unsafe action");
   throw new Error("Compiler tick cannot close without a typed continuation");
 }
+
+/*
+ * Controller-owned storage governance is deliberately separate from the
+ * Spawner's compiler state machine.  A storage reading is an observation,
+ * not a worker admission signal: only the Controller may produce the daily
+ * receipt and only a typed threshold transition may affect next-issue
+ * admission.  Keeping this contract here lets the lifecycle and its schema
+ * travel together without making ordinary agents poll the host.
+ */
+export const AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA = "agentos.agent_spawner_storage_governance.v1";
+export const AGENT_SPAWNER_STORAGE_GOVERNANCE_VERSION = 1;
+export const AGENT_SPAWNER_STORAGE_POLICY = Object.freeze({
+  monitor_owner: "CONTROLLER_ONLY",
+  monitor_interval_hours: 24,
+  ordinary_agents_poll_storage: false,
+  cleanup_target_free_gib: Object.freeze({minimum: 80, maximum: 100, work_stopping_floor: false}),
+  owner_warning_at_or_below_free_gib: 50,
+  hard_operating_floor_at_or_below_free_gib: 25,
+  below_target_current_issue_transition: Object.freeze([
+    "FINISH_AND_VERIFY_CURRENT_ISSUE",
+    "FREEZE_EXACT_CANDIDATE",
+    "HANDOFF_AND_COMPLETE_AUTHORIZED_RUNTIME_DELIVERY",
+    "ADMIT_NO_NEXT_ISSUE",
+    "CONTROLLER_RUNS_CUSTODY_SAFE_CLEANUP_TOWARD_80_TO_100_GIB",
+    "RESUME_NEXT_ISSUE_AFTER_CLEANUP_TRANSITION_CLOSES",
+  ]),
+  cleanup_safety: Object.freeze({
+    preserve_active_or_unmerged_work: true,
+    ambiguous_custody_cleanup_forbidden: true,
+    allowed_classes: Object.freeze([
+      "PROVEN_SAFE_DISPOSABLE_DATA",
+      "STALE_CACHES",
+      "REDUNDANT_BUILD_OUTPUTS",
+      "CLEAN_RELEASED_WORKTREES",
+    ]),
+  }),
+});
+export const AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS = Object.freeze([
+  "FIXTURE.STORAGE.79_GIB_ORDINARY_COMPILE_AND_TEST",
+  "FIXTURE.STORAGE.79_GIB_CONTROLLER_DAILY_CLEANUP",
+  "FIXTURE.STORAGE.CLEANUP_FAILURE_ALERT_RESUME_ABOVE_25",
+  "FIXTURE.STORAGE.50_GIB_OWNER_WARNING",
+  "FIXTURE.STORAGE.25_GIB_HARD_STOP",
+  "FIXTURE.STORAGE.ORDINARY_AGENT_POLL_REJECTED",
+  "FIXTURE.STORAGE.DUPLICATE_DAILY_CHECK_REJECTED",
+  "FIXTURE.STORAGE.AMBIGUOUS_CUSTODY_CLEANUP_REJECTED",
+  "FIXTURE.STORAGE.NEXT_ISSUE_DURING_CLEANUP_REJECTED",
+  "FIXTURE.STORAGE.HISTORICAL_RECEIPT_CANNOT_OVERRIDE",
+]);
+export const CONTROLLER_STORAGE_HOSTILE_FIXTURE_REFS = AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS;
+
+const STORAGE_THRESHOLD_CLASSES = Object.freeze([
+  "HARD_FLOOR",
+  "OWNER_WARNING",
+  "BELOW_CLEANUP_TARGET",
+  "CLEANUP_TARGET",
+  "ABOVE_CLEANUP_TARGET",
+]);
+const STORAGE_DECISION_KEYS = Object.freeze([
+  "schema", "version", "receipt_id", "monitor_role", "observed_at_utc", "free_gib", "threshold_class",
+  "policy", "current_issue", "next_issue", "cleanup", "ordinary_agents", "custody", "previous_receipt_sha256",
+  "hostile_fixture_refs", "receipt_sha256",
+]);
+const STORAGE_POLICY_KEYS = Object.freeze([
+  "monitor_owner", "monitor_interval_hours", "ordinary_agents_poll_storage", "cleanup_target_free_gib",
+  "owner_warning_at_or_below_free_gib", "hard_operating_floor_at_or_below_free_gib",
+  "below_target_current_issue_transition", "cleanup_safety",
+]);
+const STORAGE_CURRENT_ISSUE_KEYS = Object.freeze([
+  "status", "work_allowed", "storage_heavy_work_allowed", "finish_verify_freeze_handoff_required", "runtime_delivery_allowed",
+]);
+const STORAGE_NEXT_ISSUE_KEYS = Object.freeze(["admission", "allowed", "blocked_reason"]);
+const STORAGE_CLEANUP_KEYS = Object.freeze([
+  "required", "action", "target_min_gib", "target_max_gib", "attempted", "reached_target", "owner_alert", "resume_above_gib",
+]);
+const STORAGE_ORDINARY_AGENT_KEYS = Object.freeze(["polling_allowed", "decision"]);
+const STORAGE_CUSTODY_KEYS = Object.freeze(["active_or_unmerged_preserved", "ambiguous_custody_cleanup_forbidden", "cleanup_allowed"]);
+const STORAGE_SHA256 = /^[0-9a-f]{64}$/u;
+const STORAGE_IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
+const STORAGE_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
+
+function storageRequireSha(value, label, {nullable = false} = {}) {
+  if (nullable && value === null) return;
+  assert(typeof value === "string" && STORAGE_SHA256.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+function storageExactKeys(value, expected, label) {
+  exactKeys(value, expected, label);
+}
+
+function storageRequireFiniteGib(value) {
+  assert(typeof value === "number" && Number.isFinite(value) && value >= 0, "Controller storage free_gib must be a non-negative finite number");
+}
+
+function storageDecisionBody(decision) {
+  const body = structuredClone(decision);
+  body.receipt_sha256 = null;
+  return body;
+}
+
+function storageThresholdClass(freeGib) {
+  if (freeGib <= AGENT_SPAWNER_STORAGE_POLICY.hard_operating_floor_at_or_below_free_gib) return "HARD_FLOOR";
+  if (freeGib <= AGENT_SPAWNER_STORAGE_POLICY.owner_warning_at_or_below_free_gib) return "OWNER_WARNING";
+  if (freeGib < AGENT_SPAWNER_STORAGE_POLICY.cleanup_target_free_gib.minimum) return "BELOW_CLEANUP_TARGET";
+  if (freeGib <= AGENT_SPAWNER_STORAGE_POLICY.cleanup_target_free_gib.maximum) return "CLEANUP_TARGET";
+  return "ABOVE_CLEANUP_TARGET";
+}
+
+function storageTransitionFor(freeGib, {
+  currentIssueStatus = "ACTIVE",
+  currentIssueCustody = "ACTIVE",
+  nextIssueRequested = false,
+  cleanupAttempted = false,
+  cleanupReachedTarget = null,
+  cleanupFailed = false,
+} = {}) {
+  storageRequireFiniteGib(freeGib);
+  assert(typeof currentIssueStatus === "string" && currentIssueStatus.length > 0, "Controller current issue status is required");
+  assert(typeof currentIssueCustody === "string" && currentIssueCustody.length > 0, "Controller current issue custody is required");
+  assert(typeof nextIssueRequested === "boolean", "Controller next-issue request must be boolean");
+  assert(typeof cleanupAttempted === "boolean", "Controller cleanup attempted flag must be boolean");
+  assert(cleanupReachedTarget === null || typeof cleanupReachedTarget === "boolean", "Controller cleanup target result must be boolean or null");
+  assert(typeof cleanupFailed === "boolean", "Controller cleanup failure flag must be boolean");
+  const thresholdClass = storageThresholdClass(freeGib);
+  const hardFloor = thresholdClass === "HARD_FLOOR";
+  const belowTarget = hardFloor || thresholdClass === "OWNER_WARNING" || thresholdClass === "BELOW_CLEANUP_TARGET";
+  const protectedCustody = ["ACTIVE", "UNMERGED", "AMBIGUOUS", "UNKNOWN"].includes(currentIssueCustody);
+  if (cleanupAttempted && protectedCustody) throw new Error("Ambiguous or active custody cleanup is rejected");
+  if (cleanupFailed && cleanupReachedTarget === true) throw new Error("Cleanup result cannot be both failed and at target");
+  const ownerAlert = hardFloor || thresholdClass === "OWNER_WARNING" || cleanupFailed;
+  const currentIssue = hardFloor
+    ? {
+      status: currentIssueStatus,
+      work_allowed: false,
+      storage_heavy_work_allowed: false,
+      finish_verify_freeze_handoff_required: true,
+      runtime_delivery_allowed: false,
+    }
+    : {
+      status: currentIssueStatus,
+      work_allowed: true,
+      storage_heavy_work_allowed: true,
+      finish_verify_freeze_handoff_required: belowTarget,
+      runtime_delivery_allowed: belowTarget,
+    };
+  const nextBlocked = hardFloor || belowTarget || cleanupAttempted && cleanupReachedTarget !== true;
+  if (nextIssueRequested && nextBlocked) throw new Error("Next issue admission is rejected while Controller cleanup transition is open");
+  const nextIssue = {
+    admission: nextBlocked ? (hardFloor ? "DENY_HARD_OPERATING_FLOOR" : "DENY_DURING_CLEANUP") : "ADMIT_AFTER_DAILY_TRANSITION",
+    allowed: !nextBlocked,
+    blocked_reason: nextBlocked ? (hardFloor ? "FREE_GIB_AT_OR_BELOW_25_HARD_OPERATING_FLOOR" : "BELOW_80_CLEANUP_TARGET_CONTROLLER_TRANSITION") : null,
+  };
+  const cleanupRequired = belowTarget && !hardFloor;
+  const cleanup = {
+    required: cleanupRequired || hardFloor,
+    action: hardFloor
+      ? "ALERT_OWNER_AND_WAIT_FOR_RECOVERY_AUTHORITY"
+      : belowTarget
+        ? "CONTROLLER_RUNS_CUSTODY_SAFE_CLEANUP_TOWARD_80_TO_100_GIB"
+        : "NO_CLEANUP_REQUIRED",
+    target_min_gib: AGENT_SPAWNER_STORAGE_POLICY.cleanup_target_free_gib.minimum,
+    target_max_gib: AGENT_SPAWNER_STORAGE_POLICY.cleanup_target_free_gib.maximum,
+    attempted: cleanupAttempted,
+    reached_target: cleanupReachedTarget,
+    owner_alert: ownerAlert,
+    resume_above_gib: AGENT_SPAWNER_STORAGE_POLICY.hard_operating_floor_at_or_below_free_gib,
+  };
+  return {thresholdClass, currentIssue, nextIssue, cleanup, ownerAlert, protectedCustody};
+}
+
+function validateStoragePolicy(policy) {
+  storageExactKeys(policy, STORAGE_POLICY_KEYS, "Controller storage policy");
+  assert(policy.monitor_owner === "CONTROLLER_ONLY", "Controller storage monitor owner is invalid");
+  assert(policy.monitor_interval_hours === 24, "Controller storage monitor interval is invalid");
+  assert(policy.ordinary_agents_poll_storage === false, "Ordinary agents may not poll storage");
+  storageExactKeys(policy.cleanup_target_free_gib, ["minimum", "maximum", "work_stopping_floor"], "Controller cleanup target");
+  assert(policy.cleanup_target_free_gib.minimum === 80 && policy.cleanup_target_free_gib.maximum === 100 && policy.cleanup_target_free_gib.work_stopping_floor === false, "Controller cleanup target policy is invalid");
+  assert(policy.owner_warning_at_or_below_free_gib === 50, "Controller owner warning threshold is invalid");
+  assert(policy.hard_operating_floor_at_or_below_free_gib === 25, "Controller hard operating floor is invalid");
+  assert(Array.isArray(policy.below_target_current_issue_transition) && JSON.stringify(policy.below_target_current_issue_transition) === JSON.stringify(AGENT_SPAWNER_STORAGE_POLICY.below_target_current_issue_transition), "Controller below-target transition is invalid");
+  storageExactKeys(policy.cleanup_safety, ["preserve_active_or_unmerged_work", "ambiguous_custody_cleanup_forbidden", "allowed_classes"], "Controller cleanup safety");
+  assert(policy.cleanup_safety.preserve_active_or_unmerged_work === true && policy.cleanup_safety.ambiguous_custody_cleanup_forbidden === true, "Controller cleanup safety boundary is invalid");
+  assert(JSON.stringify(policy.cleanup_safety.allowed_classes) === JSON.stringify(AGENT_SPAWNER_STORAGE_POLICY.cleanup_safety.allowed_classes), "Controller cleanup classes are invalid");
+}
+
+function validateStorageDecisionParts(decision) {
+  storageExactKeys(decision.policy, STORAGE_POLICY_KEYS, "Controller storage decision policy");
+  validateStoragePolicy(decision.policy);
+  storageExactKeys(decision.current_issue, STORAGE_CURRENT_ISSUE_KEYS, "Controller current issue storage transition");
+  storageExactKeys(decision.next_issue, STORAGE_NEXT_ISSUE_KEYS, "Controller next issue storage transition");
+  storageExactKeys(decision.cleanup, STORAGE_CLEANUP_KEYS, "Controller cleanup transition");
+  storageExactKeys(decision.ordinary_agents, STORAGE_ORDINARY_AGENT_KEYS, "Controller ordinary-agent storage rule");
+  storageExactKeys(decision.custody, STORAGE_CUSTODY_KEYS, "Controller storage custody");
+  for (const field of ["work_allowed", "storage_heavy_work_allowed", "finish_verify_freeze_handoff_required", "runtime_delivery_allowed"]) assert(typeof decision.current_issue[field] === "boolean", `Controller current issue ${field} must be boolean`);
+  assert(typeof decision.next_issue.allowed === "boolean", "Controller next issue allowed must be boolean");
+  if (decision.next_issue.allowed) assert(decision.next_issue.blocked_reason === null, "Allowed next issue cannot have a blocked reason");
+  else assert(typeof decision.next_issue.blocked_reason === "string", "Denied next issue requires a blocked reason");
+  for (const field of ["required", "attempted", "owner_alert"]) assert(typeof decision.cleanup[field] === "boolean", `Controller cleanup ${field} must be boolean`);
+  assert(decision.cleanup.action === "NO_CLEANUP_REQUIRED" || decision.cleanup.action === "CONTROLLER_RUNS_CUSTODY_SAFE_CLEANUP_TOWARD_80_TO_100_GIB" || decision.cleanup.action === "ALERT_OWNER_AND_WAIT_FOR_RECOVERY_AUTHORITY", "Controller cleanup action is invalid");
+  assert(Number.isSafeInteger(decision.cleanup.target_min_gib) && decision.cleanup.target_min_gib === 80, "Controller cleanup minimum is invalid");
+  assert(Number.isSafeInteger(decision.cleanup.target_max_gib) && decision.cleanup.target_max_gib === 100, "Controller cleanup maximum is invalid");
+  assert(decision.cleanup.reached_target === null || typeof decision.cleanup.reached_target === "boolean", "Controller cleanup target result is invalid");
+  assert(decision.cleanup.resume_above_gib === 25, "Controller cleanup resume floor is invalid");
+  assert(decision.ordinary_agents.polling_allowed === false && decision.ordinary_agents.decision === "REJECT_REPEATED_STORAGE_POLL", "Ordinary-agent polling rule is invalid");
+  assert(decision.custody.active_or_unmerged_preserved === true && decision.custody.ambiguous_custody_cleanup_forbidden === true, "Controller storage custody preservation is invalid");
+  if (decision.threshold_class === "HARD_FLOOR") assert(decision.custody.cleanup_allowed === false, "Hard-floor cleanup custody must remain closed");
+}
+
+export function validateControllerStorageDecision(decision, {previousReceipt = null, nowMs = null} = {}) {
+  storageExactKeys(decision, STORAGE_DECISION_KEYS, "Controller storage decision");
+  assert(decision.schema === AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA && decision.version === AGENT_SPAWNER_STORAGE_GOVERNANCE_VERSION, "Controller storage decision identity is invalid");
+  assert(typeof decision.receipt_id === "string" && STORAGE_IDENTIFIER.test(decision.receipt_id), "Controller storage receipt ID is invalid");
+  assert(decision.monitor_role === "CONTROLLER", "Controller storage receipt must be Controller-owned");
+  assert(typeof decision.observed_at_utc === "string" && STORAGE_TIMESTAMP.test(decision.observed_at_utc), "Controller storage observation timestamp is invalid");
+  storageRequireFiniteGib(decision.free_gib);
+  assert(STORAGE_THRESHOLD_CLASSES.includes(decision.threshold_class), "Controller storage threshold class is invalid");
+  assert(decision.threshold_class === storageThresholdClass(decision.free_gib), "Controller storage threshold class is stale");
+  validateStorageDecisionParts(decision);
+  assert(decision.hostile_fixture_refs && JSON.stringify(decision.hostile_fixture_refs) === JSON.stringify(AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS), "Controller storage hostile coverage is incomplete");
+  storageRequireSha(decision.previous_receipt_sha256, "Controller previous storage receipt", {nullable: true});
+  storageRequireSha(decision.receipt_sha256, "Controller storage receipt digest");
+  assert(decision.receipt_sha256 === canonicalDigest(storageDecisionBody(decision)), "Controller storage receipt digest mismatch");
+  if (previousReceipt !== null) {
+    validateControllerStorageDecision(previousReceipt);
+    assert(decision.previous_receipt_sha256 === previousReceipt.receipt_sha256, "Controller storage receipt parent is stale");
+    const elapsed = Date.parse(decision.observed_at_utc) - Date.parse(previousReceipt.observed_at_utc);
+    assert(elapsed >= AGENT_SPAWNER_STORAGE_POLICY.monitor_interval_hours * 60 * 60 * 1000, "Controller daily storage check is duplicated or too early");
+    if (nowMs !== null) assert(Date.parse(decision.observed_at_utc) <= nowMs, "Controller storage observation is from the future");
+  }
+  // A parent digest may be carried without its payload when the caller is
+  // crossing a custody boundary.  When the parent payload is available, the
+  // elapsed-window and exact parent binding above are enforced.
+  return decision;
+}
+
+export function compileControllerStorageDecision({
+  receiptId,
+  observedAtUtc,
+  freeGib,
+  currentIssueStatus = "ACTIVE",
+  currentIssueCustody = "ACTIVE",
+  nextIssueRequested = false,
+  cleanupAttempted = false,
+  cleanupReachedTarget = null,
+  cleanupFailed = false,
+  previousReceiptSha256 = null,
+  previousReceipt = null,
+  actorRole = "CONTROLLER",
+  storagePoll = false,
+} = {}) {
+  assert(actorRole === "CONTROLLER", "Only the Controller may produce a daily storage receipt");
+  assert(storagePoll === false, "Ordinary-agent repeated storage polling is rejected");
+  assert(typeof receiptId === "string" && STORAGE_IDENTIFIER.test(receiptId), "Controller storage receipt ID is invalid");
+  assert(typeof observedAtUtc === "string" && STORAGE_TIMESTAMP.test(observedAtUtc), "Controller storage observation timestamp is invalid");
+  if (previousReceipt !== null) {
+    validateControllerStorageDecision(previousReceipt);
+    if (previousReceiptSha256 !== null) assert(previousReceiptSha256 === previousReceipt.receipt_sha256, "Controller previous storage receipt digest differs from bound receipt");
+    previousReceiptSha256 = previousReceipt.receipt_sha256;
+    assert(Date.parse(observedAtUtc) - Date.parse(previousReceipt.observed_at_utc) >= AGENT_SPAWNER_STORAGE_POLICY.monitor_interval_hours * 60 * 60 * 1000, "Controller daily storage check is duplicated or too early");
+  }
+  storageRequireSha(previousReceiptSha256, "Controller previous storage receipt", {nullable: true});
+  const transition = storageTransitionFor(freeGib, {currentIssueStatus, currentIssueCustody, nextIssueRequested, cleanupAttempted, cleanupReachedTarget, cleanupFailed});
+  const decision = {
+    schema: AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA,
+    version: AGENT_SPAWNER_STORAGE_GOVERNANCE_VERSION,
+    receipt_id: receiptId,
+    monitor_role: "CONTROLLER",
+    observed_at_utc: observedAtUtc,
+    free_gib: freeGib,
+    threshold_class: transition.thresholdClass,
+    policy: structuredClone(AGENT_SPAWNER_STORAGE_POLICY),
+    current_issue: transition.currentIssue,
+    next_issue: transition.nextIssue,
+    cleanup: transition.cleanup,
+    ordinary_agents: {polling_allowed: false, decision: "REJECT_REPEATED_STORAGE_POLL"},
+    custody: {
+      active_or_unmerged_preserved: true,
+      ambiguous_custody_cleanup_forbidden: true,
+    cleanup_allowed: !transition.protectedCustody && transition.thresholdClass !== "HARD_FLOOR",
+    },
+    previous_receipt_sha256: previousReceiptSha256,
+    hostile_fixture_refs: [...AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS],
+    receipt_sha256: null,
+  };
+  decision.receipt_sha256 = canonicalDigest(storageDecisionBody(decision));
+  return validateControllerStorageDecision(decision, {previousReceipt});
+}
+
+export const compileControllerDailyStorageReceipt = compileControllerStorageDecision;
+export const validateControllerDailyStorageReceipt = validateControllerStorageDecision;
+export const evaluateControllerStorageDecision = storageTransitionFor;
+export const deriveControllerStorageDecision = compileControllerStorageDecision;
+export const compileAgentSpawnerStorageGovernance = compileControllerStorageDecision;
+export const validateAgentSpawnerStorageGovernance = validateControllerStorageDecision;
+export const STORAGE_POLICY = AGENT_SPAWNER_STORAGE_POLICY;
+export const STORAGE_HOSTILE_FIXTURE_REFS = AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS;
+
+export function advanceControllerStorageDecision(previousReceipt, options = {}) {
+  validateControllerStorageDecision(previousReceipt);
+  return compileControllerStorageDecision({...options, previousReceipt});
+}
+
+export const advanceControllerStorageGovernance = advanceControllerStorageDecision;

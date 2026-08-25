@@ -36,12 +36,19 @@ import {
 import {compileControllerCampaignCandidate} from "../control/agentos-controller.mjs";
 
 const SHA = "a".repeat(64);
+const cascadeCloseoutBindings = new Map();
 const cascadeCloseout = compileCascadeUniversalTaskCloseoutReceipts({
   receiptRefs: Object.fromEntries([
     "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
     "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE", "ARCHIVE_VISIBLE_TASK",
-  ].map((step) => [step, `opaque:sha256:${cascadeDigest({kind: "cascade-closeout", step})}`])),
+  ].map((step) => {
+    const payload = {kind: "cascade-closeout", step};
+    const reference = `opaque:sha256:${cascadeDigest(payload)}`;
+    cascadeCloseoutBindings.set(reference, {payload, receipt_sha256: cascadeDigest(payload), status: "PROVEN"});
+    return [step, reference];
+  })),
   observedAt: "2026-08-03T00:00:00.000Z",
+  receiptResolver: (reference, {authority}) => ({...cascadeCloseoutBindings.get(reference), authority}),
 });
 assert.equal(cascadeCloseout.length, 9);
 assert.equal(cascadeCloseout[0].step, "PRESERVE_HANDOFF");

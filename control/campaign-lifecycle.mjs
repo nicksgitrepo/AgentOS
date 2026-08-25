@@ -522,7 +522,7 @@ function validateHandoffReceipts(receipts, label) {
   }
 }
 
-export function validatePlatformAgent(agent) {
+export function validatePlatformAgent(agent, {receiptResolver} = {}) {
   exactKeys(agent, [
     "logical_capability_id", "logical_agent_id", "execution_session_id", "state",
     "platform_worktree", "supervision", "request_queue", "handoff_receipts", "universal_closeout_receipts",
@@ -538,6 +538,7 @@ export function validatePlatformAgent(agent) {
   validateUniversalTaskCloseoutForMode("CAMPAIGN", agent.universal_closeout_receipts, {
     closed: agent.state === "ARCHIVED_UNPINNED",
     label: "Platform Agent universal closeout receipts",
+    receiptResolver,
   });
   if (agent.state === "UNSPAWNED") {
     assert(agent.supervision === null, "unspawned Platform Agent has a supervisor");
@@ -639,8 +640,8 @@ export function markPlatformHandoffReady(agent, currentCommit, currentTree, repo
   return next;
 }
 
-export function releasePlatformLease(agent, atUtc) {
-  validatePlatformAgent(agent);
+export function releasePlatformLease(agent, atUtc, {receiptResolver} = {}) {
+  validatePlatformAgent(agent, {receiptResolver});
   requireUtc(atUtc, "Platform lease release time");
   assert(["LEASED", "WORKING", "HANDOFF_READY"].includes(agent.state), "Platform Agent is not leased");
   assert(agent.supervision !== null, "Platform lease release lacks supervision");
@@ -661,21 +662,22 @@ export function releasePlatformLease(agent, atUtc) {
   next.supervision = null;
   next.handoff_receipts.push(receipt);
   next.handoff_receipts.sort((left, right) => compareUtf8(left.assignment_id, right.assignment_id));
-  validatePlatformAgent(next);
+  validatePlatformAgent(next, {receiptResolver});
   return next;
 }
 
-export function archivePlatformAgent(agent, {universalCloseoutReceipts} = {}) {
-  validatePlatformAgent(agent);
+export function archivePlatformAgent(agent, {universalCloseoutReceipts, receiptResolver} = {}) {
+  validatePlatformAgent(agent, {receiptResolver});
   assert(agent.state === "AVAILABLE", "only an available Platform Agent may be archived");
   validateUniversalTaskCloseoutForMode("CAMPAIGN", universalCloseoutReceipts, {
     closed: true,
     label: "Platform Agent archive closeout receipts",
+    receiptResolver,
   });
   const next = structuredClone(agent);
   next.state = "ARCHIVED_UNPINNED";
   next.universal_closeout_receipts = structuredClone(universalCloseoutReceipts);
-  validatePlatformAgent(next);
+  validatePlatformAgent(next, {receiptResolver});
   return next;
 }
 
@@ -1080,7 +1082,7 @@ function appendTransition(next, previous, event) {
   return next;
 }
 
-export function validateLifecycleState(state) {
+export function validateLifecycleState(state, {receiptResolver} = {}) {
   assertUniversalDevelopmentMode("CAMPAIGN");
   exactKeys(state, ["schema", "governance_version", "status", "campaign_id", "campaign_version", "logical_lineage_id", "policy_epoch", "policy_state_sha256", "acceptance_contract_sha256", "stage", "root", "active_writer", "holds", "platform_pool", "checkpoint_ledger", "finalizer", "acceptance", "runtime", "roster", "continuous_audit_sentinel", "successor_orientation", "living_ledger", "transition_journal", "state_sha256"], "campaign lifecycle state");
   assert(state.schema === "governance.campaign_lifecycle_state.v1" && state.governance_version === "2.1rc", "campaign lifecycle identity is invalid");
@@ -1109,7 +1111,7 @@ export function validateLifecycleState(state) {
   const capabilityIds = new Set();
   const agentIds = new Set();
   for (const agent of state.platform_pool) {
-    validatePlatformAgent(agent);
+    validatePlatformAgent(agent, {receiptResolver});
     assert(!capabilityIds.has(agent.logical_capability_id), "Platform capability is duplicated");
     assert(!agentIds.has(agent.logical_agent_id), "Platform logical agent is duplicated");
     capabilityIds.add(agent.logical_capability_id);
@@ -1175,7 +1177,7 @@ export function validateLifecycleState(state) {
   return state;
 }
 
-export function sealLifecycleState(state) {
+export function sealLifecycleState(state, {receiptResolver} = {}) {
   const next = structuredClone(state);
   if (!Array.isArray(next.transition_journal) || next.transition_journal.length === 0) {
     assert(next.stage === "BUILDING", "a new lifecycle state must begin at BUILDING");
@@ -1195,7 +1197,7 @@ export function sealLifecycleState(state) {
   }
   delete next.state_sha256;
   next.state_sha256 = lifecycleDigest(next);
-  validateLifecycleState(next);
+  validateLifecycleState(next, {receiptResolver});
   return next;
 }
 
@@ -1245,8 +1247,8 @@ function assertLineage(previous, next) {
   for (const field of ["campaign_id", "campaign_version", "logical_lineage_id", "role_id", "auditor_session_id", "scope", "started_at_utc"]) assert(previous.continuous_audit_sentinel[field] === next.continuous_audit_sentinel[field], `lifecycle transition changed continuous audit sentinel ${field}`);
 }
 
-export function applyLifecycleTransition(previous, next, event = {}) {
-  validateLifecycleState(previous);
+export function applyLifecycleTransition(previous, next, event = {}, {receiptResolver} = {}) {
+  validateLifecycleState(previous, {receiptResolver});
   const candidate = structuredClone(next);
   assertLineage(previous, candidate);
   assert(canonicalJson(candidate.transition_journal) === canonicalJson(previous.transition_journal),
@@ -1301,7 +1303,7 @@ export function applyLifecycleTransition(previous, next, event = {}) {
     candidate.continuous_audit_sentinel = archiveContinuousAuditSentinel(candidate.continuous_audit_sentinel, {archivedAtUtc: event.at_utc, reason: "ACCEPTED_LIVE_CLOSURE"});
   }
   appendTransition(candidate, previous, event);
-  const sealed = sealLifecycleState(candidate);
+  const sealed = sealLifecycleState(candidate, {receiptResolver});
   assert(sealed.state_sha256 !== previous.state_sha256, "lifecycle transition did not change state");
   return sealed;
 }
@@ -1461,8 +1463,8 @@ export function recordLiveDelta(state, orchestratorSessionId, liveDelta) {
   });
 }
 
-export function admitNextCampaign(state, {finalCandidate, auditorBinding, featureAgentBindings, platformAgentBindings = []}) {
-  validateLifecycleState(state);
+export function admitNextCampaign(state, {finalCandidate, auditorBinding, featureAgentBindings, platformAgentBindings = [], receiptResolver} = {}) {
+  validateLifecycleState(state, {receiptResolver});
   assert(state.stage === "ACCEPTED_LIVE_CLOSED", "next campaign admission requires accepted-live closure");
   assert(state.successor_orientation.status === "LIVE_DELTA_RECEIVED", "next campaign admission requires the live delta");
   validateSuccessorCandidatePacket(finalCandidate, "final next-campaign candidate", state, {
@@ -1497,7 +1499,7 @@ export function admitNextCampaign(state, {finalCandidate, auditorBinding, featur
   return applyLifecycleTransition(state, next, {
     type: "NEXT_CAMPAIGN_ADMITTED",
     payload: {final_candidate_sha256: finalCandidate.candidate_sha256, feature_count: featureAgentBindings.length, platform_count: platformAgentBindings.length},
-  });
+  }, {receiptResolver});
 }
 
 function validateEvent(event) {

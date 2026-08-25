@@ -108,10 +108,11 @@ export function compileReproductionPacket({
   drill,
   provenance,
   createdAt,
+  receiptResolver,
 } = {}) {
   requireIdentifier(packetId, "reproduction packet ID");
   validateGovernanceProposalForUse(proposal);
-  validateWorkflowDrill(drill);
+  validateWorkflowDrill(drill, {receiptResolver});
   assert(drill.status === "CLOSED_NON_ACCEPTING" && drill.final_status === "DRILL_COMPLETE_NON_ACCEPTING", "reproduction requires a closed complete non-accepting drill");
   validateProvenance(provenance, {
     requiredRefs: ["worker_ref", "worker_session_ref", "orchestrator_ref", "orchestrator_session_ref", "learner_ref", "learner_session_ref", "auditor_ref", "auditor_session_ref", "reproduction_ref", "reproduction_session_ref", "model_ref"],
@@ -157,11 +158,11 @@ export function compileReproductionPacket({
     protected_actions: protectedActions(),
     digest: null,
   });
-  validateReproductionPacket(packet, {proposal, drill});
+  validateReproductionPacket(packet, {proposal, drill, receiptResolver});
   return packet;
 }
 
-export function validateReproductionPacket(packet, {proposal = null, drill = null} = {}) {
+export function validateReproductionPacket(packet, {proposal = null, drill = null, receiptResolver} = {}) {
   exactKeys(packet, [
     "schema",
     "version",
@@ -199,7 +200,7 @@ export function validateReproductionPacket(packet, {proposal = null, drill = nul
     assert(packet.proposal_digest === proposal.digest, "reproduction packet proposal binding differs");
   }
   if (drill !== null) {
-    validateWorkflowDrill(drill);
+    validateWorkflowDrill(drill, {receiptResolver});
     assert(packet.drill_digest === drill.digest, "reproduction packet drill binding differs");
     assert(sameBinding(packet.provenance, drill.provenance), "reproduction packet provenance differs from drill");
     assert(packet.provenance.reproduction_ref !== packet.provenance.learner_ref, "reproduction packet worker is not fresh");
@@ -406,13 +407,14 @@ export function compileIndependentReview({
   checks,
   findings = [],
   reviewedAt,
+  receiptResolver,
 } = {}) {
   requireIdentifier(reviewId, "independent review ID");
   requireSafeReference(reviewRef, "independent review reference");
   validateReproductionPacket(packet);
   assert(packet.revocation.status === "NOT_REVOKED", "revoked reproduction packet cannot receive independent review");
   validateGovernanceProposalForUse(proposal);
-  validateWorkflowDrill(drill);
+  validateWorkflowDrill(drill, {receiptResolver});
   validateReproductionResult(reproduction, {packet});
   assert(drill.status === "CLOSED_NON_ACCEPTING", "independent review requires a closed drill");
   validateProvenance(provenance, {
@@ -466,11 +468,11 @@ export function compileIndependentReview({
     protected_actions: protectedActions(),
     digest: null,
   });
-  validateIndependentReview(review, {proposal, drill, packet, reproduction});
+  validateIndependentReview(review, {proposal, drill, packet, reproduction, receiptResolver});
   return review;
 }
 
-export function validateIndependentReview(review, {proposal = null, drill = null, packet = null, reproduction = null} = {}) {
+export function validateIndependentReview(review, {proposal = null, drill = null, packet = null, reproduction = null, receiptResolver} = {}) {
   exactKeys(review, [
     "schema",
     "version",
@@ -507,7 +509,7 @@ export function validateIndependentReview(review, {proposal = null, drill = null
     assert(review.proposal_digest === proposal.digest, "independent review proposal binding differs");
   }
   if (drill !== null) {
-    validateWorkflowDrill(drill);
+    validateWorkflowDrill(drill, {receiptResolver});
     assert(review.drill_digest === drill.digest, "independent review drill binding differs");
   }
   if (packet !== null) {
@@ -658,14 +660,15 @@ export function compileApprenticeshipHandoff({
   uncertainty = [],
   hostileFindings = [],
   createdAt,
+  receiptResolver,
 } = {}) {
   requireIdentifier(handoffId, "apprenticeship handoff ID");
   validateGovernanceProposalForUse(proposal);
-  validateWorkflowDrill(drill);
+  validateWorkflowDrill(drill, {receiptResolver});
   validateReproductionPacket(packet);
   assert(packet.revocation.status === "NOT_REVOKED", "revoked reproduction packet cannot be handed off");
   validateReproductionResult(reproduction);
-  validateIndependentReview(review, {packet});
+  validateIndependentReview(review, {packet, receiptResolver});
   assert(drill.status === "CLOSED_NON_ACCEPTING", "handoff requires a closed drill");
   if (ownerDecision !== null) validateOwnerDecision(ownerDecision, {proposal, review});
   assert(sameBinding(reproduction.provenance, proposal.provenance), "handoff reproduction provenance differs from proposal");
@@ -729,11 +732,11 @@ export function compileApprenticeshipHandoff({
     created_at: createdAt,
     digest: null,
   });
-  validateApprenticeshipHandoff(handoff, {proposal, drill, packet, reproduction, review, ownerDecision});
+  validateApprenticeshipHandoff(handoff, {proposal, drill, packet, reproduction, review, ownerDecision, receiptResolver});
   return handoff;
 }
 
-export function validateApprenticeshipHandoff(handoff, {proposal = null, drill = null, packet = null, reproduction = null, review = null, ownerDecision = null} = {}) {
+export function validateApprenticeshipHandoff(handoff, {proposal = null, drill = null, packet = null, reproduction = null, review = null, ownerDecision = null, receiptResolver} = {}) {
   exactKeys(handoff, [
     "schema",
     "version",
@@ -793,7 +796,7 @@ export function validateApprenticeshipHandoff(handoff, {proposal = null, drill =
     assert(sameBinding(handoff.provenance, proposal.provenance), "handoff provenance differs from proposal");
   }
   if (drill !== null) {
-    validateWorkflowDrill(drill);
+    validateWorkflowDrill(drill, {receiptResolver});
     assert(handoff.drill_digest === drill.digest, "handoff drill binding differs");
     assert(canonicalJson(handoff.question_records) === canonicalJson(drill.question_records), "handoff question records differ from drill");
     assert(canonicalJson(handoff.comparison_records) === canonicalJson(drill.comparison_records), "handoff comparison records differ from drill");

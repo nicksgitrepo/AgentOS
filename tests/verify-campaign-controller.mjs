@@ -195,6 +195,7 @@ const leasedPlatform = platform;
 platform = releasePlatformLease(platform, nextIso);
 assert.equal(platform.state, "AVAILABLE");
 assert.throws(() => archivePlatformAgent(platform), /closeout/u);
+const platformCloseoutBindings = new Map();
 const platformCloseout = compileUniversalTaskCloseoutReceipts({
   mode: "CAMPAIGN",
   observedAt: nextIso,
@@ -202,9 +203,18 @@ const platformCloseout = compileUniversalTaskCloseoutReceipts({
     "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
     "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
     "ARCHIVE_VISIBLE_TASK",
-  ].map((step, index) => [step, `digest:${crypto.createHash("sha256").update(`platform-closeout-${index + 1}`).digest("hex")}`])),
+  ].map((step, index) => {
+    const bytes = `platform-closeout-${index + 1}`;
+    const reference = `digest:${crypto.createHash("sha256").update(bytes).digest("hex")}`;
+    platformCloseoutBindings.set(reference, {bytes, receipt_sha256: reference.slice("digest:".length), status: "PROVEN", authority: null});
+    return [step, reference];
+  })),
+  receiptResolver: (reference, {authority}) => ({...platformCloseoutBindings.get(reference), authority}),
 });
-const archivedPlatform = archivePlatformAgent(platform, {universalCloseoutReceipts: platformCloseout});
+const archivedPlatform = archivePlatformAgent(platform, {
+  universalCloseoutReceipts: platformCloseout,
+  receiptResolver: (reference, {authority}) => ({...platformCloseoutBindings.get(reference), authority}),
+});
 assert.equal(archivedPlatform.state, "ARCHIVED_UNPINNED");
 assert.equal(archivedPlatform.universal_closeout_receipts.length, 9);
 assert.throws(() => compileUniversalTaskCloseoutReceipts({
@@ -216,6 +226,23 @@ assert.throws(() => compileUniversalTaskCloseoutReceipts({
     "ARCHIVE_VISIBLE_TASK",
   ].map((step, index) => [step, `ref:FORGED-CLOSEOUT-${index + 1}`])),
 }), /content-addressed/u, "forged closeout references must fail closed");
+assert.throws(() => compileUniversalTaskCloseoutReceipts({
+  mode: "CAMPAIGN",
+  observedAt: nextIso,
+  receiptRefs: Object.fromEntries([
+    "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
+    "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
+    "ARCHIVE_VISIBLE_TASK",
+  ].map((step, index) => [step, `digest:${crypto.createHash("sha256").update(`missing-closeout-${index + 1}`).digest("hex")}`])),
+}), /receipt resolver/u, "closeout references without a resolver must fail closed");
+const unresolvedCloseoutRefs = Object.fromEntries([
+  "PRESERVE_HANDOFF", "PERSIST_HANDOFF", "AUDIT_CANDIDATE", "INTEGRATE_ACCEPTED_WORK",
+  "UNPIN_SESSION", "CLOSE_STALE_WORKTREE", "REMOVE_ACTIVE_TASK_SCOPE", "MARK_CHAT_OUT_OF_SCOPE",
+  "ARCHIVE_VISIBLE_TASK",
+].map((step, index) => [step, `digest:${crypto.createHash("sha256").update(`unresolved-closeout-${index + 1}`).digest("hex")}`]));
+assert.throws(() => compileUniversalTaskCloseoutReceipts({
+  mode: "CAMPAIGN", observedAt: nextIso, receiptRefs: unresolvedCloseoutRefs, receiptResolver: () => null,
+}), /did not resolve/u, "unresolved closeout references must fail closed");
 
 const held = setHold(initial, {
   hold_id: "HOLD-1", kind: "EXTERNAL_DEPENDENCY", scope: "FEATURE-A", authority_boundary: "external access",
@@ -328,12 +355,16 @@ const closureAvailablePlatform = compilePlatformAgent({
   platformWorktree: liveDelta.platform_pool[0].platform_worktree,
   state: "AVAILABLE",
 });
-const closurePlatform = archivePlatformAgent(closureAvailablePlatform, {universalCloseoutReceipts: platformCloseout});
-const closureReadyLiveDelta = sealLifecycleState({...liveDelta, platform_pool: [closurePlatform]});
-validateCampaignState(closureReadyLiveDelta);
+const closurePlatform = archivePlatformAgent(closureAvailablePlatform, {
+  universalCloseoutReceipts: platformCloseout,
+  receiptResolver: (reference, {authority}) => ({...platformCloseoutBindings.get(reference), authority}),
+});
+const platformCloseoutResolver = (reference, {authority}) => ({...platformCloseoutBindings.get(reference), authority});
+const closureReadyLiveDelta = sealLifecycleState({...liveDelta, platform_pool: [closurePlatform]}, {receiptResolver: platformCloseoutResolver});
+validateCampaignState(closureReadyLiveDelta, {receiptResolver: platformCloseoutResolver});
 const closed = applyLifecycleTransition(closureReadyLiveDelta, {...closureReadyLiveDelta, stage: "ACCEPTED_LIVE_CLOSED"}, {
   type: "ACCEPTED_LIVE_CLOSURE", at_utc: "2026-01-01T00:04:00.000Z", payload: {closure_receipt: closureReceipt},
-});
+}, {receiptResolver: platformCloseoutResolver});
 const finalCandidate = compileNextCampaignCandidate({
   candidateKind: "FINAL", campaignId: "CAMPAIGN-2", campaignVersion: "v2", projectId: "LINE-1",
   sourceCommit: "commit-next-final", sourceTree: "tree-next-final", sourceWorktreeId: "next-final-worktree",
@@ -349,6 +380,7 @@ const admitted = admitNextCampaign(closed, {
   auditorBinding: identity("INDEPENDENT_AUDITOR", "SESSION-NEXT-AUDITOR", false, "CAMPAIGN-2", "v2"),
   featureAgentBindings: [identity("FEATURE_AGENT:TWO", "SESSION-NEXT-FEATURE", false, "CAMPAIGN-2", "v2")],
   platformAgentBindings: [identity("PLATFORM_AGENT:BACKEND_API", "SESSION-NEXT-PLATFORM", false, "CAMPAIGN-2", "v2")],
+  receiptResolver: platformCloseoutResolver,
 });
 assert.equal(admitted.successor_orientation.status, "CAMPAIGN_ADMITTED");
 assert.equal(admitted.successor_orientation.orchestrator_binding.orientation_only, false);

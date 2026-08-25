@@ -11,6 +11,28 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {
+  AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA,
+  AGENT_SPAWNER_STORAGE_GOVERNANCE_VERSION,
+  AGENT_SPAWNER_STORAGE_POLICY,
+  AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS,
+  compileControllerStorageDecision as compileControllerStorageReceipt,
+  validateControllerStorageDecision as validateControllerStorageReceipt,
+} from "./agent-spawner-lifecycle.mjs";
+
+// The Controller-facing names are explicit aliases over the single storage
+// decision contract.  There must not be a second policy implementation in
+// the authority gate.
+export const CONTROLLER_STORAGE_DECISION_SCHEMA = AGENT_SPAWNER_STORAGE_GOVERNANCE_SCHEMA;
+export const CONTROLLER_STORAGE_DECISION_VERSION = AGENT_SPAWNER_STORAGE_GOVERNANCE_VERSION;
+export const CONTROLLER_STORAGE_POLICY = AGENT_SPAWNER_STORAGE_POLICY;
+export const CONTROLLER_STORAGE_HOSTILE_FIXTURE_REFS = AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS;
+export const compileControllerStorageDecision = compileControllerStorageReceipt;
+export const compileControllerDailyStorageReceipt = compileControllerStorageReceipt;
+export const validateControllerStorageDecision = validateControllerStorageReceipt;
+export const validateControllerDailyStorageReceipt = validateControllerStorageReceipt;
+export const compileControllerStorageDecisionGate = compileControllerStorageReceipt;
+export const validateControllerStorageDecisionGate = validateControllerStorageReceipt;
 
 export const CONTROLLER_SPAWNER_AUTHORITY_GATE_SCHEMA = "agentos.controller_spawner_authority_gate.v1";
 export const CONTROLLER_SPAWNER_AUTHORITY_GATE_VERSION = 1;
