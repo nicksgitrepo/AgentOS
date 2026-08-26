@@ -4,7 +4,40 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest} from "../control/content-addressing.mjs";
-import {HYGIENE_AFTER_STATE_SCHEMA, compileHygieneDryRun, executeHygiene, validateDeletionManifest, validateHygieneAfterState} from "../control/hygiene-executor.mjs";
+import {
+  HYGIENE_AFTER_STATE_SCHEMA,
+  STORAGE_HYGIENE_PLAN_SCHEMA,
+  compileHygieneDryRun,
+  compileStorageAssetDisposition,
+  compileStorageHygienePlan,
+  executeHygiene,
+  validateDeletionManifest,
+  validateHygieneAfterState,
+} from "../control/hygiene-executor.mjs";
+
+function eligibleTarget(pathname, kind = "TEMP", overrides = {}) {
+  return {
+    path: pathname,
+    kind,
+    lifecycle_class: "CLEANUP_ELIGIBLE",
+    owner_id: "OWNER-ROUTE-037",
+    campaign_id: "CAMPAIGN-ROUTE-037",
+    deletion_condition: "Delivered identity and durable handoff are complete.",
+    estimated_bytes: 11,
+    process_count: 0,
+    active: false,
+    dirty: false,
+    referenced: false,
+    shared: false,
+    owner_released: true,
+    checkpoint_complete: true,
+    memory_handoff_complete: true,
+    remote_preserved: true,
+    retention_reason: null,
+    evidence_sha256: "a".repeat(64),
+    ...overrides,
+  };
+}
 
 const tempParent = process.env.TMPDIR;
 assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
@@ -18,7 +51,7 @@ try {
   const manifest = {
     schema: "agentos.cleanup_deletion_manifest.v1",
     version: 1,
-    targets: [{path: "disposable.txt", kind: "TEMP", active: false, dirty: false, referenced: false, shared: false}],
+    targets: [eligibleTarget("disposable.txt")],
     manifest_sha256: null,
   };
   manifest.manifest_sha256 = canonicalDigest({...manifest, manifest_sha256: null});
@@ -150,6 +183,24 @@ try {
   const active = {...manifest, targets: [{...manifest.targets[0], active: true}]};
   active.manifest_sha256 = canonicalDigest({...active, manifest_sha256: null});
   assert.throws(() => validateDeletionManifest(active), /safely removable/u);
+  const activeDisposition = compileStorageAssetDisposition(eligibleTarget("active-worktree", "WORKTREE", {lifecycle_class: "ACTIVE_CUSTODY", active: true, owner_released: false, checkpoint_complete: false, memory_handoff_complete: false, remote_preserved: false}));
+  assert.equal(activeDisposition.disposition, "RETAIN");
+  assert.deepEqual(activeDisposition.hold_reasons, ["ACTIVE_CUSTODY", "OWNER_NOT_RELEASED", "CHECKPOINT_INCOMPLETE", "MEMORY_HANDOFF_INCOMPLETE", "REMOTE_IDENTITY_NOT_PRESERVED"]);
+  const evidenceDisposition = compileStorageAssetDisposition(eligibleTarget("receipts/candidate.json", "TEMP", {lifecycle_class: "DELIVERY_EVIDENCE"}));
+  assert.equal(evidenceDisposition.disposition, "RETAIN");
+  assert.deepEqual(evidenceDisposition.hold_reasons, ["DURABLE_EVIDENCE_RETAINED"]);
+  const plan = compileStorageHygienePlan({assets: [eligibleTarget("target", "BUILD_OUTPUT", {lifecycle_class: "REGENERABLE", estimated_bytes: 2048}), activeDisposition, evidenceDisposition], observedAtUtc: "2026-08-26T18:00:00.000Z"});
+  assert.equal(plan.schema, STORAGE_HYGIENE_PLAN_SCHEMA);
+  assert.deepEqual(plan.cleanup_eligible_paths, ["target"]);
+  assert.deepEqual(plan.retained_paths, ["active-worktree", "receipts/candidate.json"]);
+  assert.equal(plan.estimated_cleanup_bytes, 2048);
+  assert.match(plan.plan_sha256, /^[0-9a-f]{64}$/u);
+  const sharedCache = {...manifest, targets: [eligibleTarget("shared-cache", "CACHE", {shared: true})], manifest_sha256: null};
+  sharedCache.manifest_sha256 = canonicalDigest({...sharedCache, manifest_sha256: null});
+  assert.throws(() => validateDeletionManifest(sharedCache), /safely removable/u);
+  const unpreservedWorktree = {...manifest, targets: [eligibleTarget("worktree", "WORKTREE", {remote_preserved: false})], manifest_sha256: null};
+  unpreservedWorktree.manifest_sha256 = canonicalDigest({...unpreservedWorktree, manifest_sha256: null});
+  assert.throws(() => validateDeletionManifest(unpreservedWorktree), /safely removable/u);
   outside = fs.mkdtempSync(path.join(tempParent, "route037-hygiene-outside-"));
   fs.writeFileSync(path.join(outside, "secret.txt"), "must remain outside authority\n");
   fs.symlinkSync(outside, path.join(root, "linked"), "dir");

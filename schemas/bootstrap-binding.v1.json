@@ -2408,7 +2408,7 @@
         },
         {
           "path": "control/hygiene-executor.mjs",
-          "sha256": "325991150cac56cafd5d3741631f081630db6e4a9eb22e645121e9de53d451ad"
+          "sha256": "f5d3ec7a0c0c97ee7cb125955abefcdd4e29c9c709a71fd84ac209a8e02842b8"
         },
         {
           "path": "control/liveness-sentinel.mjs",
@@ -2416,7 +2416,7 @@
         },
         {
           "path": "docs/campaign-closeout-memory-archive-hygiene.md",
-          "sha256": "dc6697a97c51f12507af88a6ac750337deb1a4b6f00750b7fa1ff52403c65524"
+          "sha256": "7e99f3dd08919d0cc5ef76a9afff7b112e2d5de3c25bef2c96bf390824a54872"
         },
         {
           "path": "schemas/authoritative-roster-recovery-document.v1.json",
@@ -2432,7 +2432,7 @@
         },
         {
           "path": "schemas/cleanup-deletion-manifest.v1.json",
-          "sha256": "597b4813d0223ffe1656af388a4f05bd9b004da26c5cd25aa804403961b2a698"
+          "sha256": "17772eedf4cb65c79eb5f3b72a01b5ec11f5afc7d493e5d138be16bd68ca125e"
         },
         {
           "path": "schemas/controller-closeout-verification.v1.json",
@@ -2772,7 +2772,7 @@
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
-          "sha256": "d1713d4111b245d4b5b838327ea0f91669f8639dbdd451c60011955e8558bbf0"
+          "sha256": "2d829e0a99f00e31c471799ffba5d4a358f41bb8ba061c398e06e3591e20080d"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
@@ -2959,7 +2959,7 @@
         },
         {
           "path": "control/hygiene-executor.mjs",
-          "sha256": "325991150cac56cafd5d3741631f081630db6e4a9eb22e645121e9de53d451ad"
+          "sha256": "f5d3ec7a0c0c97ee7cb125955abefcdd4e29c9c709a71fd84ac209a8e02842b8"
         },
         {
           "path": "control/liveness-sentinel.mjs",
@@ -2967,7 +2967,7 @@
         },
         {
           "path": "docs/campaign-closeout-memory-archive-hygiene.md",
-          "sha256": "dc6697a97c51f12507af88a6ac750337deb1a4b6f00750b7fa1ff52403c65524"
+          "sha256": "7e99f3dd08919d0cc5ef76a9afff7b112e2d5de3c25bef2c96bf390824a54872"
         },
         {
           "path": "schemas/authoritative-roster-recovery-document.v1.json",
@@ -2983,7 +2983,7 @@
         },
         {
           "path": "schemas/cleanup-deletion-manifest.v1.json",
-          "sha256": "597b4813d0223ffe1656af388a4f05bd9b004da26c5cd25aa804403961b2a698"
+          "sha256": "17772eedf4cb65c79eb5f3b72a01b5ec11f5afc7d493e5d138be16bd68ca125e"
         },
         {
           "path": "schemas/controller-closeout-verification.v1.json",
@@ -3323,7 +3323,7 @@
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
-          "sha256": "d1713d4111b245d4b5b838327ea0f91669f8639dbdd451c60011955e8558bbf0"
+          "sha256": "2d829e0a99f00e31c471799ffba5d4a358f41bb8ba061c398e06e3591e20080d"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",

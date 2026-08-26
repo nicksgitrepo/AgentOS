@@ -2,17 +2,43 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "agentos.cleanup_deletion_manifest.v1",
   "type": "object",
-  "additionalProperties": true,
-  "required": ["schema", "version", "authority_root", "manifest_sha256", "entries", "mode", "created_at_utc"],
+  "additionalProperties": false,
+  "required": ["schema", "version", "targets", "manifest_sha256"],
   "properties": {
     "schema": {"const": "agentos.cleanup_deletion_manifest.v1"},
     "version": {"const": 1},
-    "authority_root": {"type": "string", "minLength": 1},
-    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "entries": {"type": "array", "items": {"type": "object", "required": ["path", "sha256", "kind", "disposition"], "properties": {"path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "kind": {"enum": ["file", "directory", "metadata"]}, "disposition": {"enum": ["RETAIN", "DELETE"]}}}},
-    "mode": {"enum": ["DRY_RUN", "AUTHORIZED_EXECUTION"]},
-    "created_at_utc": {"type": "string", "minLength": 1},
-    "deletion_authority": {"const": "CONTROLLER_CLEANUP_ONLY"},
-    "live_process_policy": {"const": "FAIL_CLOSED"}
-  }
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["path", "kind", "lifecycle_class", "owner_id", "campaign_id", "deletion_condition", "estimated_bytes", "process_count", "active", "dirty", "referenced", "shared", "owner_released", "checkpoint_complete", "memory_handoff_complete", "remote_preserved", "retention_reason", "evidence_sha256"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"},
+          "kind": {"enum": ["WORKTREE", "CACHE", "FIXTURE", "BROWSER_STATE", "TEMP", "BUILD_OUTPUT", "DEPENDENCY_COPY", "RUNTIME_STATE"]},
+          "lifecycle_class": {"const": "CLEANUP_ELIGIBLE"},
+          "owner_id": {"type": "string", "minLength": 1},
+          "campaign_id": {"type": "string", "minLength": 1},
+          "deletion_condition": {"type": "string", "minLength": 1},
+          "estimated_bytes": {"type": "integer", "minimum": 0},
+          "process_count": {"const": 0},
+          "active": {"const": false},
+          "dirty": {"const": false},
+          "referenced": {"const": false},
+          "shared": {"const": false},
+          "owner_released": {"const": true},
+          "checkpoint_complete": {"const": true},
+          "memory_handoff_complete": {"const": true},
+          "remote_preserved": {"type": "boolean"},
+          "retention_reason": {"type": "null"},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "allOf": [{"if": {"properties": {"kind": {"const": "WORKTREE"}}}, "then": {"properties": {"remote_preserved": {"const": true}}}}]
+      }
+    },
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "x-lifecycle-classes": ["ACTIVE_CUSTODY", "REGENERABLE", "DELIVERY_EVIDENCE", "RETAINED_RUNTIME_STATE", "CLEANUP_ELIGIBLE"],
+  "x-policy": {"build_products_are_evidence": false, "delivery_evidence_is_automatically_deletable": false, "execution_requires_separate_admission": true, "active_or_ambiguous_custody_fails_closed": true}
 }
