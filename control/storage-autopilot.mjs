@@ -67,8 +67,10 @@ export function validateStorageAsset(asset, label = "storage asset") {
 export function compileStorageAssetDisposition(asset) {
   const valid = validateStorageAsset(asset);
   const holds = [];
-  if (valid.lifecycle_class === "DELIVERY_EVIDENCE") holds.push("DURABLE_EVIDENCE_RETAINED");
-  if (valid.active) holds.push("ACTIVE_CUSTODY");
+  if (STORAGE_AUTO_LIFECYCLE_PROTECTED.has(valid.lifecycle_class)) {
+    holds.push(valid.lifecycle_class === "DELIVERY_EVIDENCE" ? "DURABLE_EVIDENCE_RETAINED" : valid.lifecycle_class);
+  }
+  if (valid.active && !holds.includes("ACTIVE_CUSTODY")) holds.push("ACTIVE_CUSTODY");
   if (valid.dirty) holds.push("DIRTY_CUSTODY");
   if (valid.referenced) holds.push("LIVE_REFERENCE");
   if (valid.shared) holds.push("SHARED_RESOURCE");
@@ -634,10 +636,11 @@ export const discoverStorageUnion = compileUniversalDiscovery;
 export const validateStorageDiscovery = validateUniversalDiscovery;
 
 export function compileStorageDeletionDecision(asset, {action = "DELETE"} = {}) {
-  const valid = compileStorageAssetDisposition(asset);
-  const protectedClass = STORAGE_AUTO_LIFECYCLE_PROTECTED.has(valid.lifecycle_class) || valid.protected === true || valid.kind === "RUNTIME_STATE";
-  const allowed = action !== "DELETE" || (!protectedClass && valid.disposition === "DELETE_AFTER_SEPARATE_ADMISSION");
-  return {path: valid.path, action, allowed, disposition: allowed ? "DELETE_AFTER_SEPARATE_ADMISSION" : "RETAIN", reason: allowed ? null : "PROTECTED_DATA_DELETE_DENIAL", lifecycle_class: valid.lifecycle_class};
+  const source = validateStorageAsset(asset);
+  const classified = compileStorageAssetDisposition(source);
+  const protectedClass = STORAGE_AUTO_LIFECYCLE_PROTECTED.has(source.lifecycle_class) || source.protected === true || source.kind === "RUNTIME_STATE";
+  const allowed = action !== "DELETE" || (!protectedClass && classified.disposition === "DELETE_AFTER_SEPARATE_ADMISSION");
+  return {path: source.path, action, allowed, disposition: allowed ? "DELETE_AFTER_SEPARATE_ADMISSION" : "RETAIN", reason: allowed ? null : "PROTECTED_DATA_DELETE_DENIAL", lifecycle_class: classified.lifecycle_class};
 }
 
 export function assertProtectedDataDeleteDenied(asset) {

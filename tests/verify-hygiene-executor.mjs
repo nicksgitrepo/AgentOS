@@ -18,6 +18,7 @@ import {
   compileStorageAccounting,
   compileStorageAssetDisposition,
   compileStorageAutopilotDecision,
+  compileStorageDeletionDecision,
   compileStorageHygienePlan,
   compileUniversalDiscovery,
   executeHygiene,
@@ -206,6 +207,26 @@ try {
   const evidenceDisposition = compileStorageAssetDisposition(eligibleTarget("receipts/candidate.json", "TEMP", {lifecycle_class: "DELIVERY_EVIDENCE"}));
   assert.equal(evidenceDisposition.disposition, "RETAIN");
   assert.deepEqual(evidenceDisposition.hold_reasons, ["DURABLE_EVIDENCE_RETAINED"]);
+  for (const [index, lifecycleClass] of ["ACTIVE_CUSTODY", "RETAINED_RUNTIME_STATE", "DELIVERY_EVIDENCE"].entries()) {
+    const protectedAsset = eligibleTarget(`protected-class-${index}`, "TEMP", {
+      lifecycle_class: lifecycleClass,
+      eligible: true,
+      disposition: "DELETE_AFTER_SEPARATE_ADMISSION",
+      force: true,
+      override: true,
+      release: true,
+      cleanup: true,
+      hold_reasons: [],
+    });
+    const protectedDisposition = compileStorageAssetDisposition(protectedAsset);
+    assert.equal(protectedDisposition.disposition, "RETAIN");
+    assert.equal(protectedDisposition.lifecycle_class, lifecycleClass);
+    assert.notEqual(protectedDisposition.hold_reasons.length, 0);
+    assert.equal(compileStorageDeletionDecision(protectedAsset).allowed, false);
+    assert.equal(compileStorageDeletionDecision({...protectedAsset, disposition: "DELETE", force: false, override: false}, {action: "DELETE"}).allowed, false);
+  }
+  assert.throws(() => compileStorageAssetDisposition(eligibleTarget("unknown-class", "TEMP", {lifecycle_class: "UNKNOWN"})), /lifecycle class is invalid/u);
+  assert.throws(() => compileStorageDeletionDecision(eligibleTarget("malformed-class", "TEMP", {lifecycle_class: null})), /lifecycle class is invalid/u);
   const plan = compileStorageHygienePlan({assets: [eligibleTarget("target", "BUILD_OUTPUT", {lifecycle_class: "REGENERABLE", estimated_bytes: 2048}), activeDisposition, evidenceDisposition], observedAtUtc: "2026-08-26T18:00:00.000Z"});
   assert.equal(plan.schema, STORAGE_HYGIENE_PLAN_SCHEMA);
   assert.deepEqual(plan.cleanup_eligible_paths, ["target"]);
