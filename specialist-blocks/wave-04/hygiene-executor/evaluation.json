@@ -110,6 +110,39 @@
       "observed": "PASS"
     }
   ],
+  "storage_governance": {
+    "schema": "agentos.controller.storage_autopilot.v1",
+    "implementation_paths": [
+      "control/hygiene-executor.mjs",
+      "control/campaign-closeout-contracts.mjs",
+      "control/campaign-closeout-lifecycle.mjs"
+    ],
+    "hostile_cases": [
+      "EACH_THRESHOLD_BOUNDARY_AND_NON_OVERLAPPING_STATE",
+      "PHYSICAL_LOGICAL_DOUBLE_COUNT_DENIAL",
+      "INSUFFICIENT_UPDATE_HEADROOM",
+      "INSTALLER_OR_STAGED_UPDATE_PRESENT",
+      "INDEXING_NOT_QUIET",
+      "SAMPLES_UNSTABLE_OR_LESS_THAN_SIX_HOURS_APART",
+      "SETTLED_BUILD_ROLL_FORWARD",
+      "SYSTEM_RESIDUE_OVER_FIFTEEN_GIB",
+      "SYSTEM_RESIDUE_GROWTH_ACROSS_THREE_BUILDS",
+      "DEDUPLICATED_SYSTEM_ESCALATION",
+      "AGENTOS_CLEANUP_WITH_UPDATE_UNSETTLED",
+      "TASK_GROWTH_PLUS_TWO_GIB",
+      "TASK_GROWTH_TWO_X_WITHOUT_AUTO_STOP",
+      "MISSING_GENERATED_OR_TEMP_OWNERSHIP_METADATA",
+      "RETENTION_DEFAULTS",
+      "PROTECTED_DATA_DELETE_DENIAL",
+      "APFS_ESTIMATE_ACTUAL_CALIBRATION",
+      "ONE_CYCLE_BLOCKED_PATH_NO_ROUTE",
+      "TWO_CYCLE_IDENTICAL_BLOCKED_PATH_EXACT_ROUTE",
+      "BLOCKED_PATH_IDENTITY_CHANGE_RESETS_CORRELATION",
+      "EXISTING_LIFECYCLE_CLASS_AND_STRICT_GATE_PRESERVATION"
+    ],
+    "cleanup_or_deletion_authorized": false,
+    "ordinary_agent_polling": "DENY"
+  },
   "results": {
     "passed": 17,
     "failed": 0,

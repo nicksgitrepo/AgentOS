@@ -6,13 +6,30 @@ import path from "node:path";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   HYGIENE_AFTER_STATE_SCHEMA,
+  STORAGE_ACCOUNTING_BUCKETS,
+  STORAGE_AUTOPILOT_HOSTILE_CASES,
+  STORAGE_AUTOPILOT_SCHEMA,
   STORAGE_HYGIENE_PLAN_SCHEMA,
+  assertProtectedDataDeleteDenied,
+  classifyStorageThreshold,
+  compileApfsCalibration,
+  compileBlockedPathRoute,
   compileHygieneDryRun,
+  compileStorageAccounting,
   compileStorageAssetDisposition,
+  compileStorageAutopilotDecision,
   compileStorageHygienePlan,
+  compileUniversalDiscovery,
   executeHygiene,
+  validateApfsCalibration,
+  validateBlockedPathRoute,
   validateDeletionManifest,
   validateHygieneAfterState,
+  validateStorageAccounting,
+  validateStorageAutopilotDecision,
+  validateGeneratedTempMetadata,
+  compileRetentionDefaults,
+  validateRetentionDefaults,
 } from "../control/hygiene-executor.mjs";
 
 function eligibleTarget(pathname, kind = "TEMP", overrides = {}) {
@@ -219,6 +236,78 @@ try {
   parentSymlinkDryRun.dry_run_sha256 = canonicalDigest({...parentSymlinkDryRun, dry_run_sha256: null});
   assert.throws(() => executeHygiene({manifest: parentSymlink, dryRun: parentSymlinkDryRun, authorityRoot: root, executionAdmitted: true, removeTarget: () => {}}), /symlinked component/u);
   assert.equal(fs.readFileSync(path.join(outside, "secret.txt"), "utf8"), "must remain outside authority\n");
+
+  const accounting = compileStorageAccounting({buckets: [
+    {id: STORAGE_ACCOUNTING_BUCKETS[0], kind: "PHYSICAL", free_bytes: 1000, used_bytes: 9000, provenance: "APFS_SYNTHETIC", overlaps: ["PROJECT_LOGICAL", "SYSTEM_LOGICAL"]},
+    {id: STORAGE_ACCOUNTING_BUCKETS[1], kind: "LOGICAL", bytes: 5000, provenance: "PROJECT_SYNTHETIC", overlaps: ["APFS_PHYSICAL_FREE_AND_USED"]},
+    {id: STORAGE_ACCOUNTING_BUCKETS[2], kind: "LOGICAL", bytes: 3000, provenance: "SYSTEM_SYNTHETIC", overlaps: ["APFS_PHYSICAL_FREE_AND_USED"]},
+    {id: STORAGE_ACCOUNTING_BUCKETS[3], kind: "LOGICAL", bytes: 100, provenance: "PROTECTED_SYNTHETIC", overlaps: []},
+  ]});
+  assert.equal(accounting.double_count_denied, true);
+  assert.equal(accounting.reclaimable_bytes, 8000);
+  validateStorageAccounting(accounting);
+  assert.throws(() => compileStorageAccounting({buckets: accounting.buckets, reclaimable_bytes: 18100}), /cannot be summed|double-count/u);
+  assert.deepEqual([25, 50, 51, 80, 81, 100, 101].map(classifyStorageThreshold), ["HARD_FLOOR", "OWNER_WARNING", "BELOW_CLEANUP_TARGET", "CLEANUP_TARGET", "CLEANUP_TARGET", "CLEANUP_TARGET", "ABOVE_CLEANUP_TARGET"]);
+
+  const unsettled = compileStorageAutopilotDecision({
+    receiptId: "STORAGE.AUTOPILOT.UNSETTLED",
+    observedAtUtc: "2026-08-26T18:00:00.000Z",
+    freeGib: 40,
+    accounting,
+    updateState: {
+      installer_present: true,
+      staged_update_present: false,
+      indexing_quiet: false,
+      update_headroom_gib: 10,
+      samples: ["2026-08-26T00:00:00.000Z", "2026-08-26T03:00:00.000Z"],
+    },
+    taskGrowth: {growth_gib: 2, ratio: 2},
+  });
+  assert.equal(unsettled.schema, STORAGE_AUTOPILOT_SCHEMA);
+  assert.equal(unsettled.update.settled, false);
+  assert.equal(unsettled.update.update_actions_allowed, false);
+  assert.equal(unsettled.cleanup.independent_of_update_state, true);
+  assert.equal(unsettled.task_growth.alert, true);
+  assert.equal(unsettled.task_growth.automatic_stop, false);
+  validateStorageAutopilotDecision(unsettled);
+  assert.throws(() => compileStorageAutopilotDecision({receiptId: "STORAGE.AUTOPILOT.HEADROOM", observedAtUtc: "2026-08-26T18:00:00.000Z", freeGib: 80, updateRequired: true, updateHeadroomGib: 19, requireUpdateAction: true}), /headroom/u);
+  assert.throws(() => compileStorageAutopilotDecision({receiptId: "STORAGE.AUTOPILOT.POLL", observedAtUtc: "2026-08-26T18:00:00.000Z", freeGib: 80, actorRole: "AGENT"}), /Controller/u);
+
+  const metadata = {owner_task_id: "TASK-STORAGE-109", purpose: "synthetic fixture", created_at: "2026-08-26T18:00:00.000Z", regeneration_proof: "REGENERABLE_FROM_SOURCE", retention_condition: "delete after closeout"};
+  validateGeneratedTempMetadata(metadata);
+  assert.throws(() => validateGeneratedTempMetadata({...metadata, owner_task_id: undefined, explicit_orphan: false}), /owner task|explicit orphan/u);
+  const retention = compileRetentionDefaults();
+  validateRetentionDefaults(retention);
+  validateApfsCalibration(compileApfsCalibration({estimatedBytes: 100, actualBytes: 125, batchId: "BATCH-STORAGE-109"}));
+  assertProtectedDataDeleteDenied(eligibleTarget("protected-runtime", "RUNTIME_STATE", {lifecycle_class: "RETAINED_RUNTIME_STATE"}));
+
+  const blockedFirst = compileBlockedPathRoute({path: "blocked/target", currentIdentity: "IDENTITY-A", owner: "CONTROLLER", cycle: 1});
+  const blockedSecond = compileBlockedPathRoute({path: "blocked/target", currentIdentity: "IDENTITY-A", owner: "CONTROLLER", cycle: 2, previousRoutes: [blockedFirst]});
+  assert.equal(blockedFirst.route, null);
+  assert.equal(blockedSecond.route_emitted, true);
+  validateBlockedPathRoute(blockedSecond);
+  const blockedReset = compileBlockedPathRoute({path: "blocked/target", currentIdentity: "IDENTITY-B", owner: "CONTROLLER", cycle: 2, previousRoutes: [blockedFirst]});
+  assert.equal(blockedReset.route, null);
+
+  const discovery = compileUniversalDiscovery({
+    sources: {
+      live: ["TASK-DISCOVERY-A"],
+      archived: [{task_id: "TASK-DISCOVERY-B", archived: true}],
+      host_registry: [{task_id: "TASK-DISCOVERY-B", archived: true}],
+    },
+    directReadbacks: {
+      "TASK-DISCOVERY-A": {task_id: "TASK-DISCOVERY-A", classification: "TEMPORARY_CLOSED"},
+      "TASK-DISCOVERY-B": {task_id: "TASK-DISCOVERY-B", classification: "PERMANENT_EXEMPT"},
+    },
+  });
+  assert.equal(discovery.status, "DISCOVERY_COMPLETE");
+  assert.equal(discovery.union_count, 2);
+  assert.equal(discovery.unaccounted_count, 0);
+  assert.throws(() => compileUniversalDiscovery({sources: {live: {items: ["TASK-BOUNDED"], complete: false}}, directReadbacks: {"TASK-BOUNDED": {task_id: "TASK-BOUNDED", classification: "TEMPORARY_CLOSED"}}}), /bounded or incomplete/u);
+  assert.throws(() => compileUniversalDiscovery({sources: {live: ["TASK-MISSING-READBACK"]}}), /direct readback missing/u);
+  const divergence = compileUniversalDiscovery({sources: {archived: [{task_id: "TASK-DIVERGENCE", archived: true}], host_registry: [{task_id: "TASK-DIVERGENCE", archived: false}]}, directReadbacks: {"TASK-DIVERGENCE": {task_id: "TASK-DIVERGENCE", classification: "PERMANENT_EXEMPT"}}});
+  assert.equal(divergence.status, "ARCHIVED_REGISTRY_PROJECTION_DIVERGENCE");
+  assert.equal(STORAGE_AUTOPILOT_HOSTILE_CASES.length, 21);
 } finally {
   fs.rmSync(root, {recursive: true, force: true});
   if (outside) fs.rmSync(outside, {recursive: true, force: true});

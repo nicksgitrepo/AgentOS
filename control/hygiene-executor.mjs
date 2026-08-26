@@ -6,27 +6,103 @@ import fs from "node:fs";
 import path from "node:path";
 import {canonicalDigest} from "./content-addressing.mjs";
 
-export const HYGIENE_EXECUTION_SCHEMA = "agentos.hygiene_executor_execution.v1";
-export const HYGIENE_DRY_RUN_SCHEMA = "agentos.hygiene_executor_dry_run.v1";
-export const HYGIENE_AFTER_STATE_SCHEMA = "agentos.hygiene_executor_after_state.v1";
-export const STORAGE_HYGIENE_PLAN_SCHEMA = "agentos.storage_hygiene_plan.v1";
-export const STORAGE_LIFECYCLE_CLASSES = Object.freeze([
-  "ACTIVE_CUSTODY",
-  "REGENERABLE",
-  "DELIVERY_EVIDENCE",
-  "RETAINED_RUNTIME_STATE",
-  "CLEANUP_ELIGIBLE",
-]);
-export const CLEANUP_TARGET_KINDS = Object.freeze([
-  "WORKTREE",
-  "CACHE",
-  "FIXTURE",
-  "BROWSER_STATE",
-  "TEMP",
-  "BUILD_OUTPUT",
-  "DEPENDENCY_COPY",
-  "RUNTIME_STATE",
-]);
+import {
+  STORAGE_HYGIENE_PLAN_SCHEMA,
+  STORAGE_LIFECYCLE_CLASSES,
+  CLEANUP_TARGET_KINDS,
+  validateStorageAsset,
+  compileStorageAssetDisposition,
+  compileStorageHygienePlan,
+  STORAGE_AUTOPILOT_SCHEMA,
+  STORAGE_AUTOPILOT_VERSION,
+  STORAGE_ACCOUNTING_SCHEMA,
+  STORAGE_DISCOVERY_SCHEMA,
+  STORAGE_RETENTION_SCHEMA,
+  STORAGE_CALIBRATION_SCHEMA,
+  STORAGE_BLOCKED_PATH_SCHEMA,
+  STORAGE_ACCOUNTING_BUCKETS,
+  STORAGE_AUTOPILOT_POLICY,
+  STORAGE_RETENTION_DEFAULTS,
+  STORAGE_AUTOPILOT_HOSTILE_CASES,
+  compileStorageAccounting,
+  validateStorageAccounting,
+  classifyStorageThreshold,
+  validateGeneratedTempMetadata,
+  validateGeneratedArtifactMetadata,
+  validateTempMetadata,
+  compileRetentionDefaults,
+  validateRetentionDefaults,
+  compileApfsCalibration,
+  validateApfsCalibration,
+  compileBlockedPathRoute,
+  validateBlockedPathRoute,
+  compileBlockedPathGateRoute,
+  compileBlockedPathCorrelation,
+  compileUniversalDiscovery,
+  validateUniversalDiscovery,
+  compileStorageDiscoveryUnion,
+  discoverStorageUnion,
+  validateStorageDiscovery,
+  compileStorageDeletionDecision,
+  assertProtectedDataDeleteDenied,
+  validateProtectedDataDelete,
+  compileStorageAutopilotDecision,
+  validateStorageAutopilotDecision,
+  compileControllerStorageAutopilot,
+  compileControllerStorageAutopilotDecision,
+  validateControllerStorageAutopilot,
+  evaluateStorageThreshold,
+  storageThresholdClass,
+} from "./storage-autopilot.mjs";
+export {
+  STORAGE_HYGIENE_PLAN_SCHEMA,
+  STORAGE_LIFECYCLE_CLASSES,
+  CLEANUP_TARGET_KINDS,
+  compileStorageAssetDisposition,
+  compileStorageHygienePlan,
+  STORAGE_AUTOPILOT_SCHEMA,
+  STORAGE_AUTOPILOT_VERSION,
+  STORAGE_ACCOUNTING_SCHEMA,
+  STORAGE_DISCOVERY_SCHEMA,
+  STORAGE_RETENTION_SCHEMA,
+  STORAGE_CALIBRATION_SCHEMA,
+  STORAGE_BLOCKED_PATH_SCHEMA,
+  STORAGE_ACCOUNTING_BUCKETS,
+  STORAGE_AUTOPILOT_POLICY,
+  STORAGE_RETENTION_DEFAULTS,
+  STORAGE_AUTOPILOT_HOSTILE_CASES,
+  compileStorageAccounting,
+  validateStorageAccounting,
+  classifyStorageThreshold,
+  validateGeneratedTempMetadata,
+  validateGeneratedArtifactMetadata,
+  validateTempMetadata,
+  compileRetentionDefaults,
+  validateRetentionDefaults,
+  compileApfsCalibration,
+  validateApfsCalibration,
+  compileBlockedPathRoute,
+  validateBlockedPathRoute,
+  compileBlockedPathGateRoute,
+  compileBlockedPathCorrelation,
+  compileUniversalDiscovery,
+  validateUniversalDiscovery,
+  compileStorageDiscoveryUnion,
+  discoverStorageUnion,
+  validateStorageDiscovery,
+  compileStorageDeletionDecision,
+  assertProtectedDataDeleteDenied,
+  validateProtectedDataDelete,
+  compileStorageAutopilotDecision,
+  validateStorageAutopilotDecision,
+  compileControllerStorageAutopilot,
+  compileControllerStorageAutopilotDecision,
+  validateControllerStorageAutopilot,
+  evaluateStorageThreshold,
+  storageThresholdClass,
+} from "./storage-autopilot.mjs";
+
+
 const SHA256 = /^[0-9a-f]{64}$/u;
 
 function assert(condition, message) { if (!condition) throw new Error(message); }
@@ -64,72 +140,10 @@ function safeRelative(target) {
   return target;
 }
 
-function validateStorageAsset(asset, label = "storage asset") {
-  record(asset, label);
-  const relative = safeRelative(asset.path);
-  assert(CLEANUP_TARGET_KINDS.includes(asset.kind), `${label} kind is invalid`);
-  assert(STORAGE_LIFECYCLE_CLASSES.includes(asset.lifecycle_class), `${label} lifecycle class is invalid`);
-  string(asset.owner_id, `${label} owner`);
-  string(asset.campaign_id, `${label} campaign`);
-  string(asset.deletion_condition, `${label} deletion condition`);
-  nonNegativeInteger(asset.estimated_bytes, `${label} estimated bytes`);
-  nonNegativeInteger(asset.process_count, `${label} process count`);
-  for (const field of ["active", "dirty", "referenced", "shared", "owner_released", "checkpoint_complete", "memory_handoff_complete", "remote_preserved"]) {
-    assert(typeof asset[field] === "boolean", `${label} ${field} must be boolean`);
-  }
-  assert(asset.retention_reason === null || (typeof asset.retention_reason === "string" && asset.retention_reason.trim().length > 0), `${label} retention reason is invalid`);
-  sha(asset.evidence_sha256, `${label} evidence digest`);
-  return {...asset, path: relative};
-}
 
-/**
- * Classify one observed storage asset. Classification is conservative: a
- * caller cannot turn active, dirty, referenced, shared, unpreserved, or
- * process-owned material into deletion authority by merely naming it
- * CLEANUP_ELIGIBLE.
- */
-export function compileStorageAssetDisposition(asset) {
-  const valid = validateStorageAsset(asset);
-  const holds = [];
-  if (valid.lifecycle_class === "DELIVERY_EVIDENCE") holds.push("DURABLE_EVIDENCE_RETAINED");
-  if (valid.active) holds.push("ACTIVE_CUSTODY");
-  if (valid.dirty) holds.push("DIRTY_CUSTODY");
-  if (valid.referenced) holds.push("LIVE_REFERENCE");
-  if (valid.shared) holds.push("SHARED_RESOURCE");
-  if (valid.process_count > 0) holds.push("LIVE_PROCESS");
-  if (!valid.owner_released) holds.push("OWNER_NOT_RELEASED");
-  if (!valid.checkpoint_complete) holds.push("CHECKPOINT_INCOMPLETE");
-  if (!valid.memory_handoff_complete) holds.push("MEMORY_HANDOFF_INCOMPLETE");
-  if (valid.kind === "WORKTREE" && !valid.remote_preserved) holds.push("REMOTE_IDENTITY_NOT_PRESERVED");
-  if (valid.retention_reason !== null) holds.push("RETENTION_REASON_ACTIVE");
-  const cleanupEligible = holds.length === 0;
-  return {
-    ...valid,
-    lifecycle_class: cleanupEligible ? "CLEANUP_ELIGIBLE" : valid.lifecycle_class,
-    disposition: cleanupEligible ? "DELETE_AFTER_SEPARATE_ADMISSION" : "RETAIN",
-    hold_reasons: holds,
-  };
-}
-
-export function compileStorageHygienePlan({assets, observedAtUtc} = {}) {
-  assert(Array.isArray(assets) && assets.length > 0, "storage hygiene assets are required");
-  string(observedAtUtc, "storage hygiene observation time");
-  const classified = assets.map((asset) => compileStorageAssetDisposition(asset));
-  assert(new Set(classified.map((asset) => asset.path)).size === classified.length, "storage hygiene plan contains duplicate paths");
-  const plan = {
-    schema: STORAGE_HYGIENE_PLAN_SCHEMA,
-    version: 1,
-    observed_at_utc: observedAtUtc,
-    assets: classified,
-    cleanup_eligible_paths: classified.filter((asset) => asset.disposition === "DELETE_AFTER_SEPARATE_ADMISSION").map((asset) => asset.path).sort(),
-    retained_paths: classified.filter((asset) => asset.disposition === "RETAIN").map((asset) => asset.path).sort(),
-    estimated_cleanup_bytes: classified.filter((asset) => asset.disposition === "DELETE_AFTER_SEPARATE_ADMISSION").reduce((sum, asset) => sum + asset.estimated_bytes, 0),
-    plan_sha256: null,
-  };
-  plan.plan_sha256 = canonicalDigest({...plan, plan_sha256: null});
-  return plan;
-}
-
+export const HYGIENE_EXECUTION_SCHEMA = "agentos.hygiene_executor_execution.v1";
+export const HYGIENE_DRY_RUN_SCHEMA = "agentos.hygiene_executor_dry_run.v1";
+export const HYGIENE_AFTER_STATE_SCHEMA = "agentos.hygiene_executor_after_state.v1";
 export function validateDeletionManifest(manifest) {
   record(manifest, "cleanup deletion manifest");
   assert(manifest.schema === "agentos.cleanup_deletion_manifest.v1", "cleanup deletion manifest schema is invalid");

@@ -84,3 +84,54 @@ continue below it. At or below 50 GB Controller warns the owner and closes the
 current issue before starting new work. At or below 25 GB no storage-heavy new
 work starts. Cleanup resumes work only after manifest-bound execution and a
 fresh after-state receipt.
+
+## Storage autopilot decision contract
+
+The Controller records one digest-bound observation every 24 hours. The
+observation has four explicitly different accounting buckets:
+`APFS_PHYSICAL_FREE_AND_USED`, `PROJECT_LOGICAL`, `SYSTEM_LOGICAL`, and
+`PROTECTED_LOGICAL`. Each bucket retains its provenance. Physical and logical
+measurements that overlap are not added as independent reclaimable bytes; a
+double-count claim is denied. The autopilot is an accounting and routing
+decision, never cleanup or deletion authority.
+
+The decision tree is deterministic at every boundary: above 80 GiB is healthy;
+50–80 GiB opens orderly Controller cleanup while the current issue may finish,
+verify, freeze, hand off, and (when above 25 GiB) deliver; at or below 50 GiB
+the owner warning is recorded; at or below 25 GiB the hard operating floor
+closes new work and waits for owner recovery authority. A next issue is not
+admitted while the below-target transition is open. Ordinary agents do not
+poll storage, and a task may not be stopped automatically merely because its
+growth reaches 2 GiB or doubles.
+
+macOS update/build settling is independent evidence: no installer or staged
+update, quiet indexing, and two stable samples at least six hours apart. The
+Controller may perform AgentOS cleanup planning while that update state is
+unsettled, but it may not claim update readiness or bypass the headroom
+requirement (20 GiB). System residue over 15 GiB above the settled baseline or
+growing across three builds emits one deduplicated escalation. A settled build
+rolls the baseline forward with source provenance.
+
+Every generated or temporary path carries an owner task (or an explicit orphan
+decision), purpose, creation time, regeneration proof, and retention/deletion
+condition. Defaults remain seven-day temporary expiry, a retention reason after
+30 days for generated artifacts, quarterly legacy review, bounded/rotated logs,
+and cache cleanup only at a proven-safe closeout. Protected lifecycle classes,
+active or unmerged custody, durable evidence, chat/session state, and ambiguous
+references are never auto-deleted.
+
+The universal discovery union includes live, pinned, non-pinned, archived,
+not-loaded, interrupted, failed, idle, and active task projections; campaign
+rosters; Controller, worktree, process, automation, State, Memory, handoff,
+artifact, and authoritative host registries. Every deduplicated task identity
+requires an independent direct readback and exactly one `PERMANENT_EXEMPT` or
+`TEMPORARY_CLOSED` classification. Bounded pages, omitted identities, and an
+archived app/host projection disagreement fail closed as
+`ARCHIVED_REGISTRY_PROJECTION_DIVERGENCE` rather than implying absence.
+
+If one exact path is blocked for one cycle, no route is emitted. The same path,
+identity, and owner on the second cycle emits one deduplicated typed gate route;
+an identity change resets the correlation. APFS calibration records estimated
+bytes, actual bytes, and both ratio directions for every executed batch. These
+receipts preserve the existing lifecycle classes and strict gates and are
+safe to hand off without granting execution authority.

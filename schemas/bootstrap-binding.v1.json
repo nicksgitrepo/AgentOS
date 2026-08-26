@@ -2782,7 +2782,7 @@
       "mechanical_paths": [
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "8d7d9dd14aefe891f57e2c27c27eb12066a2e3a3c18c6ea67f4c61ec54fe4d7b"
+          "sha256": "dae8a21a6baa5691484d00028535ab18a0ac2daf6a47145f112d322050042488"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -2951,15 +2951,15 @@
         },
         {
           "path": "control/campaign-closeout-contracts.mjs",
-          "sha256": "3ed4d53996eafa109306ec4f862f0235643ebdfac5c8c578e9175d8216ecc936"
+          "sha256": "50f5b5c5ab0cc2fc559e13015b7a713226126b92608052d154bfe47deb1fb2bf"
         },
         {
           "path": "control/campaign-closeout-lifecycle.mjs",
-          "sha256": "edae0a4f8b34070636ad6b443f2210093b1a0200ba63064296d5184a8bb44f1e"
+          "sha256": "e74d2b7464aa2b3a83b1b53517db20808ef1ac1707254fb85da869112ab6784e"
         },
         {
           "path": "control/hygiene-executor.mjs",
-          "sha256": "f5d3ec7a0c0c97ee7cb125955abefcdd4e29c9c709a71fd84ac209a8e02842b8"
+          "sha256": "df22bc0da258c1828d8c74a5382ad4d119cbcf33954bf70c982e2477442012aa"
         },
         {
           "path": "control/liveness-sentinel.mjs",
@@ -2967,7 +2967,7 @@
         },
         {
           "path": "docs/campaign-closeout-memory-archive-hygiene.md",
-          "sha256": "7e99f3dd08919d0cc5ef76a9afff7b112e2d5de3c25bef2c96bf390824a54872"
+          "sha256": "c16c61abea65b63c9e68d176ced6e1689e41b8ae93088ea537efc5bdc87c9918"
         },
         {
           "path": "schemas/authoritative-roster-recovery-document.v1.json",
@@ -2979,7 +2979,7 @@
         },
         {
           "path": "schemas/campaign-closeout-lifecycle.v1.json",
-          "sha256": "6ac1e84563a02b242716a7e95e59ff44204f45c2b494156b102c59f0f707eefc"
+          "sha256": "c320a0891dcddc39805c4fdc559c45d0ebb7140c1ee132a4941d5de77d7831e5"
         },
         {
           "path": "schemas/cleanup-deletion-manifest.v1.json",
@@ -2991,15 +2991,15 @@
         },
         {
           "path": "schemas/hygiene-executor-after-state.v1.json",
-          "sha256": "d23c4c2786e323a2abcaea65832627f92c2ac831fd7893db4c0469776aa35bd0"
+          "sha256": "d917fc5d65773609ac1b30600997e5a882a54ffa35481e677877db9750d947db"
         },
         {
           "path": "schemas/hygiene-executor-dry-run.v1.json",
-          "sha256": "2d03548213ee580710bf50800cb423075ce001327b50c535db37d3bf451c0c12"
+          "sha256": "3f5a3b1d03ebef8a6d71c557642b2adcec92b8db62882aa08bbfd6abe5a7246d"
         },
         {
           "path": "schemas/hygiene-executor-execution.v1.json",
-          "sha256": "38b67fe87aa586df26a4ee103ea36c212a4a04199e5657343c6ca861c37618fb"
+          "sha256": "5839c619c63918c2c2d5058add1cf2aab44b68e680a08fd4cc6645e716529502"
         },
         {
           "path": "schemas/immutable-lane-despawn-handoff.v1.json",
@@ -3043,7 +3043,7 @@
         },
         {
           "path": "specialist-blocks/wave-04/hygiene-executor/evaluation.json",
-          "sha256": "7bf3d32b31a2d3581853565bc41426e202ef6e1a097139c515806fede362251d"
+          "sha256": "b13e9e78a0bba22c073ec76b156eba65f313552a0fc1108c8f6962a5fe3cc497"
         },
         {
           "path": "specialist-blocks/wave-04/hygiene-executor/fixtures/authority_conflict.json",
@@ -3315,15 +3315,15 @@
         },
         {
           "path": "tests/verify-campaign-closeout-contracts.mjs",
-          "sha256": "0305cc3f0591e84d3204f4ee1248838c1d65f0900cd3d17869b5ee7706ccbff2"
+          "sha256": "efdc0d85888cd28d6f82d0d65a9cedeeeb274bcdf7af20097cb2376e3c314603"
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
-          "sha256": "89aa7328de53713847ecc808dfe5806a7ceae798addb4cda0b334dcfae055b0e"
+          "sha256": "cba96d2bf528b6b4243a765bda15e89d028cba91ed6c90d574bb268b472bf98d"
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
-          "sha256": "2d829e0a99f00e31c471799ffba5d4a358f41bb8ba061c398e06e3591e20080d"
+          "sha256": "0734271c6f490e3184ae6824ae79b40186f811c76430d3c7a66c3ca69cf388db"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
@@ -3395,7 +3395,7 @@
         },
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "8d7d9dd14aefe891f57e2c27c27eb12066a2e3a3c18c6ea67f4c61ec54fe4d7b"
+          "sha256": "dae8a21a6baa5691484d00028535ab18a0ac2daf6a47145f112d322050042488"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -3491,6 +3491,17 @@
         }
       ],
       "successor_061_authority_sha256": "52dfd00e902917f02a60a7f03394d09a18903d1b6b281164041e6177a78c563c"
+    },
+    "storage_autopilot_controller": {
+      "path": "control/storage-autopilot.mjs",
+      "sha256": "3213a137cad277acbe84492cb5b46c40d8d68fdb91ec520c724a9a2020d4661f",
+      "authority": "orchestrator-storage-autopilot-architecture-modularization-successor-110",
+      "authority_sha256": "e6618a9c3c048abb7db13e3d835414a66facdbc54eb296a8c02d8e3a75e0b3dc",
+      "direct_path_count": 14,
+      "mechanical_path_count": 1,
+      "maximum_total_path_count": 15,
+      "public_api": "HYGIENE_EXECUTOR_COMPATIBILITY_REEXPORT",
+      "filesystem_mutation": false
     }
   },
   "compatibility_only": {

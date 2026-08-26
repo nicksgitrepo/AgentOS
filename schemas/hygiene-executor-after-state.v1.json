@@ -16,6 +16,9 @@
     "after_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "authority_root": {"type": "string", "minLength": 1},
     "symlink_ancestors_checked": {"const": true},
-    "fresh_revalidation": {"const": true}
+    "fresh_revalidation": {"const": true},
+    "storage_accounting": {"type": ["object", "null"]},
+    "storage_autopilot": {"type": ["object", "null"]},
+    "storage_discovery": {"type": ["object", "null"]}
   }
 }

@@ -20,6 +20,8 @@ import {
   correctFalseBlocker,
   reconcileThreadReadbackProjection,
   validateProjectionDivergenceReceipt,
+  compileStorageAutopilotDecision,
+  validateStorageAutopilotDecision,
 } from "../control/campaign-closeout-contracts.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -86,5 +88,9 @@ assert.equal(corrected.duplicate_route, false);
 const duplicate = correctFalseBlocker({originalClassification: "HOST_SAME_TASK_EXHAUSTED", recovered: receipt, consumptionLedger: ledger});
 assert.equal(duplicate.duplicate, true);
 assert.throws(() => correctFalseBlocker({originalClassification: "UNRELATED_FAILURE", recovered: receipt, consumptionLedger: ledger}), /exact projection-derived false blocker/u);
+
+const storageContract = compileStorageAutopilotDecision({receiptId: "STORAGE.CONTRACTS.037", observedAtUtc: "2026-08-26T18:00:00.000Z", freeGib: 26});
+assert.equal(storageContract.threshold_class, "OWNER_WARNING");
+validateStorageAutopilotDecision(storageContract);
 
 console.log("PASS campaign closeout contracts: project-agnostic divergence identity, false-blocker correction, and exactly-once route contract");

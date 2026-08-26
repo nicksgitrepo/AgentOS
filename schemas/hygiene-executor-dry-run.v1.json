@@ -3,6 +3,15 @@
   "$id": "agentos.hygiene_executor_dry_run.v1",
   "type": "object",
   "required": ["schema", "version", "manifest_sha256", "dry_run_sha256", "targets"],
-  "properties": {"schema": {"const": "agentos.hygiene_executor_dry_run.v1"}, "version": {"const": 1}, "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "dry_run_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "targets": {"type": "array"}},
+  "properties": {
+    "schema": {"const": "agentos.hygiene_executor_dry_run.v1"},
+    "version": {"const": 1},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dry_run_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "targets": {"type": "array"},
+    "storage_accounting": {"type": ["object", "null"], "description": "Controller-owned APFS and logical accounting with provenance and overlap denial."},
+    "storage_autopilot": {"type": ["object", "null"], "description": "Controller-only 24-hour storage decision; it grants no cleanup authority."},
+    "storage_discovery": {"type": ["object", "null"], "description": "Complete multi-source task/storage discovery union and direct readbacks."}
+  },
   "additionalProperties": true
 }

@@ -12,6 +12,65 @@
  */
 
 import {canonicalDigest} from "./content-addressing.mjs";
+import {
+  STORAGE_ACCOUNTING_BUCKETS,
+  STORAGE_AUTOPILOT_HOSTILE_CASES,
+  STORAGE_AUTOPILOT_POLICY,
+  STORAGE_AUTOPILOT_SCHEMA,
+  STORAGE_ACCOUNTING_SCHEMA,
+  STORAGE_DISCOVERY_SCHEMA,
+  STORAGE_RETENTION_SCHEMA,
+  STORAGE_CALIBRATION_SCHEMA,
+  STORAGE_BLOCKED_PATH_SCHEMA,
+  compileStorageAccounting,
+  validateStorageAccounting,
+  classifyStorageThreshold,
+  compileStorageAutopilotDecision,
+  compileControllerStorageAutopilot,
+  validateStorageAutopilotDecision,
+  compileUniversalDiscovery,
+  compileStorageDiscoveryUnion,
+  validateUniversalDiscovery,
+  validateGeneratedTempMetadata,
+  compileRetentionDefaults,
+  validateRetentionDefaults,
+  compileApfsCalibration,
+  validateApfsCalibration,
+  compileBlockedPathRoute,
+  validateBlockedPathRoute,
+  compileStorageDeletionDecision,
+  assertProtectedDataDeleteDenied,
+} from "./hygiene-executor.mjs";
+
+export {
+  STORAGE_ACCOUNTING_BUCKETS,
+  STORAGE_AUTOPILOT_HOSTILE_CASES,
+  STORAGE_AUTOPILOT_POLICY,
+  STORAGE_AUTOPILOT_SCHEMA,
+  STORAGE_ACCOUNTING_SCHEMA,
+  STORAGE_DISCOVERY_SCHEMA,
+  STORAGE_RETENTION_SCHEMA,
+  STORAGE_CALIBRATION_SCHEMA,
+  STORAGE_BLOCKED_PATH_SCHEMA,
+  compileStorageAccounting,
+  validateStorageAccounting,
+  classifyStorageThreshold,
+  compileStorageAutopilotDecision,
+  compileControllerStorageAutopilot,
+  validateStorageAutopilotDecision,
+  compileUniversalDiscovery,
+  compileStorageDiscoveryUnion,
+  validateUniversalDiscovery,
+  validateGeneratedTempMetadata,
+  compileRetentionDefaults,
+  validateRetentionDefaults,
+  compileApfsCalibration,
+  validateApfsCalibration,
+  compileBlockedPathRoute,
+  validateBlockedPathRoute,
+  compileStorageDeletionDecision,
+  assertProtectedDataDeleteDenied,
+};
 
 export const CLOSEOUT_LIFECYCLE_SCHEMA = "agentos.campaign_closeout_lifecycle.v1";
 export const PROJECTION_DIVERGENCE_SCHEMA = "agentos.thread_readback_projection_divergence.v1";
@@ -752,16 +811,17 @@ const CLOSEOUT_STATES = Object.freeze(["CHECKPOINT_REACHED", "HANDOFF_READY", "A
 const CLOSEOUT_NEXT = Object.freeze({CHECKPOINT_REACHED: "HANDOFF_READY", HANDOFF_READY: "AUDIT_ROUTED", AUDIT_ROUTED: "AUDIT_CONSUMED", AUDIT_CONSUMED: "CLOSED"});
 
 /** Minimal deterministic closeout state machine used by the hygiene gates. */
-export function createCloseoutLifecycle({taskId, turnId, laneId, candidate, handoffSha256, auditor, custodyGeneration} = {}) {
+export function createCloseoutLifecycle({taskId, turnId, laneId, candidate, handoffSha256, auditor, custodyGeneration, storageDecision = null} = {}) {
   requireIdentifier(taskId, "closeout task ID");
   requireIdentifier(turnId, "closeout turn ID");
   requireIdentifier(laneId, "closeout lane ID");
   requireSha(handoffSha256, "closeout handoff digest");
   requireIdentifier(auditor, "closeout auditor");
   requireIdentifier(custodyGeneration, "closeout custody generation");
+  if (storageDecision !== null) validateStorageAutopilotDecision(storageDecision);
   const candidateIdentity = candidate ?? {};
   const key = canonicalDigest({taskId, turnId, laneId, candidate: candidateIdentity, handoffSha256, auditor, custodyGeneration});
-  const record = {schema: CLOSEOUT_LIFECYCLE_SCHEMA, version: 1, task_id: taskId, turn_id: turnId, lane_id: laneId, candidate: clone(candidateIdentity), handoff_sha256: handoffSha256, auditor, custody_generation: custodyGeneration, state: "CHECKPOINT_REACHED", transition_sequence: 0, idempotency_key: key, route_attempts: 0, consumed: false};
+  const record = {schema: CLOSEOUT_LIFECYCLE_SCHEMA, version: 1, task_id: taskId, turn_id: turnId, lane_id: laneId, candidate: clone(candidateIdentity), handoff_sha256: handoffSha256, auditor, custody_generation: custodyGeneration, ...(storageDecision === null ? {} : {storage_decision: clone(storageDecision)}), state: "CHECKPOINT_REACHED", transition_sequence: 0, idempotency_key: key, route_attempts: 0, consumed: false};
   return Object.freeze({
     read() { return clone(record); },
     transition(next, details = {}) {

@@ -18,6 +18,8 @@ import {
   createCloseoutLifecycle,
   createConsumptionLedger,
   createDurableHistoryAdapter,
+  compileStorageAutopilotDecision,
+  validateStorageAutopilotDecision,
   reconcileThreadReadbackProjection,
   readStableAuthorityDigest,
   validateProjectionDivergenceReceipt,
@@ -282,5 +284,23 @@ const retryAllowed = authorizeSameTaskBoundedRetry({correlation: {status: COMMAN
 assert.equal(retryAllowed.status, COMMAND_PATH_RETRY_ALLOWED);
 const retryDuplicate = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0, deletion_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
 assert.equal(retryDuplicate.status, COMMAND_PATH_DUPLICATE_RETRY_REJECTED);
+
+const storageDecision = compileStorageAutopilotDecision({
+  receiptId: "STORAGE.CLOSEOUT.037",
+  observedAtUtc: "2026-08-26T18:00:00.000Z",
+  freeGib: 81,
+});
+validateStorageAutopilotDecision(storageDecision);
+const storageLifecycle = createCloseoutLifecycle({
+  taskId: "TASK-STORAGE-CLOSEOUT-037",
+  turnId: "TURN-STORAGE-CLOSEOUT-037",
+  laneId: "ROUTE-037",
+  candidate: {commit: "d".repeat(40), tree: "e".repeat(40)},
+  handoffSha256: "f".repeat(64),
+  auditor: "AUDITOR-STORAGE-037",
+  custodyGeneration: "CUSTODY-STORAGE-037",
+  storageDecision,
+});
+assert.equal(storageLifecycle.read().storage_decision.receipt_sha256, storageDecision.receipt_sha256);
 
 console.log("PASS campaign closeout lifecycle: durable projection divergence, PASS/FAIL/blocker recovery, exact correlation, stability gating, exactly-once consumption, no replay, and ordered audit closeout");

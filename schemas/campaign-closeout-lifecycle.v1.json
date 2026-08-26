@@ -12,7 +12,28 @@
     "lane_id": {"type": "string", "minLength": 1},
     "state": {"enum": ["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "AUDIT_CONSUMED", "CLOSED"]},
     "transition_sequence": {"type": "integer", "minimum": 0},
-    "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "storage_decision": {"$ref": "#/$defs/storage_decision"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "storage_decision": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema", "version", "receipt_id", "monitor_role", "observed_at_utc", "free_gib", "threshold_class", "cleanup_or_deletion_authorized", "hostile_fixture_refs", "receipt_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.controller.storage_autopilot.v1"},
+        "version": {"const": 1},
+        "receipt_id": {"type": "string", "minLength": 1},
+        "monitor_role": {"const": "CONTROLLER"},
+        "observed_at_utc": {"type": "string", "format": "date-time"},
+        "free_gib": {"type": "number", "minimum": 0},
+        "threshold_class": {"enum": ["HARD_FLOOR", "OWNER_WARNING", "BELOW_CLEANUP_TARGET", "CLEANUP_TARGET", "ABOVE_CLEANUP_TARGET"]},
+        "cleanup_or_deletion_authorized": {"const": false},
+        "hostile_fixture_refs": {"type": "array", "minItems": 21},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
   },
   "x-projection-divergence-rule": "An empty API items projection never proves absence when an injected read-only durable final_agent_item_id resolves exactly to the requested task and turn.",
   "x-no-replay-rule": "Recovered results are consumed once and never wake, rerun, redeliver, or duplicate-route completed work."
