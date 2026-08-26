@@ -2782,7 +2782,7 @@
       "mechanical_paths": [
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "dae8a21a6baa5691484d00028535ab18a0ac2daf6a47145f112d322050042488"
+          "sha256": "339bea043e9433a0492fbc2f52a62d884438fad211ddbe6ce139fef13ac0ff52"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -3323,7 +3323,7 @@
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
-          "sha256": "0734271c6f490e3184ae6824ae79b40186f811c76430d3c7a66c3ca69cf388db"
+          "sha256": "d69ca3abe67c59cf34cce87e61c7988f52ff3ab2a8a85abb18fa11c67d12fc0b"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
@@ -3395,7 +3395,7 @@
         },
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "dae8a21a6baa5691484d00028535ab18a0ac2daf6a47145f112d322050042488"
+          "sha256": "339bea043e9433a0492fbc2f52a62d884438fad211ddbe6ce139fef13ac0ff52"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -3494,7 +3494,7 @@
     },
     "storage_autopilot_controller": {
       "path": "control/storage-autopilot.mjs",
-      "sha256": "3213a137cad277acbe84492cb5b46c40d8d68fdb91ec520c724a9a2020d4661f",
+      "sha256": "c70907ec4c40590a5814148e36c3ebf028fa6b9bce02604ece4f20da86beda5e",
       "authority": "orchestrator-storage-autopilot-architecture-modularization-successor-110",
       "authority_sha256": "e6618a9c3c048abb7db13e3d835414a66facdbc54eb296a8c02d8e3a75e0b3dc",
       "direct_path_count": 14,

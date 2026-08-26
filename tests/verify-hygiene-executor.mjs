@@ -291,9 +291,9 @@ try {
 
   const discovery = compileUniversalDiscovery({
     sources: {
-      live: ["TASK-DISCOVERY-A"],
-      archived: [{task_id: "TASK-DISCOVERY-B", archived: true}],
-      host_registry: [{task_id: "TASK-DISCOVERY-B", archived: true}],
+      live: {items: ["TASK-DISCOVERY-A"], complete: true},
+      archived: {items: [{task_id: "TASK-DISCOVERY-B", archived: true}], exhaustive: true},
+      host_registry: {items: [{task_id: "TASK-DISCOVERY-B", archived: true}], paginated_complete: true},
     },
     directReadbacks: {
       "TASK-DISCOVERY-A": {task_id: "TASK-DISCOVERY-A", classification: "TEMPORARY_CLOSED"},
@@ -303,9 +303,11 @@ try {
   assert.equal(discovery.status, "DISCOVERY_COMPLETE");
   assert.equal(discovery.union_count, 2);
   assert.equal(discovery.unaccounted_count, 0);
-  assert.throws(() => compileUniversalDiscovery({sources: {live: {items: ["TASK-BOUNDED"], complete: false}}, directReadbacks: {"TASK-BOUNDED": {task_id: "TASK-BOUNDED", classification: "TEMPORARY_CLOSED"}}}), /bounded or incomplete/u);
-  assert.throws(() => compileUniversalDiscovery({sources: {live: ["TASK-MISSING-READBACK"]}}), /direct readback missing/u);
-  const divergence = compileUniversalDiscovery({sources: {archived: [{task_id: "TASK-DIVERGENCE", archived: true}], host_registry: [{task_id: "TASK-DIVERGENCE", archived: false}]}, directReadbacks: {"TASK-DIVERGENCE": {task_id: "TASK-DIVERGENCE", classification: "PERMANENT_EXEMPT"}}});
+  assert.throws(() => compileUniversalDiscovery({sources: {live: {items: ["TASK-BOUNDED"], complete: false}}, directReadbacks: {"TASK-BOUNDED": {task_id: "TASK-BOUNDED", classification: "TEMPORARY_CLOSED"}}}), /bounded or incomplete|explicit exhaustive completeness/u);
+  assert.throws(() => compileUniversalDiscovery({sources: {live: ["TASK-BOUNDED-LIST"]}, directReadbacks: {"TASK-BOUNDED-LIST": {task_id: "TASK-BOUNDED-LIST", classification: "TEMPORARY_CLOSED"}}}), /explicit exhaustive completeness/u);
+  assert.throws(() => compileUniversalDiscovery({sources: {live: {items: ["TASK-NO-COMPLETENESS"]}}, directReadbacks: {"TASK-NO-COMPLETENESS": {task_id: "TASK-NO-COMPLETENESS", classification: "TEMPORARY_CLOSED"}}}), /explicit exhaustive completeness/u);
+  assert.throws(() => compileUniversalDiscovery({sources: {live: {items: ["TASK-MISSING-READBACK"], complete: true}}}), /direct readback missing/u);
+  const divergence = compileUniversalDiscovery({sources: {archived: {items: [{task_id: "TASK-DIVERGENCE", archived: true}], complete: true}, host_registry: {items: [{task_id: "TASK-DIVERGENCE", archived: false}], exhaustive: true}}, directReadbacks: {"TASK-DIVERGENCE": {task_id: "TASK-DIVERGENCE", classification: "PERMANENT_EXEMPT"}}});
   assert.equal(divergence.status, "ARCHIVED_REGISTRY_PROJECTION_DIVERGENCE");
   assert.equal(STORAGE_AUTOPILOT_HOSTILE_CASES.length, 21);
 } finally {

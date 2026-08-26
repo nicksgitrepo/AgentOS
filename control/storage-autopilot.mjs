@@ -500,10 +500,11 @@ export const compileBlockedPathGateRoute = compileBlockedPathRoute;
 export const compileBlockedPathCorrelation = compileBlockedPathRoute;
 
 function storageAutoDiscoverySource(value, sourceName) {
-  if (Array.isArray(value)) return {items: value, complete: true};
+  assert(!Array.isArray(value), `storage discovery source ${sourceName} requires explicit exhaustive completeness`);
   record(value, `storage discovery source ${sourceName}`);
-  const complete = value.complete ?? value.paginated_complete ?? value.is_complete ?? value.exhaustive;
-  assert(complete !== false, `storage discovery source ${sourceName} is bounded or incomplete`);
+  const completenessSignals = [value.complete, value.paginated_complete, value.is_complete, value.exhaustive]
+    .filter((signal) => signal !== undefined);
+  assert(completenessSignals.length > 0 && completenessSignals.every((signal) => signal === true), `storage discovery source ${sourceName} requires explicit exhaustive completeness`);
   const items = value.items ?? value.identities ?? value.records ?? value.tasks ?? [];
   assert(Array.isArray(items), `storage discovery source ${sourceName} items must be an array`);
   return {items, complete: true};
