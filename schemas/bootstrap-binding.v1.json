@@ -2400,11 +2400,11 @@
         },
         {
           "path": "control/campaign-closeout-contracts.mjs",
-          "sha256": "3ed4d53996eafa109306ec4f862f0235643ebdfac5c8c578e9175d8216ecc936"
+          "sha256": "d9ec7f5cba90b0dc7aa070b6310172500519edeb6d2c328c70a88cd66ad22eb3"
         },
         {
           "path": "control/campaign-closeout-lifecycle.mjs",
-          "sha256": "fac733436c9af0c456cd0bdd79d1fc41f2b618b70d485c2e7cf4a74e7e5123a5"
+          "sha256": "c45397ce255fb89eee1bde85872f6573586e0512ff93538c09e8cbe851349407"
         },
         {
           "path": "control/hygiene-executor.mjs",
@@ -2764,11 +2764,11 @@
         },
         {
           "path": "tests/verify-campaign-closeout-contracts.mjs",
-          "sha256": "8c22e1196181383ea82c6ff4bd822310969c1f71478318d4d2260dff2e266df2"
+          "sha256": "b292cfe8b4d66648ab6675a18c9e13ffaa680c3b69f22da8633905f4ece1d212"
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
-          "sha256": "de6a83e04c2613ccda5c440883cd74879aee27cd2ab42a2a19c9bf9692fb3772"
+          "sha256": "fefa8f1299c135664a2ad6f57302be6c485318deb114710667ec3b1ab87b83f4"
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
@@ -2782,7 +2782,7 @@
       "mechanical_paths": [
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "f4eef18e9a997f2954e9377f3495101b1f2e32ea39d71edfe3c0d687dd87ef31"
+          "sha256": "1706a8fd6bf52f151b93b25b2282290fa58448353d2c2b1597163871580c5a93"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -3395,7 +3395,7 @@
         },
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "f4eef18e9a997f2954e9377f3495101b1f2e32ea39d71edfe3c0d687dd87ef31"
+          "sha256": "1706a8fd6bf52f151b93b25b2282290fa58448353d2c2b1597163871580c5a93"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",

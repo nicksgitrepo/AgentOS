@@ -2,6 +2,14 @@
 
 import assert from "node:assert/strict";
 import {
+  COMMAND_PATH_CORRELATED_SUCCESS,
+  COMMAND_PATH_CORRELATION_OPEN,
+  COMMAND_PATH_DUPLICATE_RETRY_REJECTED,
+  COMMAND_PATH_RETRY_ALLOWED,
+  authorizeSameTaskBoundedRetry,
+  correlateRuntimeReceiptCommandPath,
+  consumeCommandPathSuccessOnce,
+  createCommandPathConsumptionLedger,
   CORRELATED_READBACK,
   LOW_CONFIDENCE_CORRELATION_BLOCKER,
   THREAD_READBACK_PROJECTION_DIVERGENCE,
@@ -113,5 +121,121 @@ assert.throws(() => lifecycle.transition("AUDIT_ROUTED"), /not allowed|idempoten
 lifecycle.transition("AUDIT_CONSUMED", {recipient_consumed: true});
 lifecycle.transition("CLOSED");
 assert.equal(lifecycle.read().state, "CLOSED");
+
+const runtimeTaskId = "TASK-RUNTIME-CORRELATION-037";
+const runtimeTurnId = "TURN-RUNTIME-CORRELATION-037";
+const runtimeCommand = {
+  command_id: "CMD-RUNTIME-CLEANUP-037",
+  command_path: "agentos-cleanup",
+  command_argv: ["agentos-cleanup", "--bounded"],
+};
+const runtimeCommandItem = {
+  item_id: "CMD-ITEM-037",
+  task_id: runtimeTaskId,
+  turn_id: runtimeTurnId,
+  item_type: "commandExecution",
+  ...runtimeCommand,
+  exit_code: 0,
+  status: "SUCCEEDED",
+};
+runtimeCommandItem.item_json_sha256 = canonicalDigest(runtimeCommandItem);
+const runtimeFinalItem = {
+  item_id: "MSG-RUNTIME-FINAL-037",
+  task_id: runtimeTaskId,
+  turn_id: runtimeTurnId,
+  item_type: "agentMessage",
+  semantic_output: {classification: "MUTATION_ACKNOWLEDGED"},
+};
+runtimeFinalItem.item_json_sha256 = canonicalDigest(runtimeFinalItem);
+const runtimeDurable = {
+  source: "SYNTHETIC_RUNTIME_HISTORY",
+  turn: {task_id: runtimeTaskId, turn_id: runtimeTurnId, final_agent_item_id: runtimeFinalItem.item_id, item_count: 2},
+  items: [runtimeCommandItem, runtimeFinalItem],
+};
+const runtimeReceipt = {
+  schema: "agentos.runtime.typed_execution_receipt.v1",
+  version: 1,
+  task_id: runtimeTaskId,
+  turn_id: runtimeTurnId,
+  command_id: runtimeCommand.command_id,
+  command_path: runtimeCommand.command_path,
+  exit_code: 0,
+  status: "SUCCEEDED",
+  terminal: true,
+  mutation: true,
+  receipt_sha256: null,
+};
+runtimeReceipt.receipt_sha256 = canonicalDigest({...runtimeReceipt, receipt_sha256: null});
+const runtimeAfterState = {
+  schema: "agentos.runtime.fresh_after_state.v1",
+  version: 1,
+  task_id: runtimeTaskId,
+  turn_id: runtimeTurnId,
+  command_id: runtimeCommand.command_id,
+  fresh_revalidation: true,
+  mutation_applied: true,
+  after_state_sha256: null,
+};
+runtimeAfterState.after_state_sha256 = canonicalDigest({...runtimeAfterState, after_state_sha256: null});
+const runtimeCommandPath = {authorized_command: runtimeCommand, execution_receipt: runtimeReceipt, after_state: runtimeAfterState};
+const runtimeSuccess = correlateRuntimeReceiptCommandPath({
+  taskId: runtimeTaskId,
+  turnId: runtimeTurnId,
+  projection: {status: "completed", items: [], items_count: 0},
+  durableHistory: runtimeDurable,
+  commandPath: runtimeCommandPath,
+});
+assert.equal(runtimeSuccess.status, COMMAND_PATH_CORRELATED_SUCCESS);
+assert.equal(runtimeSuccess.success, true);
+assert.equal(runtimeSuccess.projection.empty, true);
+assert.equal(runtimeSuccess.durable_evidence.command_count, 1);
+assert.equal(runtimeSuccess.replay_inferred, false);
+assert.equal(runtimeSuccess.wake_inferred, false);
+assert.equal(runtimeSuccess.deletion_inferred, false);
+
+const noCommand = correlateRuntimeReceiptCommandPath({
+  taskId: runtimeTaskId,
+  turnId: runtimeTurnId,
+  projection: {status: "completed", items: [], items_count: 0},
+  durableHistory: {turn: {...runtimeDurable.turn, item_count: 1, final_agent_item_id: runtimeFinalItem.item_id}, items: [runtimeFinalItem]},
+  commandPath: runtimeCommandPath,
+});
+assert.equal(noCommand.status, COMMAND_PATH_CORRELATION_OPEN);
+assert.equal(noCommand.reason, "AUTHORIZED_COMMAND_PATH_REQUIRED");
+const emptyProjectionWithCommands = correlateRuntimeReceiptCommandPath({
+  taskId: runtimeTaskId,
+  turnId: runtimeTurnId,
+  projection: {status: "completed", items: [], items_count: 0},
+  durableHistory: runtimeDurable,
+});
+assert.equal(emptyProjectionWithCommands.status, COMMAND_PATH_CORRELATION_OPEN);
+assert.equal(emptyProjectionWithCommands.success, false);
+
+const interruptedReceipt = {...runtimeReceipt, exit_code: 130, status: "INTERRUPTED", terminal: false, receipt_sha256: null};
+interruptedReceipt.receipt_sha256 = canonicalDigest({...interruptedReceipt, receipt_sha256: null});
+const interrupted = correlateRuntimeReceiptCommandPath({taskId: runtimeTaskId, turnId: runtimeTurnId, projection: {status: "completed", items: [], items_count: 0}, durableHistory: runtimeDurable, commandPath: {...runtimeCommandPath, execution_receipt: interruptedReceipt}});
+assert.equal(interrupted.status, COMMAND_PATH_CORRELATION_OPEN);
+assert.match(interrupted.reason, /TERMINAL|RECEIPT/u);
+
+const noAfterState = correlateRuntimeReceiptCommandPath({taskId: runtimeTaskId, turnId: runtimeTurnId, projection: {status: "completed", items: [], items_count: 0}, durableHistory: runtimeDurable, commandPath: {authorized_command: runtimeCommand, execution_receipt: runtimeReceipt}});
+assert.equal(noAfterState.status, COMMAND_PATH_CORRELATION_OPEN);
+assert.equal(noAfterState.reason, "FRESH_AFTER_STATE_REQUIRED");
+
+const commandLedger = createCommandPathConsumptionLedger();
+const consumed = consumeCommandPathSuccessOnce({correlation: runtimeSuccess, ledger: commandLedger});
+assert.equal(consumed.consumed, true);
+assert.throws(() => consumeCommandPathSuccessOnce({correlation: runtimeSuccess, ledger: commandLedger, retry: true}), /duplicate retry/u);
+const duplicateRetry = correlateRuntimeReceiptCommandPath({taskId: runtimeTaskId, turnId: runtimeTurnId, projection: {status: "completed", items: [], items_count: 0}, durableHistory: runtimeDurable, commandPath: runtimeCommandPath, retry: {requested: true}});
+assert.equal(duplicateRetry.status, COMMAND_PATH_DUPLICATE_RETRY_REJECTED === duplicateRetry.status ? COMMAND_PATH_DUPLICATE_RETRY_REJECTED : COMMAND_PATH_CORRELATION_OPEN);
+assert.equal(duplicateRetry.success, false);
+
+const retryAuthority = {status: "STABLE", digest: "a".repeat(64)};
+const retryLedger = createCommandPathConsumptionLedger();
+const retryRequest = {same_task: true, task_id: runtimeTaskId, turn_id: runtimeTurnId, attempt: 1};
+const retryPreflight = {fresh: true, mutation_count: 0, authority_digest: retryAuthority.digest};
+const retryAllowed = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
+assert.equal(retryAllowed.status, COMMAND_PATH_RETRY_ALLOWED);
+const retryDuplicate = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
+assert.equal(retryDuplicate.status, COMMAND_PATH_DUPLICATE_RETRY_REJECTED);
 
 console.log("PASS campaign closeout lifecycle: durable projection divergence, PASS/FAIL/blocker recovery, exact correlation, stability gating, exactly-once consumption, no replay, and ordered audit closeout");

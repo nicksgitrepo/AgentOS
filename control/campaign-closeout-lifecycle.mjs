@@ -15,9 +15,16 @@ import {canonicalDigest} from "./content-addressing.mjs";
 
 export const CLOSEOUT_LIFECYCLE_SCHEMA = "agentos.campaign_closeout_lifecycle.v1";
 export const PROJECTION_DIVERGENCE_SCHEMA = "agentos.thread_readback_projection_divergence.v1";
+export const COMMAND_PATH_CORRELATION_SCHEMA = "agentos.runtime.command_path_correlation.v1";
+export const TYPED_EXECUTION_RECEIPT_SCHEMA = "agentos.runtime.typed_execution_receipt.v1";
+export const FRESH_AFTER_STATE_SCHEMA = "agentos.runtime.fresh_after_state.v1";
 export const THREAD_READBACK_PROJECTION_DIVERGENCE = "THREAD_READBACK_PROJECTION_DIVERGENCE";
 export const LOW_CONFIDENCE_CORRELATION_BLOCKER = "LOW_CONFIDENCE_DURABLE_HISTORY_CORRELATION_BLOCKER";
 export const CORRELATED_READBACK = "CORRELATED_READBACK";
+export const COMMAND_PATH_CORRELATION_OPEN = "COMMAND_PATH_CORRELATION_OPEN";
+export const COMMAND_PATH_CORRELATED_SUCCESS = "COMMAND_PATH_CORRELATED_SUCCESS";
+export const COMMAND_PATH_RETRY_ALLOWED = "COMMAND_PATH_RETRY_ALLOWED";
+export const COMMAND_PATH_DUPLICATE_RETRY_REJECTED = "COMMAND_PATH_DUPLICATE_RETRY_REJECTED";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/u;
@@ -242,6 +249,260 @@ function historyRows(durable) {
   if (durable.item) return [durable.item];
   return [];
 }
+
+function commandValue(value, ...keys) {
+  return pick(value, ...keys);
+}
+
+function normalizeCommandPath(value, label = "command path") {
+  if (typeof value === "string") {
+    requireString(value, label);
+    return {command_path: value, command_argv: null};
+  }
+  requireRecord(value, label);
+  const commandPath = commandValue(value, "command_path", "commandPath", "path", "executable");
+  const commandArgv = commandValue(value, "command_argv", "commandArgv", "argv");
+  if (commandArgv !== undefined && commandArgv !== null) {
+    assert(Array.isArray(commandArgv) && commandArgv.length > 0 && commandArgv.every((part) => typeof part === "string" && part.length > 0), `${label} argv is invalid`);
+  }
+  if (commandPath !== undefined && commandPath !== null) requireString(commandPath, `${label} path`);
+  assert(commandPath !== undefined || commandArgv !== undefined, `${label} path is required`);
+  return {command_path: commandPath ?? null, command_argv: commandArgv ? [...commandArgv] : null};
+}
+
+function commandIdentity(value, label = "command") {
+  requireRecord(value, label);
+  const commandId = commandValue(value, "command_id", "commandId", "execution_id", "executionId", "id");
+  requireIdentifier(commandId, `${label} ID`);
+  const pathValue = normalizeCommandPath(value, label);
+  const commandSha = commandValue(value, "command_sha256", "commandSha256", "path_sha256", "pathSha256");
+  if (commandSha !== undefined && commandSha !== null) requireSha(commandSha, `${label} digest`);
+  const digest = canonicalDigest({command_id: commandId, ...pathValue});
+  if (commandSha !== undefined && commandSha !== null) assert(commandSha === digest, `${label} digest does not match its immutable command path`, "COMMAND_PATH_DIGEST_MISMATCH");
+  return {command_id: commandId, ...pathValue, command_sha256: digest};
+}
+
+function commandItemIdentity(item) {
+  const raw = item.item;
+  const command = {
+    command_id: commandValue(raw, "command_id", "commandId", "execution_id", "executionId", "id"),
+    command_path: commandValue(raw, "command_path", "commandPath", "path", "executable"),
+    command_argv: commandValue(raw, "command_argv", "commandArgv", "argv"),
+    command_sha256: commandValue(raw, "command_sha256", "commandSha256", "path_sha256", "pathSha256"),
+  };
+  if (command.command_id === undefined && command.command_path === undefined && command.command_argv === undefined) return null;
+  return commandIdentity(command, "durable command execution");
+}
+
+function commandExitCode(value) {
+  const raw = commandValue(value, "exit_code", "exitCode", "code");
+  return raw === undefined || raw === null ? null : raw;
+}
+
+function commandInterrupted(value) {
+  const exitCode = commandExitCode(value);
+  const signal = commandValue(value, "signal", "termination_signal", "terminationSignal");
+  const status = commandValue(value, "status", "state", "terminal_status");
+  return exitCode === 130 || signal === "SIGINT" || signal === "SIGTERM" || status === "INTERRUPTED" || status === "TERMINATED";
+}
+
+function commandMutation(value) {
+  if (!isRecord(value)) return false;
+  if (value.mutation === true || value.mutating === true || value.destructive === true || value.destructive_work === true || value.requires_after_state === true) return true;
+  const operation = commandValue(value, "operation", "operation_kind", "operationKind");
+  return typeof operation === "string" && /delete|remove|write|mutat|cleanup|destruct/iu.test(operation);
+}
+
+function commandReceipt(value) {
+  const receipt = value?.execution_receipt ?? value?.typed_execution_receipt ?? value?.terminal_receipt ?? value?.receipt ?? value;
+  if (!isRecord(receipt)) return null;
+  return receipt;
+}
+
+function validateExecutionReceipt(receipt, {taskId, turnId, command} = {}) {
+  if (!isRecord(receipt)) return {valid: false, reason: "MISSING_TYPED_EXECUTION_RECEIPT"};
+  if (receipt.schema !== TYPED_EXECUTION_RECEIPT_SCHEMA || receipt.version !== 1) return {valid: false, reason: "TYPED_EXECUTION_RECEIPT_SCHEMA_REQUIRED"};
+  const observedTask = commandValue(receipt, "task_id", "taskId", "thread_id", "threadId");
+  const observedTurn = commandValue(receipt, "turn_id", "turnId");
+  const observedCommand = commandValue(receipt, "command_id", "commandId", "execution_id", "executionId", "id");
+  const observedPath = commandValue(receipt, "command_path", "commandPath", "path", "executable");
+  if (observedTask !== taskId || observedTurn !== turnId || observedCommand !== command.command_id) return {valid: false, reason: "EXECUTION_RECEIPT_CORRELATION_MISMATCH"};
+  if (observedPath !== undefined && observedPath !== null && command.command_path !== null && observedPath !== command.command_path) return {valid: false, reason: "EXECUTION_RECEIPT_COMMAND_PATH_MISMATCH"};
+  const exitCode = commandExitCode(receipt);
+  if (!Number.isSafeInteger(exitCode)) return {valid: false, reason: "EXECUTION_RECEIPT_EXIT_CODE_REQUIRED"};
+  const receiptSha = commandValue(receipt, "receipt_sha256", "receiptSha256", "execution_receipt_sha256", "executionReceiptSha256");
+  if (receiptSha === undefined || receiptSha === null || !SHA256.test(receiptSha)) return {valid: false, reason: "EXECUTION_RECEIPT_DIGEST_REQUIRED"};
+  const digestField = Object.hasOwn(receipt, "receipt_sha256")
+    ? "receipt_sha256"
+    : (Object.hasOwn(receipt, "receiptSha256")
+      ? "receiptSha256"
+      : (Object.hasOwn(receipt, "execution_receipt_sha256") ? "execution_receipt_sha256" : "executionReceiptSha256"));
+  if (receiptSha !== digestBody(receipt, digestField)) return {valid: false, reason: "EXECUTION_RECEIPT_DIGEST_MISMATCH"};
+  const terminal = receipt.terminal === true || receipt.terminal_receipt === true || (typeof receipt.terminal_reason === "string" && receipt.terminal_reason.length > 0);
+  if (!terminal) return {valid: false, reason: "EXECUTION_RECEIPT_NOT_TERMINAL"};
+  return {valid: true, receipt, exit_code: exitCode, interrupted: commandInterrupted(receipt), terminal};
+}
+
+function validateFreshAfterState(afterState, {taskId, turnId, command} = {}) {
+  if (!isRecord(afterState)) return {valid: false, reason: "FRESH_AFTER_STATE_REQUIRED"};
+  if (afterState.schema !== FRESH_AFTER_STATE_SCHEMA || afterState.version !== 1) return {valid: false, reason: "FRESH_AFTER_STATE_SCHEMA_REQUIRED"};
+  const observedTask = commandValue(afterState, "task_id", "taskId", "thread_id", "threadId");
+  const observedTurn = commandValue(afterState, "turn_id", "turnId");
+  const observedCommand = commandValue(afterState, "command_id", "commandId", "execution_id", "executionId", "id");
+  if (observedTask !== taskId || observedTurn !== turnId || observedCommand !== command.command_id) return {valid: false, reason: "AFTER_STATE_CORRELATION_MISMATCH"};
+  if (afterState.fresh_revalidation !== true && afterState.freshRevalidation !== true) return {valid: false, reason: "FRESH_AFTER_STATE_REVALIDATION_REQUIRED"};
+  const field = Object.hasOwn(afterState, "after_state_sha256") ? "after_state_sha256" : (Object.hasOwn(afterState, "afterStateSha256") ? "afterStateSha256" : null);
+  const digest = field ? afterState[field] : null;
+  if (!SHA256.test(digest ?? "")) return {valid: false, reason: "FRESH_AFTER_STATE_DIGEST_REQUIRED"};
+  if (digest !== digestBody(afterState, field)) return {valid: false, reason: "FRESH_AFTER_STATE_DIGEST_MISMATCH"};
+  return {valid: true, after_state: afterState, digest};
+}
+
+function openCommandCorrelation({taskId, turnId, projection, durableEvidence, reason, command = null, execution = null, retry = null} = {}) {
+  const result = {
+    schema: COMMAND_PATH_CORRELATION_SCHEMA,
+    version: 1,
+    task_id: taskId,
+    turn_id: turnId,
+    status: COMMAND_PATH_CORRELATION_OPEN,
+    classification: COMMAND_PATH_CORRELATION_OPEN,
+    open: true,
+    success: false,
+    reason,
+    projection: projection ? {items_count: projection.items_count, empty: projection.items.length === 0, projection_sha256: projectionDigest(projection)} : null,
+    durable_evidence: durableEvidence ?? null,
+    command: command ?? null,
+    execution: execution ?? null,
+    retry: retry ?? null,
+    replay_inferred: false,
+    wake_inferred: false,
+    deletion_inferred: false,
+    receipt_sha256: null,
+  };
+  return result;
+}
+
+export function correlateRuntimeReceiptCommandPath({taskId, turnId, projection = null, durableHistory = null, adapter = undefined, authorizedCommand = undefined, commandPath = undefined, executionReceipt = undefined, afterState = undefined, retry = undefined, consumptionLedger = undefined, authorityDigest = undefined, preflight = undefined} = {}) {
+  requireIdentifier(taskId, "runtime command task ID");
+  requireIdentifier(turnId, "runtime command turn ID");
+  const normalizedProjection = projection === null ? null : normalizeProjection(projection);
+  if (normalizedProjection) {
+    nonNegativeInteger(normalizedProjection.items_count, "runtime projected item count");
+    assert(normalizedProjection.items_count === normalizedProjection.items.length, "runtime projected item count diverges from item array");
+  }
+  const durable = resolveDurable({durableHistory, adapter, taskId, turnId});
+  if (!durable) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, reason: "DURABLE_HISTORY_REQUIRED"});
+  const turn = normalizeTurn(durable.turn ?? durable, taskId, turnId);
+  const rows = historyRows(durable);
+  if (!Array.isArray(durable.items)) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence: {item_count: turn.item_count}, reason: "DURABLE_ITEM_INVENTORY_REQUIRED"});
+  if (turn.item_count !== rows.length) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence: {item_count: turn.item_count, observed_item_count: rows.length}, reason: "DURABLE_ITEM_COUNT_MISMATCH"});
+  if (turn.final_agent_item_id === null) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence: {item_count: turn.item_count, command_count: 0}, reason: "DURABLE_FINAL_AGENT_ITEM_REQUIRED"});
+  const normalizedRows = rows.map((row) => normalizeItem(row, {taskId, turnId, itemId: pick(row, "item_id", "itemId", "id")}));
+  const finalItems = normalizedRows.filter((row) => row.id === turn.final_agent_item_id);
+  if (finalItems.length !== 1 || finalItems[0].type !== "agentMessage") {
+    return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence: {item_count: turn.item_count, observed_final_agent_item_count: finalItems.length}, reason: "DURABLE_FINAL_AGENT_ITEM_REQUIRED"});
+  }
+  const commandItems = normalizedRows.filter((row) => row.type === "commandExecution").map((row) => ({...row, command: commandItemIdentity(row)}));
+  const durableEvidence = {item_count: turn.item_count, final_agent_item_id: turn.final_agent_item_id, command_count: commandItems.length, command_ids: commandItems.map((row) => row.command?.command_id).filter(Boolean)};
+  if (commandItems.length === 0) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, reason: "AUTHORIZED_COMMAND_PATH_REQUIRED"});
+  const authorized = authorizedCommand ?? commandPath?.authorized_command ?? commandPath?.authorizedCommand ?? commandPath?.command ?? commandPath;
+  if (!authorized || !isRecord(authorized)) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, reason: "AUTHORIZED_COMMAND_PATH_REQUIRED"});
+  let command;
+  try { command = commandIdentity(authorized, "authorized command"); } catch (error) { return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, reason: error.message}); }
+  const matches = commandItems.filter((row) => row.command && row.command.command_id === command.command_id && (command.command_path === null || row.command.command_path === command.command_path));
+  if (matches.length !== 1) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, reason: matches.length === 0 ? "DURABLE_COMMAND_PATH_NOT_CORRELATED" : "DURABLE_COMMAND_PATH_AMBIGUOUS"});
+  const receipt = commandReceipt(executionReceipt ?? commandPath);
+  const receiptCheck = validateExecutionReceipt(receipt, {taskId, turnId, command});
+  if (!receiptCheck.valid) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id}, reason: receiptCheck.reason});
+  const commandExit = receiptCheck.exit_code;
+  if (commandExit === 130 || receiptCheck.interrupted) {
+    const retryResult = retry ? authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: taskId, turn_id: turnId, execution: {exit_code: commandExit, mutation_count: 0}, authority_digest: authorityDigest?.digest}, retry, authorityDigest, preflight, ledger: consumptionLedger}) : null;
+    return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: commandExit, interrupted: true}, retry: retryResult, reason: "INTERRUPTED_COMMAND_REQUIRES_TYPED_TERMINAL_RECEIPT"});
+  }
+  if (commandExit !== 0) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: commandExit}, reason: "COMMAND_EXIT_NONZERO_REMAINS_OPEN"});
+  const freshState = afterState ?? commandPath?.after_state ?? commandPath?.afterState;
+  const afterCheck = validateFreshAfterState(freshState, {taskId, turnId, command});
+  if (!afterCheck.valid) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: 0, receipt_sha256: commandValue(receipt, "receipt_sha256", "receiptSha256")}, reason: afterCheck.reason});
+  const success = {
+    schema: COMMAND_PATH_CORRELATION_SCHEMA,
+    version: 1,
+    task_id: taskId,
+    turn_id: turnId,
+    status: COMMAND_PATH_CORRELATED_SUCCESS,
+    classification: COMMAND_PATH_CORRELATED_SUCCESS,
+    open: false,
+    success: true,
+    projection: normalizedProjection ? {items_count: normalizedProjection.items_count, empty: normalizedProjection.items.length === 0, projection_sha256: projectionDigest(normalizedProjection)} : null,
+    durable_evidence: durableEvidence,
+    command,
+    execution: {command_id: command.command_id, exit_code: 0, receipt_sha256: commandValue(receipt, "receipt_sha256", "receiptSha256"), terminal: true},
+    typed_execution_receipt: receipt,
+    fresh_after_state: afterCheck.after_state,
+    authority_digest: authorityDigest?.digest ?? null,
+    replay_inferred: false,
+    wake_inferred: false,
+    deletion_inferred: false,
+    receipt_sha256: null,
+  };
+  success.receipt_sha256 = digestBody(success, "receipt_sha256");
+  if (retry?.requested === true) {
+    const duplicate = openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: success.execution, reason: "DUPLICATE_RETRY_AFTER_CORRELATED_SUCCESS"});
+    duplicate.status = COMMAND_PATH_DUPLICATE_RETRY_REJECTED;
+    duplicate.classification = COMMAND_PATH_DUPLICATE_RETRY_REJECTED;
+    duplicate.retry = {requested: true, allowed: false, status: COMMAND_PATH_DUPLICATE_RETRY_REJECTED, reason: "DUPLICATE_RETRY_AFTER_CORRELATED_SUCCESS", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+    return duplicate;
+  }
+  return success;
+}
+
+export function createCommandPathConsumptionLedger() {
+  return {schema: "agentos.runtime.command_path_consumption_ledger.v1", consumed: new Set(), consumed_keys: [], retry_keys: []};
+}
+
+export function commandPathConsumptionKey(correlation) {
+  requireRecord(correlation, "command path correlation");
+  assert(correlation.status === COMMAND_PATH_CORRELATED_SUCCESS && correlation.success === true, "only a correlated command success may be consumed");
+  requireIdentifier(correlation.task_id, "command correlation task ID");
+  requireIdentifier(correlation.turn_id, "command correlation turn ID");
+  requireIdentifier(correlation.command?.command_id, "command correlation command ID");
+  requireSha(correlation.receipt_sha256, "command correlation receipt digest");
+  return [correlation.task_id, correlation.turn_id, correlation.command.command_id, correlation.receipt_sha256].join("\u0000");
+}
+
+export function consumeCommandPathSuccessOnce({correlation, ledger, retry = false} = {}) {
+  const key = commandPathConsumptionKey(correlation);
+  assert(isRecord(ledger), "command path consumption ledger is required");
+  if (!(ledger.consumed instanceof Set)) ledger.consumed = new Set(Array.isArray(ledger.consumed_keys) ? ledger.consumed_keys : []);
+  if (retry && ledger.consumed.has(key)) throw new Error("duplicate retry after correlated success is rejected");
+  if (ledger.consumed.has(key)) return {consumed: false, duplicate: true, key, next_action: "NO_OP_ALREADY_CONSUMED"};
+  ledger.consumed.add(key);
+  if (Array.isArray(ledger.consumed_keys)) { ledger.consumed_keys.push(key); ledger.consumed_keys.sort(); }
+  return {consumed: true, duplicate: false, key, next_action: "CONSUME_CORRELATED_SUCCESS_ONCE"};
+}
+
+export function authorizeSameTaskBoundedRetry({correlation, retry, authorityDigest, preflight, ledger} = {}) {
+  requireRecord(retry, "same-task retry request");
+  const taskId = correlation?.task_id;
+  const turnId = correlation?.turn_id;
+  if (retry.same_task !== true || retry.task_id !== taskId || retry.turn_id !== turnId) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_IDENTITY_MISMATCH", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (retry.attempt !== 1 || correlation?.execution?.exit_code !== 130 || (correlation.execution.mutation_count ?? 0) !== 0) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_BOUNDS_EXCEEDED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (!authorityDigest || authorityDigest.status !== "STABLE" || !SHA256.test(authorityDigest.digest ?? "") || (correlation.authority_digest && correlation.authority_digest !== authorityDigest.digest)) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_AUTHORITY_NOT_STABLE", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (!preflight || preflight.fresh !== true || preflight.mutation_count !== 0 || preflight.authority_digest !== authorityDigest.digest) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_FRESH_PREFLIGHT_REQUIRED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (!ledger || !isRecord(ledger)) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_LEDGER_REQUIRED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  const key = `${taskId}\u0000${turnId}\u0000${authorityDigest.digest}`;
+  ledger.retry_keys ??= [];
+  if (!Array.isArray(ledger.retry_keys)) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_LEDGER_INVALID", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (ledger.retry_keys.includes(key)) return {requested: true, allowed: false, status: COMMAND_PATH_DUPLICATE_RETRY_REJECTED, reason: "DUPLICATE_SAME_TASK_RETRY_REJECTED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  ledger.retry_keys.push(key);
+  ledger.retry_keys.sort();
+  return {requested: true, allowed: true, status: COMMAND_PATH_RETRY_ALLOWED, key, attempt: 1, replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+}
+
+export const reconcileCommandPathProjection = correlateRuntimeReceiptCommandPath;
+export const correlateCommandPathProjection = correlateRuntimeReceiptCommandPath;
+export const validateCommandPathCorrelation = correlateRuntimeReceiptCommandPath;
+export const compileCommandPathCorrelation = correlateRuntimeReceiptCommandPath;
+export const correlateRuntimeReceipt = correlateRuntimeReceiptCommandPath;
 
 function sourceConfidence(durable, item) {
   if (item?.item_json_sha256 && durable?.turn?.final_agent_item_id) return "HIGH_EXACT_ITEM_ID";
