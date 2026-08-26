@@ -133,7 +133,9 @@ export function executeHygiene({manifest, dryRun, authorityRoot, executionAdmitt
   assert(executionAdmitted === true, "cleanup execution requires separate admission");
   assert(typeof removeTarget === "function", "cleanup execution requires an injected remover");
   const removed = [];
+  const dryTargets = new Map(validatedDryRun.targets.map((target) => [target.path, target]));
   for (const entry of valid.targets) {
+    if (dryTargets.get(entry.path)?.exists !== true) continue;
     const resolved = resolveTarget(authorityRoot, entry.path);
     if (!fs.existsSync(resolved.target)) continue;
     const validated = resolveTarget(authorityRoot, entry.path);

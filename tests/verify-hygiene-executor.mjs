@@ -112,6 +112,37 @@ try {
   } finally {
     fs.rmSync(vanishingRoot, {recursive: true, force: true});
   }
+  const reappearingRoot = fs.mkdtempSync(path.join(tempParent, "route037-hygiene-reappearing-"));
+  try {
+    const reappearingManifest = {...manifest, targets: [{...manifest.targets[0], path: "reappears.txt"}], manifest_sha256: null};
+    reappearingManifest.manifest_sha256 = canonicalDigest({...reappearingManifest, manifest_sha256: null});
+    const reappearingDryRun = compileHygieneDryRun({manifest: reappearingManifest, authorityRoot: reappearingRoot});
+    assert.equal(reappearingDryRun.targets[0].exists, false);
+    fs.writeFileSync(path.join(reappearingRoot, "reappears.txt"), "reappeared after dry run\n");
+    let reappearingCalls = 0;
+    const reappearingExecution = executeHygiene({manifest: reappearingManifest, dryRun: reappearingDryRun, authorityRoot: reappearingRoot, executionAdmitted: true, removeTarget: () => { reappearingCalls += 1; }});
+    assert.equal(reappearingCalls, 0);
+    assert.deepEqual(reappearingExecution.removed_paths, []);
+    assert.deepEqual(reappearingExecution.retained_paths, ["reappears.txt"]);
+    const reappearingAfterState = {
+      schema: HYGIENE_AFTER_STATE_SCHEMA,
+      version: 1,
+      manifest_sha256: reappearingExecution.manifest_sha256,
+      dry_run_sha256: reappearingExecution.dry_run_sha256,
+      execution_sha256: reappearingExecution.execution_sha256,
+      authority_root: fs.realpathSync.native(reappearingRoot),
+      symlink_ancestors_checked: true,
+      fresh_revalidation: true,
+      retained_paths: reappearingExecution.retained_paths,
+      removed_paths: reappearingExecution.removed_paths,
+      failures: reappearingExecution.failures,
+      after_state_sha256: null,
+    };
+    reappearingAfterState.after_state_sha256 = canonicalDigest({...reappearingAfterState, after_state_sha256: null});
+    validateHygieneAfterState({execution: reappearingExecution, afterState: reappearingAfterState, manifest: reappearingManifest, dryRun: reappearingDryRun, authorityRoot: reappearingRoot, afterTargets: [{path: "reappears.txt", exists: true}]});
+  } finally {
+    fs.rmSync(reappearingRoot, {recursive: true, force: true});
+  }
   assert.throws(() => executeHygiene({manifest, dryRun: dry, authorityRoot: root, executionAdmitted: false, removeTarget: () => {}}), /separate admission/u);
   const broad = {...manifest, targets: [{...manifest.targets[0], path: "**/*"}]};
   broad.manifest_sha256 = canonicalDigest({...broad, manifest_sha256: null});
