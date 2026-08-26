@@ -2404,7 +2404,7 @@
         },
         {
           "path": "control/campaign-closeout-lifecycle.mjs",
-          "sha256": "c45397ce255fb89eee1bde85872f6573586e0512ff93538c09e8cbe851349407"
+          "sha256": "edae0a4f8b34070636ad6b443f2210093b1a0200ba63064296d5184a8bb44f1e"
         },
         {
           "path": "control/hygiene-executor.mjs",
@@ -2764,11 +2764,11 @@
         },
         {
           "path": "tests/verify-campaign-closeout-contracts.mjs",
-          "sha256": "b292cfe8b4d66648ab6675a18c9e13ffaa680c3b69f22da8633905f4ece1d212"
+          "sha256": "0305cc3f0591e84d3204f4ee1248838c1d65f0900cd3d17869b5ee7706ccbff2"
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
-          "sha256": "fefa8f1299c135664a2ad6f57302be6c485318deb114710667ec3b1ab87b83f4"
+          "sha256": "89aa7328de53713847ecc808dfe5806a7ceae798addb4cda0b334dcfae055b0e"
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
@@ -2782,7 +2782,7 @@
       "mechanical_paths": [
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "1706a8fd6bf52f151b93b25b2282290fa58448353d2c2b1597163871580c5a93"
+          "sha256": "8d7d9dd14aefe891f57e2c27c27eb12066a2e3a3c18c6ea67f4c61ec54fe4d7b"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -2955,7 +2955,7 @@
         },
         {
           "path": "control/campaign-closeout-lifecycle.mjs",
-          "sha256": "fac733436c9af0c456cd0bdd79d1fc41f2b618b70d485c2e7cf4a74e7e5123a5"
+          "sha256": "edae0a4f8b34070636ad6b443f2210093b1a0200ba63064296d5184a8bb44f1e"
         },
         {
           "path": "control/hygiene-executor.mjs",
@@ -3315,11 +3315,11 @@
         },
         {
           "path": "tests/verify-campaign-closeout-contracts.mjs",
-          "sha256": "8c22e1196181383ea82c6ff4bd822310969c1f71478318d4d2260dff2e266df2"
+          "sha256": "0305cc3f0591e84d3204f4ee1248838c1d65f0900cd3d17869b5ee7706ccbff2"
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
-          "sha256": "de6a83e04c2613ccda5c440883cd74879aee27cd2ab42a2a19c9bf9692fb3772"
+          "sha256": "89aa7328de53713847ecc808dfe5806a7ceae798addb4cda0b334dcfae055b0e"
         },
         {
           "path": "tests/verify-hygiene-executor.mjs",
@@ -3395,7 +3395,7 @@
         },
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "1706a8fd6bf52f151b93b25b2282290fa58448353d2c2b1597163871580c5a93"
+          "sha256": "8d7d9dd14aefe891f57e2c27c27eb12066a2e3a3c18c6ea67f4c61ec54fe4d7b"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",

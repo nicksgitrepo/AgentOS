@@ -137,6 +137,8 @@ const runtimeCommandItem = {
   ...runtimeCommand,
   exit_code: 0,
   status: "SUCCEEDED",
+  mutation_count: 1,
+  deletion_count: 1,
 };
 runtimeCommandItem.item_json_sha256 = canonicalDigest(runtimeCommandItem);
 const runtimeFinalItem = {
@@ -163,6 +165,8 @@ const runtimeReceipt = {
   status: "SUCCEEDED",
   terminal: true,
   mutation: true,
+  mutation_count: 1,
+  deletion_count: 1,
   receipt_sha256: null,
 };
 runtimeReceipt.receipt_sha256 = canonicalDigest({...runtimeReceipt, receipt_sha256: null});
@@ -232,10 +236,51 @@ assert.equal(duplicateRetry.success, false);
 const retryAuthority = {status: "STABLE", digest: "a".repeat(64)};
 const retryLedger = createCommandPathConsumptionLedger();
 const retryRequest = {same_task: true, task_id: runtimeTaskId, turn_id: runtimeTurnId, attempt: 1};
-const retryPreflight = {fresh: true, mutation_count: 0, authority_digest: retryAuthority.digest};
-const retryAllowed = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
+const retryPreflight = {fresh: true, mutation_count: 0, deletion_count: 0, authority_digest: retryAuthority.digest};
+const retryMutationCommandItem = {
+  ...runtimeCommandItem,
+  item_id: "CMD-ITEM-RETRY-MUTATION-037",
+  exit_code: 130,
+  status: "INTERRUPTED",
+  mutation_count: 1,
+  deletion_count: 1,
+};
+delete retryMutationCommandItem.item_json_sha256;
+retryMutationCommandItem.item_json_sha256 = canonicalDigest(retryMutationCommandItem);
+const retryMutationDurable = {
+  ...runtimeDurable,
+  items: [retryMutationCommandItem, runtimeFinalItem],
+};
+const retryMutationReceipt = {
+  ...runtimeReceipt,
+  exit_code: 130,
+  status: "INTERRUPTED",
+  terminal: true,
+  receipt_sha256: null,
+};
+retryMutationReceipt.receipt_sha256 = canonicalDigest({...retryMutationReceipt, receipt_sha256: null});
+const retryMutationAuthority = {status: "STABLE", digest: "b".repeat(64)};
+const retryMutationLedger = createCommandPathConsumptionLedger();
+const retryMutationResult = correlateRuntimeReceiptCommandPath({
+  taskId: runtimeTaskId,
+  turnId: runtimeTurnId,
+  projection: {status: "completed", items: [], items_count: 0},
+  durableHistory: retryMutationDurable,
+  commandPath: {...runtimeCommandPath, execution_receipt: retryMutationReceipt},
+  retry: retryRequest,
+  authorityDigest: retryMutationAuthority,
+  preflight: retryPreflight,
+  consumptionLedger: retryMutationLedger,
+});
+assert.equal(retryMutationResult.status, COMMAND_PATH_CORRELATION_OPEN);
+assert.equal(retryMutationResult.execution.mutation_count, 1);
+assert.equal(retryMutationResult.execution.deletion_count, 1);
+assert.equal(retryMutationResult.retry.allowed, false);
+assert.equal(retryMutationResult.retry.reason, "SAME_TASK_RETRY_MUTATION_STATE_NOT_ZERO");
+assert.deepEqual(retryMutationLedger.retry_keys, []);
+const retryAllowed = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0, deletion_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
 assert.equal(retryAllowed.status, COMMAND_PATH_RETRY_ALLOWED);
-const retryDuplicate = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
+const retryDuplicate = authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: runtimeTaskId, turn_id: runtimeTurnId, authority_digest: retryAuthority.digest, execution: {exit_code: 130, mutation_count: 0, deletion_count: 0}}, retry: retryRequest, authorityDigest: retryAuthority, preflight: retryPreflight, ledger: retryLedger});
 assert.equal(retryDuplicate.status, COMMAND_PATH_DUPLICATE_RETRY_REJECTED);
 
 console.log("PASS campaign closeout lifecycle: durable projection divergence, PASS/FAIL/blocker recovery, exact correlation, stability gating, exactly-once consumption, no replay, and ordered audit closeout");

@@ -313,6 +313,24 @@ function commandMutation(value) {
   return typeof operation === "string" && /delete|remove|write|mutat|cleanup|destruct/iu.test(operation);
 }
 
+function commandCount(value, keys, label) {
+  if (!isRecord(value)) return {valid: false, reason: `${label}_REQUIRED`};
+  const present = keys.filter((key) => Object.hasOwn(value, key));
+  if (present.length === 0) return {valid: false, reason: `${label}_REQUIRED`};
+  const values = present.map((key) => value[key]);
+  if (!values.every((count) => Number.isSafeInteger(count) && count >= 0)) return {valid: false, reason: `${label}_INVALID`};
+  if (new Set(values).size !== 1) return {valid: false, reason: `${label}_INCONSISTENT`};
+  return {valid: true, value: values[0]};
+}
+
+function commandMutationState(value, label = "COMMAND_MUTATION_STATE") {
+  const mutation = commandCount(value, ["mutation_count", "mutationCount", "mutations_count", "mutationsCount"], `${label}_MUTATION_COUNT`);
+  if (!mutation.valid) return {valid: false, reason: mutation.reason};
+  const deletion = commandCount(value, ["deletion_count", "deletionCount", "deletions_count", "deletionsCount", "deleted_count", "deletedCount", "removed_count", "removedCount"], `${label}_DELETION_COUNT`);
+  if (!deletion.valid) return {valid: false, reason: deletion.reason};
+  return {valid: true, mutation_count: mutation.value, deletion_count: deletion.value};
+}
+
 function commandReceipt(value) {
   const receipt = value?.execution_receipt ?? value?.typed_execution_receipt ?? value?.terminal_receipt ?? value?.receipt ?? value;
   if (!isRecord(receipt)) return null;
@@ -340,7 +358,9 @@ function validateExecutionReceipt(receipt, {taskId, turnId, command} = {}) {
   if (receiptSha !== digestBody(receipt, digestField)) return {valid: false, reason: "EXECUTION_RECEIPT_DIGEST_MISMATCH"};
   const terminal = receipt.terminal === true || receipt.terminal_receipt === true || (typeof receipt.terminal_reason === "string" && receipt.terminal_reason.length > 0);
   if (!terminal) return {valid: false, reason: "EXECUTION_RECEIPT_NOT_TERMINAL"};
-  return {valid: true, receipt, exit_code: exitCode, interrupted: commandInterrupted(receipt), terminal};
+  const mutationState = commandMutationState(receipt, "EXECUTION_RECEIPT_MUTATION_STATE");
+  if (!mutationState.valid) return {valid: false, reason: mutationState.reason};
+  return {valid: true, receipt, exit_code: exitCode, interrupted: commandInterrupted(receipt), terminal, mutation_count: mutationState.mutation_count, deletion_count: mutationState.deletion_count};
 }
 
 function validateFreshAfterState(afterState, {taskId, turnId, command} = {}) {
@@ -411,18 +431,24 @@ export function correlateRuntimeReceiptCommandPath({taskId, turnId, projection =
   try { command = commandIdentity(authorized, "authorized command"); } catch (error) { return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, reason: error.message}); }
   const matches = commandItems.filter((row) => row.command && row.command.command_id === command.command_id && (command.command_path === null || row.command.command_path === command.command_path));
   if (matches.length !== 1) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, reason: matches.length === 0 ? "DURABLE_COMMAND_PATH_NOT_CORRELATED" : "DURABLE_COMMAND_PATH_AMBIGUOUS"});
+  const durableMutationState = commandMutationState(matches[0].item, "DURABLE_COMMAND_MUTATION_STATE");
+  if (!durableMutationState.valid) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id}, reason: durableMutationState.reason});
   const receipt = commandReceipt(executionReceipt ?? commandPath);
   const receiptCheck = validateExecutionReceipt(receipt, {taskId, turnId, command});
   if (!receiptCheck.valid) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id}, reason: receiptCheck.reason});
+  if (receiptCheck.mutation_count !== durableMutationState.mutation_count || receiptCheck.deletion_count !== durableMutationState.deletion_count) {
+    return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, mutation_count: receiptCheck.mutation_count, deletion_count: receiptCheck.deletion_count}, reason: "COMMAND_MUTATION_STATE_MISMATCH"});
+  }
   const commandExit = receiptCheck.exit_code;
   if (commandExit === 130 || receiptCheck.interrupted) {
-    const retryResult = retry ? authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: taskId, turn_id: turnId, execution: {exit_code: commandExit, mutation_count: 0}, authority_digest: authorityDigest?.digest}, retry, authorityDigest, preflight, ledger: consumptionLedger}) : null;
-    return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: commandExit, interrupted: true}, retry: retryResult, reason: "INTERRUPTED_COMMAND_REQUIRES_TYPED_TERMINAL_RECEIPT"});
+    const execution = {command_id: command.command_id, exit_code: commandExit, interrupted: true, mutation_count: receiptCheck.mutation_count, deletion_count: receiptCheck.deletion_count};
+    const retryResult = retry ? authorizeSameTaskBoundedRetry({correlation: {status: COMMAND_PATH_CORRELATION_OPEN, task_id: taskId, turn_id: turnId, execution, authority_digest: authorityDigest?.digest}, retry, authorityDigest, preflight, ledger: consumptionLedger}) : null;
+    return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution, retry: retryResult, reason: "INTERRUPTED_COMMAND_REQUIRES_TYPED_TERMINAL_RECEIPT"});
   }
-  if (commandExit !== 0) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: commandExit}, reason: "COMMAND_EXIT_NONZERO_REMAINS_OPEN"});
+  if (commandExit !== 0) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: commandExit, mutation_count: receiptCheck.mutation_count, deletion_count: receiptCheck.deletion_count}, reason: "COMMAND_EXIT_NONZERO_REMAINS_OPEN"});
   const freshState = afterState ?? commandPath?.after_state ?? commandPath?.afterState;
   const afterCheck = validateFreshAfterState(freshState, {taskId, turnId, command});
-  if (!afterCheck.valid) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: 0, receipt_sha256: commandValue(receipt, "receipt_sha256", "receiptSha256")}, reason: afterCheck.reason});
+  if (!afterCheck.valid) return openCommandCorrelation({taskId, turnId, projection: normalizedProjection, durableEvidence, command, execution: {command_id: command.command_id, exit_code: 0, receipt_sha256: commandValue(receipt, "receipt_sha256", "receiptSha256"), mutation_count: receiptCheck.mutation_count, deletion_count: receiptCheck.deletion_count}, reason: afterCheck.reason});
   const success = {
     schema: COMMAND_PATH_CORRELATION_SCHEMA,
     version: 1,
@@ -435,7 +461,7 @@ export function correlateRuntimeReceiptCommandPath({taskId, turnId, projection =
     projection: normalizedProjection ? {items_count: normalizedProjection.items_count, empty: normalizedProjection.items.length === 0, projection_sha256: projectionDigest(normalizedProjection)} : null,
     durable_evidence: durableEvidence,
     command,
-    execution: {command_id: command.command_id, exit_code: 0, receipt_sha256: commandValue(receipt, "receipt_sha256", "receiptSha256"), terminal: true},
+    execution: {command_id: command.command_id, exit_code: 0, receipt_sha256: commandValue(receipt, "receipt_sha256", "receiptSha256"), terminal: true, mutation_count: receiptCheck.mutation_count, deletion_count: receiptCheck.deletion_count},
     typed_execution_receipt: receipt,
     fresh_after_state: afterCheck.after_state,
     authority_digest: authorityDigest?.digest ?? null,
@@ -485,9 +511,13 @@ export function authorizeSameTaskBoundedRetry({correlation, retry, authorityDige
   const taskId = correlation?.task_id;
   const turnId = correlation?.turn_id;
   if (retry.same_task !== true || retry.task_id !== taskId || retry.turn_id !== turnId) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_IDENTITY_MISMATCH", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
-  if (retry.attempt !== 1 || correlation?.execution?.exit_code !== 130 || (correlation.execution.mutation_count ?? 0) !== 0) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_BOUNDS_EXCEEDED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (retry.attempt !== 1 || correlation?.execution?.exit_code !== 130) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_BOUNDS_EXCEEDED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  const executionMutationState = commandMutationState(correlation.execution, "SAME_TASK_RETRY_EXECUTION_MUTATION_STATE");
+  if (!executionMutationState.valid) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_MUTATION_STATE_REQUIRED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  if (executionMutationState.mutation_count !== 0 || executionMutationState.deletion_count !== 0) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_MUTATION_STATE_NOT_ZERO", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
   if (!authorityDigest || authorityDigest.status !== "STABLE" || !SHA256.test(authorityDigest.digest ?? "") || (correlation.authority_digest && correlation.authority_digest !== authorityDigest.digest)) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_AUTHORITY_NOT_STABLE", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
-  if (!preflight || preflight.fresh !== true || preflight.mutation_count !== 0 || preflight.authority_digest !== authorityDigest.digest) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_FRESH_PREFLIGHT_REQUIRED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
+  const preflightMutationState = commandMutationState(preflight, "SAME_TASK_RETRY_PREFLIGHT_MUTATION_STATE");
+  if (!preflight || preflight.fresh !== true || !preflightMutationState.valid || preflightMutationState.mutation_count !== 0 || preflightMutationState.deletion_count !== 0 || preflight.authority_digest !== authorityDigest.digest) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_FRESH_PREFLIGHT_REQUIRED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
   if (!ledger || !isRecord(ledger)) return {requested: true, allowed: false, status: COMMAND_PATH_CORRELATION_OPEN, reason: "SAME_TASK_RETRY_LEDGER_REQUIRED", replay_inferred: false, wake_inferred: false, deletion_inferred: false};
   const key = `${taskId}\u0000${turnId}\u0000${authorityDigest.digest}`;
   ledger.retry_keys ??= [];
