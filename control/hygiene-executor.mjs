@@ -207,7 +207,7 @@ export function validateHygieneAfterState({execution, afterState, afterTargets =
   assert(targets.length === expectedPaths.length && targets.every((target) => expectedPaths.includes(target.path)), "cleanup after-target inventory does not match execution paths");
   samePathSet(targets.map((target) => target.path), manifestPaths, "cleanup after-target inventory");
   for (const target of targets) {
-    const shouldExist = afterRemoved.includes(target.path) ? false : dryTargets.get(target.path).exists;
+    const shouldExist = afterRemoved.includes(target.path) ? false : target.exists;
     assert(target.exists === shouldExist, `cleanup after-target state is inconsistent for ${target.path}`);
     const resolved = resolveTarget(resolvedRoot, target.path);
     assert(fs.existsSync(resolved.target) === shouldExist, `cleanup after-target filesystem state is inconsistent for ${target.path}`);

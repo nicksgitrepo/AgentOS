@@ -82,6 +82,36 @@ try {
   };
   ghostAfterState.after_state_sha256 = canonicalDigest({...ghostAfterState, after_state_sha256: null});
   assert.throws(() => validateHygieneAfterState({execution: ghostExecution, afterState: ghostAfterState, manifest: ghostManifest, dryRun: ghostDryRun, authorityRoot, afterTargets: [{path: "control/hygiene-executor.mjs", exists: true}]}), /target set|manifest/u);
+  const vanishingRoot = fs.mkdtempSync(path.join(tempParent, "route037-hygiene-vanishing-"));
+  try {
+    fs.writeFileSync(path.join(vanishingRoot, "vanishing.txt"), "vanish before execution\n");
+    const vanishingManifest = {...manifest, targets: [{...manifest.targets[0], path: "vanishing.txt"}], manifest_sha256: null};
+    vanishingManifest.manifest_sha256 = canonicalDigest({...vanishingManifest, manifest_sha256: null});
+    const vanishingDryRun = compileHygieneDryRun({manifest: vanishingManifest, authorityRoot: vanishingRoot});
+    assert.equal(vanishingDryRun.targets[0].exists, true);
+    fs.rmSync(path.join(vanishingRoot, "vanishing.txt"));
+    const vanishingExecution = executeHygiene({manifest: vanishingManifest, dryRun: vanishingDryRun, authorityRoot: vanishingRoot, executionAdmitted: true, removeTarget: () => { throw new Error("vanished target must not be removed"); }});
+    assert.deepEqual(vanishingExecution.removed_paths, []);
+    assert.deepEqual(vanishingExecution.retained_paths, ["vanishing.txt"]);
+    const vanishingAfterState = {
+      schema: HYGIENE_AFTER_STATE_SCHEMA,
+      version: 1,
+      manifest_sha256: vanishingExecution.manifest_sha256,
+      dry_run_sha256: vanishingExecution.dry_run_sha256,
+      execution_sha256: vanishingExecution.execution_sha256,
+      authority_root: fs.realpathSync.native(vanishingRoot),
+      symlink_ancestors_checked: true,
+      fresh_revalidation: true,
+      retained_paths: vanishingExecution.retained_paths,
+      removed_paths: vanishingExecution.removed_paths,
+      failures: vanishingExecution.failures,
+      after_state_sha256: null,
+    };
+    vanishingAfterState.after_state_sha256 = canonicalDigest({...vanishingAfterState, after_state_sha256: null});
+    validateHygieneAfterState({execution: vanishingExecution, afterState: vanishingAfterState, manifest: vanishingManifest, dryRun: vanishingDryRun, authorityRoot: vanishingRoot, afterTargets: [{path: "vanishing.txt", exists: false}]});
+  } finally {
+    fs.rmSync(vanishingRoot, {recursive: true, force: true});
+  }
   assert.throws(() => executeHygiene({manifest, dryRun: dry, authorityRoot: root, executionAdmitted: false, removeTarget: () => {}}), /separate admission/u);
   const broad = {...manifest, targets: [{...manifest.targets[0], path: "**/*"}]};
   broad.manifest_sha256 = canonicalDigest({...broad, manifest_sha256: null});
