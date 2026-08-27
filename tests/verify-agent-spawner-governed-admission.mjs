@@ -234,6 +234,12 @@ expectBlock(duplicate, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /duplicate/u);
 const duplicateProcess = atomicInput();
 duplicateProcess.processReadback = makeProcess([{process_id: "PROCESS-GOV02-OTHER", task_id: "TASK-GOV02-OTHER", role_id: atomicRequest.role_id, worktree: WORKTREE, command: "node"}]);
 expectBlock(duplicateProcess, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /process readback/u);
+const duplicateProcessIdentity = atomicInput();
+duplicateProcessIdentity.processReadback = makeProcess([
+  {process_id: "PROCESS-GOV02-DUPLICATE", task_id: "TASK-GOV02-OTHER-1", role_id: "AGENT.GOV02.OTHER-1", worktree: path.join(CWD, "other-1"), command: "node worker-one"},
+  {process_id: "PROCESS-GOV02-DUPLICATE", task_id: "TASK-GOV02-OTHER-2", role_id: "AGENT.GOV02.OTHER-2", worktree: path.join(CWD, "other-2"), command: "node worker-two"},
+]);
+expectBlock(duplicateProcessIdentity, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /duplicate process identity/u);
 const duplicateWriter = atomicInput();
 duplicateWriter.existingClaims = [{kind: "WRITER", identity: atomicRequest.role_id, status: "ACTIVE"}];
 duplicateWriter.existingClaimsReadback = makeClaimsReadback(duplicateWriter.existingClaims);

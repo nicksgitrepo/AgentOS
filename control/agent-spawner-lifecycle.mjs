@@ -502,9 +502,12 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   assert(state.substantive_prompt_sent === false && state.process_started === false, "task state crossed the substantive-work boundary");
   const process = digestReadback(readbacks.processReadback, ATOMIC_BRIDGE_PROCESS_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.process, "Atomic process readback");
   assert(Array.isArray(process.processes), "process readback processes are required");
+  const processIds = new Set();
   process.processes.forEach((entry, processIndex) => {
     exactKeys(entry, ATOMIC_BRIDGE_PROCESS_ITEM_KEYS, `Atomic process ${processIndex}`);
     for (const field of ATOMIC_BRIDGE_PROCESS_ITEM_KEYS) bridgeAtomicText(entry[field], `Atomic process ${processIndex} ${field}`);
+    assert(!processIds.has(entry.process_id), "process readback contains a duplicate process identity");
+    processIds.add(entry.process_id);
     assert(!(entry.task_id === request.task_id || entry.role_id === request.role_id || entry.worktree === request.worktree), "process readback contains a conflicting task, role, or worktree");
   });
   const claims = readbacks.existingClaims;

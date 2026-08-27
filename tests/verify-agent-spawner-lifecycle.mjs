@@ -238,6 +238,18 @@ const activeTargetStateReceipt = structuredClone(bridgeAdmissionReceipt);
 activeTargetStateReceipt.state_readback_sha256 = activeTargetStateReadbacks.stateReadback.readback_sha256;
 activeTargetStateReceipt.receipt_sha256 = canonicalDigest({...activeTargetStateReceipt, receipt_sha256: null});
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, activeTargetStateReceipt, activeTargetStateReadbacks), /pre-admission state/u, "bridge must reject an active task state");
+const duplicateProcessIdentityReadbacks = structuredClone(bridgeReadbacks);
+duplicateProcessIdentityReadbacks.processReadback = bridgeDigestRecord({
+  ...duplicateProcessIdentityReadbacks.processReadback,
+  processes: [
+    {process_id: "PROCESS.GOV02.DUPLICATE", task_id: "TASK.GOV02.OTHER.ONE", role_id: "AGENT.GOV02.OTHER.ONE", worktree: path.join(lifecycleFixtureCwd, "other-one"), command: "node worker-one"},
+    {process_id: "PROCESS.GOV02.DUPLICATE", task_id: "TASK.GOV02.OTHER.TWO", role_id: "AGENT.GOV02.OTHER.TWO", worktree: path.join(lifecycleFixtureCwd, "other-two"), command: "node worker-two"},
+  ],
+});
+const duplicateProcessIdentityReceipt = structuredClone(bridgeAdmissionReceipt);
+duplicateProcessIdentityReceipt.process_readback_sha256 = duplicateProcessIdentityReadbacks.processReadback.readback_sha256;
+duplicateProcessIdentityReceipt.receipt_sha256 = canonicalDigest({...duplicateProcessIdentityReceipt, receipt_sha256: null});
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, duplicateProcessIdentityReceipt, duplicateProcessIdentityReadbacks), /duplicate process identity/u, "bridge must reject duplicate process identities");
 const forgedBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 for (const field of ["receipt_sha256", "admission_id", "host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256"]) delete forgedBridgeReceipt[field];
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, forgedBridgeReceipt, bridgeReadbacks), /fields mismatch|receipt|readback/u, "bridge must reject a forged receipt with omitted durable/readback fields");

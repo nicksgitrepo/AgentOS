@@ -393,9 +393,12 @@ function validateAtomicProcessReadback(processReadback, request) {
   atomicReadbackExact(processReadback, ATOMIC_PROCESS_READBACK_KEYS, "Atomic process readback");
   atomicRequire(processReadback.schema === ATOMIC_READBACK_SCHEMAS.process && processReadback.version === 1 && processReadback.fresh === true, ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "fresh process readback is required");
   atomicRequire(Array.isArray(processReadback.processes), ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "process readback processes are required");
+  const processIds = new Set();
   processReadback.processes.forEach((process, i) => {
     atomicReadbackExact(process, ATOMIC_PROCESS_KEYS, `Atomic process ${i}`);
     for (const field of ATOMIC_PROCESS_KEYS) atomicText(process[field], `Atomic process ${i} ${field}`);
+    atomicRequire(!processIds.has(process.process_id), ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, "process readback contains a duplicate process identity");
+    processIds.add(process.process_id);
     const collision = process.task_id === request.task_id || process.role_id === request.role_id || process.worktree === request.worktree;
     atomicRequire(!collision, ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, "process readback contains a conflicting task, role, or worktree");
   });
