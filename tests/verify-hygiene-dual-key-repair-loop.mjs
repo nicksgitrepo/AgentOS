@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   DUAL_KEY_AUDITOR_ROLE,
   DUAL_KEY_CONTROLLER_ROLE,
@@ -99,6 +100,12 @@ assert.equal(repaired.issue_id, issueId);
 const candidateR2 = {...candidate, candidate_id: "CANDIDATE-ZERO-RECOVERY-R2", commit: "d".repeat(40)};
 loop = routeDualKeyCandidateToAuditor(freezeDualKeyCandidate(repaired, {actor: worker, candidate: candidateR2}), {actor: worker, recipientTaskId: auditor.task_id});
 loop = recordDualKeyAuditorVerdict(loop, {actor: auditor, verdict: {status: "PASS", evidence_sha256: "e".repeat(64)}});
+const forgedVerdictState = structuredClone(loop);
+forgedVerdictState.verdict = {...forgedVerdictState.verdict, status: "REPAIR_REQUIRED", verdict_sha256: null};
+forgedVerdictState.verdict.verdict_sha256 = canonicalDigest({...forgedVerdictState.verdict, verdict_sha256: null});
+forgedVerdictState.loop_sha256 = canonicalDigest({...forgedVerdictState, loop_sha256: null});
+rejected(() => validateDualKeyRepairLoop(forgedVerdictState), /VERDICT_STATE_MISMATCH_DENIED/u);
+rejected(() => authorizeRuntimeOnlyDelivery(forgedVerdictState, {actor: {role: DUAL_KEY_RUNTIME_ROLE, task_id: "R-R1-TAMPER"}}), /VERDICT_STATE_MISMATCH_DENIED/u);
 const tamperedCounts = {...loop, active_issue_count: 2};
 rejected(() => validateDualKeyRepairLoop(tamperedCounts), /multiple active issues|active issue/u);
 const tamperedCandidates = {...loop, active_candidate_count: 2};

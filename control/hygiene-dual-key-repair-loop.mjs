@@ -467,6 +467,8 @@ export function validateDualKeyRepairLoop(loop) {
   }
   if (["PASS", "REPAIR_REQUIRED"].includes(loop.state)) {
     record(loop.verdict, "dual-key verdict");
+    const expectedStatus = loop.state === "PASS" ? "PASS" : "REPAIR_REQUIRED";
+    assert(loop.verdict.status === expectedStatus, "VERDICT_STATE_MISMATCH_DENIED: loop state and verdict status must agree");
     assert(loop.verdict.candidate_sha256 === loop.candidate.candidate_sha256, "dual-key verdict is not bound to the current candidate");
     assert(loop.verdict.auditor_task_id === auditor.task_id, "dual-key verdict is not from the bound Auditor");
     sha(loop.verdict.verdict_sha256, "dual-key verdict digest");

@@ -3505,7 +3505,7 @@
     },
     "hygiene_dual_key_zero_recovery_governance": {
       "path": "control/hygiene-dual-key-repair-loop.mjs",
-      "sha256": "b3962503f77294f25bd3603b485e6cf8b1f3f412e9c7aa19b6947b6b7409472c",
+      "sha256": "ff5e173c4985ecff2fc5263e8ab566be0ef1b0137ccfcfe93b8f7c169d0e92d6",
       "authority": "orchestrator-hygiene-dual-key-zero-recovery-governance-activation-successor-115",
       "authority_sha256": "90336d9881962c54d460b0a98a693298f8dfe24237cf564bf09f23f858ac6d8c",
       "issue_id": "AGENTOS-GOV-HYGIENE-DUAL-KEY-ZERO-RECOVERY-SCOPE-INTEGRITY-001",
@@ -3513,9 +3513,9 @@
       "mechanical_path_count": 1,
       "maximum_total_path_count": 13,
       "authorized_direct_paths": [
-        {"path": "control/hygiene-dual-key-repair-loop.mjs", "sha256": "b3962503f77294f25bd3603b485e6cf8b1f3f412e9c7aa19b6947b6b7409472c"},
+        {"path": "control/hygiene-dual-key-repair-loop.mjs", "sha256": "ff5e173c4985ecff2fc5263e8ab566be0ef1b0137ccfcfe93b8f7c169d0e92d6"},
         {"path": "schemas/hygiene-dual-key-repair-loop.v1.json", "sha256": "d868d613c5fee916b2ddf007783b79d7741a238524d8964c500b92ff15e60421"},
-        {"path": "tests/verify-hygiene-dual-key-repair-loop.mjs", "sha256": "077d5e43a319dd2fa9970ad912e86d22f1ee709e7f474a985b3aa673b2ecf40f"},
+        {"path": "tests/verify-hygiene-dual-key-repair-loop.mjs", "sha256": "ec19209cf91dbdf32f32592694c628861620a7c89acdeb81d7ea74d37c772154"},
         {"path": "control/campaign-closeout-contracts.mjs", "sha256": "218d0c86921a6b88036c908151160af90c7ee9699539b6a6219054633578b692"},
         {"path": "control/campaign-closeout-lifecycle.mjs", "sha256": "872e7cf666517cc3232081f435d1cf4860891075981c108090d4a2756847b482"},
         {"path": "schemas/campaign-closeout-lifecycle.v1.json", "sha256": "88b21fb7f57b5e5a5287fc1f4db577ae4040e52ba8978ff172ce6898031f90e1"},
