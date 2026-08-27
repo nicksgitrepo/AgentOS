@@ -264,6 +264,21 @@ const duplicateWriter = atomicInput();
 duplicateWriter.existingClaims = [{kind: "WRITER", identity: atomicRequest.role_id, status: "ACTIVE"}];
 duplicateWriter.existingClaimsReadback = makeClaimsReadback(duplicateWriter.existingClaims);
 expectBlock(duplicateWriter, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /existing identity claim/u);
+for (const claims of [
+  [
+    {kind: "WRITER", identity: "AGENT.GOV02.DUPLICATE.CLAIM", status: "ACTIVE"},
+    {kind: "WRITER", identity: "AGENT.GOV02.DUPLICATE.CLAIM", status: "ACTIVE"},
+  ],
+  [
+    {kind: "WRITER", identity: "AGENT.GOV02.CROSS.KIND", status: "ACTIVE"},
+    {kind: "AUDITOR", identity: "AGENT.GOV02.CROSS.KIND", status: "ACTIVE"},
+  ],
+]) {
+  const duplicateActiveClaims = atomicInput();
+  duplicateActiveClaims.existingClaims = claims;
+  duplicateActiveClaims.existingClaimsReadback = makeClaimsReadback(claims);
+  expectBlock(duplicateActiveClaims, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /duplicate identity/u);
+}
 const omittedClaimsWriter = atomicInput();
 omittedClaimsWriter.existingClaimsReadback = makeClaimsReadback([{kind: "WRITER", identity: "AGENT.GOV02.OTHER_WRITER", status: "ACTIVE"}]);
 delete omittedClaimsWriter.existingClaims;

@@ -265,6 +265,27 @@ for (const [field, sharedValue] of [
   duplicateTaskIndexReceipt.receipt_sha256 = canonicalDigest({...duplicateTaskIndexReceipt, receipt_sha256: null});
   assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, duplicateTaskIndexReceipt, duplicateTaskIndexReadbacks), /duplicate .* identity/u, `bridge must reject duplicate ${field} identities among unrelated rows`);
 }
+for (const claims of [
+  [
+    {kind: "WRITER", identity: "AGENT.GOV02.DUPLICATE.CLAIM", status: "ACTIVE"},
+    {kind: "WRITER", identity: "AGENT.GOV02.DUPLICATE.CLAIM", status: "ACTIVE"},
+  ],
+  [
+    {kind: "WRITER", identity: "AGENT.GOV02.CROSS.KIND", status: "ACTIVE"},
+    {kind: "AUDITOR", identity: "AGENT.GOV02.CROSS.KIND", status: "ACTIVE"},
+  ],
+]) {
+  const duplicateActiveClaimsReadbacks = structuredClone(bridgeReadbacks);
+  duplicateActiveClaimsReadbacks.existingClaims = claims;
+  duplicateActiveClaimsReadbacks.existingClaimsReadback = bridgeDigestRecord({
+    ...duplicateActiveClaimsReadbacks.existingClaimsReadback,
+    claims,
+  });
+  const duplicateActiveClaimsReceipt = structuredClone(bridgeAdmissionReceipt);
+  duplicateActiveClaimsReceipt.existing_claims_readback_sha256 = duplicateActiveClaimsReadbacks.existingClaimsReadback.readback_sha256;
+  duplicateActiveClaimsReceipt.receipt_sha256 = canonicalDigest({...duplicateActiveClaimsReceipt, receipt_sha256: null});
+  assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, duplicateActiveClaimsReceipt, duplicateActiveClaimsReadbacks), /duplicate identity/u, "bridge must reject duplicate active identity claims");
+}
 const duplicateProcessIdentityReadbacks = structuredClone(bridgeReadbacks);
 duplicateProcessIdentityReadbacks.processReadback = bridgeDigestRecord({
   ...duplicateProcessIdentityReadbacks.processReadback,

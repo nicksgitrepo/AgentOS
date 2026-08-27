@@ -412,12 +412,17 @@ function validateAtomicProcessReadback(processReadback, request) {
 
 function validateAtomicClaims(existingClaims, request) {
   atomicRequire(Array.isArray(existingClaims), ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "existing identity claims readback is required");
+  const seenClaimIdentities = new Set();
   existingClaims.forEach((claim, i) => {
     atomicReadbackExact(claim, ATOMIC_CLAIM_KEYS, `Atomic existing claim ${i}`);
     atomicText(claim.kind, `Atomic existing claim ${i} kind`);
     atomicText(claim.identity, `Atomic existing claim ${i} identity`);
     atomicText(claim.status, `Atomic existing claim ${i} status`);
-    if (!ATOMIC_FAILED_ROW_STATUSES.has(claim.status)) atomicRequire(![request.task_id, request.role_id, request.worktree, request.custody_ref].includes(claim.identity), ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, "existing identity claim collides with the requested admission");
+    if (!ATOMIC_FAILED_ROW_STATUSES.has(claim.status)) {
+      atomicRequire(!seenClaimIdentities.has(claim.identity), ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, "existing identity claims contain a duplicate identity");
+      seenClaimIdentities.add(claim.identity);
+      atomicRequire(![request.task_id, request.role_id, request.worktree, request.custody_ref].includes(claim.identity), ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, "existing identity claim collides with the requested admission");
+    }
   });
 }
 

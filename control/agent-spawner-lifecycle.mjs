@@ -518,10 +518,15 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   const claimsReadback = digestReadback(readbacks.existingClaimsReadback, ATOMIC_BRIDGE_CLAIMS_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.claims, "Atomic existing identity claims readback");
   assert(claimsReadback.authority === "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK" && OPAQUE_REF.test(claimsReadback.provenance), "Atomic existing identity claims readback authority/provenance is invalid");
   assert(Array.isArray(claimsReadback.claims) && JSON.stringify(claimsReadback.claims) === JSON.stringify(claims), "Atomic existing identity claims readback does not match supplied claims");
+  const seenClaimIdentities = new Set();
   claims.forEach((claim, index) => {
     exactKeys(claim, ATOMIC_BRIDGE_CLAIM_KEYS, `Atomic existing claim ${index}`);
     for (const field of ATOMIC_BRIDGE_CLAIM_KEYS) bridgeAtomicText(claim[field], `Atomic existing claim ${index} ${field}`);
-    if (!ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(claim.status)) assert(![request.task_id, request.role_id, request.worktree, request.custody_ref].includes(claim.identity), "existing identity claim collides with the requested admission");
+    if (!ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(claim.status)) {
+      assert(!seenClaimIdentities.has(claim.identity), "existing identity claims contain a duplicate identity");
+      seenClaimIdentities.add(claim.identity);
+      assert(![request.task_id, request.role_id, request.worktree, request.custody_ref].includes(claim.identity), "existing identity claim collides with the requested admission");
+    }
   });
   assert(receipt.host_readback_sha256 === host.readback_sha256 && receipt.task_index_readback_sha256 === index.readback_sha256 && receipt.state_readback_sha256 === state.readback_sha256 && receipt.process_readback_sha256 === process.readback_sha256, "Atomic admission receipt operational readback binding is stale");
   assert(receipt.existing_claims_readback_sha256 === claimsReadback.readback_sha256 && receipt.existing_claims_authority === claimsReadback.authority && receipt.existing_claims_provenance === claimsReadback.provenance, "Atomic admission receipt existing claims binding is stale");
