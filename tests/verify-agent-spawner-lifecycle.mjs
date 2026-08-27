@@ -241,8 +241,29 @@ copiedBindingLifecycle.atomic_admission_binding = structuredClone(isolatedLocal.
 copiedBindingLifecycle.lifecycle_sha256 = canonicalDigest({...copiedBindingLifecycle, lifecycle_sha256: null});
 assert.throws(
   () => recordAgentSpawnerAtomicAdmission(copiedBindingLifecycle, bridgeAdmissionReceipt, bridgeReadbacks),
-  /lifecycle binding lifecycle_id is not bound/u,
+  /lifecycle binding lifecycle_id is not bound|source digest is not bound to the authoritative lifecycle source/u,
   "bridge must reject a copied admission binding attached to a different lifecycle identity",
+);
+const forgedSourceLifecycleDigest = HASH("GOV02-UNRELATED-SOURCE-LIFECYCLE");
+const forgedSourceDigestReceipt = structuredClone(bridgeAdmissionReceipt);
+forgedSourceDigestReceipt.lifecycle_sha256 = forgedSourceLifecycleDigest;
+forgedSourceDigestReceipt.receipt_sha256 = canonicalDigest({...forgedSourceDigestReceipt, receipt_sha256: null});
+const forgedSourceDigestBinding = structuredClone(isolatedLocal.atomic_admission_binding);
+forgedSourceDigestBinding.source_lifecycle_sha256 = forgedSourceLifecycleDigest;
+forgedSourceDigestBinding.receipt_sha256 = forgedSourceDigestReceipt.receipt_sha256;
+forgedSourceDigestBinding.binding_sha256 = canonicalDigest({...forgedSourceDigestBinding, binding_sha256: null});
+const forgedSourceDigestLifecycle = structuredClone(isolatedLocal);
+forgedSourceDigestLifecycle.atomic_admission_binding = forgedSourceDigestBinding;
+forgedSourceDigestLifecycle.lifecycle_sha256 = canonicalDigest({...forgedSourceDigestLifecycle, lifecycle_sha256: null});
+assert.throws(
+  () => validateAgentSpawnerLifecycle(forgedSourceDigestLifecycle),
+  /source digest is not bound to the authoritative lifecycle source/u,
+  "lifecycle validation must reject a self-consistent binding naming an unrelated source lifecycle",
+);
+assert.throws(
+  () => recordAgentSpawnerAtomicAdmission(forgedSourceDigestLifecycle, forgedSourceDigestReceipt, bridgeReadbacks),
+  /(?:lifecycle digest|binding source digest) is not bound to the authoritative lifecycle source/u,
+  "bridge must reject a receipt and binding whose source lifecycle digest is not the authoritative lifecycle source",
 );
 assert.throws(
   () => bindAgentSpawnerAtomicAdmissionLifecycle(unrelatedLifecycle, {admissionReceipt: bridgeAdmissionReceipt, readbacks: bridgeReadbacks}),

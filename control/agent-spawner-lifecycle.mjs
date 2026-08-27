@@ -140,6 +140,16 @@ function lifecycleBody(lifecycle) {
   return body;
 }
 
+// The atomic-admission binding is attached after the admitted lifecycle is
+// sealed.  Its source digest therefore names the admitted, unbound lifecycle
+// body rather than the post-binding wrapper (whose digest necessarily changes
+// when the binding is attached).  Re-derive that source body from the
+// authoritative lifecycle so a caller cannot substitute an unrelated,
+// self-consistent lifecycle digest.
+function atomicAdmissionSourceLifecycleDigest(lifecycle) {
+  return canonicalDigest({...lifecycle, atomic_admission_binding: null, lifecycle_sha256: null});
+}
+
 const ATOMIC_ADMISSION_LIFECYCLE_BINDING_KEYS = Object.freeze([
   "schema", "version", "lifecycle_id", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
   "custody_ref", "source_lifecycle_sha256", "receipt_sha256", "readback_bundle_sha256", "binding_sha256",
@@ -289,6 +299,12 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   if (lifecycle.atomic_admission_binding !== null) {
     validateAtomicAdmissionLifecycleBinding(lifecycle.atomic_admission_binding);
     assert(lifecycle.mode === "GOVERNED_SPAWN", "Atomic-admission lifecycle binding requires governed-spawn mode");
+    if (lifecycle.state === "SPAWN_ADMITTED") {
+      assert(
+        lifecycle.atomic_admission_binding.source_lifecycle_sha256 === atomicAdmissionSourceLifecycleDigest(lifecycle),
+        "Atomic admission lifecycle binding source digest is not bound to the authoritative lifecycle source",
+      );
+    }
   }
   assert(AGENT_SPAWNER_NEXT_ACTIONS.includes(lifecycle.next_action), "Agent Spawner next action is invalid");
   assert(lifecycle.next_action === deriveCompilerAction(lifecycle), "Agent Spawner next action does not match lifecycle state");
@@ -662,6 +678,15 @@ export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt, r
   const binding = lifecycle.atomic_admission_binding;
   assert(binding !== null, "Atomic admission lifecycle binding is required");
   validateAtomicAdmissionLifecycleBinding(binding);
+  const authoritativeSourceLifecycleDigest = atomicAdmissionSourceLifecycleDigest(lifecycle);
+  assert(
+    admissionReceipt.lifecycle_sha256 === authoritativeSourceLifecycleDigest,
+    "Atomic admission receipt lifecycle digest is not bound to the authoritative lifecycle source",
+  );
+  assert(
+    binding.source_lifecycle_sha256 === authoritativeSourceLifecycleDigest,
+    "Atomic admission lifecycle binding source digest is not bound to the authoritative lifecycle source",
+  );
   for (const [field, expected] of [
     ["lifecycle_id", lifecycle.lifecycle_id],
     ["source_lifecycle_sha256", admissionReceipt.lifecycle_sha256],
