@@ -358,6 +358,40 @@ export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalC
   });
 }
 
+/*
+ * The governed-admission adapter records the host-bound admission receipt
+ * separately from this lifecycle record.  This bridge is intentionally
+ * non-mutating: it proves that the receipt belongs to the already admitted
+ * governed lifecycle and exposes the one next action without starting a
+ * worker.  All project/task/custody facts are compared from the receipt;
+ * caller-supplied prompt text or a creation acknowledgement cannot stand in
+ * for those persisted facts.
+ */
+export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt) {
+  validateAgentSpawnerLifecycle(lifecycle);
+  assert(isRecord(admissionReceipt), "Atomic admission receipt must be an object");
+  assert(admissionReceipt.schema === "agentos.agent_spawner_atomic_admission.v1" && admissionReceipt.version === 1, "Atomic admission receipt identity is invalid");
+  assert(admissionReceipt.status === "ADMITTED", "Atomic admission receipt is not admitted");
+  assert(admissionReceipt.environment === "local", "Atomic admission receipt environment must be local");
+  for (const field of ["task_id", "role_id", "role_kind", "project_id", "cwd", "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam"]) requireString(admissionReceipt[field], `Atomic admission ${field}`);
+  assert(admissionReceipt.model === "gpt-5.6-luna" && admissionReceipt.reasoning_effort === "max", "Atomic admission model or reasoning binding is invalid");
+  assert(admissionReceipt.substantive_prompt_sent === false && admissionReceipt.process_started === false, "Atomic admission crossed the substantive-work boundary");
+  assert(admissionReceipt.cleanup_action === "NONE" && admissionReceipt.retry_allowed === false, "Atomic admission cleanup/retry state is invalid");
+  assert(admissionReceipt.material_transition === "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION", "Atomic admission next transition is invalid");
+  assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ADMITTED" && lifecycle.next_action === "START_GOVERNED_SPAWN", "Atomic admission must follow the governed spawn admission lifecycle");
+  assert(lifecycle.authority.product_mutation === false && lifecycle.authority.provider_access === false && lifecycle.authority.credential_access === false && lifecycle.authority.external_sync === false, "Atomic admission crossed a protected capability");
+  return {
+    accepted: true,
+    status: "ATOMIC_ADMISSION_RECORDED",
+    task_id: admissionReceipt.task_id,
+    lifecycle_sha256: lifecycle.lifecycle_sha256,
+    next_action: "START_GOVERNED_SPAWN",
+    substantive_work_started: false,
+  };
+}
+
+export const validateAgentSpawnerAtomicAdmissionTransition = recordAgentSpawnerAtomicAdmission;
+
 function eventBody(event) {
   const body = structuredClone(event);
   body.event_sha256 = null;
