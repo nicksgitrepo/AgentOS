@@ -2,6 +2,7 @@ import {canonicalDigest} from "./content-addressing.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}$/u;
+const OPAQUE_REFERENCE = /^opaque:[A-Za-z0-9:_-]+$/u;
 const RECEIPT_KEYS = [
   "schema", "version", "status", "request_id", "candidate_commit", "candidate_tree",
   "candidate_generation", "effective_argv", "working_directory_ref", "dependency_closure_sha256",
@@ -33,7 +34,7 @@ export function validateSchedulerAdmissionReceipt(receipt, {candidateCommit = nu
   assert(GIT_OBJECT.test(receipt.candidate_commit) && GIT_OBJECT.test(receipt.candidate_tree), "scheduler admission candidate identity is invalid");
   assert(Number.isInteger(receipt.candidate_generation) && receipt.candidate_generation > 0, "scheduler admission generation is invalid");
   assert(Array.isArray(receipt.effective_argv) && receipt.effective_argv.length > 0 && receipt.effective_argv.every((entry) => typeof entry === "string" && entry.length > 0), "scheduler admission argv is invalid");
-  assert(typeof receipt.working_directory_ref === "string" && receipt.working_directory_ref.length > 0 && !receipt.working_directory_ref.startsWith("/"), "scheduler admission working-directory reference is not opaque");
+  assert(typeof receipt.working_directory_ref === "string" && OPAQUE_REFERENCE.test(receipt.working_directory_ref), "scheduler admission working-directory reference is not opaque");
   for (const field of ["dependency_closure_sha256", "runtime_closure_sha256", "admission_sha256"]) assert(SHA256.test(receipt[field]), `scheduler admission ${field} is invalid`);
   for (const field of ["execution_unit_id", "lane_cursor_ref", "queue_cursor_ref"]) assert(typeof receipt[field] === "string" && receipt[field].length > 0, `scheduler admission ${field} is required`);
   assert(receipt.admission_sha256 === canonicalDigest({...receipt, admission_sha256: null}), "scheduler admission digest is invalid");

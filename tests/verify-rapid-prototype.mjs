@@ -8,7 +8,7 @@ import {
   runRapidPrototype,
 } from "../control/rapid-prototype/index.mjs";
 import {scanPublicPayload} from "../control/rapid-prototype/security-privacy.mjs";
-import {compileSchedulerAdmissionReceipt} from "../control/scheduler-admission.mjs";
+import {compileSchedulerAdmissionReceipt, validateSchedulerAdmissionReceipt} from "../control/scheduler-admission.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
 const SOURCE = Object.freeze({
@@ -201,6 +201,20 @@ function baseInput(calls = []) {
 const calls = [];
 const input = baseInput(calls);
 const ready = await runRapidPrototype(input);
+
+const nonOpaqueSchedulerAdmission = structuredClone(SCHEDULER_ADMISSION);
+nonOpaqueSchedulerAdmission.working_directory_ref = "scheduler-custody-token-without-opaque-scheme";
+nonOpaqueSchedulerAdmission.admission_sha256 = canonicalDigest({...nonOpaqueSchedulerAdmission, admission_sha256: null});
+assert.throws(
+  () => validateSchedulerAdmissionReceipt(nonOpaqueSchedulerAdmission, {candidateCommit: SOURCE.source_commit, candidateTree: SOURCE.source_tree, requestId: REQUEST_ID}),
+  /not opaque/u,
+  "scheduler admission must reject a non-opaque working-directory custody token",
+);
+const unboundSchedulerInput = baseInput([]);
+unboundSchedulerInput.schedulerAdmissionReceipt = nonOpaqueSchedulerAdmission;
+const unboundScheduler = await runRapidPrototype(unboundSchedulerInput);
+assert.equal(unboundScheduler.evidence.verified, false, "non-opaque scheduler custody must not produce verified evidence");
+assert.equal(unboundScheduler.status, "UNAVAILABLE", "invalid scheduler custody must stop the verification handoff");
 
 const withoutAuthority = {...input};
 delete withoutAuthority.host_authority;

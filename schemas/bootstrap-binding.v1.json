@@ -1614,7 +1614,7 @@
     },
     "rapid_prototype_verifier": {
       "path": "tests/verify-rapid-prototype.mjs",
-      "sha256": "a820c561a7519e9435e83c2ed01b4c983f9b676de27b1cffe3df28e3c9510cdc"
+      "sha256": "021f6035e726f1b9306637d85558f585bc394574f014e037e9533421550d17fd"
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
@@ -1790,7 +1790,7 @@
     },
     "scheduler_admission_controller": {
       "path": "control/scheduler-admission.mjs",
-      "sha256": "2d8e8e11ff92123eb45465ec4133fd9945bb02ef5111e0f31e162dacc3401cb2"
+      "sha256": "ddadc1a4df0cdc5ce4a8896594aafa952683e493e3ec42d27a6bd4a5d6f92638"
     },
     "imported_rapid_development_owner_approval_contract": {
       "path": "schemas/imported-rapid-development-owner-approval.v1.json",
@@ -1802,7 +1802,7 @@
     },
     "scheduler_admission_receipt_contract": {
       "path": "schemas/scheduler-admission-receipt.v1.json",
-      "sha256": "7c2529c84ef4b70a0c1c9eb8963f7d33a0c29bcbdae64b4a2d7575a8f716fcd2"
+      "sha256": "6b2756196e5e3050d455814fc3ead9bb5a287dd5f09e24eacdcc71ffba4e254a"
     },
     "platform_domain_runtime_registry": {
       "path": "docs/platform-domain-runtime-registry.v1.json",

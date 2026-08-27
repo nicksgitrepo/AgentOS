@@ -18,7 +18,7 @@
     "candidate_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "candidate_generation": {"type": "integer", "minimum": 1},
     "effective_argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-    "working_directory_ref": {"type": "string", "pattern": "^(?!/).+"},
+    "working_directory_ref": {"type": "string", "pattern": "^opaque:[A-Za-z0-9:_-]+$"},
     "dependency_closure_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "runtime_closure_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "execution_unit_id": {"type": "string", "minLength": 1},
