@@ -7,6 +7,7 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const publicKernel = await import(pathToFileURL(path.join(root, "control", "agentos.mjs")).href);
+const permanentRoleRoster = await import(pathToFileURL(path.join(root, "control", "permanent-role-roster.mjs")).href);
 
 for (const name of [
   "bootstrapAndStartAgentOS",
@@ -19,8 +20,30 @@ for (const name of [
   "validateAutonomousLaneHandoff",
   "compileControllerNextLifecycleHandoff",
   "validateControllerNextLifecycleHandoff",
+  "compilePermanentRoleCandidate",
+  "validatePermanentRoleCandidate",
+  "compilePermanentRoleRoster",
+  "validatePermanentRoleRoster",
+  "admitNextPermanentRole",
 ]) {
   assert.equal(typeof publicKernel[name], "function", `public kernel export is unavailable: ${name}`);
+}
+
+for (const name of [
+  "compilePermanentRoleCandidate",
+  "validatePermanentRoleCandidate",
+  "compilePermanentRoleRoster",
+  "validatePermanentRoleRoster",
+  "admitNextPermanentRole",
+  "PERMANENT_ROLE_ROSTER_SCHEMA",
+  "PERMANENT_ROLE_CANDIDATE_SCHEMA",
+  "PERMANENT_ROLE_ROSTER_VERSION",
+  "PERMANENT_ROLE_IDS",
+  "PERMANENT_ROLE_KINDS",
+  "PERMANENT_ROLE_ROSTER_NEXT_ACTIONS",
+]) {
+  assert.equal(publicKernel[name], permanentRoleRoster[name], `public kernel roster export drifted from direct module: ${name}`);
+  assert.equal(publicKernel.permanentRoleRoster[name], permanentRoleRoster[name], `public kernel roster namespace drifted from direct module: ${name}`);
 }
 
 function modules(directory) {

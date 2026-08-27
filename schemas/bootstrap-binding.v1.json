@@ -906,7 +906,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "9367f7b5394c4eebfa5c9971f6fb55f3a35634861bcadc62f8d41a561a91f4fa"
+      "sha256": "42c64a740a9755af91734baaae420753cc9df85a7250fd344751c88b60aeb0c2"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -1618,7 +1618,7 @@
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
-      "sha256": "3be3387de173ebdce1bdf524f44763b3f3d90ce6adecdd886a2d22453e32cff4"
+      "sha256": "fddd8ed2fce11ae220bd00a02f272a5544dc01ad2b9bc267e351f694f0bdf7ef"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
