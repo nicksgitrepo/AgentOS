@@ -131,6 +131,16 @@ const isolatedLocal = compileAgentSpawnerLifecycle({
 });
 assert.equal(isolatedLocal.state, "SPAWN_ADMITTED");
 assert.equal(isolatedLocal.authority.isolated_local_custody, true);
+const lifecycleClaimsReadback = {
+  schema: "agentos.agent_spawner_identity_claims_readback.v1",
+  version: 1,
+  fresh: true,
+  authority: "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK",
+  provenance: "ref:spawner/identity-claims-readback",
+  claims: [],
+  readback_sha256: null,
+};
+lifecycleClaimsReadback.readback_sha256 = canonicalDigest({...lifecycleClaimsReadback, readback_sha256: null});
 const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, {
   schema: "agentos.agent_spawner_atomic_admission.v1",
   version: 1,
@@ -147,6 +157,9 @@ const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, {
   reasoning_effort: "max",
   queue: "GOV-02-ATOMIC-SPAWNER-ADMISSION",
   seam: "GOV-02",
+  existing_claims_readback_sha256: lifecycleClaimsReadback.readback_sha256,
+  existing_claims_authority: lifecycleClaimsReadback.authority,
+  existing_claims_provenance: lifecycleClaimsReadback.provenance,
   substantive_prompt_sent: false,
   process_started: false,
   cleanup_action: "NONE",
@@ -161,6 +174,9 @@ assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, {
   task_id: "TASK-GOV02-LIFECYCLE", role_id: "AGENT.GOV02.ATOMIC", role_kind: "ATOMIC_SPECIALIST", project_id: "PROJECT-GOV02",
   cwd: "/", worktree: path.join(lifecycleFixtureCwd, "gov02-fixture"), custody_ref: "ref:custody/gov02",
   model: "gpt-5.6-luna", reasoning_effort: "max", queue: "GOV-02-ATOMIC-SPAWNER-ADMISSION", seam: "GOV-02",
+  existing_claims_readback_sha256: lifecycleClaimsReadback.readback_sha256,
+  existing_claims_authority: lifecycleClaimsReadback.authority,
+  existing_claims_provenance: lifecycleClaimsReadback.provenance,
   substantive_prompt_sent: false, process_started: false, cleanup_action: "NONE", retry_allowed: false,
   material_transition: "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION",
 }), /cwd/u);

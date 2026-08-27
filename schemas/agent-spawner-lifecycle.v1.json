@@ -202,7 +202,7 @@
       "required": [
         "schema", "version", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
         "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "status", "host_readback_sha256",
-        "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256", "substantive_prompt_sent",
+        "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256", "existing_claims_readback_sha256", "existing_claims_authority", "existing_claims_provenance", "substantive_prompt_sent",
         "process_started", "cleanup_action", "retry_allowed", "material_transition", "hostile_fixture_refs", "receipt_sha256"
       ],
       "properties": {
@@ -226,6 +226,9 @@
         "task_index_readback_sha256": {"$ref": "#/$defs/sha256"},
         "state_readback_sha256": {"$ref": "#/$defs/sha256"},
         "process_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "existing_claims_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "existing_claims_authority": {"const": "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK"},
+        "existing_claims_provenance": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
         "substantive_prompt_sent": {"const": false},
         "process_started": {"const": false},
         "cleanup_action": {"const": "NONE"},

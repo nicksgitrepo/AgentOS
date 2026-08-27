@@ -34,10 +34,13 @@ export const AGENT_SPAWNER_GOVERNED_ADMISSION_NEXT_HANDLER = "HANDLER.GOVERNED_S
  */
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA = "agentos.agent_spawner_atomic_admission.v1";
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA = "agentos.agent_spawner_atomic_admission_request.v1";
+export const AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_READBACK_SCHEMA = "agentos.agent_spawner_identity_claims_readback.v1";
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_READBACK_VERSION = 1;
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_STATUS = "ADMITTED";
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_REQUIRED_MODEL = "gpt-5.6-luna";
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_REQUIRED_REASONING = "max";
+export const AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY = "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK";
+export const AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_PROVENANCE = "ref:spawner/identity-claims-readback";
 export const AGENT_SPAWNER_ATOMIC_ADMISSION_BLOCKER_CODES = Object.freeze({
   FRESH_READBACK_REQUIRED: "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED",
   PROJECT_BINDING_MISMATCH: "ATOMIC_ADMISSION_PROJECT_BINDING_MISMATCH",
@@ -54,6 +57,7 @@ export const AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS = Object.freeze
   "FIXTURE.ATOMIC_ADMISSION.DUPLICATE_IDENTITY_COLLISION",
   "FIXTURE.ATOMIC_ADMISSION.FAILED_ROW_INDEPENDENCE",
   "FIXTURE.ATOMIC_ADMISSION.FAILED_TASK_HOLD_ARCHIVE_ONCE",
+  "FIXTURE.ATOMIC_ADMISSION.MISSING_IDENTITY_CLAIMS_READBACK",
   "FIXTURE.ATOMIC_ADMISSION.PROJECT_CWD_ROOT_MISMATCH",
   "FIXTURE.ATOMIC_ADMISSION.PROMPT_TITLE_CANNOT_SUBSTITUTE_READBACK",
   "FIXTURE.ATOMIC_ADMISSION.ROLE_PROJECT_CWD_DRIFT",
@@ -210,10 +214,12 @@ const ATOMIC_STATE_READBACK_KEYS = Object.freeze([
 const ATOMIC_PROCESS_READBACK_KEYS = Object.freeze(["schema", "version", "fresh", "processes", "readback_sha256"]);
 const ATOMIC_PROCESS_KEYS = Object.freeze(["process_id", "task_id", "role_id", "worktree", "command"]);
 const ATOMIC_CLAIM_KEYS = Object.freeze(["kind", "identity", "status"]);
+const ATOMIC_CLAIMS_READBACK_KEYS = Object.freeze(["schema", "version", "fresh", "authority", "provenance", "claims", "readback_sha256"]);
 const ATOMIC_RECEIPT_KEYS = Object.freeze([
   "schema", "version", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
   "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "status",
   "host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256",
+  "existing_claims_readback_sha256", "existing_claims_authority", "existing_claims_provenance",
   "substantive_prompt_sent", "process_started", "cleanup_action", "retry_allowed", "material_transition",
   "hostile_fixture_refs", "receipt_sha256",
 ]);
@@ -404,9 +410,22 @@ function validateAtomicClaims(existingClaims, request) {
   });
 }
 
+function validateAtomicClaimsReadback(existingClaimsReadback, existingClaims, request) {
+  atomicReadbackExact(existingClaimsReadback, ATOMIC_CLAIMS_READBACK_KEYS, "Atomic existing identity claims readback");
+  atomicRequire(existingClaimsReadback.schema === AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_READBACK_SCHEMA && existingClaimsReadback.version === AGENT_SPAWNER_ATOMIC_ADMISSION_READBACK_VERSION && existingClaimsReadback.fresh === true, ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "fresh existing identity claims readback is required");
+  atomicRequire(Array.isArray(existingClaims), ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "existing identity claims readback is required");
+  atomicRequire(Array.isArray(existingClaimsReadback.claims), ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "existing identity claims are required");
+  atomicRequire(JSON.stringify(existingClaimsReadback.claims) === JSON.stringify(existingClaims), ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "existing identity claims readback does not match the supplied claims");
+  atomicRequire(existingClaimsReadback.authority === AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY, ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "existing identity claims readback authority is invalid");
+  atomicRequire(typeof existingClaimsReadback.provenance === "string" && /^(?:opaque:|ref:)[^\s]+$/u.test(existingClaimsReadback.provenance), ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "existing identity claims readback provenance is required");
+  atomicDigest(existingClaimsReadback, "readback_sha256", "Atomic existing identity claims readback");
+  validateAtomicClaims(existingClaimsReadback.claims, request);
+  return existingClaimsReadback;
+}
+
 function atomicReceiptBody(receipt) { return atomicBody(receipt, "receipt_sha256"); }
 
-export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, hostReadback = null, taskIndexReadback = null, stateReadback = null, processReadback = null, existingClaims = [], projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
+export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, hostReadback = null, taskIndexReadback = null, stateReadback = null, processReadback = null, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
   try {
     atomicExact(receipt, ATOMIC_RECEIPT_KEYS, "Atomic admission receipt", ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH);
     atomicRequire(receipt.schema === AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA && receipt.version === 1, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt identity is invalid");
@@ -414,13 +433,17 @@ export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, ho
     for (const field of ["admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd", "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "material_transition"]) atomicText(receipt[field], `Atomic admission receipt ${field}`);
     atomicRequire(receipt.environment === "local", ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "Atomic admission receipt environment is invalid");
     for (const field of ["host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256"]) atomicSha(receipt[field], `Atomic admission receipt ${field}`);
+    atomicSha(receipt.existing_claims_readback_sha256, "Atomic admission receipt existing claims readback");
+    atomicRequire(receipt.existing_claims_authority === AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt existing claims authority is invalid");
+    atomicRequire(typeof receipt.existing_claims_provenance === "string" && /^(?:opaque:|ref:)[^\s]+$/u.test(receipt.existing_claims_provenance), ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt existing claims provenance is invalid");
     sortedUniqueIdentifiers(receipt.hostile_fixture_refs, "Atomic admission hostile fixtures");
     atomicRequire(JSON.stringify(receipt.hostile_fixture_refs) === JSON.stringify([...AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS]), ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission hostile fixture coverage is incomplete");
     atomicDigest(receipt, "receipt_sha256", "Atomic admission receipt");
     if (request !== null) {
-      const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, projectBinding, expectedProjectId, expectedCwd});
+      const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, existingClaimsReadback, projectBinding, expectedProjectId, expectedCwd});
       for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) atomicRequire(receipt[field] === expected, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, `Atomic admission receipt ${field} is not bound to the request`);
       atomicRequire(receipt.host_readback_sha256 === inputs.hostReadback.readback_sha256 && receipt.task_index_readback_sha256 === inputs.taskIndexReadback.readback_sha256 && receipt.state_readback_sha256 === inputs.stateReadback.readback_sha256 && receipt.process_readback_sha256 === inputs.processReadback.readback_sha256, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt readback digest binding is stale");
+      atomicRequire(receipt.existing_claims_readback_sha256 === inputs.existingClaimsReadback.readback_sha256 && receipt.existing_claims_authority === inputs.existingClaimsReadback.authority && receipt.existing_claims_provenance === inputs.existingClaimsReadback.provenance, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt existing claims binding is stale");
     }
     return receipt;
   } catch (error) {
@@ -429,7 +452,7 @@ export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, ho
   }
 }
 
-export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = [], projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
+export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
   try {
     validateAtomicRequest(request);
     const binding = projectBinding ?? {project_id: expectedProjectId, cwd: expectedCwd, environment: "local"};
@@ -442,16 +465,16 @@ export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexR
     validateAtomicTaskIndex(taskIndexReadback, request);
     validateAtomicStateReadback(stateReadback, request);
     validateAtomicProcessReadback(processReadback, request);
-    validateAtomicClaims(existingClaims, request);
-    return {request, hostReadback, taskIndexReadback, stateReadback, processReadback, projectBinding: binding};
+    validateAtomicClaimsReadback(existingClaimsReadback, existingClaims, request);
+    return {request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, existingClaimsReadback, projectBinding: binding};
   } catch (error) {
     if (error instanceof AgentSpawnerAtomicAdmissionError) throw error;
     throw new AgentSpawnerAtomicAdmissionError(ATOMIC_BLOCKER_CODES.REQUEST_INVALID, error.message);
   }
 }
 
-export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = [], projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
-  const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, projectBinding, expectedProjectId, expectedCwd});
+export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
+  const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, existingClaimsReadback, projectBinding, expectedProjectId, expectedCwd});
   const receipt = {
     schema: AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA,
     version: 1,
@@ -473,6 +496,9 @@ export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskI
     task_index_readback_sha256: taskIndexReadback.readback_sha256,
     state_readback_sha256: stateReadback.readback_sha256,
     process_readback_sha256: processReadback.readback_sha256,
+    existing_claims_readback_sha256: existingClaimsReadback.readback_sha256,
+    existing_claims_authority: existingClaimsReadback.authority,
+    existing_claims_provenance: existingClaimsReadback.provenance,
     substantive_prompt_sent: false,
     process_started: false,
     cleanup_action: ATOMIC_RECEIPT_CLEANUP,

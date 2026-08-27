@@ -16,6 +16,9 @@ import {
   AgentSpawnerAtomicAdmissionError,
   AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA,
   AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_READBACK_SCHEMA,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_PROVENANCE,
   AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS,
 } from "../control/agent-spawner-governed-admission.mjs";
 
@@ -172,7 +175,19 @@ const makeProcess = (processes = []) => digestRecord({
   processes,
   readback_sha256: null,
 });
-const atomicInput = () => ({request: structuredClone(atomicRequest), projectBinding: {project_id: PROJECT_ID, cwd: CWD, environment: "local"}, hostReadback: makeHost(), taskIndexReadback: makeIndex(), stateReadback: makeState(), processReadback: makeProcess(), existingClaims: []});
+const makeClaimsReadback = (claims = []) => digestRecord({
+  schema: AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_READBACK_SCHEMA,
+  version: 1,
+  fresh: true,
+  authority: AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY,
+  provenance: AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_PROVENANCE,
+  claims,
+  readback_sha256: null,
+});
+const atomicInput = () => {
+  const existingClaims = [];
+  return {request: structuredClone(atomicRequest), projectBinding: {project_id: PROJECT_ID, cwd: CWD, environment: "local"}, hostReadback: makeHost(), taskIndexReadback: makeIndex(), stateReadback: makeState(), processReadback: makeProcess(), existingClaims, existingClaimsReadback: makeClaimsReadback(existingClaims)};
+};
 const expectBlock = (input, code, message) => {
   assert.throws(() => compileAgentSpawnerAtomicAdmission(input), (error) => {
     assert(error instanceof AgentSpawnerAtomicAdmissionError);
@@ -210,7 +225,19 @@ duplicateProcess.processReadback = makeProcess([{process_id: "PROCESS-GOV02-OTHE
 expectBlock(duplicateProcess, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /process readback/u);
 const duplicateWriter = atomicInput();
 duplicateWriter.existingClaims = [{kind: "WRITER", identity: atomicRequest.role_id, status: "ACTIVE"}];
+duplicateWriter.existingClaimsReadback = makeClaimsReadback(duplicateWriter.existingClaims);
 expectBlock(duplicateWriter, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /existing identity claim/u);
+const omittedClaimsWriter = atomicInput();
+omittedClaimsWriter.existingClaimsReadback = makeClaimsReadback([{kind: "WRITER", identity: "AGENT.GOV02.OTHER_WRITER", status: "ACTIVE"}]);
+delete omittedClaimsWriter.existingClaims;
+expectBlock(omittedClaimsWriter, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED", /existing identity claims/u);
+const omittedClaimsAuditor = atomicInput();
+omittedClaimsAuditor.existingClaimsReadback = makeClaimsReadback([{kind: "AUDITOR", identity: "AGENT.GOV02.OTHER_AUDITOR", status: "ACTIVE"}]);
+delete omittedClaimsAuditor.existingClaims;
+expectBlock(omittedClaimsAuditor, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED", /existing identity claims/u);
+const missingClaimsReadback = atomicInput();
+delete missingClaimsReadback.existingClaimsReadback;
+expectBlock(missingClaimsReadback, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED", /existing identity claims readback/u);
 const failedRow = atomicInput();
 failedRow.taskIndexReadback = makeIndex([makeRow(), makeRow({task_id: atomicRequest.task_id, role_id: atomicRequest.role_id, status: "FAILED", lifecycle: "FAILED"})]);
 assert.equal(compileAgentSpawnerAtomicAdmission(failedRow).status, "ADMITTED", "a failed historical row must not block an independent admission");

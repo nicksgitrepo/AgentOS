@@ -377,6 +377,9 @@ export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt) {
   assert(admissionReceipt.cwd.startsWith("/") && admissionReceipt.cwd !== "/", "Atomic admission cwd must be a non-root absolute project path");
   assert(admissionReceipt.worktree.startsWith(`${admissionReceipt.cwd}/`) || admissionReceipt.worktree === admissionReceipt.cwd, "Atomic admission worktree escaped the bound project cwd");
   assert(admissionReceipt.model === "gpt-5.6-luna" && admissionReceipt.reasoning_effort === "max", "Atomic admission model or reasoning binding is invalid");
+  requireSha(admissionReceipt.existing_claims_readback_sha256, "Atomic admission existing claims readback digest");
+  assert(admissionReceipt.existing_claims_authority === "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK", "Atomic admission existing claims authority is invalid");
+  assert(typeof admissionReceipt.existing_claims_provenance === "string" && OPAQUE_REF.test(admissionReceipt.existing_claims_provenance), "Atomic admission existing claims provenance is invalid");
   assert(admissionReceipt.substantive_prompt_sent === false && admissionReceipt.process_started === false, "Atomic admission crossed the substantive-work boundary");
   assert(admissionReceipt.cleanup_action === "NONE" && admissionReceipt.retry_allowed === false, "Atomic admission cleanup/retry state is invalid");
   assert(admissionReceipt.material_transition === "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION", "Atomic admission next transition is invalid");

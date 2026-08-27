@@ -83,8 +83,8 @@ and `$defs.routing_payload` describe the exact records.
 `compileAgentSpawnerAtomicAdmission` is the narrow boundary between a
 compiler handoff and a governed task admission. It accepts persisted facts,
 not a creation acknowledgement: a fresh host readback, fresh task-index and
-state readbacks, a fresh process-set readback, and an exact local project,
-role, model, reasoning, queue, seam, worktree, and custody match. The project
+state readbacks, a fresh process-set readback, and an explicit fresh identity-
+claims readback. The project
 identifier is typed input and is never embedded in this portable module; the
 local environment and configured model/effort are checked explicitly.
 
@@ -95,6 +95,8 @@ new admission. A failed admission yields one content-addressed
 `HOLD_OR_ARCHIVE_ONCE` blocker with `substantive_work_started: false` and
 `retry_allowed: false`; it does not send a substantive prompt, create a
 worktree, or start a process. Only after every readback validates does the
-adapter emit one `ADMITTED` receipt bound to all four readback digests and the
-next governed action. Prompt text, title, local process cwd, or an API
-acknowledgement cannot substitute for persisted metadata.
+adapter emit one `ADMITTED` receipt bound to all four operational readback
+digests plus the identity-claims readback digest, fixed authority, and
+provenance. An explicitly authoritative empty claims array is valid; an
+omitted claims readback is not. Prompt text, title, local process cwd, or an
+API acknowledgement cannot substitute for persisted metadata.
