@@ -98,7 +98,7 @@ assert.equal(roster.activation_state, "OFF");
 assert.equal(roster.worker_spawned_count, 0);
 
 for (let index = 0; index < PERMANENT_ROLE_IDS.length; index += 1) {
-  roster = admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[index]);
+  roster = admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[index], {spawnerAdmission: admission});
   assert.deepEqual(roster.admitted_role_ids, PERMANENT_ROLE_IDS.slice(0, index + 1));
   assert.equal(roster.worker_spawned_count, 0);
   assert.equal(roster.activation_state, "OFF");
@@ -136,7 +136,7 @@ redigest(duplicateRoleSet, "roster_sha256");
 assert.throws(() => validatePermanentRoleRoster(duplicateRoleSet), /role set is incomplete or reordered/u);
 
 assert.throws(() => compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates: candidates.slice(0, -1)}), /candidates are incomplete/u);
-assert.throws(() => admitNextPermanentRole(compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates}), PERMANENT_ROLE_IDS[1]), /typed next role/u);
+assert.throws(() => admitNextPermanentRole(compilePermanentRoleRoster({spawnerAdmissionSha256: admission.admission_sha256, candidates}), PERMANENT_ROLE_IDS[1], {spawnerAdmission: admission}), /typed next role/u);
 
 const badQa = structuredClone(roster);
 badQa.candidates[0].qa_status = "QA_PENDING";
@@ -159,6 +159,8 @@ const staleAdmission = structuredClone(admission);
 staleAdmission.block_set.independent_evaluation_sha256 = SHA("e");
 redigest(staleAdmission.block_set, "block_set_sha256");
 redigest(staleAdmission, "admission_sha256");
+assert.throws(() => admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[0]), /current Spawner admission/u);
+assert.throws(() => admitNextPermanentRole(roster, PERMANENT_ROLE_IDS[0], {spawnerAdmission: staleAdmission}), /Spawner admission is stale/u);
 assert.throws(() => validatePermanentRoleRoster(roster, {spawnerAdmission: staleAdmission}), /Spawner admission is stale/u);
 
 console.log("PASS permanent role roster: one-at-a-time canonical admission, compiler-only boundaries, successor handoff, malformed-input rejection, stale custody, and hostile lifecycle checks");

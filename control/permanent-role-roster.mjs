@@ -185,8 +185,9 @@ export function compilePermanentRoleRoster({spawnerAdmissionSha256, candidates, 
   return validatePermanentRoleRoster(roster);
 }
 
-export function admitNextPermanentRole(roster, roleId) {
-  validatePermanentRoleRoster(roster);
+export function admitNextPermanentRole(roster, roleId, {spawnerAdmission} = {}) {
+  assert(spawnerAdmission !== null && spawnerAdmission !== undefined, "Permanent role admission requires the current Spawner admission");
+  validatePermanentRoleRoster(roster, {spawnerAdmission});
   requireToken(roleId, "Permanent roster requested role");
   assert(roster.next_role_id === roleId, "Permanent role admission must follow the typed next role");
   const next = structuredClone(roster);
@@ -200,7 +201,7 @@ export function admitNextPermanentRole(roster, roleId) {
   next.next_action = next.next_role_id === null ? "INJECT_ORCHESTRATOR_GOVERNANCE" : "ADMIT_NEXT_PERMANENT_ROLE";
   bindSuccessor(next);
   next.roster_sha256 = digestWithout(next, "roster_sha256");
-  return validatePermanentRoleRoster(next);
+  return validatePermanentRoleRoster(next, {spawnerAdmission});
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Permanent role roster contract loaded\n");

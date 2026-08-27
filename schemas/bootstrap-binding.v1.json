@@ -1114,15 +1114,15 @@
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
-      "sha256": "d1ce0f3d4ffb0d14db19279471677603fa5345e289b5af8b785252ed85225535"
+      "sha256": "40143c6a4df5195ff968f0d12062019179f912c63d9adc5fec3926e50f211844"
     },
     "permanent_role_roster_contract": {
       "path": "schemas/permanent-role-roster.v1.json",
-      "sha256": "55deae85d4b445db2ae109405dd860b141efa22c98dd4dfb426ea555d97ad890"
+      "sha256": "1d71bba4817e96c48d2575bc755785d138320b150a008104510a7c4dfd48c3f1"
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "7dd5c17d5a800959d315ed550e4132f498c62be68f6642f9a3d73afc484af412"
+      "sha256": "7d64a799278fe2f9ffaaf3a01695651be524f7a3b85da31ce33a9e79948dd41f"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",

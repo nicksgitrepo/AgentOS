@@ -48,6 +48,7 @@
   "state_rules": {
     "order": "Only the typed next_role_id may be admitted; admitted_role_ids must be a canonical prefix.",
     "roles": "The Intent Regulator is the Controller alias; a duplicate Controller role is forbidden. The canonical permanent roles are Intent Regulator, Memory, Runtime, and Scheduler.",
+    "custody": "Every role admission must revalidate the complete current typed Spawner admission against spawner_admission_sha256; a roster digest alone cannot authorize a transition.",
     "qa": "Every candidate must have complete non-placeholder blocks, hostile fixtures, independent evaluation, explicit authority, and stop conditions before admission.",
     "closeout": "All roles admitted yields next_action=INJECT_ORCHESTRATOR_GOVERNANCE with a registered next_handler and same-turn continuation; activation remains OFF."
   }
