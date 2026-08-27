@@ -209,6 +209,10 @@ assert.equal(admitted.process_started, false);
 assert.deepEqual(admitted.hostile_fixture_refs, [...AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS]);
 validateAgentSpawnerAtomicAdmission(admitted, atomicInput());
 assert.equal(admitted.receipt_sha256, canonicalDigest({...admitted, receipt_sha256: null}));
+const reboundAdmissionReceipt = structuredClone(admitted);
+reboundAdmissionReceipt.admission_id = "REQ.GOV02.ATOMIC.REBOUND";
+reboundAdmissionReceipt.receipt_sha256 = canonicalDigest({...reboundAdmissionReceipt, receipt_sha256: null});
+assert.throws(() => validateAgentSpawnerAtomicAdmission(reboundAdmissionReceipt, atomicInput()), /admission_id.*not bound to the request/u, "core validator must reject a self-consistent receipt rebound to another admission identity");
 
 const wrongCwd = atomicInput();
 wrongCwd.hostReadback = makeHost({cwd: "/"});

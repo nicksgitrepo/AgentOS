@@ -460,7 +460,7 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   bridgeAtomicReference(request.custody_ref, "Atomic admission custody reference");
   bridgeAtomicReference(request.prompt_ref, "Atomic admission prompt reference");
   bridgeAtomicText(request.title, "Atomic admission title");
-  for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(receipt[field] === expected, `Atomic admission receipt ${field} is not bound to the request`);
+  for (const [field, expected] of [["admission_id", request.request_id], ["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(receipt[field] === expected, `Atomic admission receipt ${field} is not bound to the request`);
   const binding = readbacks.projectBinding;
   const bindingProjectId = binding?.project_id ?? binding?.projectId;
   assert(isRecord(binding) && typeof bindingProjectId === "string" && bindingProjectId.length > 0 && typeof binding.cwd === "string" && binding.cwd.length > 0, "Atomic admission authoritative project binding is required");

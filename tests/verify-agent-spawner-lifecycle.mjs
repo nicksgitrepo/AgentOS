@@ -219,6 +219,10 @@ const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, bridge
 assert.equal(atomicTransition.status, "ATOMIC_ADMISSION_RECORDED");
 assert.equal(atomicTransition.next_action, "START_GOVERNED_SPAWN");
 assert.equal(atomicTransition.substantive_work_started, false);
+const reboundBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
+reboundBridgeReceipt.admission_id = "REQ.GOV02.LIFECYCLE.REBOUND";
+reboundBridgeReceipt.receipt_sha256 = canonicalDigest({...reboundBridgeReceipt, receipt_sha256: null});
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, reboundBridgeReceipt, bridgeReadbacks), /admission_id.*not bound to the request/u, "bridge must reject a self-consistent receipt rebound to another admission identity");
 const forgedBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 for (const field of ["receipt_sha256", "admission_id", "host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256"]) delete forgedBridgeReceipt[field];
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, forgedBridgeReceipt, bridgeReadbacks), /fields mismatch|receipt|readback/u, "bridge must reject a forged receipt with omitted durable/readback fields");
