@@ -406,7 +406,7 @@ function validateAtomicClaims(existingClaims, request) {
 
 function atomicReceiptBody(receipt) { return atomicBody(receipt, "receipt_sha256"); }
 
-export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, hostReadback = null, taskIndexReadback = null, stateReadback = null, processReadback = null, existingClaims = []} = {}) {
+export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, hostReadback = null, taskIndexReadback = null, stateReadback = null, processReadback = null, existingClaims = [], projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
   try {
     atomicExact(receipt, ATOMIC_RECEIPT_KEYS, "Atomic admission receipt", ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH);
     atomicRequire(receipt.schema === AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA && receipt.version === 1, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt identity is invalid");
@@ -418,7 +418,7 @@ export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, ho
     atomicRequire(JSON.stringify(receipt.hostile_fixture_refs) === JSON.stringify([...AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS]), ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission hostile fixture coverage is incomplete");
     atomicDigest(receipt, "receipt_sha256", "Atomic admission receipt");
     if (request !== null) {
-      const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims});
+      const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, projectBinding, expectedProjectId, expectedCwd});
       for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) atomicRequire(receipt[field] === expected, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, `Atomic admission receipt ${field} is not bound to the request`);
       atomicRequire(receipt.host_readback_sha256 === inputs.hostReadback.readback_sha256 && receipt.task_index_readback_sha256 === inputs.taskIndexReadback.readback_sha256 && receipt.state_readback_sha256 === inputs.stateReadback.readback_sha256 && receipt.process_readback_sha256 === inputs.processReadback.readback_sha256, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt readback digest binding is stale");
     }
@@ -429,24 +429,28 @@ export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, ho
   }
 }
 
-export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = []} = {}) {
+export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = [], projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
   try {
     validateAtomicRequest(request);
+    const binding = projectBinding ?? {project_id: expectedProjectId, cwd: expectedCwd, environment: "local"};
+    atomicRequire(isRecord(binding) && typeof binding.project_id === "string" && binding.project_id.length > 0 && typeof binding.cwd === "string" && binding.cwd.length > 0, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "an authoritative saved-project binding is required");
+    atomicRequire(binding.environment === undefined || binding.environment === "local", ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "saved-project binding must use the local environment");
+    atomicRequire(request.target.projectId === binding.project_id && request.cwd === binding.cwd, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "request does not match the authoritative saved-project binding");
     atomicRequire(hostReadback !== null && taskIndexReadback !== null && stateReadback !== null && processReadback !== null, ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "fresh host, task-index, state, and process readbacks are all required");
     validateAtomicHostReadback(hostReadback, request);
     validateAtomicTaskIndex(taskIndexReadback, request);
     validateAtomicStateReadback(stateReadback, request);
     validateAtomicProcessReadback(processReadback, request);
     validateAtomicClaims(existingClaims, request);
-    return {request, hostReadback, taskIndexReadback, stateReadback, processReadback};
+    return {request, hostReadback, taskIndexReadback, stateReadback, processReadback, projectBinding: binding};
   } catch (error) {
     if (error instanceof AgentSpawnerAtomicAdmissionError) throw error;
     throw new AgentSpawnerAtomicAdmissionError(ATOMIC_BLOCKER_CODES.REQUEST_INVALID, error.message);
   }
 }
 
-export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = []} = {}) {
-  const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims});
+export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = [], projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
+  const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, projectBinding, expectedProjectId, expectedCwd});
   const receipt = {
     schema: AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA,
     version: 1,

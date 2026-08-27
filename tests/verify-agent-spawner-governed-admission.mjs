@@ -172,7 +172,7 @@ const makeProcess = (processes = []) => digestRecord({
   processes,
   readback_sha256: null,
 });
-const atomicInput = () => ({request: structuredClone(atomicRequest), hostReadback: makeHost(), taskIndexReadback: makeIndex(), stateReadback: makeState(), processReadback: makeProcess(), existingClaims: []});
+const atomicInput = () => ({request: structuredClone(atomicRequest), projectBinding: {project_id: PROJECT_ID, cwd: CWD, environment: "local"}, hostReadback: makeHost(), taskIndexReadback: makeIndex(), stateReadback: makeState(), processReadback: makeProcess(), existingClaims: []});
 const expectBlock = (input, code, message) => {
   assert.throws(() => compileAgentSpawnerAtomicAdmission(input), (error) => {
     assert(error instanceof AgentSpawnerAtomicAdmissionError);
