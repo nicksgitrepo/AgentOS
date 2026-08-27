@@ -12,6 +12,7 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {controllerActionHandlerFor} from "./controller-action-dispatcher.mjs";
 
 export const ACTION_RESULT_CONTINUATION_SCHEMA = "agentos.action_result_continuation.v1";
 export const ACTION_RESULT_CONTINUATION_VERSION = 1;
@@ -131,6 +132,7 @@ export function validateActionResultContinuation(record) {
   assert(["RESULT_PERSISTED", "PROTECTED_WAIT_PERSISTED", "OWNER_REVIEW_PERSISTED"].includes(record.status), "Action result status is not persisted");
   requireSha(record.record_sha256, "Action result record digest");
   assert(record.record_sha256 === canonicalDigest({...record, record_sha256: null}), "Action result record digest mismatch");
+  assert(record.next_handler === controllerActionHandlerFor(record.next_action), "Action result next handler is not registry-bound");
   return record;
 }
 

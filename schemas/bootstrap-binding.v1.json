@@ -994,15 +994,15 @@
     },
     "action_result_continuation_controller": {
       "path": "control/action-result-continuation.mjs",
-      "sha256": "7899920b80095df978d2c4f5ef06bc2a715ed29642dc0e1d7450e67b2618e486"
+      "sha256": "32f5772af00729dc8de6e113e817bb6426dd3bf6c3572e68226cd5fc6ecf2231"
     },
     "action_result_continuation_contract": {
       "path": "schemas/action-result-continuation.v1.json",
-      "sha256": "6cdc7c57fbe1c522e6b7bf250a121ad1867d8988fc6180fd876e1d584f426f10"
+      "sha256": "2c7c79bbc4cea1fa514c78f7914b1af4f98d3eb9b2def5dd76e721e4df5ff62e"
     },
     "action_result_continuation_verifier": {
       "path": "tests/verify-action-result-continuation.mjs",
-      "sha256": "57aead32d6b99f3f9b45c1be755d5352b73d55305dccef866cedddc9a4e15f0b"
+      "sha256": "b78ffe585bc45e4e07291b60fd0ed1e3cf189c4b8619cb2954352ee48cf1aaee"
     },
     "turn_continuation_gate_controller": {
       "path": "control/turn-continuation-gate.mjs",

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agentos.dev/schemas/action-result-continuation.v1.json",
   "title": "AgentOS persisted action-result continuation",
-  "description": "A Controller or Spawner action must persist a typed result and an immediate successor. Planning-only, timer-only, commentary-only, null-result, and DONE/NONE closeouts are invalid.",
+  "description": "A Controller or Spawner action must persist a typed result and an immediate successor bound to the executable Controller action registry. Planning-only, timer-only, commentary-only, null-result, unknown-route, and DONE/NONE closeouts are invalid.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "version", "action_id", "result_id", "result", "result_sha256", "semantic_before_sha256", "semantic_after_sha256", "next_action", "next_handler", "continuation", "continuation_sha256", "persistence", "evidence_refs", "hostile_fixture_refs", "status", "record_sha256"],
@@ -15,8 +15,8 @@
     "result_sha256": {"$ref": "#/$defs/sha256"},
     "semantic_before_sha256": {"$ref": "#/$defs/sha256"},
     "semantic_after_sha256": {"$ref": "#/$defs/sha256"},
-    "next_action": {"$ref": "#/$defs/identifier"},
-    "next_handler": {"$ref": "#/$defs/identifier"},
+    "next_action": {"$ref": "#/$defs/controllerAction"},
+    "next_handler": {"$ref": "#/$defs/controllerHandler"},
     "continuation": {"$ref": "#/$defs/continuation"},
     "continuation_sha256": {"$ref": "#/$defs/sha256"},
     "persistence": {"$ref": "#/$defs/persistence"},
@@ -28,6 +28,32 @@
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "identifier": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]{0,191}$"},
+    "controllerAction": {"enum": [
+      "ADMIT_GOVERNED_SPAWN", "ADMIT_NEXT_PERMANENT_ROLE", "ADMIT_TYPED_AGENT_SPAWNER", "ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE",
+      "BUILD_SOURCE_LOCK_AND_QA_MISSING_BLOCKS", "COMPILE_BLOCK_PATCH", "COMPILE_NEXT_BLOCK", "CONSTRUCT_PERMANENT_ROLES_ONE_AT_A_TIME",
+      "INJECT_ORCHESTRATOR_GOVERNANCE", "MATERIALIZE_NEW_PROJECT_REPOSITORIES", "OWNER_REVIEW", "PREPARE_CANDIDATE_REVIEW",
+      "PREPARE_DEVELOPMENT_CANDIDATE_REVIEW", "PREPARE_PYRAMID_IMPORT_OUTPUT", "PUBLISH_TYPED_ROSTER", "RECORD_BLOCKED_EXACT_AND_CONTINUE_UNAFFECTED_WORK",
+      "REPAIR_BLOCKS", "REQUEST_SPAWNER_QA", "REQUEST_SPAWNER_QA_FOR_CURRENT_WAVE", "RETRY_SPAWNER_QA", "RUNTIME_ATOMIC_GIT_REPOINT",
+      "RUN_LOCAL_CANDIDATE_PROOF", "RUN_NEXT_BOUNDED_RECOVERY", "SELF_REPAIR_WORKFLOW_DEAD_END", "START_CENTRAL_INTEGRATION",
+      "START_CENTRAL_INTEGRATION_OF_ACCEPTED_PLATFORM_HANDOFFS", "START_COMPILER", "START_CURRENT_SPECIALIST_AUDIT_REPAIR_WAVE", "START_GOVERNED_SPAWN",
+      "START_IMPORT_ORCHESTRATOR", "START_INDEPENDENT_REAUDIT", "START_INDEPENDENT_REAUDIT_OF_CUMULATIVE_CANDIDATE", "START_ISOLATED_AUDIT_LANES",
+      "START_NEXT_AVAILABLE_CONTROLLER_TRANSITION", "START_NEXT_LOCAL_BLOCK_REPAIR", "START_PLATFORM_REVIEW", "START_PLATFORM_REVIEW_TEST_AND_INTEGRATION",
+      "START_SPECIALIST_WAVE", "WAIT_FOR_EXACT_PROTECTED_BOUNDARY_RESOLUTION", "WAIT_FOR_INDEPENDENT_CLEARANCE", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT",
+      "WAIT_FOR_PROTECTED_EVENT", "WAIT_FOR_PROTECTED_WAVE_ACTIVATION"
+    ]},
+    "controllerHandler": {"enum": [
+      "HANDLER.AGENTOS.SPAWNER.DEFECT.COMPILER", "HANDLER.CONTROLLER_AVAILABLE_TRANSITION", "HANDLER.CONTROLLER_BLOCK_REPAIR",
+      "HANDLER.CONTROLLER_CANDIDATE_REVIEW", "HANDLER.CONTROLLER_CENTRAL_INTEGRATION", "HANDLER.CONTROLLER_CONTINUE_UNAFFECTED",
+      "HANDLER.CONTROLLER_INDEPENDENT_REAUDIT", "HANDLER.CONTROLLER_LOCAL_BLOCK_REPAIR", "HANDLER.CONTROLLER_PLATFORM_REVIEW",
+      "HANDLER.CONTROLLER_RECOVERY", "HANDLER.CONTROLLER_SPAWNER_QA", "HANDLER.CONTROLLER_SPECIALIST_WAVE", "HANDLER.GOVERNED_SPAWN_ADAPTER",
+      "HANDLER.ORCHESTRATOR.MATERIALIZE_NEW_PROJECT_REPOSITORIES", "HANDLER.ORCHESTRATOR.PREPARE_PYRAMID_IMPORT_OUTPUT", "HANDLER.ORCHESTRATOR_BLOCK_REPAIR",
+      "HANDLER.ORCHESTRATOR_CENTRAL_INTEGRATION", "HANDLER.ORCHESTRATOR_GOVERNANCE", "HANDLER.ORCHESTRATOR_INDEPENDENT_REAUDIT",
+      "HANDLER.ORCHESTRATOR_ISOLATED_AUDIT", "HANDLER.ORCHESTRATOR_PLATFORM_REVIEW", "HANDLER.ORCHESTRATOR_SPAWNER_QA",
+      "HANDLER.ORCHESTRATOR_SPECIALIST_WAVE", "HANDLER.ORCHESTRATOR_START", "HANDLER.OWNER_REVIEW", "HANDLER.PERMANENT_ROLE_ADMISSION",
+      "HANDLER.PERMANENT_ROLE_CONSTRUCTION", "HANDLER.PLATFORM_AGENT.ASSEMBLE_ISOLATED_CUMULATIVE_CANDIDATE", "HANDLER.PROTECTED_EVENT_WAIT",
+      "HANDLER.RUNTIME.RUN_LOCAL_CANDIDATE_PROOF", "HANDLER.RUNTIME_ATOMIC_GIT_REPOINT", "HANDLER.SELF_REPAIR_WORKFLOW", "HANDLER.SPAWNER_ADMISSION",
+      "HANDLER.SPAWNER_BLOCK_COMPILER", "HANDLER.SPAWNER_COMPILER", "HANDLER.SPAWNER_ROSTER_PUBLISHER"
+    ]},
     "reference": {"type": "string", "pattern": "^(opaque:|ref:)[^\\s]+$"},
     "evidenceRef": {
       "type": "object", "additionalProperties": false,
@@ -61,7 +87,7 @@
   },
   "state_rules": {
     "result": "A handler cannot close on reasoning or commentary; a non-empty typed result must be persisted and content-addressed.",
-    "successor": "Every result binds a non-terminal next_action and next_handler; NONE, DONE, null, and timer-only closeouts are rejected.",
+    "successor": "Every result binds a non-terminal next_action to the exact executable Controller registry next_handler; NONE, DONE, null, unknown-route, and timer-only closeouts are rejected.",
     "continuation": "Local actions dispatch in the same turn; protected waits are event-driven with zero resources and an explicit blocker.",
     "repair": "Missing result persistence, missing successor, or unchanged semantic state is a typed project-agnostic Spawner defect."
   }

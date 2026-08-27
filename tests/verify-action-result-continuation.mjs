@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
+import {CONTROLLER_ACTION_IDS, CONTROLLER_ACTION_REGISTRY} from "../control/controller-action-dispatcher.mjs";
 import {
   actionResultContinuationDigest,
   compileActionResultContinuation,
@@ -44,6 +46,34 @@ validateActionResultContinuation(record);
 assert.equal(record.result_sha256, canonicalDigest(record.result));
 assert.equal(record.continuation_sha256, actionResultContinuationDigest(record.continuation));
 assert.equal(record.record_sha256, canonicalDigest({...record, record_sha256: null}));
+
+const staleHandler = structuredClone(record);
+staleHandler.next_handler = "HANDLER.UNREGISTERED.EXECUTION";
+staleHandler.record_sha256 = canonicalDigest({...staleHandler, record_sha256: null});
+assert.throws(() => validateActionResultContinuation(staleHandler), /registry-bound/u, "an unregistered handler may not claim a persisted successor");
+assert.throws(() => compileActionResultContinuation({
+  actionId: record.action_id,
+  resultId: "RESULT.SPAWNER_QA.UNREGISTERED_HANDLER",
+  result: record.result,
+  semanticBeforeSha256: record.semantic_before_sha256,
+  semanticAfterSha256: record.semantic_after_sha256,
+  nextAction: record.next_action,
+  nextHandler: staleHandler.next_handler,
+  continuation: record.continuation,
+  persistence: record.persistence,
+  evidenceRefs: record.evidence_refs,
+  hostileFixtureRefs: ["FIXTURE.ACTION_RESULT.UNREGISTERED_HANDLER"],
+}), /registry-bound/u, "the compiler must reject an unregistered successor route before persistence");
+
+const actionResultSchema = JSON.parse(fs.readFileSync(new URL("../schemas/action-result-continuation.v1.json", import.meta.url), "utf8"));
+assert.equal(actionResultSchema.properties.next_action.$ref, "#/$defs/controllerAction");
+assert.equal(actionResultSchema.properties.next_handler.$ref, "#/$defs/controllerHandler");
+assert.deepEqual([...actionResultSchema.$defs.controllerAction.enum].sort(), [...CONTROLLER_ACTION_IDS].sort(), "action-result schema route enum drifted from the Controller registry");
+assert.deepEqual(
+  [...actionResultSchema.$defs.controllerHandler.enum].sort(),
+  [...new Set(CONTROLLER_ACTION_IDS.map((actionId) => CONTROLLER_ACTION_REGISTRY[actionId].handler))].sort(),
+  "action-result schema handler enum drifted from the Controller registry",
+);
 
 const rejects = (mutator, message) => {
   const candidate = structuredClone(record);
