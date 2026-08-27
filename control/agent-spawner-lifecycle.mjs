@@ -12,7 +12,6 @@
 
 import crypto from "node:crypto";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
-import {validateAgentSpawnerAtomicAdmission} from "./agent-spawner-governed-admission.mjs";
 
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
 export const AGENT_SPAWNER_LIFECYCLE_VERSION = 1;
@@ -359,6 +358,156 @@ export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalC
   });
 }
 
+const ATOMIC_BRIDGE_REQUEST_KEYS = Object.freeze([
+  "schema", "version", "request_id", "task_id", "role_id", "role_kind", "model", "reasoning_effort",
+  "target", "cwd", "worktree", "custody_ref", "queue", "seam", "prompt_ref", "title",
+]);
+const ATOMIC_BRIDGE_TARGET_KEYS = Object.freeze(["projectId", "environment"]);
+const ATOMIC_BRIDGE_RECEIPT_KEYS = Object.freeze([
+  "schema", "version", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
+  "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "status", "host_readback_sha256",
+  "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256", "existing_claims_readback_sha256",
+  "existing_claims_authority", "existing_claims_provenance", "substantive_prompt_sent", "process_started", "cleanup_action",
+  "retry_allowed", "material_transition", "hostile_fixture_refs", "receipt_sha256",
+]);
+const ATOMIC_BRIDGE_HOST_KEYS = Object.freeze([
+  "schema", "version", "fresh", "project_id", "cwd", "role_id", "role_kind", "model", "reasoning_effort",
+  "queue", "seam", "worktree", "custody_ref", "worktree_clean", "readback_sha256",
+]);
+const ATOMIC_BRIDGE_INDEX_KEYS = Object.freeze(["schema", "version", "fresh", "project_id", "cwd", "queue", "seam", "rows", "readback_sha256"]);
+const ATOMIC_BRIDGE_ROW_KEYS = Object.freeze([
+  "task_id", "role_id", "role_kind", "project_id", "cwd", "worktree", "custody_ref", "model", "reasoning_effort",
+  "queue", "seam", "status", "lifecycle",
+]);
+const ATOMIC_BRIDGE_STATE_KEYS = Object.freeze([
+  "schema", "version", "fresh", "task_id", "role_id", "role_kind", "project_id", "cwd", "worktree", "custody_ref",
+  "model", "reasoning_effort", "queue", "seam", "status", "lifecycle", "substantive_prompt_sent", "process_started", "readback_sha256",
+]);
+const ATOMIC_BRIDGE_PROCESS_KEYS = Object.freeze(["schema", "version", "fresh", "processes", "readback_sha256"]);
+const ATOMIC_BRIDGE_PROCESS_ITEM_KEYS = Object.freeze(["process_id", "task_id", "role_id", "worktree", "command"]);
+const ATOMIC_BRIDGE_CLAIMS_KEYS = Object.freeze(["schema", "version", "fresh", "authority", "provenance", "claims", "readback_sha256"]);
+const ATOMIC_BRIDGE_CLAIM_KEYS = Object.freeze(["kind", "identity", "status"]);
+const ATOMIC_BRIDGE_FAILED_ROW_STATUSES = new Set(["FAILED", "ARCHIVED", "HELD"]);
+const ATOMIC_BRIDGE_HOSTILE_FIXTURE_REFS = Object.freeze([
+  "FIXTURE.ATOMIC_ADMISSION.CREATION_ACK_WITHOUT_READBACK",
+  "FIXTURE.ATOMIC_ADMISSION.DUPLICATE_IDENTITY_COLLISION",
+  "FIXTURE.ATOMIC_ADMISSION.FAILED_ROW_INDEPENDENCE",
+  "FIXTURE.ATOMIC_ADMISSION.FAILED_TASK_HOLD_ARCHIVE_ONCE",
+  "FIXTURE.ATOMIC_ADMISSION.MISSING_IDENTITY_CLAIMS_READBACK",
+  "FIXTURE.ATOMIC_ADMISSION.PROJECT_CWD_ROOT_MISMATCH",
+  "FIXTURE.ATOMIC_ADMISSION.PROMPT_TITLE_CANNOT_SUBSTITUTE_READBACK",
+  "FIXTURE.ATOMIC_ADMISSION.ROLE_PROJECT_CWD_DRIFT",
+  "FIXTURE.ATOMIC_ADMISSION.SUCCESS_DURABLE_RECEIPT",
+]);
+
+function bridgeAtomicText(value, label) {
+  requireString(value, label);
+}
+
+function bridgeAtomicIdentifier(value, label) {
+  bridgeAtomicText(value, label);
+  assert(value.length <= 191, `${label} is too long`);
+}
+
+function bridgeAtomicAbsolutePath(value, label) {
+  bridgeAtomicText(value, label);
+  assert(value.startsWith("/") && value !== "/", `${label} must be an absolute non-root path`);
+}
+
+function bridgeAtomicReference(value, label) {
+  assert(typeof value === "string" && /^(?:opaque:|ref:)[^\s]+$/u.test(value), `${label} must be an opaque reference`);
+}
+
+function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
+  exactKeys(receipt, ATOMIC_BRIDGE_RECEIPT_KEYS, "Atomic admission receipt");
+  assert(receipt.schema === "agentos.agent_spawner_atomic_admission.v1" && receipt.version === 1, "Atomic admission receipt identity is invalid");
+  assert(receipt.status === "ADMITTED" && receipt.environment === "local", "Atomic admission receipt status or environment is invalid");
+  for (const field of ["admission_id", "task_id", "role_id", "role_kind", "project_id", "cwd", "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "material_transition"]) requireString(receipt[field], `Atomic admission receipt ${field}`);
+  for (const field of ["host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256", "existing_claims_readback_sha256"]) requireSha(receipt[field], `Atomic admission receipt ${field}`);
+  assert(receipt.existing_claims_authority === "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK", "Atomic admission receipt existing claims authority is invalid");
+  assert(typeof receipt.existing_claims_provenance === "string" && OPAQUE_REF.test(receipt.existing_claims_provenance), "Atomic admission receipt existing claims provenance is invalid");
+  assert(receipt.substantive_prompt_sent === false && receipt.process_started === false && receipt.cleanup_action === "NONE" && receipt.retry_allowed === false, "Atomic admission receipt crossed the substantive-work boundary");
+  assert(receipt.material_transition === "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION", "Atomic admission receipt next transition is invalid");
+  sortedIdentifiers(receipt.hostile_fixture_refs, "Atomic admission hostile fixtures");
+  assert(JSON.stringify(receipt.hostile_fixture_refs) === JSON.stringify([...ATOMIC_BRIDGE_HOSTILE_FIXTURE_REFS]), "Atomic admission hostile fixture coverage is incomplete");
+  requireSha(receipt.receipt_sha256, "Atomic admission receipt");
+  assert(receipt.receipt_sha256 === canonicalDigest({...receipt, receipt_sha256: null}), "Atomic admission receipt digest mismatch");
+  assert(isRecord(readbacks) && isRecord(readbacks.request), "Atomic admission request readback is required");
+  exactKeys(readbacks.request, ATOMIC_BRIDGE_REQUEST_KEYS, "Atomic admission request");
+  const request = readbacks.request;
+  assert(request.schema === "agentos.agent_spawner_atomic_admission_request.v1" && request.version === 1, "Atomic admission request identity is invalid");
+  exactKeys(request.target, ATOMIC_BRIDGE_TARGET_KEYS, "Atomic admission request target");
+  for (const field of ["request_id", "task_id", "role_id", "role_kind", "queue", "seam"]) bridgeAtomicText(request[field], `Atomic admission request ${field}`);
+  bridgeAtomicIdentifier(request.request_id, "Atomic admission request ID");
+  bridgeAtomicIdentifier(request.role_id, "Atomic admission role ID");
+  bridgeAtomicText(request.model, "Atomic admission model");
+  bridgeAtomicText(request.reasoning_effort, "Atomic admission reasoning effort");
+  assert(request.model === "gpt-5.6-luna" && request.reasoning_effort === "max", "Atomic admission model or reasoning effort is not admitted");
+  bridgeAtomicText(request.target.projectId, "Atomic admission project ID");
+  assert(request.target.environment === "local", "Atomic admission request target environment is invalid");
+  bridgeAtomicAbsolutePath(request.cwd, "Atomic admission cwd");
+  assert(request.cwd !== "/", "Atomic admission cwd cannot be the host root");
+  bridgeAtomicAbsolutePath(request.worktree, "Atomic admission worktree");
+  assert(request.worktree.startsWith(`${request.cwd}/`) || request.worktree === request.cwd, "Atomic admission worktree is outside the bound project cwd");
+  bridgeAtomicReference(request.custody_ref, "Atomic admission custody reference");
+  bridgeAtomicReference(request.prompt_ref, "Atomic admission prompt reference");
+  bridgeAtomicText(request.title, "Atomic admission title");
+  for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(receipt[field] === expected, `Atomic admission receipt ${field} is not bound to the request`);
+  const binding = readbacks.projectBinding;
+  const bindingProjectId = binding?.project_id ?? binding?.projectId;
+  assert(isRecord(binding) && typeof bindingProjectId === "string" && bindingProjectId.length > 0 && typeof binding.cwd === "string" && binding.cwd.length > 0, "Atomic admission authoritative project binding is required");
+  assert((binding.environment === undefined || binding.environment === "local") && bindingProjectId === request.target.projectId && binding.cwd === request.cwd, "Atomic admission authoritative project binding is required");
+  const digestReadback = (value, keys, label) => {
+    assert(isRecord(value), `${label} is required`);
+    exactKeys(value, keys, label);
+    assert(value.fresh === true, `${label} must be fresh`);
+    requireSha(value.readback_sha256, `${label} digest`);
+    assert(value.readback_sha256 === canonicalDigest({...value, readback_sha256: null}), `${label} digest mismatch`);
+    return value;
+  };
+  const host = digestReadback(readbacks.hostReadback, ATOMIC_BRIDGE_HOST_KEYS, "Atomic host readback");
+  for (const [field, expected] of [["project_id", request.target.projectId], ["cwd", request.cwd], ["role_id", request.role_id], ["role_kind", request.role_kind], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam], ["worktree", request.worktree], ["custody_ref", request.custody_ref]]) assert(host[field] === expected, `host readback ${field} differs from the request`);
+  assert(host.worktree_clean === true, "host readback does not prove clean custody");
+  const index = digestReadback(readbacks.taskIndexReadback, ATOMIC_BRIDGE_INDEX_KEYS, "Atomic task-index readback");
+  assert(index.project_id === request.target.projectId && index.cwd === request.cwd && index.queue === request.queue && index.seam === request.seam && Array.isArray(index.rows), "task-index readback binding is invalid");
+  index.rows.forEach((row, rowIndex) => {
+    exactKeys(row, ATOMIC_BRIDGE_ROW_KEYS, `Atomic task-index row ${rowIndex}`);
+    for (const field of ATOMIC_BRIDGE_ROW_KEYS) bridgeAtomicText(row[field], `Atomic task-index row ${rowIndex} ${field}`);
+  });
+  const targetRows = index.rows.filter((row) => row && row.task_id === request.task_id && row.status !== "FAILED" && row.status !== "ARCHIVED" && row.status !== "HELD" && row.lifecycle !== "FAILED" && row.lifecycle !== "ARCHIVED" && row.lifecycle !== "HELD");
+  assert(targetRows.length === 1, "task-index must contain exactly one nonfailed target task row");
+  exactKeys(targetRows[0], ATOMIC_BRIDGE_ROW_KEYS, "Atomic task-index target row");
+  for (const [field, expected] of [["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(targetRows[0][field] === expected, `task-index target ${field} differs from the request`);
+  const nonFailedRows = index.rows.filter((row) => !ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(row.status) && !ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(row.lifecycle));
+  for (const row of nonFailedRows) {
+    if (row === targetRows[0]) continue;
+    const sameIdentity = row.task_id === request.task_id || row.role_id === request.role_id || row.worktree === request.worktree || row.custody_ref === request.custody_ref;
+    assert(!sameIdentity, "task-index contains a duplicate task, role, worktree, or custody identity");
+  }
+  const state = digestReadback(readbacks.stateReadback, ATOMIC_BRIDGE_STATE_KEYS, "Atomic task-state readback");
+  for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(state[field] === expected, `task state ${field} differs from the request`);
+  assert(state.substantive_prompt_sent === false && state.process_started === false, "task state crossed the substantive-work boundary");
+  const process = digestReadback(readbacks.processReadback, ATOMIC_BRIDGE_PROCESS_KEYS, "Atomic process readback");
+  assert(Array.isArray(process.processes), "process readback processes are required");
+  process.processes.forEach((entry, processIndex) => {
+    exactKeys(entry, ATOMIC_BRIDGE_PROCESS_ITEM_KEYS, `Atomic process ${processIndex}`);
+    for (const field of ATOMIC_BRIDGE_PROCESS_ITEM_KEYS) bridgeAtomicText(entry[field], `Atomic process ${processIndex} ${field}`);
+    assert(!(entry.task_id === request.task_id || entry.role_id === request.role_id || entry.worktree === request.worktree), "process readback contains a conflicting task, role, or worktree");
+  });
+  const claims = readbacks.existingClaims;
+  assert(Array.isArray(claims), "Atomic existing identity claims readback is required");
+  const claimsReadback = digestReadback(readbacks.existingClaimsReadback, ATOMIC_BRIDGE_CLAIMS_KEYS, "Atomic existing identity claims readback");
+  assert(claimsReadback.authority === "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK" && OPAQUE_REF.test(claimsReadback.provenance), "Atomic existing identity claims readback authority/provenance is invalid");
+  assert(Array.isArray(claimsReadback.claims) && JSON.stringify(claimsReadback.claims) === JSON.stringify(claims), "Atomic existing identity claims readback does not match supplied claims");
+  claims.forEach((claim, index) => {
+    exactKeys(claim, ATOMIC_BRIDGE_CLAIM_KEYS, `Atomic existing claim ${index}`);
+    for (const field of ATOMIC_BRIDGE_CLAIM_KEYS) bridgeAtomicText(claim[field], `Atomic existing claim ${index} ${field}`);
+    if (!ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(claim.status)) assert(![request.task_id, request.role_id, request.worktree, request.custody_ref].includes(claim.identity), "existing identity claim collides with the requested admission");
+  });
+  assert(receipt.host_readback_sha256 === host.readback_sha256 && receipt.task_index_readback_sha256 === index.readback_sha256 && receipt.state_readback_sha256 === state.readback_sha256 && receipt.process_readback_sha256 === process.readback_sha256, "Atomic admission receipt operational readback binding is stale");
+  assert(receipt.existing_claims_readback_sha256 === claimsReadback.readback_sha256 && receipt.existing_claims_authority === claimsReadback.authority && receipt.existing_claims_provenance === claimsReadback.provenance, "Atomic admission receipt existing claims binding is stale");
+}
+
 /*
  * The governed-admission adapter records the host-bound admission receipt
  * separately from this lifecycle record.  This bridge is intentionally
@@ -373,18 +522,7 @@ export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt, r
   assert(isRecord(admissionReceipt), "Atomic admission receipt must be an object");
   assert(isRecord(readbacks), "Atomic admission fresh readbacks are required");
   assert(isRecord(readbacks.request) && isRecord(readbacks.hostReadback) && isRecord(readbacks.taskIndexReadback) && isRecord(readbacks.stateReadback) && isRecord(readbacks.processReadback) && isRecord(readbacks.existingClaimsReadback), "Atomic admission request and every operational readback are required");
-  validateAgentSpawnerAtomicAdmission(admissionReceipt, {
-    request: readbacks.request,
-    hostReadback: readbacks.hostReadback,
-    taskIndexReadback: readbacks.taskIndexReadback,
-    stateReadback: readbacks.stateReadback,
-    processReadback: readbacks.processReadback,
-    existingClaims: readbacks.existingClaims,
-    existingClaimsReadback: readbacks.existingClaimsReadback,
-    projectBinding: readbacks.projectBinding,
-    expectedProjectId: readbacks.expectedProjectId,
-    expectedCwd: readbacks.expectedCwd,
-  });
+  validateAtomicAdmissionBridgeReceipt(admissionReceipt, readbacks);
   assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ADMITTED" && lifecycle.next_action === "START_GOVERNED_SPAWN", "Atomic admission must follow the governed spawn admission lifecycle");
   assert(lifecycle.authority.product_mutation === false && lifecycle.authority.provider_access === false && lifecycle.authority.credential_access === false && lifecycle.authority.external_sync === false, "Atomic admission crossed a protected capability");
   return {
