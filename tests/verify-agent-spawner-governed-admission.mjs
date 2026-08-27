@@ -219,7 +219,7 @@ noAckSubstitute.stateReadback = null;
 expectBlock(noAckSubstitute, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED", /fresh host.*state/u);
 const badTarget = atomicInput();
 badTarget.request.target = {projectId: "OTHER-PROJECT", environment: "local"};
-expectBlock(badTarget, "ATOMIC_ADMISSION_PROJECT_BINDING_MISMATCH", /host readback project_id/u);
+expectBlock(badTarget, "ATOMIC_ADMISSION_PROJECT_BINDING_MISMATCH", /authoritative saved-project/u);
 const evaluated = evaluateAgentSpawnerAtomicAdmission(substantive);
 assert.equal(evaluated.accepted, false);
 assert.equal(evaluated.status, "HELD");
