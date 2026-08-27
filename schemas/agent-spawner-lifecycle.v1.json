@@ -97,12 +97,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "schema", "version", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
+        "schema", "version", "lifecycle_id", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
         "custody_ref", "receipt_sha256", "readback_bundle_sha256", "binding_sha256"
       ],
       "properties": {
         "schema": {"const": "agentos.agent_spawner_atomic_admission_lifecycle_binding.v1"},
         "version": {"const": 1},
+        "lifecycle_id": {"type": "string", "minLength": 1},
         "admission_id": {"type": "string", "minLength": 1},
         "task_id": {"type": "string", "minLength": 1},
         "role_id": {"type": "string", "minLength": 1},

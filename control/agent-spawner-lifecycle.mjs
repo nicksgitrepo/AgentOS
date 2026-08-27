@@ -141,7 +141,7 @@ function lifecycleBody(lifecycle) {
 }
 
 const ATOMIC_ADMISSION_LIFECYCLE_BINDING_KEYS = Object.freeze([
-  "schema", "version", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
+  "schema", "version", "lifecycle_id", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
   "custody_ref", "receipt_sha256", "readback_bundle_sha256", "binding_sha256",
 ]);
 
@@ -158,7 +158,7 @@ function atomicAdmissionReadbackBundleDigest(readbacks) {
 function validateAtomicAdmissionLifecycleBinding(binding) {
   exactKeys(binding, ATOMIC_ADMISSION_LIFECYCLE_BINDING_KEYS, "Agent Spawner atomic-admission lifecycle binding");
   assert(binding.schema === AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_SCHEMA && binding.version === AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_VERSION, "Agent Spawner atomic-admission lifecycle binding identity is invalid");
-  for (const field of ["admission_id", "task_id", "role_id", "project_id"]) requireString(binding[field], `Agent Spawner lifecycle binding ${field}`);
+  for (const field of ["lifecycle_id", "admission_id", "task_id", "role_id", "project_id"]) requireString(binding[field], `Agent Spawner lifecycle binding ${field}`);
   assert(binding.environment === "local", "Agent Spawner lifecycle binding environment is invalid");
   for (const field of ["cwd", "worktree"]) {
     requireString(binding[field], `Agent Spawner lifecycle binding ${field}`);
@@ -415,6 +415,7 @@ export function bindAgentSpawnerAtomicAdmissionLifecycle(lifecycle, {admissionRe
   const binding = {
     schema: AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_SCHEMA,
     version: AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_VERSION,
+    lifecycle_id: lifecycle.lifecycle_id,
     admission_id: request.request_id,
     task_id: request.task_id,
     role_id: request.role_id,
@@ -657,6 +658,7 @@ export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt, r
   assert(binding !== null, "Atomic admission lifecycle binding is required");
   validateAtomicAdmissionLifecycleBinding(binding);
   for (const [field, expected] of [
+    ["lifecycle_id", lifecycle.lifecycle_id],
     ["admission_id", admissionReceipt.admission_id],
     ["task_id", admissionReceipt.task_id],
     ["role_id", admissionReceipt.role_id],

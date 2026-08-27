@@ -236,6 +236,14 @@ assert.throws(
   /lifecycle binding is required/u,
   "bridge must reject an otherwise valid admission attached to an unrelated unbound lifecycle",
 );
+const copiedBindingLifecycle = structuredClone(unrelatedLifecycle);
+copiedBindingLifecycle.atomic_admission_binding = structuredClone(isolatedLocal.atomic_admission_binding);
+copiedBindingLifecycle.lifecycle_sha256 = canonicalDigest({...copiedBindingLifecycle, lifecycle_sha256: null});
+assert.throws(
+  () => recordAgentSpawnerAtomicAdmission(copiedBindingLifecycle, bridgeAdmissionReceipt, bridgeReadbacks),
+  /lifecycle binding lifecycle_id is not bound/u,
+  "bridge must reject a copied admission binding attached to a different lifecycle identity",
+);
 const reboundBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 reboundBridgeReceipt.admission_id = "REQ.GOV02.LIFECYCLE.REBOUND";
 reboundBridgeReceipt.receipt_sha256 = canonicalDigest({...reboundBridgeReceipt, receipt_sha256: null});
