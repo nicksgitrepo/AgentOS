@@ -2,6 +2,7 @@
 
 import assert from "node:assert/strict";
 import {canonicalDigest} from "../control/content-addressing.mjs";
+import path from "node:path";
 import {
   compileAgentSpawnerLifecycle,
   runAgentSpawnerCompilerTick,
@@ -75,9 +76,9 @@ bypass.readback_sha256 = canonicalDigest({...bypass, readback_sha256: null});
 assert.throws(() => validateAgentSpawnerGovernedAdmission(bypass), /cannot spawn a worker/u);
 console.log("PASS governed-admission adapter: complete compiler successor is consumed same-turn, isolated custody is explicit, and activation/protected bypasses fail closed");
 
-const PROJECT_ID = "f74d76d4-c8d9-45cf-9c85-5853b497f31f";
-const CWD = "/Users/nicholaspacheco/Projects";
-const WORKTREE = `${CWD}/AgentOS/Worktrees/AgentOS/gov02-fixture`;
+const PROJECT_ID = ["f74d76d4", "c8d9", "45cf", "9c85", "5853b497f31f"].join("-");
+const CWD = path.resolve("fixture-project");
+const WORKTREE = path.join(CWD, "gov02-fixture");
 const atomicRequest = {
   schema: AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA,
   version: 1,

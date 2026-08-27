@@ -24,8 +24,10 @@ import {
   recordAgentSpawnerAtomicAdmission,
 } from "../control/agent-spawner-lifecycle.mjs";
 import fs from "node:fs";
+import path from "node:path";
 
 const HASH = (value) => canonicalDigest({value});
+const lifecycleFixtureCwd = path.resolve("fixture-project");
 const common = {
   lifecycleId: "LIFECYCLE.SPAWNER.CURRENT",
   candidateSha256: HASH("candidate"),
@@ -138,8 +140,8 @@ const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, {
   role_id: "AGENT.GOV02.ATOMIC",
   role_kind: "ATOMIC_SPECIALIST",
   project_id: "PROJECT-GOV02",
-  cwd: "/Users/nicholaspacheco/Projects",
-  worktree: "/Users/nicholaspacheco/Projects/AgentOS/Worktrees/AgentOS/gov02-fixture",
+  cwd: lifecycleFixtureCwd,
+  worktree: path.join(lifecycleFixtureCwd, "gov02-fixture"),
   custody_ref: "ref:custody/gov02",
   model: "gpt-5.6-luna",
   reasoning_effort: "max",
@@ -157,7 +159,7 @@ assert.equal(atomicTransition.substantive_work_started, false);
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, {
   schema: "agentos.agent_spawner_atomic_admission.v1", version: 1, status: "ADMITTED", environment: "local",
   task_id: "TASK-GOV02-LIFECYCLE", role_id: "AGENT.GOV02.ATOMIC", role_kind: "ATOMIC_SPECIALIST", project_id: "PROJECT-GOV02",
-  cwd: "/", worktree: "/Users/nicholaspacheco/Projects/AgentOS/Worktrees/AgentOS/gov02-fixture", custody_ref: "ref:custody/gov02",
+  cwd: "/", worktree: path.join(lifecycleFixtureCwd, "gov02-fixture"), custody_ref: "ref:custody/gov02",
   model: "gpt-5.6-luna", reasoning_effort: "max", queue: "GOV-02-ATOMIC-SPAWNER-ADMISSION", seam: "GOV-02",
   substantive_prompt_sent: false, process_started: false, cleanup_action: "NONE", retry_allowed: false,
   material_transition: "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION",
