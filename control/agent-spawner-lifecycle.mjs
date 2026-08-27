@@ -386,6 +386,14 @@ const ATOMIC_BRIDGE_STATE_KEYS = Object.freeze([
 const ATOMIC_BRIDGE_PROCESS_KEYS = Object.freeze(["schema", "version", "fresh", "processes", "readback_sha256"]);
 const ATOMIC_BRIDGE_PROCESS_ITEM_KEYS = Object.freeze(["process_id", "task_id", "role_id", "worktree", "command"]);
 const ATOMIC_BRIDGE_CLAIMS_KEYS = Object.freeze(["schema", "version", "fresh", "authority", "provenance", "claims", "readback_sha256"]);
+const ATOMIC_BRIDGE_READBACK_SCHEMAS = Object.freeze({
+  host: "agentos.agent_spawner_host_readback.v1",
+  taskIndex: "agentos.agent_spawner_task_index_readback.v1",
+  state: "agentos.agent_spawner_task_state_readback.v1",
+  process: "agentos.agent_spawner_process_readback.v1",
+  claims: "agentos.agent_spawner_identity_claims_readback.v1",
+});
+const ATOMIC_BRIDGE_READBACK_VERSION = 1;
 const ATOMIC_BRIDGE_CLAIM_KEYS = Object.freeze(["kind", "identity", "status"]);
 const ATOMIC_BRIDGE_FAILED_ROW_STATUSES = new Set(["FAILED", "ARCHIVED", "HELD"]);
 const ATOMIC_BRIDGE_HOSTILE_FIXTURE_REFS = Object.freeze([
@@ -457,18 +465,19 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   const bindingProjectId = binding?.project_id ?? binding?.projectId;
   assert(isRecord(binding) && typeof bindingProjectId === "string" && bindingProjectId.length > 0 && typeof binding.cwd === "string" && binding.cwd.length > 0, "Atomic admission authoritative project binding is required");
   assert((binding.environment === undefined || binding.environment === "local") && bindingProjectId === request.target.projectId && binding.cwd === request.cwd, "Atomic admission authoritative project binding is required");
-  const digestReadback = (value, keys, label) => {
+  const digestReadback = (value, keys, expectedSchema, label) => {
     assert(isRecord(value), `${label} is required`);
     exactKeys(value, keys, label);
+    assert(value.schema === expectedSchema && value.version === ATOMIC_BRIDGE_READBACK_VERSION, `${label} schema or version is invalid`);
     assert(value.fresh === true, `${label} must be fresh`);
     requireSha(value.readback_sha256, `${label} digest`);
     assert(value.readback_sha256 === canonicalDigest({...value, readback_sha256: null}), `${label} digest mismatch`);
     return value;
   };
-  const host = digestReadback(readbacks.hostReadback, ATOMIC_BRIDGE_HOST_KEYS, "Atomic host readback");
+  const host = digestReadback(readbacks.hostReadback, ATOMIC_BRIDGE_HOST_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.host, "Atomic host readback");
   for (const [field, expected] of [["project_id", request.target.projectId], ["cwd", request.cwd], ["role_id", request.role_id], ["role_kind", request.role_kind], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam], ["worktree", request.worktree], ["custody_ref", request.custody_ref]]) assert(host[field] === expected, `host readback ${field} differs from the request`);
   assert(host.worktree_clean === true, "host readback does not prove clean custody");
-  const index = digestReadback(readbacks.taskIndexReadback, ATOMIC_BRIDGE_INDEX_KEYS, "Atomic task-index readback");
+  const index = digestReadback(readbacks.taskIndexReadback, ATOMIC_BRIDGE_INDEX_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.taskIndex, "Atomic task-index readback");
   assert(index.project_id === request.target.projectId && index.cwd === request.cwd && index.queue === request.queue && index.seam === request.seam && Array.isArray(index.rows), "task-index readback binding is invalid");
   index.rows.forEach((row, rowIndex) => {
     exactKeys(row, ATOMIC_BRIDGE_ROW_KEYS, `Atomic task-index row ${rowIndex}`);
@@ -484,10 +493,10 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
     const sameIdentity = row.task_id === request.task_id || row.role_id === request.role_id || row.worktree === request.worktree || row.custody_ref === request.custody_ref;
     assert(!sameIdentity, "task-index contains a duplicate task, role, worktree, or custody identity");
   }
-  const state = digestReadback(readbacks.stateReadback, ATOMIC_BRIDGE_STATE_KEYS, "Atomic task-state readback");
+  const state = digestReadback(readbacks.stateReadback, ATOMIC_BRIDGE_STATE_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.state, "Atomic task-state readback");
   for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(state[field] === expected, `task state ${field} differs from the request`);
   assert(state.substantive_prompt_sent === false && state.process_started === false, "task state crossed the substantive-work boundary");
-  const process = digestReadback(readbacks.processReadback, ATOMIC_BRIDGE_PROCESS_KEYS, "Atomic process readback");
+  const process = digestReadback(readbacks.processReadback, ATOMIC_BRIDGE_PROCESS_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.process, "Atomic process readback");
   assert(Array.isArray(process.processes), "process readback processes are required");
   process.processes.forEach((entry, processIndex) => {
     exactKeys(entry, ATOMIC_BRIDGE_PROCESS_ITEM_KEYS, `Atomic process ${processIndex}`);
@@ -496,7 +505,7 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   });
   const claims = readbacks.existingClaims;
   assert(Array.isArray(claims), "Atomic existing identity claims readback is required");
-  const claimsReadback = digestReadback(readbacks.existingClaimsReadback, ATOMIC_BRIDGE_CLAIMS_KEYS, "Atomic existing identity claims readback");
+  const claimsReadback = digestReadback(readbacks.existingClaimsReadback, ATOMIC_BRIDGE_CLAIMS_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.claims, "Atomic existing identity claims readback");
   assert(claimsReadback.authority === "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK" && OPAQUE_REF.test(claimsReadback.provenance), "Atomic existing identity claims readback authority/provenance is invalid");
   assert(Array.isArray(claimsReadback.claims) && JSON.stringify(claimsReadback.claims) === JSON.stringify(claims), "Atomic existing identity claims readback does not match supplied claims");
   claims.forEach((claim, index) => {

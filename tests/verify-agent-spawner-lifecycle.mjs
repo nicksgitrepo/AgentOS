@@ -226,6 +226,20 @@ assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmis
 const driftedBridgeReadbacks = structuredClone(bridgeReadbacks);
 driftedBridgeReadbacks.hostReadback = bridgeDigestRecord({...driftedBridgeReadbacks.hostReadback, cwd: "/"});
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, driftedBridgeReadbacks), /host readback cwd|readback/u, "bridge must recompute and bind each operational readback");
+for (const [field, label] of [
+  ["hostReadback", "host"],
+  ["taskIndexReadback", "task-index"],
+  ["stateReadback", "task-state"],
+  ["processReadback", "process"],
+  ["existingClaimsReadback", "identity-claims"],
+]) {
+  const wrongSchema = structuredClone(bridgeReadbacks);
+  wrongSchema[field] = bridgeDigestRecord({...wrongSchema[field], schema: `agentos.forged.${label}.v999`});
+  assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, wrongSchema), /schema|version|readback/u, `bridge must reject a forged ${label} readback schema`);
+  const wrongVersion = structuredClone(bridgeReadbacks);
+  wrongVersion[field] = bridgeDigestRecord({...wrongVersion[field], version: 999});
+  assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, wrongVersion), /schema|version|readback/u, `bridge must reject a forged ${label} readback version`);
+}
 assert.equal(isolatedLocal.authority.spawn_authority, true);
 assert.equal(isolatedLocal.wave_activation, "OFF");
 const isolatedActive = advanceAgentSpawnerLifecycle(isolatedLocal, {
