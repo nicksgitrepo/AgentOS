@@ -1126,7 +1126,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "11a59631352c263a9d5aa00a5e69ee4aa9bf05ff58c61e110ab4b88cd3c26ad0"
+      "sha256": "bd76cfeded5d0278f91c0a48210ca957fa2cdf0c5aeb79d45cc78688bd29d273"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1138,15 +1138,15 @@
     },
     "agent_spawner_lifecycle_contract": {
       "path": "schemas/agent-spawner-lifecycle.v1.json",
-      "sha256": "dd04b833b2937fe7395524a33fadf9ea5e9f853ab9a18ead0439f7d94c572eb5"
+      "sha256": "bb29434be2f808123eecb839139b680c38360f960e89c6490dac9d1c093409cb"
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "562bdc639098aace2cd4a7e167726d2249ac3ed0d4655bcfcdf55ecde31a64a2"
+      "sha256": "ba301aef3cf6e6b94dd02d2c0e54b2f70bbf5cd22fd2c957b4b24141003769b6"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
-      "sha256": "c682e93045187372cbd9c4c0be57a0cef282ba1a52d61f4f5001b64cb331fa0e"
+      "sha256": "d2e4a339082839481e4cbd7bab4615e0b4020a3280ab7bef605180eb216fddf7"
     },
     "controller_spawner_authority_gate_controller": {
       "path": "control/controller-spawner-authority-gate.mjs",
@@ -2358,7 +2358,7 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "fd4ff1ef0147f1d80f8c5c2f43247bbeaf3e62f5f65cc2f6ebe4043feca884c7"
+      "sha256": "96a1f3045049b613c0e6b907769c145d7313520055ea6a7217267b7cf092cdff"
     },
     "agent_spawner_governed_admission_contract": {
       "path": "schemas/agent-spawner-governed-admission.v1.json",
@@ -2366,7 +2366,7 @@
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
-      "sha256": "58a5fc4544a2f8322f7be297e60899566975bedefe590f826ca954ca2274f794"
+      "sha256": "a5a09c17be6aa558cdc0547fdc52eb2156175020eb2bb611c0a11573116e6502"
     },
     "project_controller_lifecycle_recovery_gate": {
       "path": "specialist-blocks/wave-01/project-controller/gates/11-lifecycle-recovery-archive.gate",
