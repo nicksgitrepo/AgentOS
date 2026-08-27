@@ -491,10 +491,13 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   assert(targetRows[0].status === ATOMIC_BRIDGE_PRE_ADMISSION_STATUS && targetRows[0].lifecycle === ATOMIC_BRIDGE_PRE_ADMISSION_LIFECYCLE, "task-index target is not in the pre-admission state");
   for (const [field, expected] of [["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(targetRows[0][field] === expected, `task-index target ${field} differs from the request`);
   const nonFailedRows = index.rows.filter((row) => !ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(row.status) && !ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(row.lifecycle));
+  const seenIdentities = new Map(["task_id", "role_id", "worktree", "custody_ref"].map((field) => [field, new Set()]));
   for (const row of nonFailedRows) {
-    if (row === targetRows[0]) continue;
-    const sameIdentity = row.task_id === request.task_id || row.role_id === request.role_id || row.worktree === request.worktree || row.custody_ref === request.custody_ref;
-    assert(!sameIdentity, "task-index contains a duplicate task, role, worktree, or custody identity");
+    for (const field of seenIdentities.keys()) {
+      const identities = seenIdentities.get(field);
+      assert(!identities.has(row[field]), `task-index contains a duplicate ${field} identity`);
+      identities.add(row[field]);
+    }
   }
   const state = digestReadback(readbacks.stateReadback, ATOMIC_BRIDGE_STATE_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.state, "Atomic task-state readback");
   for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(state[field] === expected, `task state ${field} differs from the request`);

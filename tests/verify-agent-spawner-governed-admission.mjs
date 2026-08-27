@@ -231,6 +231,26 @@ expectBlock(roleDrift, "ATOMIC_ADMISSION_ROLE_BINDING_MISMATCH", /role_id/u);
 const duplicate = atomicInput();
 duplicate.taskIndexReadback = makeIndex([makeRow(), makeRow({task_id: "TASK-GOV02-OTHER", role_id: atomicRequest.role_id})]);
 expectBlock(duplicate, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /duplicate/u);
+const duplicateTaskIndexRow = (suffix) => makeRow({
+  task_id: `TASK-GOV02-UNRELATED-${suffix}`,
+  role_id: `AGENT.GOV02.UNRELATED.${suffix}`,
+  worktree: path.join(CWD, `unrelated-${suffix.toLowerCase()}`),
+  custody_ref: `ref:custody/gov02-unrelated-${suffix.toLowerCase()}`,
+});
+for (const [field, sharedValue] of [
+  ["task_id", "TASK-GOV02-UNRELATED-DUPLICATE"],
+  ["role_id", "AGENT.GOV02.UNRELATED.DUPLICATE"],
+  ["worktree", path.join(CWD, "unrelated-duplicate")],
+  ["custody_ref", "ref:custody/gov02-unrelated-duplicate"],
+]) {
+  const first = duplicateTaskIndexRow("ONE");
+  const second = duplicateTaskIndexRow("TWO");
+  first[field] = sharedValue;
+  second[field] = sharedValue;
+  const duplicateUnrelated = atomicInput();
+  duplicateUnrelated.taskIndexReadback = makeIndex([makeRow(), first, second]);
+  expectBlock(duplicateUnrelated, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /duplicate .* identity/u);
+}
 const duplicateProcess = atomicInput();
 duplicateProcess.processReadback = makeProcess([{process_id: "PROCESS-GOV02-OTHER", task_id: "TASK-GOV02-OTHER", role_id: atomicRequest.role_id, worktree: WORKTREE, command: "node"}]);
 expectBlock(duplicateProcess, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /process readback/u);

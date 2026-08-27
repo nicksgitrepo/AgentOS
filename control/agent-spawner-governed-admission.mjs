@@ -372,9 +372,13 @@ function validateAtomicTaskIndex(index, request) {
   const target = targetRows[0];
   atomicRequire(target.status === ATOMIC_PRE_ADMISSION_STATUS && target.lifecycle === ATOMIC_PRE_ADMISSION_LIFECYCLE, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "task-index target is not in the pre-admission state");
   for (const [field, expected] of [["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) atomicRequire(target[field] === expected, field === "role_id" || field === "role_kind" ? ATOMIC_BLOCKER_CODES.ROLE_BINDING_MISMATCH : field === "worktree" || field === "custody_ref" ? ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH : ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, `task-index target ${field} differs from the request`);
+  const seenIdentities = new Map(["task_id", "role_id", "worktree", "custody_ref"].map((field) => [field, new Set()]));
   for (const row of nonFailed) {
-    const sameIdentity = row.task_id === request.task_id || row.role_id === request.role_id || row.worktree === request.worktree || row.custody_ref === request.custody_ref;
-    if (row !== target) atomicRequire(!sameIdentity, ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, "task-index contains a duplicate task, role, worktree, or custody identity");
+    for (const field of seenIdentities.keys()) {
+      const identities = seenIdentities.get(field);
+      atomicRequire(!identities.has(row[field]), ATOMIC_BLOCKER_CODES.DUPLICATE_OR_COLLISION, `task-index contains a duplicate ${field} identity`);
+      identities.add(row[field]);
+    }
   }
   return {index, target};
 }

@@ -238,6 +238,33 @@ const activeTargetStateReceipt = structuredClone(bridgeAdmissionReceipt);
 activeTargetStateReceipt.state_readback_sha256 = activeTargetStateReadbacks.stateReadback.readback_sha256;
 activeTargetStateReceipt.receipt_sha256 = canonicalDigest({...activeTargetStateReceipt, receipt_sha256: null});
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, activeTargetStateReceipt, activeTargetStateReadbacks), /pre-admission state/u, "bridge must reject an active task state");
+const duplicateTaskIndexRow = (suffix) => ({
+  ...bridgeRow,
+  task_id: `TASK.GOV02.UNRELATED.${suffix}`,
+  role_id: `AGENT.GOV02.UNRELATED.${suffix}`,
+  worktree: path.join(lifecycleFixtureCwd, `unrelated-${suffix.toLowerCase()}`),
+  custody_ref: `ref:custody/gov02-unrelated-${suffix.toLowerCase()}`,
+});
+for (const [field, sharedValue] of [
+  ["task_id", "TASK.GOV02.UNRELATED.DUPLICATE"],
+  ["role_id", "AGENT.GOV02.UNRELATED.DUPLICATE"],
+  ["worktree", path.join(lifecycleFixtureCwd, "unrelated-duplicate")],
+  ["custody_ref", "ref:custody/gov02-unrelated-duplicate"],
+]) {
+  const first = duplicateTaskIndexRow("ONE");
+  const second = duplicateTaskIndexRow("TWO");
+  first[field] = sharedValue;
+  second[field] = sharedValue;
+  const duplicateTaskIndexReadbacks = structuredClone(bridgeReadbacks);
+  duplicateTaskIndexReadbacks.taskIndexReadback = bridgeDigestRecord({
+    ...duplicateTaskIndexReadbacks.taskIndexReadback,
+    rows: [bridgeRow, first, second],
+  });
+  const duplicateTaskIndexReceipt = structuredClone(bridgeAdmissionReceipt);
+  duplicateTaskIndexReceipt.task_index_readback_sha256 = duplicateTaskIndexReadbacks.taskIndexReadback.readback_sha256;
+  duplicateTaskIndexReceipt.receipt_sha256 = canonicalDigest({...duplicateTaskIndexReceipt, receipt_sha256: null});
+  assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, duplicateTaskIndexReceipt, duplicateTaskIndexReadbacks), /duplicate .* identity/u, `bridge must reject duplicate ${field} identities among unrelated rows`);
+}
 const duplicateProcessIdentityReadbacks = structuredClone(bridgeReadbacks);
 duplicateProcessIdentityReadbacks.processReadback = bridgeDigestRecord({
   ...duplicateProcessIdentityReadbacks.processReadback,
