@@ -77,3 +77,24 @@ and `product_verdict` remains null with `product_verdict_inherited` false; no
 old audit verdict is inherited.  The lifecycle module exports the strict
 compile/validate/finalize/consumer helpers and the schema `$defs.routing_receipt`
 and `$defs.routing_payload` describe the exact records.
+
+## Atomic project-bound Spawner admission
+
+`compileAgentSpawnerAtomicAdmission` is the narrow boundary between a
+compiler handoff and a governed task admission. It accepts persisted facts,
+not a creation acknowledgement: a fresh host readback, fresh task-index and
+state readbacks, a fresh process-set readback, and an exact local project,
+role, model, reasoning, queue, seam, worktree, and custody match. The project
+identifier is typed input and is never embedded in this portable module; the
+local environment and configured model/effort are checked explicitly.
+
+Task, role, worktree, custody, writer, auditor, and process collisions produce
+the typed `ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION` blocker. Historical
+`FAILED`, `HELD`, or `ARCHIVED` rows remain independent and do not poison a
+new admission. A failed admission yields one content-addressed
+`HOLD_OR_ARCHIVE_ONCE` blocker with `substantive_work_started: false` and
+`retry_allowed: false`; it does not send a substantive prompt, create a
+worktree, or start a process. Only after every readback validates does the
+adapter emit one `ADMITTED` receipt bound to all four readback digests and the
+next governed action. Prompt text, title, local process cwd, or an API
+acknowledgement cannot substitute for persisted metadata.

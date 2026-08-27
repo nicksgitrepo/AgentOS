@@ -9,6 +9,13 @@ import {
 import {
   compileAgentSpawnerGovernedAdmission,
   validateAgentSpawnerGovernedAdmission,
+  compileAgentSpawnerAtomicAdmission,
+  validateAgentSpawnerAtomicAdmission,
+  evaluateAgentSpawnerAtomicAdmission,
+  AgentSpawnerAtomicAdmissionError,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS,
 } from "../control/agent-spawner-governed-admission.mjs";
 
 const SHA = (char) => char.repeat(64);
@@ -67,3 +74,153 @@ bypass.admission.worker_spawned = true;
 bypass.readback_sha256 = canonicalDigest({...bypass, readback_sha256: null});
 assert.throws(() => validateAgentSpawnerGovernedAdmission(bypass), /cannot spawn a worker/u);
 console.log("PASS governed-admission adapter: complete compiler successor is consumed same-turn, isolated custody is explicit, and activation/protected bypasses fail closed");
+
+const PROJECT_ID = "f74d76d4-c8d9-45cf-9c85-5853b497f31f";
+const CWD = "/Users/nicholaspacheco/Projects";
+const WORKTREE = `${CWD}/AgentOS/Worktrees/AgentOS/gov02-fixture`;
+const atomicRequest = {
+  schema: AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA,
+  version: 1,
+  request_id: "REQ.GOV02.ATOMIC.001",
+  task_id: "TASK-GOV02-ATOMIC-001",
+  role_id: "AGENT.GOV02.ATOMIC",
+  role_kind: "ATOMIC_SPECIALIST",
+  model: "gpt-5.6-luna",
+  reasoning_effort: "max",
+  target: {projectId: PROJECT_ID, environment: "local"},
+  cwd: CWD,
+  worktree: WORKTREE,
+  custody_ref: "ref:custody/gov02-atomic-001",
+  queue: "GOV-02-ATOMIC-SPAWNER-ADMISSION",
+  seam: "GOV-02",
+  prompt_ref: "opaque:prompt/gov02-atomic-001",
+  title: "GOV-02 atomic admission fixture",
+};
+const digestRecord = (record, field = "readback_sha256") => ({...structuredClone(record), [field]: canonicalDigest({...structuredClone(record), [field]: null})});
+const makeHost = (overrides = {}) => digestRecord({
+  schema: "agentos.agent_spawner_host_readback.v1",
+  version: 1,
+  fresh: true,
+  project_id: PROJECT_ID,
+  cwd: CWD,
+  role_id: atomicRequest.role_id,
+  role_kind: atomicRequest.role_kind,
+  model: atomicRequest.model,
+  reasoning_effort: atomicRequest.reasoning_effort,
+  queue: atomicRequest.queue,
+  seam: atomicRequest.seam,
+  worktree: WORKTREE,
+  custody_ref: atomicRequest.custody_ref,
+  worktree_clean: true,
+  readback_sha256: null,
+  ...overrides,
+});
+const makeRow = (overrides = {}) => ({
+  task_id: atomicRequest.task_id,
+  role_id: atomicRequest.role_id,
+  role_kind: atomicRequest.role_kind,
+  project_id: PROJECT_ID,
+  cwd: CWD,
+  worktree: WORKTREE,
+  custody_ref: atomicRequest.custody_ref,
+  model: atomicRequest.model,
+  reasoning_effort: atomicRequest.reasoning_effort,
+  queue: atomicRequest.queue,
+  seam: atomicRequest.seam,
+  status: "PENDING",
+  lifecycle: "PENDING",
+  ...overrides,
+});
+const makeIndex = (rows = [makeRow()]) => digestRecord({
+  schema: "agentos.agent_spawner_task_index_readback.v1",
+  version: 1,
+  fresh: true,
+  project_id: PROJECT_ID,
+  cwd: CWD,
+  queue: atomicRequest.queue,
+  seam: atomicRequest.seam,
+  rows,
+  readback_sha256: null,
+});
+const makeState = (overrides = {}) => digestRecord({
+  schema: "agentos.agent_spawner_task_state_readback.v1",
+  version: 1,
+  fresh: true,
+  task_id: atomicRequest.task_id,
+  role_id: atomicRequest.role_id,
+  role_kind: atomicRequest.role_kind,
+  project_id: PROJECT_ID,
+  cwd: CWD,
+  worktree: WORKTREE,
+  custody_ref: atomicRequest.custody_ref,
+  model: atomicRequest.model,
+  reasoning_effort: atomicRequest.reasoning_effort,
+  queue: atomicRequest.queue,
+  seam: atomicRequest.seam,
+  status: "PENDING",
+  lifecycle: "PENDING",
+  substantive_prompt_sent: false,
+  process_started: false,
+  readback_sha256: null,
+  ...overrides,
+});
+const makeProcess = (processes = []) => digestRecord({
+  schema: "agentos.agent_spawner_process_readback.v1",
+  version: 1,
+  fresh: true,
+  processes,
+  readback_sha256: null,
+});
+const atomicInput = () => ({request: structuredClone(atomicRequest), hostReadback: makeHost(), taskIndexReadback: makeIndex(), stateReadback: makeState(), processReadback: makeProcess(), existingClaims: []});
+const expectBlock = (input, code, message) => {
+  assert.throws(() => compileAgentSpawnerAtomicAdmission(input), (error) => {
+    assert(error instanceof AgentSpawnerAtomicAdmissionError);
+    assert.equal(error.code, code);
+    assert.equal(error.blocker.cleanup_action, "HOLD_OR_ARCHIVE_ONCE");
+    assert.equal(error.blocker.hold_or_archive_count, 1);
+    assert.equal(error.blocker.substantive_work_started, false);
+    assert.equal(error.blocker.retry_allowed, false);
+    if (message) assert.match(error.message, message);
+    return true;
+  });
+};
+
+const admitted = compileAgentSpawnerAtomicAdmission(atomicInput());
+assert.equal(admitted.schema, AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA);
+assert.equal(admitted.status, "ADMITTED");
+assert.equal(admitted.substantive_prompt_sent, false);
+assert.equal(admitted.process_started, false);
+assert.deepEqual(admitted.hostile_fixture_refs, [...AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS]);
+validateAgentSpawnerAtomicAdmission(admitted, atomicInput());
+assert.equal(admitted.receipt_sha256, canonicalDigest({...admitted, receipt_sha256: null}));
+
+const wrongCwd = atomicInput();
+wrongCwd.hostReadback = makeHost({cwd: "/"});
+expectBlock(wrongCwd, "ATOMIC_ADMISSION_PROJECT_BINDING_MISMATCH", /host readback cwd/u);
+expectBlock({...atomicInput(), hostReadback: null}, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED", /fresh host/u);
+const roleDrift = atomicInput();
+roleDrift.hostReadback = makeHost({role_id: "AGENT.GOV02.OTHER"});
+expectBlock(roleDrift, "ATOMIC_ADMISSION_ROLE_BINDING_MISMATCH", /role_id/u);
+const duplicate = atomicInput();
+duplicate.taskIndexReadback = makeIndex([makeRow(), makeRow({task_id: "TASK-GOV02-OTHER", role_id: atomicRequest.role_id})]);
+expectBlock(duplicate, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /duplicate/u);
+const duplicateProcess = atomicInput();
+duplicateProcess.processReadback = makeProcess([{process_id: "PROCESS-GOV02-OTHER", task_id: "TASK-GOV02-OTHER", role_id: atomicRequest.role_id, worktree: WORKTREE, command: "node"}]);
+expectBlock(duplicateProcess, "ATOMIC_ADMISSION_DUPLICATE_OR_COLLISION", /process readback/u);
+const failedRow = atomicInput();
+failedRow.taskIndexReadback = makeIndex([makeRow(), makeRow({task_id: atomicRequest.task_id, role_id: atomicRequest.role_id, status: "FAILED", lifecycle: "FAILED"})]);
+assert.equal(compileAgentSpawnerAtomicAdmission(failedRow).status, "ADMITTED", "a failed historical row must not block an independent admission");
+const substantive = atomicInput();
+substantive.stateReadback = makeState({substantive_prompt_sent: true});
+expectBlock(substantive, "ATOMIC_ADMISSION_SUBSTANTIVE_WORK_STARTED", /substantive prompt/u);
+const noAckSubstitute = atomicInput();
+noAckSubstitute.stateReadback = null;
+expectBlock(noAckSubstitute, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED", /fresh host.*state/u);
+const badTarget = atomicInput();
+badTarget.request.target = {projectId: "OTHER-PROJECT", environment: "local"};
+expectBlock(badTarget, "ATOMIC_ADMISSION_PROJECT_BINDING_MISMATCH", /host readback project_id/u);
+const evaluated = evaluateAgentSpawnerAtomicAdmission(substantive);
+assert.equal(evaluated.accepted, false);
+assert.equal(evaluated.status, "HELD");
+assert.equal(evaluated.blocker.cleanup_action, "HOLD_OR_ARCHIVE_ONCE");
+console.log("PASS atomic Spawner admission: project/cwd/role/model/custody readbacks are exact, duplicate and pre-work states fail closed with one hold/archive blocker, failed rows remain independent, and successful admission emits one durable receipt");

@@ -30,7 +30,8 @@
     "lifecycle_sha256": {"$ref": "#/$defs/sha256"},
     "storage_decision": {"$ref": "#/$defs/storage_decision"},
     "routing_receipt": {"$ref": "#/$defs/routing_receipt"},
-    "routing_payload": {"$ref": "#/$defs/routing_payload"}
+    "routing_payload": {"$ref": "#/$defs/routing_payload"},
+    "atomic_admission": {"$ref": "#/$defs/atomic_admission"}
   },
   "allOf": [
     {"if": {"properties": {"state": {"enum": ["SPAWN_ADMITTED", "SPAWN_ACTIVE"]}}}, "then": {"properties": {"qa": {"properties": {
@@ -193,6 +194,45 @@
         "same_path_mutation_forbidden": {"const": true},
         "replacement_audit_requires_fresh_authority": {"const": true},
         "payload_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "atomic_admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
+        "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "status", "host_readback_sha256",
+        "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256", "substantive_prompt_sent",
+        "process_started", "cleanup_action", "retry_allowed", "material_transition", "hostile_fixture_refs", "receipt_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.agent_spawner_atomic_admission.v1"},
+        "version": {"const": 1},
+        "admission_id": {"type": "string", "minLength": 1},
+        "task_id": {"type": "string", "minLength": 1},
+        "role_id": {"$ref": "#/$defs/identifier"},
+        "role_kind": {"type": "string", "minLength": 1},
+        "project_id": {"type": "string", "minLength": 1},
+        "environment": {"const": "local"},
+        "cwd": {"type": "string", "pattern": "^/[^\\u0000-\\u001f\\u007f]+$"},
+        "worktree": {"type": "string", "pattern": "^/[^\\u0000-\\u001f\\u007f]+$"},
+        "custody_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "model": {"const": "gpt-5.6-luna"},
+        "reasoning_effort": {"const": "max"},
+        "queue": {"type": "string", "minLength": 1},
+        "seam": {"type": "string", "minLength": 1},
+        "status": {"const": "ADMITTED"},
+        "host_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "task_index_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "state_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "process_readback_sha256": {"$ref": "#/$defs/sha256"},
+        "substantive_prompt_sent": {"const": false},
+        "process_started": {"const": false},
+        "cleanup_action": {"const": "NONE"},
+        "retry_allowed": {"const": false},
+        "material_transition": {"type": "string", "minLength": 1},
+        "hostile_fixture_refs": {"type": "array", "items": {"$ref": "#/$defs/identifier"}, "minItems": 8},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
       }
     }
   }
