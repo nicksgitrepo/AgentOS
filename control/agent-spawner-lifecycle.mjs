@@ -1143,6 +1143,7 @@ export function compileAgentSpawnerRoutingReceipt({
 export function finalizeAgentSpawnerRoutingReceipt(receipt, {finalReceiptBytes} = {}) {
   validateAgentSpawnerRoutingReceipt(receipt);
   routingBlocker(receipt.route_emitted === false, "a routed receipt path cannot be finalized again");
+  routingBlocker(receipt.final_receipt_bytes_verified === false, "a byte-validated receipt cannot be finalized again; use a distinct successor receipt with fresh replacement authority");
   const finalBytes = resolveFinalReceiptBytesSha256({finalReceiptBytes});
   routingBlocker(finalBytes.verified, "exact final receipt bytes are required before route emission");
   const next = structuredClone(receipt);

@@ -418,6 +418,11 @@ assert.throws(
 );
 const finalizedRoutingReceipt = finalizeAgentSpawnerRoutingReceipt(provisionalRoutingReceipt, {finalReceiptBytes: routingBytes});
 assert.equal(finalizedRoutingReceipt.final_receipt_bytes_sha256, routingReceipt.final_receipt_bytes_sha256);
+assert.throws(
+  () => finalizeAgentSpawnerRoutingReceipt(routingReceipt, {finalReceiptBytes: routingBytesChanged}),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a byte-validated receipt may not be finalized again with different bytes on the same path",
+);
 
 const correctedRoutingReceipt = correctAgentSpawnerRoutingReceipt(routingReceipt, {
   routingReceiptId: "ROUTING.RECEIPT.SUCCESSOR",
