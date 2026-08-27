@@ -12,6 +12,7 @@
 
 import crypto from "node:crypto";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {validateAgentSpawnerAtomicAdmission} from "./agent-spawner-governed-admission.mjs";
 
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
 export const AGENT_SPAWNER_LIFECYCLE_VERSION = 1;
@@ -367,22 +368,23 @@ export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalC
  * caller-supplied prompt text or a creation acknowledgement cannot stand in
  * for those persisted facts.
  */
-export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt) {
+export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt, readbacks = null) {
   validateAgentSpawnerLifecycle(lifecycle);
   assert(isRecord(admissionReceipt), "Atomic admission receipt must be an object");
-  assert(admissionReceipt.schema === "agentos.agent_spawner_atomic_admission.v1" && admissionReceipt.version === 1, "Atomic admission receipt identity is invalid");
-  assert(admissionReceipt.status === "ADMITTED", "Atomic admission receipt is not admitted");
-  assert(admissionReceipt.environment === "local", "Atomic admission receipt environment must be local");
-  for (const field of ["task_id", "role_id", "role_kind", "project_id", "cwd", "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam"]) requireString(admissionReceipt[field], `Atomic admission ${field}`);
-  assert(admissionReceipt.cwd.startsWith("/") && admissionReceipt.cwd !== "/", "Atomic admission cwd must be a non-root absolute project path");
-  assert(admissionReceipt.worktree.startsWith(`${admissionReceipt.cwd}/`) || admissionReceipt.worktree === admissionReceipt.cwd, "Atomic admission worktree escaped the bound project cwd");
-  assert(admissionReceipt.model === "gpt-5.6-luna" && admissionReceipt.reasoning_effort === "max", "Atomic admission model or reasoning binding is invalid");
-  requireSha(admissionReceipt.existing_claims_readback_sha256, "Atomic admission existing claims readback digest");
-  assert(admissionReceipt.existing_claims_authority === "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK", "Atomic admission existing claims authority is invalid");
-  assert(typeof admissionReceipt.existing_claims_provenance === "string" && OPAQUE_REF.test(admissionReceipt.existing_claims_provenance), "Atomic admission existing claims provenance is invalid");
-  assert(admissionReceipt.substantive_prompt_sent === false && admissionReceipt.process_started === false, "Atomic admission crossed the substantive-work boundary");
-  assert(admissionReceipt.cleanup_action === "NONE" && admissionReceipt.retry_allowed === false, "Atomic admission cleanup/retry state is invalid");
-  assert(admissionReceipt.material_transition === "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION", "Atomic admission next transition is invalid");
+  assert(isRecord(readbacks), "Atomic admission fresh readbacks are required");
+  assert(isRecord(readbacks.request) && isRecord(readbacks.hostReadback) && isRecord(readbacks.taskIndexReadback) && isRecord(readbacks.stateReadback) && isRecord(readbacks.processReadback) && isRecord(readbacks.existingClaimsReadback), "Atomic admission request and every operational readback are required");
+  validateAgentSpawnerAtomicAdmission(admissionReceipt, {
+    request: readbacks.request,
+    hostReadback: readbacks.hostReadback,
+    taskIndexReadback: readbacks.taskIndexReadback,
+    stateReadback: readbacks.stateReadback,
+    processReadback: readbacks.processReadback,
+    existingClaims: readbacks.existingClaims,
+    existingClaimsReadback: readbacks.existingClaimsReadback,
+    projectBinding: readbacks.projectBinding,
+    expectedProjectId: readbacks.expectedProjectId,
+    expectedCwd: readbacks.expectedCwd,
+  });
   assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ADMITTED" && lifecycle.next_action === "START_GOVERNED_SPAWN", "Atomic admission must follow the governed spawn admission lifecycle");
   assert(lifecycle.authority.product_mutation === false && lifecycle.authority.provider_access === false && lifecycle.authority.credential_access === false && lifecycle.authority.external_sync === false, "Atomic admission crossed a protected capability");
   return {

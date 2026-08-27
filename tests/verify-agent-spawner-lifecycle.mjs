@@ -23,6 +23,13 @@ import {
   AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS,
   recordAgentSpawnerAtomicAdmission,
 } from "../control/agent-spawner-lifecycle.mjs";
+import {
+  compileAgentSpawnerAtomicAdmission,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_READBACK_SCHEMA,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY,
+  AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_PROVENANCE,
+} from "../control/agent-spawner-governed-admission.mjs";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -132,54 +139,93 @@ const isolatedLocal = compileAgentSpawnerLifecycle({
 assert.equal(isolatedLocal.state, "SPAWN_ADMITTED");
 assert.equal(isolatedLocal.authority.isolated_local_custody, true);
 const lifecycleClaimsReadback = {
-  schema: "agentos.agent_spawner_identity_claims_readback.v1",
+  schema: AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_READBACK_SCHEMA,
   version: 1,
   fresh: true,
-  authority: "AGENTOS.SPAWNER.IDENTITY_CLAIMS_READBACK",
-  provenance: "ref:spawner/identity-claims-readback",
+  authority: AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_AUTHORITY,
+  provenance: AGENT_SPAWNER_ATOMIC_ADMISSION_CLAIMS_PROVENANCE,
   claims: [],
   readback_sha256: null,
 };
 lifecycleClaimsReadback.readback_sha256 = canonicalDigest({...lifecycleClaimsReadback, readback_sha256: null});
-const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, {
-  schema: "agentos.agent_spawner_atomic_admission.v1",
+const bridgeDigestRecord = (record, field = "readback_sha256") => ({...structuredClone(record), [field]: canonicalDigest({...structuredClone(record), [field]: null})});
+const bridgeProjectId = "PROJECT-GOV02";
+const bridgeWorktree = path.join(lifecycleFixtureCwd, "gov02-fixture");
+const bridgeRequest = {
+  schema: AGENT_SPAWNER_ATOMIC_ADMISSION_REQUEST_SCHEMA,
   version: 1,
-  status: "ADMITTED",
-  environment: "local",
+  request_id: "REQ.GOV02.LIFECYCLE.BRIDGE",
   task_id: "TASK-GOV02-LIFECYCLE",
   role_id: "AGENT.GOV02.ATOMIC",
   role_kind: "ATOMIC_SPECIALIST",
-  project_id: "PROJECT-GOV02",
-  cwd: lifecycleFixtureCwd,
-  worktree: path.join(lifecycleFixtureCwd, "gov02-fixture"),
-  custody_ref: "ref:custody/gov02",
   model: "gpt-5.6-luna",
   reasoning_effort: "max",
+  target: {projectId: bridgeProjectId, environment: "local"},
+  cwd: lifecycleFixtureCwd,
+  worktree: bridgeWorktree,
+  custody_ref: "ref:custody/gov02",
   queue: "GOV-02-ATOMIC-SPAWNER-ADMISSION",
   seam: "GOV-02",
-  existing_claims_readback_sha256: lifecycleClaimsReadback.readback_sha256,
-  existing_claims_authority: lifecycleClaimsReadback.authority,
-  existing_claims_provenance: lifecycleClaimsReadback.provenance,
-  substantive_prompt_sent: false,
-  process_started: false,
-  cleanup_action: "NONE",
-  retry_allowed: false,
-  material_transition: "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION",
-});
+  prompt_ref: "opaque:prompt/gov02-lifecycle-bridge",
+  title: "GOV-02 lifecycle bridge fixture",
+};
+const bridgeRow = {
+  task_id: bridgeRequest.task_id,
+  role_id: bridgeRequest.role_id,
+  role_kind: bridgeRequest.role_kind,
+  project_id: bridgeProjectId,
+  cwd: lifecycleFixtureCwd,
+  worktree: bridgeWorktree,
+  custody_ref: bridgeRequest.custody_ref,
+  model: bridgeRequest.model,
+  reasoning_effort: bridgeRequest.reasoning_effort,
+  queue: bridgeRequest.queue,
+  seam: bridgeRequest.seam,
+  status: "PENDING",
+  lifecycle: "PENDING",
+};
+const bridgeReadbacks = {
+  request: bridgeRequest,
+  projectBinding: {project_id: bridgeProjectId, cwd: lifecycleFixtureCwd, environment: "local"},
+  hostReadback: bridgeDigestRecord({
+    schema: "agentos.agent_spawner_host_readback.v1", version: 1, fresh: true,
+    project_id: bridgeProjectId, cwd: lifecycleFixtureCwd, role_id: bridgeRequest.role_id,
+    role_kind: bridgeRequest.role_kind, model: bridgeRequest.model, reasoning_effort: bridgeRequest.reasoning_effort,
+    queue: bridgeRequest.queue, seam: bridgeRequest.seam, worktree: bridgeWorktree,
+    custody_ref: bridgeRequest.custody_ref, worktree_clean: true, readback_sha256: null,
+  }),
+  taskIndexReadback: bridgeDigestRecord({
+    schema: "agentos.agent_spawner_task_index_readback.v1", version: 1, fresh: true,
+    project_id: bridgeProjectId, cwd: lifecycleFixtureCwd, queue: bridgeRequest.queue, seam: bridgeRequest.seam,
+    rows: [bridgeRow], readback_sha256: null,
+  }),
+  stateReadback: bridgeDigestRecord({
+    schema: "agentos.agent_spawner_task_state_readback.v1", version: 1, fresh: true,
+    task_id: bridgeRequest.task_id, role_id: bridgeRequest.role_id, role_kind: bridgeRequest.role_kind,
+    project_id: bridgeProjectId, cwd: lifecycleFixtureCwd, worktree: bridgeWorktree,
+    custody_ref: bridgeRequest.custody_ref, model: bridgeRequest.model, reasoning_effort: bridgeRequest.reasoning_effort,
+    queue: bridgeRequest.queue, seam: bridgeRequest.seam, status: "PENDING", lifecycle: "PENDING",
+    substantive_prompt_sent: false, process_started: false, readback_sha256: null,
+  }),
+  processReadback: bridgeDigestRecord({
+    schema: "agentos.agent_spawner_process_readback.v1", version: 1, fresh: true,
+    processes: [], readback_sha256: null,
+  }),
+  existingClaims: [],
+  existingClaimsReadback: lifecycleClaimsReadback,
+};
+const bridgeAdmissionReceipt = compileAgentSpawnerAtomicAdmission(bridgeReadbacks);
+const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, bridgeReadbacks);
 assert.equal(atomicTransition.status, "ATOMIC_ADMISSION_RECORDED");
 assert.equal(atomicTransition.next_action, "START_GOVERNED_SPAWN");
 assert.equal(atomicTransition.substantive_work_started, false);
-assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, {
-  schema: "agentos.agent_spawner_atomic_admission.v1", version: 1, status: "ADMITTED", environment: "local",
-  task_id: "TASK-GOV02-LIFECYCLE", role_id: "AGENT.GOV02.ATOMIC", role_kind: "ATOMIC_SPECIALIST", project_id: "PROJECT-GOV02",
-  cwd: "/", worktree: path.join(lifecycleFixtureCwd, "gov02-fixture"), custody_ref: "ref:custody/gov02",
-  model: "gpt-5.6-luna", reasoning_effort: "max", queue: "GOV-02-ATOMIC-SPAWNER-ADMISSION", seam: "GOV-02",
-  existing_claims_readback_sha256: lifecycleClaimsReadback.readback_sha256,
-  existing_claims_authority: lifecycleClaimsReadback.authority,
-  existing_claims_provenance: lifecycleClaimsReadback.provenance,
-  substantive_prompt_sent: false, process_started: false, cleanup_action: "NONE", retry_allowed: false,
-  material_transition: "ADMISSION_RECORDED_NEXT_GOVERNED_ACTION",
-}), /cwd/u);
+const forgedBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
+for (const field of ["receipt_sha256", "admission_id", "host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256"]) delete forgedBridgeReceipt[field];
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, forgedBridgeReceipt, bridgeReadbacks), /fields mismatch|receipt|readback/u, "bridge must reject a forged receipt with omitted durable/readback fields");
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt), /fresh readbacks|required/u, "bridge must reject a receipt without the operational readback set");
+const driftedBridgeReadbacks = structuredClone(bridgeReadbacks);
+driftedBridgeReadbacks.hostReadback = bridgeDigestRecord({...driftedBridgeReadbacks.hostReadback, cwd: "/"});
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, driftedBridgeReadbacks), /host readback cwd|readback/u, "bridge must recompute and bind each operational readback");
 assert.equal(isolatedLocal.authority.spawn_authority, true);
 assert.equal(isolatedLocal.wave_activation, "OFF");
 const isolatedActive = advanceAgentSpawnerLifecycle(isolatedLocal, {
