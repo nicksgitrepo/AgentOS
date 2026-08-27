@@ -433,9 +433,10 @@ export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexR
   try {
     validateAtomicRequest(request);
     const binding = projectBinding ?? {project_id: expectedProjectId, cwd: expectedCwd, environment: "local"};
-    atomicRequire(isRecord(binding) && typeof binding.project_id === "string" && binding.project_id.length > 0 && typeof binding.cwd === "string" && binding.cwd.length > 0, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "an authoritative saved-project binding is required");
+    const bindingProjectId = binding?.project_id ?? binding?.projectId;
+    atomicRequire(isRecord(binding) && typeof bindingProjectId === "string" && bindingProjectId.length > 0 && typeof binding.cwd === "string" && binding.cwd.length > 0, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "an authoritative saved-project binding is required");
     atomicRequire(binding.environment === undefined || binding.environment === "local", ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "saved-project binding must use the local environment");
-    atomicRequire(request.target.projectId === binding.project_id && request.cwd === binding.cwd, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "request does not match the authoritative saved-project binding");
+    atomicRequire(request.target.projectId === bindingProjectId && request.cwd === binding.cwd, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "request does not match the authoritative saved-project binding");
     atomicRequire(hostReadback !== null && taskIndexReadback !== null && stateReadback !== null && processReadback !== null, ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "fresh host, task-index, state, and process readbacks are all required");
     validateAtomicHostReadback(hostReadback, request);
     validateAtomicTaskIndex(taskIndexReadback, request);
