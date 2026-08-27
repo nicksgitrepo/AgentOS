@@ -55,3 +55,25 @@ snapshot, the current-issue transition, next-issue admission decision,
 cleanup result, custody-preservation flags, and a parent receipt digest.  A
 duplicate or stale daily check, historical receipt, ordinary-agent poll, or
 next-issue request during cleanup is rejected by the validator.
+
+## Immutable audit-routing receipts
+
+An audit-routing receipt is a separate, project-agnostic control record with
+schema `agentos.agent_spawner_routing_receipt.v1`.  The final audit receipt
+bytes are finalized and byte-hashed before any route payload is emitted.  The
+payload binds the final receipt reference, its exact UTF-8 byte SHA-256, the
+immutable routing-receipt path, recipient, and routing-receipt digest.  A
+consumer must recompute the final byte digest immediately before audit and
+receives the typed `ROUTING_RECEIPT_PROVENANCE_BLOCKED` boundary for stale,
+missing, substituted, or otherwise inconsistent bytes.
+
+The finalized receipt is never amended to record that it was routed: its
+`route_emitted` value remains `false`, `finalized_before_route` and
+`post_route_mutation_forbidden` remain true, and the route payload is the
+separate emission record.  If a correction is needed, the correction uses a
+distinct successor receipt path and preserves the historical path and byte
+digest.  A correction requires an explicit fresh replacement-audit authority,
+and `product_verdict` remains null with `product_verdict_inherited` false; no
+old audit verdict is inherited.  The lifecycle module exports the strict
+compile/validate/finalize/consumer helpers and the schema `$defs.routing_receipt`
+and `$defs.routing_payload` describe the exact records.

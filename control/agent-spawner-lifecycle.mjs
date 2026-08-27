@@ -10,6 +10,7 @@
  * governed activation route may wait on an external/owner boundary.
  */
 
+import crypto from "node:crypto";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
@@ -52,6 +53,26 @@ export const AGENT_SPAWNER_COMPILER_OUTCOMES = Object.freeze(["BLOCK_COMPILED", 
 export const AGENT_SPAWNER_COMPILER_CONTINUATION_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE"]);
 export const AGENT_SPAWNER_COMPILER_NEXT_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT", "ADMIT_GOVERNED_SPAWN"]);
 export const AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256 = canonicalDigest({event_type: "PROTECTED_HOLD", event_sha256: null});
+
+/*
+ * Audit-routing receipts are immutable evidence records, not a mutable route
+ * status flag.  The final receipt is sealed first, then a separate route
+ * payload carries the exact bytes digest to the consumer.  A correction is a
+ * new receipt path which retains the historical identity but never inherits a
+ * product verdict.
+ */
+export const AGENT_SPAWNER_ROUTING_RECEIPT_SCHEMA = "agentos.agent_spawner_routing_receipt.v1";
+export const AGENT_SPAWNER_ROUTING_RECEIPT_VERSION = 1;
+export const AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER = "ROUTING_RECEIPT_PROVENANCE_BLOCKED";
+export const AGENT_SPAWNER_ROUTING_RECEIPT_STATUSES = Object.freeze(["FINALIZED"]);
+export const AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS = Object.freeze([
+  "FIXTURE.ROUTING_RECEIPT.DIGEST_BEFORE_FINAL_WRITE",
+  "FIXTURE.ROUTING_RECEIPT.SAME_PATH_POST_ROUTE_MUTATION",
+  "FIXTURE.ROUTING_RECEIPT.HISTORICAL_DIGESTS_SEPARATE",
+  "FIXTURE.ROUTING_RECEIPT.CORRECTION_NO_VERDICT_INHERITANCE",
+  "FIXTURE.ROUTING_RECEIPT.REPLACEMENT_REQUIRES_FRESH_AUTHORITY",
+  "FIXTURE.ROUTING_RECEIPT.SUCCESSOR_EXACT_BYTE_RECOMPUTATION",
+]);
 
 const IDENTIFIER = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
 const SHA256 = /^[0-9a-f]{64}$/u;
@@ -926,3 +947,288 @@ export function advanceControllerStorageDecision(previousReceipt, options = {}) 
 }
 
 export const advanceControllerStorageGovernance = advanceControllerStorageDecision;
+
+/*
+ * Immutable audit-routing receipt contract.
+ *
+ * A routing receipt names the exact bytes of the final audit receipt, while a
+ * route payload is a separate immutable message sent to the consumer.  The
+ * receipt itself is always FINALIZED and never changes to represent routing;
+ * corrections therefore use a distinct successor receipt path.  Keeping the
+ * two records separate makes a same-path post-route edit observable as either
+ * a raw-byte digest mismatch or a receipt/payload identity mismatch.
+ */
+const ROUTING_RECEIPT_KEYS = Object.freeze([
+  "schema", "version", "routing_receipt_id", "route_id", "recipient_ref", "receipt_path", "final_receipt_ref",
+  "final_receipt_bytes_sha256", "final_receipt_bytes_verified", "status", "finalized_before_route", "route_emitted",
+  "post_route_mutation_forbidden", "historical_receipt_ref", "historical_receipt_bytes_sha256", "successor_receipt_ref",
+  "fresh_replacement_authority_sha256", "product_verdict_inherited", "product_verdict", "hostile_fixture_refs", "receipt_sha256",
+]);
+const ROUTING_PAYLOAD_KEYS = Object.freeze([
+  "schema", "version", "route_id", "recipient_ref", "routing_receipt_ref", "routing_receipt_sha256", "receipt_path",
+  "final_receipt_ref", "final_receipt_bytes_sha256", "finalized_before_route", "same_path_mutation_forbidden",
+  "replacement_audit_requires_fresh_authority", "payload_sha256",
+]);
+
+export class AgentSpawnerRoutingReceiptProvenanceError extends Error {
+  constructor(message) {
+    super(`${AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER}: ${message}`);
+    this.name = "AgentSpawnerRoutingReceiptProvenanceError";
+    this.code = AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER;
+  }
+}
+
+function routingBlocker(condition, message) {
+  if (!condition) throw new AgentSpawnerRoutingReceiptProvenanceError(message);
+}
+
+function routingSha(value, label) {
+  routingBlocker(typeof value === "string" && SHA256.test(value), `${label} must be a lowercase SHA-256`);
+}
+
+function routingIdentifier(value, label) {
+  routingBlocker(typeof value === "string" && IDENTIFIER.test(value), `${label} must be a stable identifier`);
+}
+
+function routingReference(value, label) {
+  routingBlocker(typeof value === "string" && OPAQUE_REF.test(value), `${label} must be an opaque control reference`);
+}
+
+function routingBytes(value, label) {
+  if (Buffer.isBuffer(value)) return value;
+  if (value instanceof Uint8Array) return Buffer.from(value);
+  if (typeof value === "string") return Buffer.from(value, "utf8");
+  throw new AgentSpawnerRoutingReceiptProvenanceError(`${label} must be exact UTF-8 bytes, a Buffer, or a Uint8Array`);
+}
+
+function routingRawSha(value, label) {
+  const bytes = routingBytes(value, label);
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function routingReceiptBody(receipt) {
+  const body = structuredClone(receipt);
+  body.receipt_sha256 = null;
+  return body;
+}
+
+function routingPayloadBody(payload) {
+  const body = structuredClone(payload);
+  body.payload_sha256 = null;
+  return body;
+}
+
+function validateRoutingHostileRefs(refs) {
+  routingBlocker(Array.isArray(refs), "routing receipt hostile fixture refs are required");
+  routingBlocker(JSON.stringify(refs) === JSON.stringify([...AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS]), "routing receipt hostile fixture coverage is incomplete");
+}
+
+function resolveFinalReceiptBytesSha256({finalReceiptBytes, finalReceiptBytesSha256}) {
+  const hasBytes = finalReceiptBytes !== undefined && finalReceiptBytes !== null;
+  if (hasBytes) {
+    const computed = routingRawSha(finalReceiptBytes, "final receipt bytes");
+    if (finalReceiptBytesSha256 !== undefined && finalReceiptBytesSha256 !== null) {
+      routingSha(finalReceiptBytesSha256, "final receipt bytes digest");
+      routingBlocker(computed === finalReceiptBytesSha256, "final receipt bytes digest does not match the supplied immutable bytes");
+    }
+    return {sha256: computed, verified: true};
+  }
+  routingSha(finalReceiptBytesSha256, "final receipt bytes digest");
+  return {sha256: finalReceiptBytesSha256, verified: false};
+}
+
+function validateRoutingCorrectionFields(receipt) {
+  const hasHistory = receipt.historical_receipt_ref !== null;
+  if (!hasHistory) {
+    routingBlocker(receipt.historical_receipt_bytes_sha256 === null, "historical receipt digest is present without a historical receipt reference");
+    routingBlocker(receipt.successor_receipt_ref === null, "successor receipt reference is present on an original receipt");
+    routingBlocker(receipt.fresh_replacement_authority_sha256 === null, "replacement authority is present on an original receipt");
+    return;
+  }
+  routingReference(receipt.historical_receipt_ref, "historical receipt reference");
+  routingSha(receipt.historical_receipt_bytes_sha256, "historical receipt bytes digest");
+  routingReference(receipt.successor_receipt_ref, "successor receipt reference");
+  routingReference(receipt.receipt_path, "receipt path");
+  routingBlocker(receipt.successor_receipt_ref === receipt.receipt_path, "successor receipt reference must identify the current distinct receipt path");
+  routingBlocker(receipt.historical_receipt_ref !== receipt.receipt_path, "a correction may not reuse the historical receipt path");
+  routingSha(receipt.fresh_replacement_authority_sha256, "fresh replacement-audit authority digest");
+}
+
+export function validateAgentSpawnerRoutingReceipt(receipt) {
+  try {
+    exactKeys(receipt, ROUTING_RECEIPT_KEYS, "Agent Spawner routing receipt");
+  } catch (error) {
+    throw new AgentSpawnerRoutingReceiptProvenanceError(error.message);
+  }
+  routingBlocker(receipt.schema === AGENT_SPAWNER_ROUTING_RECEIPT_SCHEMA && receipt.version === AGENT_SPAWNER_ROUTING_RECEIPT_VERSION, "routing receipt identity is invalid");
+  routingIdentifier(receipt.routing_receipt_id, "routing receipt ID");
+  routingIdentifier(receipt.route_id, "routing route ID");
+  routingReference(receipt.recipient_ref, "routing recipient reference");
+  routingReference(receipt.receipt_path, "routing receipt path");
+  routingReference(receipt.final_receipt_ref, "final receipt reference");
+  routingSha(receipt.final_receipt_bytes_sha256, "final receipt bytes digest");
+  routingBlocker(typeof receipt.final_receipt_bytes_verified === "boolean", "final receipt byte-validation state is invalid");
+  routingBlocker(AGENT_SPAWNER_ROUTING_RECEIPT_STATUSES.includes(receipt.status), "routing receipt status is invalid");
+  routingBlocker(receipt.finalized_before_route === true, "routing receipt must be finalized before routing");
+  routingBlocker(receipt.route_emitted === false, "a finalized receipt may not be mutated to record route emission");
+  routingBlocker(receipt.post_route_mutation_forbidden === true, "post-route mutation protection is required");
+  routingBlocker(receipt.product_verdict_inherited === false, "a routing receipt may not inherit a product verdict");
+  routingBlocker(receipt.product_verdict === null, "product verdict must remain unset on a routing receipt");
+  validateRoutingCorrectionFields(receipt);
+  validateRoutingHostileRefs(receipt.hostile_fixture_refs);
+  routingSha(receipt.receipt_sha256, "routing receipt digest");
+  routingBlocker(receipt.receipt_sha256 === canonicalDigest(routingReceiptBody(receipt)), "routing receipt digest mismatch");
+  return receipt;
+}
+
+export function compileAgentSpawnerRoutingReceipt({
+  routingReceiptId,
+  routeId,
+  recipientRef,
+  receiptPath,
+  finalReceiptRef,
+  finalReceiptBytes,
+  finalReceiptBytesSha256,
+  correctionOf = null,
+  historicalReceiptRef = null,
+  historicalReceiptBytesSha256 = null,
+  freshReplacementAuthoritySha256 = null,
+} = {}) {
+  routingIdentifier(routingReceiptId, "routing receipt ID");
+  routingIdentifier(routeId, "routing route ID");
+  routingReference(recipientRef, "routing recipient reference");
+  routingReference(receiptPath, "routing receipt path");
+  routingReference(finalReceiptRef, "final receipt reference");
+  const finalBytes = resolveFinalReceiptBytesSha256({finalReceiptBytes, finalReceiptBytesSha256});
+  let historicalRef = historicalReceiptRef;
+  let historicalSha = historicalReceiptBytesSha256;
+  let successorRef = null;
+  let replacementAuthority = freshReplacementAuthoritySha256;
+  if (correctionOf !== null) {
+    validateAgentSpawnerRoutingReceipt(correctionOf);
+    historicalRef = correctionOf.receipt_path;
+    historicalSha = correctionOf.final_receipt_bytes_sha256;
+    successorRef = receiptPath;
+    routingSha(replacementAuthority, "fresh replacement-audit authority digest");
+    routingBlocker(replacementAuthority !== null, "fresh replacement-audit authority is required for a correction");
+    routingBlocker(receiptPath !== historicalRef, "a correction must use a distinct successor receipt path");
+  }
+  const receipt = {
+    schema: AGENT_SPAWNER_ROUTING_RECEIPT_SCHEMA,
+    version: AGENT_SPAWNER_ROUTING_RECEIPT_VERSION,
+    routing_receipt_id: routingReceiptId,
+    route_id: routeId,
+    recipient_ref: recipientRef,
+    receipt_path: receiptPath,
+    final_receipt_ref: finalReceiptRef,
+    final_receipt_bytes_sha256: finalBytes.sha256,
+    final_receipt_bytes_verified: finalBytes.verified,
+    status: "FINALIZED",
+    finalized_before_route: true,
+    route_emitted: false,
+    post_route_mutation_forbidden: true,
+    historical_receipt_ref: historicalRef,
+    historical_receipt_bytes_sha256: historicalSha,
+    successor_receipt_ref: successorRef,
+    fresh_replacement_authority_sha256: replacementAuthority,
+    product_verdict_inherited: false,
+    product_verdict: null,
+    hostile_fixture_refs: [...AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS],
+    receipt_sha256: null,
+  };
+  receipt.receipt_sha256 = canonicalDigest(routingReceiptBody(receipt));
+  return validateAgentSpawnerRoutingReceipt(receipt);
+}
+
+export function finalizeAgentSpawnerRoutingReceipt(receipt, {finalReceiptBytes} = {}) {
+  validateAgentSpawnerRoutingReceipt(receipt);
+  routingBlocker(receipt.route_emitted === false, "a routed receipt path cannot be finalized again");
+  const finalBytes = resolveFinalReceiptBytesSha256({finalReceiptBytes});
+  routingBlocker(finalBytes.verified, "exact final receipt bytes are required before route emission");
+  const next = structuredClone(receipt);
+  next.final_receipt_bytes_sha256 = finalBytes.sha256;
+  next.final_receipt_bytes_verified = true;
+  next.receipt_sha256 = canonicalDigest(routingReceiptBody(next));
+  return validateAgentSpawnerRoutingReceipt(next);
+}
+
+export function compileAgentSpawnerRoutingRoutePayload(receipt) {
+  validateAgentSpawnerRoutingReceipt(receipt);
+  routingBlocker(receipt.final_receipt_bytes_verified === true, "route payload requires byte-validated final receipt");
+  const payload = {
+    schema: AGENT_SPAWNER_ROUTING_RECEIPT_SCHEMA,
+    version: AGENT_SPAWNER_ROUTING_RECEIPT_VERSION,
+    route_id: receipt.route_id,
+    recipient_ref: receipt.recipient_ref,
+    routing_receipt_ref: receipt.receipt_path,
+    routing_receipt_sha256: receipt.receipt_sha256,
+    receipt_path: receipt.receipt_path,
+    final_receipt_ref: receipt.final_receipt_ref,
+    final_receipt_bytes_sha256: receipt.final_receipt_bytes_sha256,
+    finalized_before_route: true,
+    same_path_mutation_forbidden: true,
+    replacement_audit_requires_fresh_authority: true,
+    payload_sha256: null,
+  };
+  payload.payload_sha256 = canonicalDigest(routingPayloadBody(payload));
+  return payload;
+}
+
+function validateRoutingPayload(payload) {
+  try {
+    exactKeys(payload, ROUTING_PAYLOAD_KEYS, "Agent Spawner routing payload");
+  } catch (error) {
+    throw new AgentSpawnerRoutingReceiptProvenanceError(error.message);
+  }
+  routingBlocker(payload.schema === AGENT_SPAWNER_ROUTING_RECEIPT_SCHEMA && payload.version === AGENT_SPAWNER_ROUTING_RECEIPT_VERSION, "routing payload identity is invalid");
+  routingIdentifier(payload.route_id, "routing payload route ID");
+  routingReference(payload.recipient_ref, "routing payload recipient reference");
+  routingReference(payload.routing_receipt_ref, "routing payload receipt reference");
+  routingSha(payload.routing_receipt_sha256, "routing payload receipt digest");
+  routingReference(payload.receipt_path, "routing payload receipt path");
+  routingReference(payload.final_receipt_ref, "routing payload final receipt reference");
+  routingSha(payload.final_receipt_bytes_sha256, "routing payload final receipt bytes digest");
+  routingBlocker(payload.finalized_before_route === true, "routing payload must bind a finalized receipt");
+  routingBlocker(payload.same_path_mutation_forbidden === true, "routing payload must forbid same-path mutation");
+  routingBlocker(payload.replacement_audit_requires_fresh_authority === true, "routing payload must require fresh replacement authority");
+  routingSha(payload.payload_sha256, "routing payload digest");
+  routingBlocker(payload.payload_sha256 === canonicalDigest(routingPayloadBody(payload)), "routing payload digest mismatch");
+  return payload;
+}
+
+export function validateAgentSpawnerRouteConsumer({receipt, routePayload, finalReceiptBytes, observedReceiptPath = null} = {}) {
+  validateAgentSpawnerRoutingReceipt(receipt);
+  validateRoutingPayload(routePayload);
+  routingBlocker(routePayload.route_id === receipt.route_id, "route payload route identity differs from the finalized receipt");
+  routingBlocker(routePayload.recipient_ref === receipt.recipient_ref, "route payload recipient differs from the finalized receipt");
+  routingBlocker(routePayload.routing_receipt_ref === receipt.receipt_path && routePayload.receipt_path === receipt.receipt_path, "route payload receipt path differs from the finalized receipt");
+  routingBlocker(routePayload.routing_receipt_sha256 === receipt.receipt_sha256, "route payload carries a stale routing receipt digest");
+  routingBlocker(routePayload.final_receipt_ref === receipt.final_receipt_ref, "route payload final receipt reference differs from the finalized receipt");
+  routingBlocker(routePayload.final_receipt_bytes_sha256 === receipt.final_receipt_bytes_sha256, "route payload carries a stale final receipt bytes digest");
+  const actualPath = observedReceiptPath ?? receipt.receipt_path;
+  routingBlocker(actualPath === receipt.receipt_path, "same-path post-route mutation or receipt-path substitution detected");
+  routingBlocker(finalReceiptBytes !== undefined && finalReceiptBytes !== null, "consumer must recompute the exact final receipt bytes digest");
+  const computedFinalSha = routingRawSha(finalReceiptBytes, "consumer final receipt bytes");
+  routingBlocker(computedFinalSha === routePayload.final_receipt_bytes_sha256, "consumer final receipt bytes digest disagrees with the routed payload");
+  return {accepted: true, status: "ROUTING_RECEIPT_CONSUMER_VERIFIED", receipt_sha256: receipt.receipt_sha256, final_receipt_bytes_sha256: computedFinalSha};
+}
+
+export function correctAgentSpawnerRoutingReceipt(previousReceipt, options = {}) {
+  validateAgentSpawnerRoutingReceipt(previousReceipt);
+  routingBlocker(options.receiptPath !== previousReceipt.receipt_path, "replacement audit must use a distinct successor receipt path");
+  routingSha(options.freshReplacementAuthoritySha256, "fresh replacement-audit authority digest");
+  routingBlocker(options.freshReplacementAuthoritySha256 !== null && options.freshReplacementAuthoritySha256 !== undefined, "explicit fresh replacement-audit authority is required");
+  const next = compileAgentSpawnerRoutingReceipt({...options, correctionOf: previousReceipt});
+  routingBlocker(next.historical_receipt_ref === previousReceipt.receipt_path, "historical receipt identity was not preserved");
+  routingBlocker(next.product_verdict_inherited === false && next.product_verdict === null, "replacement receipt inherited a product verdict");
+  return next;
+}
+
+// Short aliases keep the public contract easy to consume without exposing a
+// second implementation or allowing callers to bypass the strict validators.
+export const compileRoutingReceipt = compileAgentSpawnerRoutingReceipt;
+export const validateRoutingReceipt = validateAgentSpawnerRoutingReceipt;
+export const finalizeRoutingReceipt = finalizeAgentSpawnerRoutingReceipt;
+export const compileRoutingRoutePayload = compileAgentSpawnerRoutingRoutePayload;
+export const validateRoutingRouteConsumer = validateAgentSpawnerRouteConsumer;
+export const correctRoutingReceipt = correctAgentSpawnerRoutingReceipt;

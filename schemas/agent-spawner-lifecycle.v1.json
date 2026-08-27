@@ -28,7 +28,9 @@
     "protected_hold_event_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
     "next_action": {"enum": ["START_COMPILER", "COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE", "ADMIT_GOVERNED_SPAWN", "START_GOVERNED_SPAWN", "WAIT_FOR_OWNER_OR_PROTECTED_DEPENDENCY_EVENT", "NONE"]},
     "lifecycle_sha256": {"$ref": "#/$defs/sha256"},
-    "storage_decision": {"$ref": "#/$defs/storage_decision"}
+    "storage_decision": {"$ref": "#/$defs/storage_decision"},
+    "routing_receipt": {"$ref": "#/$defs/routing_receipt"},
+    "routing_payload": {"$ref": "#/$defs/routing_payload"}
   },
   "allOf": [
     {"if": {"properties": {"state": {"enum": ["SPAWN_ADMITTED", "SPAWN_ACTIVE"]}}}, "then": {"properties": {"qa": {"properties": {
@@ -127,6 +129,70 @@
         "previous_receipt_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
         "hostile_fixture_refs": {"type": "array", "const": ["FIXTURE.STORAGE.79_GIB_ORDINARY_COMPILE_AND_TEST", "FIXTURE.STORAGE.79_GIB_CONTROLLER_DAILY_CLEANUP", "FIXTURE.STORAGE.CLEANUP_FAILURE_ALERT_RESUME_ABOVE_25", "FIXTURE.STORAGE.50_GIB_OWNER_WARNING", "FIXTURE.STORAGE.25_GIB_HARD_STOP", "FIXTURE.STORAGE.ORDINARY_AGENT_POLL_REJECTED", "FIXTURE.STORAGE.DUPLICATE_DAILY_CHECK_REJECTED", "FIXTURE.STORAGE.AMBIGUOUS_CUSTODY_CLEANUP_REJECTED", "FIXTURE.STORAGE.NEXT_ISSUE_DURING_CLEANUP_REJECTED", "FIXTURE.STORAGE.HISTORICAL_RECEIPT_CANNOT_OVERRIDE"]},
         "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "routing_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "routing_receipt_id", "route_id", "recipient_ref", "receipt_path", "final_receipt_ref",
+        "final_receipt_bytes_sha256", "final_receipt_bytes_verified", "status", "finalized_before_route", "route_emitted",
+        "post_route_mutation_forbidden", "historical_receipt_ref", "historical_receipt_bytes_sha256", "successor_receipt_ref",
+        "fresh_replacement_authority_sha256", "product_verdict_inherited", "product_verdict", "hostile_fixture_refs", "receipt_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.agent_spawner_routing_receipt.v1"},
+        "version": {"const": 1},
+        "routing_receipt_id": {"$ref": "#/$defs/identifier"},
+        "route_id": {"$ref": "#/$defs/identifier"},
+        "recipient_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "receipt_path": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "final_receipt_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "final_receipt_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "final_receipt_bytes_verified": {"type": "boolean"},
+        "status": {"const": "FINALIZED"},
+        "finalized_before_route": {"const": true},
+        "route_emitted": {"const": false},
+        "post_route_mutation_forbidden": {"const": true},
+        "historical_receipt_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"}]},
+        "historical_receipt_bytes_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "successor_receipt_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"}]},
+        "fresh_replacement_authority_sha256": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+        "product_verdict_inherited": {"const": false},
+        "product_verdict": {"type": "null"},
+        "hostile_fixture_refs": {"type": "array", "const": [
+          "FIXTURE.ROUTING_RECEIPT.DIGEST_BEFORE_FINAL_WRITE",
+          "FIXTURE.ROUTING_RECEIPT.SAME_PATH_POST_ROUTE_MUTATION",
+          "FIXTURE.ROUTING_RECEIPT.HISTORICAL_DIGESTS_SEPARATE",
+          "FIXTURE.ROUTING_RECEIPT.CORRECTION_NO_VERDICT_INHERITANCE",
+          "FIXTURE.ROUTING_RECEIPT.REPLACEMENT_REQUIRES_FRESH_AUTHORITY",
+          "FIXTURE.ROUTING_RECEIPT.SUCCESSOR_EXACT_BYTE_RECOMPUTATION"
+        ]},
+        "receipt_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "routing_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "version", "route_id", "recipient_ref", "routing_receipt_ref", "routing_receipt_sha256", "receipt_path",
+        "final_receipt_ref", "final_receipt_bytes_sha256", "finalized_before_route", "same_path_mutation_forbidden",
+        "replacement_audit_requires_fresh_authority", "payload_sha256"
+      ],
+      "properties": {
+        "schema": {"const": "agentos.agent_spawner_routing_receipt.v1"},
+        "version": {"const": 1},
+        "route_id": {"$ref": "#/$defs/identifier"},
+        "recipient_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "routing_receipt_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "routing_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_path": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "final_receipt_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "final_receipt_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "finalized_before_route": {"const": true},
+        "same_path_mutation_forbidden": {"const": true},
+        "replacement_audit_requires_fresh_authority": {"const": true},
+        "payload_sha256": {"$ref": "#/$defs/sha256"}
       }
     }
   }

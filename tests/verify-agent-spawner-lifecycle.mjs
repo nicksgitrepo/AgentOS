@@ -13,6 +13,14 @@ import {
   AGENT_SPAWNER_STORAGE_POLICY,
   compileControllerStorageDecision,
   validateControllerStorageDecision,
+  compileAgentSpawnerRoutingReceipt,
+  validateAgentSpawnerRoutingReceipt,
+  finalizeAgentSpawnerRoutingReceipt,
+  compileAgentSpawnerRoutingRoutePayload,
+  validateAgentSpawnerRouteConsumer,
+  correctAgentSpawnerRoutingReceipt,
+  AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER,
+  AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS,
 } from "../control/agent-spawner-lifecycle.mjs";
 import fs from "node:fs";
 
@@ -355,3 +363,109 @@ assert.deepEqual(lifecycleSchema.$defs.storage_decision.properties.hostile_fixtu
 assert.deepEqual(AGENT_SPAWNER_STORAGE_POLICY.cleanup_target_free_gib, {minimum: 80, maximum: 100, work_stopping_floor: false});
 
 console.log(`PASS Controller storage decision tree: ${AGENT_SPAWNER_STORAGE_HOSTILE_FIXTURE_REFS.length} hostile cases, 79 GiB ordinary work, <=50 GiB warning, <=25 GiB hard floor, daily exactly-once and custody-safe cleanup`);
+
+// Audit-routing receipts are finalized before a route payload is emitted.  The
+// consumer must hash the exact final bytes it receives; a self-consistent
+// payload digest is not sufficient evidence when the referenced bytes changed.
+const routingBytes = Buffer.from('{"schema":"opaque.audit.v1","status":"PASS"}\n', "utf8");
+const routingBytesChanged = Buffer.from('{"schema":"opaque.audit.v1","status":"CORRECTED"}\n', "utf8");
+const routingReceipt = compileAgentSpawnerRoutingReceipt({
+  routingReceiptId: "ROUTING.RECEIPT.CURRENT",
+  routeId: "ROUTING.ROUTE.CURRENT",
+  recipientRef: "opaque:auditor:independent",
+  receiptPath: "opaque:receipt:routing-current",
+  finalReceiptRef: "opaque:receipt:audit-final",
+  finalReceiptBytes: routingBytes,
+});
+assert.equal(routingReceipt.final_receipt_bytes_verified, true);
+assert.deepEqual(routingReceipt.hostile_fixture_refs, AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS);
+validateAgentSpawnerRoutingReceipt(routingReceipt);
+const routePayload = compileAgentSpawnerRoutingRoutePayload(routingReceipt);
+assert.deepEqual(
+  validateAgentSpawnerRouteConsumer({receipt: routingReceipt, routePayload, finalReceiptBytes: routingBytes}),
+  {
+    accepted: true,
+    status: "ROUTING_RECEIPT_CONSUMER_VERIFIED",
+    receipt_sha256: routingReceipt.receipt_sha256,
+    final_receipt_bytes_sha256: routingReceipt.final_receipt_bytes_sha256,
+  },
+);
+
+assert.throws(
+  () => validateAgentSpawnerRouteConsumer({receipt: routingReceipt, routePayload, finalReceiptBytes: routingBytesChanged}),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a digest computed before the final receipt write must be rejected",
+);
+assert.throws(
+  () => validateAgentSpawnerRouteConsumer({receipt: routingReceipt, routePayload, finalReceiptBytes: routingBytes, observedReceiptPath: "opaque:receipt:routing-replaced"}),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a same-path post-route substitution must be rejected",
+);
+
+const provisionalRoutingReceipt = compileAgentSpawnerRoutingReceipt({
+  routingReceiptId: "ROUTING.RECEIPT.PROVISIONAL",
+  routeId: "ROUTING.ROUTE.PROVISIONAL",
+  recipientRef: "opaque:auditor:independent",
+  receiptPath: "opaque:receipt:routing-provisional",
+  finalReceiptRef: "opaque:receipt:audit-provisional",
+  finalReceiptBytesSha256: HASH("not-the-bytes"),
+});
+assert.equal(provisionalRoutingReceipt.final_receipt_bytes_verified, false);
+assert.throws(
+  () => compileAgentSpawnerRoutingRoutePayload(provisionalRoutingReceipt),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a route payload may not be emitted before exact bytes are validated",
+);
+const finalizedRoutingReceipt = finalizeAgentSpawnerRoutingReceipt(provisionalRoutingReceipt, {finalReceiptBytes: routingBytes});
+assert.equal(finalizedRoutingReceipt.final_receipt_bytes_sha256, routingReceipt.final_receipt_bytes_sha256);
+
+const correctedRoutingReceipt = correctAgentSpawnerRoutingReceipt(routingReceipt, {
+  routingReceiptId: "ROUTING.RECEIPT.SUCCESSOR",
+  routeId: "ROUTING.ROUTE.SUCCESSOR",
+  recipientRef: "opaque:auditor:independent",
+  receiptPath: "opaque:receipt:routing-successor",
+  finalReceiptRef: "opaque:receipt:audit-corrected",
+  finalReceiptBytes: routingBytesChanged,
+  freshReplacementAuthoritySha256: HASH("fresh-replacement-authority"),
+});
+assert.equal(correctedRoutingReceipt.historical_receipt_ref, routingReceipt.receipt_path);
+assert.equal(correctedRoutingReceipt.historical_receipt_bytes_sha256, routingReceipt.final_receipt_bytes_sha256);
+assert.equal(correctedRoutingReceipt.successor_receipt_ref, correctedRoutingReceipt.receipt_path);
+assert.equal(correctedRoutingReceipt.product_verdict_inherited, false);
+assert.equal(correctedRoutingReceipt.product_verdict, null);
+const correctedPayload = compileAgentSpawnerRoutingRoutePayload(correctedRoutingReceipt);
+assert.equal(validateAgentSpawnerRouteConsumer({receipt: correctedRoutingReceipt, routePayload: correctedPayload, finalReceiptBytes: routingBytesChanged}).accepted, true);
+assert.throws(
+  () => correctAgentSpawnerRoutingReceipt(routingReceipt, {
+    routingReceiptId: "ROUTING.RECEIPT.REUSED",
+    routeId: "ROUTING.ROUTE.REUSED",
+    recipientRef: "opaque:auditor:independent",
+    receiptPath: routingReceipt.receipt_path,
+    finalReceiptRef: "opaque:receipt:audit-reused",
+    finalReceiptBytes: routingBytesChanged,
+    freshReplacementAuthoritySha256: HASH("fresh-replacement-authority"),
+  }),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a correction may not amend the routed receipt path",
+);
+assert.throws(
+  () => correctAgentSpawnerRoutingReceipt(routingReceipt, {
+    routingReceiptId: "ROUTING.RECEIPT.NO_AUTHORITY",
+    routeId: "ROUTING.ROUTE.NO_AUTHORITY",
+    recipientRef: "opaque:auditor:independent",
+    receiptPath: "opaque:receipt:routing-no-authority",
+    finalReceiptRef: "opaque:receipt:audit-no-authority",
+    finalReceiptBytes: routingBytesChanged,
+  }),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a replacement audit must have explicit fresh authority",
+);
+const verdictTampered = structuredClone(correctedRoutingReceipt);
+verdictTampered.product_verdict = "PASS";
+verdictTampered.receipt_sha256 = HASH("tampered");
+assert.throws(
+  () => validateAgentSpawnerRoutingReceipt(verdictTampered),
+  new RegExp(AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER),
+  "a corrected receipt may not inherit a product verdict",
+);
+console.log("PASS Agent Spawner routing receipt: final-before-route, exact consumer byte recomputation, same-path mutation denial, historical separation, fresh replacement authority, and hostile coverage");
