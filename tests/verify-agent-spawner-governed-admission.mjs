@@ -209,6 +209,16 @@ assert.equal(admitted.process_started, false);
 assert.deepEqual(admitted.hostile_fixture_refs, [...AGENT_SPAWNER_ATOMIC_ADMISSION_HOSTILE_FIXTURE_REFS]);
 validateAgentSpawnerAtomicAdmission(admitted, atomicInput());
 assert.equal(admitted.receipt_sha256, canonicalDigest({...admitted, receipt_sha256: null}));
+const escapedReceiptOnly = structuredClone(admitted);
+escapedReceiptOnly.cwd = CWD;
+escapedReceiptOnly.worktree = `${CWD}/../outside-project`;
+escapedReceiptOnly.receipt_sha256 = canonicalDigest({...escapedReceiptOnly, receipt_sha256: null});
+assert.throws(() => validateAgentSpawnerAtomicAdmission(escapedReceiptOnly), (error) => {
+  assert(error instanceof AgentSpawnerAtomicAdmissionError);
+  assert.equal(error.code, "ATOMIC_ADMISSION_FRESH_READBACK_REQUIRED");
+  assert.match(error.message, /complete atomic admission request and fresh operational readbacks/u);
+  return true;
+}, "core receipt-only validation must not accept an escaped worktree");
 const escapedWorktree = atomicInput();
 escapedWorktree.request.worktree = `${CWD}/../outside-project`;
 expectBlock(escapedWorktree, "ATOMIC_ADMISSION_CUSTODY_BINDING_MISMATCH", /outside the bound project cwd/u);
