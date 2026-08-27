@@ -21,6 +21,7 @@ import {
   correctAgentSpawnerRoutingReceipt,
   AGENT_SPAWNER_ROUTING_RECEIPT_PROVENANCE_BLOCKER,
   AGENT_SPAWNER_ROUTING_HOSTILE_FIXTURE_REFS,
+  bindAgentSpawnerAtomicAdmissionLifecycle,
   recordAgentSpawnerAtomicAdmission,
 } from "../control/agent-spawner-lifecycle.mjs";
 import {
@@ -129,7 +130,7 @@ assert.throws(() => compileAgentSpawnerLifecycle({
 // clearance when custody is isolated, product/provider/external authority is
 // false, and the resource ceiling is enforced.  This is ordinary reversible
 // development work, not a protected release or provider route.
-const isolatedLocal = compileAgentSpawnerLifecycle({
+let isolatedLocal = compileAgentSpawnerLifecycle({
   ...common,
   lifecycleId: "LIFECYCLE.SPAWNER.ISOLATED_LOCAL",
   mode: "GOVERNED_SPAWN",
@@ -215,6 +216,7 @@ const bridgeReadbacks = {
   existingClaimsReadback: lifecycleClaimsReadback,
 };
 const bridgeAdmissionReceipt = compileAgentSpawnerAtomicAdmission(bridgeReadbacks);
+isolatedLocal = bindAgentSpawnerAtomicAdmissionLifecycle(isolatedLocal, {admissionReceipt: bridgeAdmissionReceipt, readbacks: bridgeReadbacks});
 const escapedBridgeReadbacks = structuredClone(bridgeReadbacks);
 escapedBridgeReadbacks.request.worktree = `${lifecycleFixtureCwd}/../outside-project`;
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, escapedBridgeReadbacks), /outside the bound project cwd/u, "bridge must reject a worktree that escapes the project cwd after path resolution");
@@ -222,6 +224,18 @@ const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, bridge
 assert.equal(atomicTransition.status, "ATOMIC_ADMISSION_RECORDED");
 assert.equal(atomicTransition.next_action, "START_GOVERNED_SPAWN");
 assert.equal(atomicTransition.substantive_work_started, false);
+const unrelatedLifecycle = compileAgentSpawnerLifecycle({
+  ...common,
+  lifecycleId: "LIFECYCLE.SPAWNER.UNRELATED",
+  mode: "GOVERNED_SPAWN",
+  isolatedLocalCustody: true,
+  qa: pendingQa,
+});
+assert.throws(
+  () => recordAgentSpawnerAtomicAdmission(unrelatedLifecycle, bridgeAdmissionReceipt, bridgeReadbacks),
+  /lifecycle binding is required/u,
+  "bridge must reject an otherwise valid admission attached to an unrelated unbound lifecycle",
+);
 const reboundBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 reboundBridgeReceipt.admission_id = "REQ.GOV02.LIFECYCLE.REBOUND";
 reboundBridgeReceipt.receipt_sha256 = canonicalDigest({...reboundBridgeReceipt, receipt_sha256: null});

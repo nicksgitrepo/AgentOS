@@ -100,3 +100,13 @@ digests plus the identity-claims readback digest, fixed authority, and
 provenance. An explicitly authoritative empty claims array is valid; an
 omitted claims readback is not. Prompt text, title, local process cwd, or an
 API acknowledgement cannot substitute for persisted metadata.
+
+The governed lifecycle record also carries an optional, self-digesting
+`atomic_admission_binding`. Compiler-only and pre-admission lifecycle records
+keep this field `null`; before the lifecycle bridge exposes
+`START_GOVERNED_SPAWN`, the binding must identify the exact admission receipt
+and fresh-readback bundle (admission, task, role, project, cwd, worktree, and
+custody). The bridge recomputes those anchors and rejects an unrelated
+lifecycle, even when its own lifecycle digest and the admission receipt are
+otherwise valid. Corrections therefore require a newly bound lifecycle record
+rather than reusing a different governed lifecycle identity.

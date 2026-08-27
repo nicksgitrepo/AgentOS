@@ -55,6 +55,8 @@ export const AGENT_SPAWNER_COMPILER_OUTCOMES = Object.freeze(["BLOCK_COMPILED", 
 export const AGENT_SPAWNER_COMPILER_CONTINUATION_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_INDEPENDENT_CLEARANCE"]);
 export const AGENT_SPAWNER_COMPILER_NEXT_ACTIONS = Object.freeze(["COMPILE_NEXT_BLOCK", "PUBLISH_TYPED_ROSTER", "WAIT_FOR_PROTECTED_EVENT", "ADMIT_GOVERNED_SPAWN"]);
 export const AGENT_SPAWNER_PROTECTED_HOLD_EVENT_SHA256 = canonicalDigest({event_type: "PROTECTED_HOLD", event_sha256: null});
+export const AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_SCHEMA = "agentos.agent_spawner_atomic_admission_lifecycle_binding.v1";
+export const AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_VERSION = 1;
 
 /*
  * Audit-routing receipts are immutable evidence records, not a mutable route
@@ -136,6 +138,37 @@ function lifecycleBody(lifecycle) {
   const body = structuredClone(lifecycle);
   body.lifecycle_sha256 = null;
   return body;
+}
+
+const ATOMIC_ADMISSION_LIFECYCLE_BINDING_KEYS = Object.freeze([
+  "schema", "version", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
+  "custody_ref", "receipt_sha256", "readback_bundle_sha256", "binding_sha256",
+]);
+
+function atomicAdmissionReadbackBundleDigest(readbacks) {
+  return canonicalDigest({
+    host_readback_sha256: readbacks.hostReadback?.readback_sha256,
+    task_index_readback_sha256: readbacks.taskIndexReadback?.readback_sha256,
+    state_readback_sha256: readbacks.stateReadback?.readback_sha256,
+    process_readback_sha256: readbacks.processReadback?.readback_sha256,
+    existing_claims_readback_sha256: readbacks.existingClaimsReadback?.readback_sha256,
+  });
+}
+
+function validateAtomicAdmissionLifecycleBinding(binding) {
+  exactKeys(binding, ATOMIC_ADMISSION_LIFECYCLE_BINDING_KEYS, "Agent Spawner atomic-admission lifecycle binding");
+  assert(binding.schema === AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_SCHEMA && binding.version === AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_VERSION, "Agent Spawner atomic-admission lifecycle binding identity is invalid");
+  for (const field of ["admission_id", "task_id", "role_id", "project_id"]) requireString(binding[field], `Agent Spawner lifecycle binding ${field}`);
+  assert(binding.environment === "local", "Agent Spawner lifecycle binding environment is invalid");
+  for (const field of ["cwd", "worktree"]) {
+    requireString(binding[field], `Agent Spawner lifecycle binding ${field}`);
+    assert(binding[field].startsWith("/") && binding[field] !== "/", `Agent Spawner lifecycle binding ${field} must be a non-root absolute path`);
+  }
+  requireString(binding.custody_ref, "Agent Spawner lifecycle binding custody_ref");
+  assert(/^(?:opaque:|ref:)[^\s]+$/u.test(binding.custody_ref), "Agent Spawner lifecycle binding custody_ref is invalid");
+  for (const field of ["receipt_sha256", "readback_bundle_sha256", "binding_sha256"]) requireSha(binding[field], `Agent Spawner lifecycle binding ${field}`);
+  assert(binding.binding_sha256 === canonicalDigest({...binding, binding_sha256: null}), "Agent Spawner atomic-admission lifecycle binding digest mismatch");
+  return binding;
 }
 
 function deriveCompilerAction(lifecycle) {
@@ -230,7 +263,7 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   exactKeys(lifecycle, [
     "schema", "version", "lifecycle_id", "role_id", "mode", "state", "persistent_state", "wave_activation", "candidate_sha256",
     "roster_projection_sha256", "context_sha256", "qa", "authority", "execution", "protected_hold_event_sha256", "next_action",
-    "lifecycle_sha256",
+    "atomic_admission_binding", "lifecycle_sha256",
   ], "Agent Spawner lifecycle");
   assert(lifecycle.schema === AGENT_SPAWNER_LIFECYCLE_SCHEMA && lifecycle.version === AGENT_SPAWNER_LIFECYCLE_VERSION, "Agent Spawner lifecycle identity is invalid");
   requireIdentifier(lifecycle.lifecycle_id, "Agent Spawner lifecycle ID");
@@ -253,6 +286,10 @@ export function validateAgentSpawnerLifecycle(lifecycle) {
   validateQa(lifecycle.qa);
   validateAuthority(lifecycle.authority, lifecycle);
   validateExecution(lifecycle.execution, lifecycle);
+  if (lifecycle.atomic_admission_binding !== null) {
+    validateAtomicAdmissionLifecycleBinding(lifecycle.atomic_admission_binding);
+    assert(lifecycle.mode === "GOVERNED_SPAWN", "Atomic-admission lifecycle binding requires governed-spawn mode");
+  }
   assert(AGENT_SPAWNER_NEXT_ACTIONS.includes(lifecycle.next_action), "Agent Spawner next action is invalid");
   assert(lifecycle.next_action === deriveCompilerAction(lifecycle), "Agent Spawner next action does not match lifecycle state");
   if (lifecycle.state === "COMPILER_ACTIVE") assert(lifecycle.mode === "COMPILER_ONLY", "Compiler-active state requires compiler-only mode");
@@ -285,6 +322,7 @@ export function compileAgentSpawnerLifecycle({
   contextSha256,
   qa,
   isolatedLocalCustody = false,
+  atomicAdmissionBinding = null,
   protectedHoldEventSha256 = null,
   execution = {compiler_ticks: 0, active_worker_count: 0, scheduler_job_count: 0, heavyweight_process_count: 0, timer_count: 0, polling: false},
 } = {}) {
@@ -295,6 +333,8 @@ export function compileAgentSpawnerLifecycle({
   const derivedState = state ?? (mode === "COMPILER_ONLY" ? "COMPILER_ACTIVE" : complete && (clearance || isolatedLocalCustody) ? "SPAWN_ADMITTED" : "QA_READY");
   const governed = mode === "GOVERNED_SPAWN";
   assert(!(isolatedLocalCustody && !governed), "Isolated local custody requires governed-spawn mode");
+  if (atomicAdmissionBinding !== null) validateAtomicAdmissionLifecycleBinding(atomicAdmissionBinding);
+  assert(!(atomicAdmissionBinding !== null && !governed), "Atomic-admission lifecycle binding requires governed-spawn mode");
   const localAdmission = governed && isolatedLocalCustody && complete;
   const lifecycle = {
     schema: AGENT_SPAWNER_LIFECYCLE_SCHEMA,
@@ -321,6 +361,7 @@ export function compileAgentSpawnerLifecycle({
       independent_evaluation_required: true,
     },
     execution: structuredClone(execution),
+    atomic_admission_binding: atomicAdmissionBinding === null ? null : structuredClone(atomicAdmissionBinding),
     protected_hold_event_sha256: protectedHoldEventSha256,
     next_action: null,
     lifecycle_sha256: null,
@@ -355,9 +396,42 @@ export function admitAgentSpawnerIsolatedLocalCustody(lifecycle, {isolatedLocalC
     rosterProjectionSha256: lifecycle.roster_projection_sha256,
     contextSha256: lifecycle.context_sha256,
     isolatedLocalCustody: true,
+    atomicAdmissionBinding: lifecycle.atomic_admission_binding,
     qa: structuredClone(lifecycle.qa),
     execution: structuredClone(lifecycle.execution),
   });
+}
+
+export function bindAgentSpawnerAtomicAdmissionLifecycle(lifecycle, {admissionReceipt, readbacks} = {}) {
+  validateAgentSpawnerLifecycle(lifecycle);
+  assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ADMITTED", "Atomic-admission lifecycle binding requires an admitted governed lifecycle");
+  assert(isRecord(admissionReceipt) && isRecord(readbacks) && isRecord(readbacks.request), "Atomic-admission lifecycle binding receipt and readbacks are required");
+  const request = readbacks.request;
+  exactKeys(request, [
+    "schema", "version", "request_id", "task_id", "role_id", "role_kind", "model", "reasoning_effort", "target",
+    "cwd", "worktree", "custody_ref", "queue", "seam", "prompt_ref", "title",
+  ], "Atomic-admission lifecycle binding request");
+  exactKeys(request.target, ["projectId", "environment"], "Atomic-admission lifecycle binding target");
+  const binding = {
+    schema: AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_SCHEMA,
+    version: AGENT_SPAWNER_ATOMIC_ADMISSION_LIFECYCLE_BINDING_VERSION,
+    admission_id: request.request_id,
+    task_id: request.task_id,
+    role_id: request.role_id,
+    project_id: request.target.projectId,
+    environment: request.target.environment,
+    cwd: request.cwd,
+    worktree: request.worktree,
+    custody_ref: request.custody_ref,
+    receipt_sha256: admissionReceipt.receipt_sha256,
+    readback_bundle_sha256: atomicAdmissionReadbackBundleDigest(readbacks),
+    binding_sha256: null,
+  };
+  binding.binding_sha256 = canonicalDigest({...binding, binding_sha256: null});
+  const next = structuredClone(lifecycle);
+  next.atomic_admission_binding = binding;
+  next.lifecycle_sha256 = canonicalDigest(lifecycleBody(next));
+  return validateAgentSpawnerLifecycle(next);
 }
 
 const ATOMIC_BRIDGE_REQUEST_KEYS = Object.freeze([
@@ -579,6 +653,21 @@ export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt, r
   assert(isRecord(readbacks), "Atomic admission fresh readbacks are required");
   assert(isRecord(readbacks.request) && isRecord(readbacks.hostReadback) && isRecord(readbacks.taskIndexReadback) && isRecord(readbacks.stateReadback) && isRecord(readbacks.processReadback) && isRecord(readbacks.existingClaimsReadback), "Atomic admission request and every operational readback are required");
   validateAtomicAdmissionBridgeReceipt(admissionReceipt, readbacks);
+  const binding = lifecycle.atomic_admission_binding;
+  assert(binding !== null, "Atomic admission lifecycle binding is required");
+  validateAtomicAdmissionLifecycleBinding(binding);
+  for (const [field, expected] of [
+    ["admission_id", admissionReceipt.admission_id],
+    ["task_id", admissionReceipt.task_id],
+    ["role_id", admissionReceipt.role_id],
+    ["project_id", admissionReceipt.project_id],
+    ["environment", admissionReceipt.environment],
+    ["cwd", admissionReceipt.cwd],
+    ["worktree", admissionReceipt.worktree],
+    ["custody_ref", admissionReceipt.custody_ref],
+    ["receipt_sha256", admissionReceipt.receipt_sha256],
+  ]) assert(binding[field] === expected, `Atomic admission lifecycle binding ${field} is not bound to the admission receipt`);
+  assert(binding.readback_bundle_sha256 === atomicAdmissionReadbackBundleDigest(readbacks), "Atomic admission lifecycle binding readback bundle is stale");
   assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ADMITTED" && lifecycle.next_action === "START_GOVERNED_SPAWN", "Atomic admission must follow the governed spawn admission lifecycle");
   assert(lifecycle.authority.product_mutation === false && lifecycle.authority.provider_access === false && lifecycle.authority.credential_access === false && lifecycle.authority.external_sync === false, "Atomic admission crossed a protected capability");
   return {
