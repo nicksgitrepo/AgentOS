@@ -214,6 +214,13 @@ reboundAdmissionReceipt.admission_id = "REQ.GOV02.ATOMIC.REBOUND";
 reboundAdmissionReceipt.receipt_sha256 = canonicalDigest({...reboundAdmissionReceipt, receipt_sha256: null});
 assert.throws(() => validateAgentSpawnerAtomicAdmission(reboundAdmissionReceipt, atomicInput()), /admission_id.*not bound to the request/u, "core validator must reject a self-consistent receipt rebound to another admission identity");
 
+const activeTargetRow = atomicInput();
+activeTargetRow.taskIndexReadback = makeIndex([makeRow({status: "ACTIVE", lifecycle: "ACTIVE"})]);
+expectBlock(activeTargetRow, "ATOMIC_ADMISSION_READBACK_DIGEST_MISMATCH", /pre-admission state/u);
+const activeTargetState = atomicInput();
+activeTargetState.stateReadback = makeState({status: "ACTIVE", lifecycle: "ACTIVE"});
+expectBlock(activeTargetState, "ATOMIC_ADMISSION_READBACK_DIGEST_MISMATCH", /pre-admission state/u);
+
 const wrongCwd = atomicInput();
 wrongCwd.hostReadback = makeHost({cwd: "/"});
 expectBlock(wrongCwd, "ATOMIC_ADMISSION_PROJECT_BINDING_MISMATCH", /host readback cwd/u);

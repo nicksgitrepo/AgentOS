@@ -223,6 +223,21 @@ const reboundBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 reboundBridgeReceipt.admission_id = "REQ.GOV02.LIFECYCLE.REBOUND";
 reboundBridgeReceipt.receipt_sha256 = canonicalDigest({...reboundBridgeReceipt, receipt_sha256: null});
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, reboundBridgeReceipt, bridgeReadbacks), /admission_id.*not bound to the request/u, "bridge must reject a self-consistent receipt rebound to another admission identity");
+const activeTargetRowReadbacks = structuredClone(bridgeReadbacks);
+activeTargetRowReadbacks.taskIndexReadback = bridgeDigestRecord({
+  ...activeTargetRowReadbacks.taskIndexReadback,
+  rows: activeTargetRowReadbacks.taskIndexReadback.rows.map((row) => ({...row, status: "ACTIVE", lifecycle: "ACTIVE"})),
+});
+const activeTargetRowReceipt = structuredClone(bridgeAdmissionReceipt);
+activeTargetRowReceipt.task_index_readback_sha256 = activeTargetRowReadbacks.taskIndexReadback.readback_sha256;
+activeTargetRowReceipt.receipt_sha256 = canonicalDigest({...activeTargetRowReceipt, receipt_sha256: null});
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, activeTargetRowReceipt, activeTargetRowReadbacks), /pre-admission state/u, "bridge must reject an active task-index target row");
+const activeTargetStateReadbacks = structuredClone(bridgeReadbacks);
+activeTargetStateReadbacks.stateReadback = bridgeDigestRecord({...activeTargetStateReadbacks.stateReadback, status: "ACTIVE", lifecycle: "ACTIVE"});
+const activeTargetStateReceipt = structuredClone(bridgeAdmissionReceipt);
+activeTargetStateReceipt.state_readback_sha256 = activeTargetStateReadbacks.stateReadback.readback_sha256;
+activeTargetStateReceipt.receipt_sha256 = canonicalDigest({...activeTargetStateReceipt, receipt_sha256: null});
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, activeTargetStateReceipt, activeTargetStateReadbacks), /pre-admission state/u, "bridge must reject an active task state");
 const forgedBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 for (const field of ["receipt_sha256", "admission_id", "host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256"]) delete forgedBridgeReceipt[field];
 assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, forgedBridgeReceipt, bridgeReadbacks), /fields mismatch|receipt|readback/u, "bridge must reject a forged receipt with omitted durable/readback fields");

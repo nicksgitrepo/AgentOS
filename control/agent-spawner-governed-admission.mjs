@@ -231,6 +231,8 @@ const ATOMIC_READBACK_SCHEMAS = Object.freeze({
 });
 const ATOMIC_RECEIPT_CLEANUP = "NONE";
 const ATOMIC_FAILED_ROW_STATUSES = new Set(["FAILED", "ARCHIVED", "HELD"]);
+const ATOMIC_PRE_ADMISSION_STATUS = "PENDING";
+const ATOMIC_PRE_ADMISSION_LIFECYCLE = "PENDING";
 const ATOMIC_BLOCKER_CODES = AGENT_SPAWNER_ATOMIC_ADMISSION_BLOCKER_CODES;
 
 function atomicText(value, label) {
@@ -368,6 +370,7 @@ function validateAtomicTaskIndex(index, request) {
   const targetRows = nonFailed.filter((row) => row.task_id === request.task_id);
   atomicRequire(targetRows.length === 1, ATOMIC_BLOCKER_CODES.ROLE_BINDING_MISMATCH, "task-index must contain exactly one nonfailed target task row");
   const target = targetRows[0];
+  atomicRequire(target.status === ATOMIC_PRE_ADMISSION_STATUS && target.lifecycle === ATOMIC_PRE_ADMISSION_LIFECYCLE, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "task-index target is not in the pre-admission state");
   for (const [field, expected] of [["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) atomicRequire(target[field] === expected, field === "role_id" || field === "role_kind" ? ATOMIC_BLOCKER_CODES.ROLE_BINDING_MISMATCH : field === "worktree" || field === "custody_ref" ? ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH : ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, `task-index target ${field} differs from the request`);
   for (const row of nonFailed) {
     const sameIdentity = row.task_id === request.task_id || row.role_id === request.role_id || row.worktree === request.worktree || row.custody_ref === request.custody_ref;
@@ -380,6 +383,7 @@ function validateAtomicStateReadback(state, request) {
   atomicReadbackExact(state, ATOMIC_STATE_READBACK_KEYS, "Atomic task-state readback");
   atomicRequire(state.schema === ATOMIC_READBACK_SCHEMAS.state && state.version === 1 && state.fresh === true, ATOMIC_BLOCKER_CODES.FRESH_READBACK_REQUIRED, "fresh task state readback is required");
   for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) atomicRequire(state[field] === expected, field === "role_id" || field === "role_kind" ? ATOMIC_BLOCKER_CODES.ROLE_BINDING_MISMATCH : field === "worktree" || field === "custody_ref" ? ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH : ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, `task state ${field} differs from the request`);
+  atomicRequire(state.status === ATOMIC_PRE_ADMISSION_STATUS && state.lifecycle === ATOMIC_PRE_ADMISSION_LIFECYCLE, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "task state is not in the pre-admission state");
   atomicRequire(state.substantive_prompt_sent === false && state.process_started === false, ATOMIC_BLOCKER_CODES.SUBSTANTIVE_WORK_STARTED, "substantive prompt or process started before atomic admission");
   atomicDigest(state, "readback_sha256", "Atomic task-state readback");
   return state;

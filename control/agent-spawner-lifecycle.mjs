@@ -396,6 +396,8 @@ const ATOMIC_BRIDGE_READBACK_SCHEMAS = Object.freeze({
 const ATOMIC_BRIDGE_READBACK_VERSION = 1;
 const ATOMIC_BRIDGE_CLAIM_KEYS = Object.freeze(["kind", "identity", "status"]);
 const ATOMIC_BRIDGE_FAILED_ROW_STATUSES = new Set(["FAILED", "ARCHIVED", "HELD"]);
+const ATOMIC_BRIDGE_PRE_ADMISSION_STATUS = "PENDING";
+const ATOMIC_BRIDGE_PRE_ADMISSION_LIFECYCLE = "PENDING";
 const ATOMIC_BRIDGE_HOSTILE_FIXTURE_REFS = Object.freeze([
   "FIXTURE.ATOMIC_ADMISSION.CREATION_ACK_WITHOUT_READBACK",
   "FIXTURE.ATOMIC_ADMISSION.DUPLICATE_IDENTITY_COLLISION",
@@ -486,6 +488,7 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   const targetRows = index.rows.filter((row) => row && row.task_id === request.task_id && row.status !== "FAILED" && row.status !== "ARCHIVED" && row.status !== "HELD" && row.lifecycle !== "FAILED" && row.lifecycle !== "ARCHIVED" && row.lifecycle !== "HELD");
   assert(targetRows.length === 1, "task-index must contain exactly one nonfailed target task row");
   exactKeys(targetRows[0], ATOMIC_BRIDGE_ROW_KEYS, "Atomic task-index target row");
+  assert(targetRows[0].status === ATOMIC_BRIDGE_PRE_ADMISSION_STATUS && targetRows[0].lifecycle === ATOMIC_BRIDGE_PRE_ADMISSION_LIFECYCLE, "task-index target is not in the pre-admission state");
   for (const [field, expected] of [["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(targetRows[0][field] === expected, `task-index target ${field} differs from the request`);
   const nonFailedRows = index.rows.filter((row) => !ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(row.status) && !ATOMIC_BRIDGE_FAILED_ROW_STATUSES.has(row.lifecycle));
   for (const row of nonFailedRows) {
@@ -495,6 +498,7 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   }
   const state = digestReadback(readbacks.stateReadback, ATOMIC_BRIDGE_STATE_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.state, "Atomic task-state readback");
   for (const [field, expected] of [["task_id", request.task_id], ["role_id", request.role_id], ["role_kind", request.role_kind], ["project_id", request.target.projectId], ["cwd", request.cwd], ["worktree", request.worktree], ["custody_ref", request.custody_ref], ["model", request.model], ["reasoning_effort", request.reasoning_effort], ["queue", request.queue], ["seam", request.seam]]) assert(state[field] === expected, `task state ${field} differs from the request`);
+  assert(state.status === ATOMIC_BRIDGE_PRE_ADMISSION_STATUS && state.lifecycle === ATOMIC_BRIDGE_PRE_ADMISSION_LIFECYCLE, "task state is not in the pre-admission state");
   assert(state.substantive_prompt_sent === false && state.process_started === false, "task state crossed the substantive-work boundary");
   const process = digestReadback(readbacks.processReadback, ATOMIC_BRIDGE_PROCESS_KEYS, ATOMIC_BRIDGE_READBACK_SCHEMAS.process, "Atomic process readback");
   assert(Array.isArray(process.processes), "process readback processes are required");
