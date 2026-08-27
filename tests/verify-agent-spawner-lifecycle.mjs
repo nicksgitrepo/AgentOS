@@ -215,6 +215,9 @@ const bridgeReadbacks = {
   existingClaimsReadback: lifecycleClaimsReadback,
 };
 const bridgeAdmissionReceipt = compileAgentSpawnerAtomicAdmission(bridgeReadbacks);
+const escapedBridgeReadbacks = structuredClone(bridgeReadbacks);
+escapedBridgeReadbacks.request.worktree = `${lifecycleFixtureCwd}/../outside-project`;
+assert.throws(() => recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, escapedBridgeReadbacks), /outside the bound project cwd/u, "bridge must reject a worktree that escapes the project cwd after path resolution");
 const atomicTransition = recordAgentSpawnerAtomicAdmission(isolatedLocal, bridgeAdmissionReceipt, bridgeReadbacks);
 assert.equal(atomicTransition.status, "ATOMIC_ADMISSION_RECORDED");
 assert.equal(atomicTransition.next_action, "START_GOVERNED_SPAWN");

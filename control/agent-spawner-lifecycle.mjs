@@ -11,6 +11,8 @@
  */
 
 import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
 
 export const AGENT_SPAWNER_LIFECYCLE_SCHEMA = "agentos.agent_spawner_lifecycle.v1";
@@ -424,6 +426,35 @@ function bridgeAtomicAbsolutePath(value, label) {
   assert(value.startsWith("/") && value !== "/", `${label} must be an absolute non-root path`);
 }
 
+function bridgeAtomicCanonicalPath(value, label) {
+  bridgeAtomicAbsolutePath(value, label);
+  const lexical = path.resolve(value);
+  let probe = lexical;
+  const missing = [];
+  while (true) {
+    try {
+      const stat = fs.lstatSync(probe);
+      const resolved = fs.realpathSync.native(probe);
+      if (stat.isSymbolicLink() || missing.length > 0) return path.resolve(resolved, ...missing.reverse());
+      return resolved;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw new Error(`${label} cannot be canonicalized`);
+      const parent = path.dirname(probe);
+      if (parent === probe) throw new Error(`${label} cannot be canonicalized`);
+      missing.push(path.basename(probe));
+      probe = parent;
+    }
+  }
+}
+
+function bridgeAssertWorktreeWithinCwd(cwd, worktree) {
+  const resolvedCwd = bridgeAtomicCanonicalPath(cwd, "Atomic admission cwd");
+  const resolvedWorktree = bridgeAtomicCanonicalPath(worktree, "Atomic admission worktree");
+  assert(resolvedCwd !== path.parse(resolvedCwd).root, "Atomic admission cwd resolves to the host root");
+  assert(resolvedWorktree !== path.parse(resolvedWorktree).root, "Atomic admission worktree resolves to the host root");
+  assert(resolvedWorktree === resolvedCwd || resolvedWorktree.startsWith(`${resolvedCwd}${path.sep}`), "Atomic admission worktree is outside the bound project cwd");
+}
+
 function bridgeAtomicReference(value, label) {
   assert(typeof value === "string" && /^(?:opaque:|ref:)[^\s]+$/u.test(value), `${label} must be an opaque reference`);
 }
@@ -458,7 +489,7 @@ function validateAtomicAdmissionBridgeReceipt(receipt, readbacks) {
   bridgeAtomicAbsolutePath(request.cwd, "Atomic admission cwd");
   assert(request.cwd !== "/", "Atomic admission cwd cannot be the host root");
   bridgeAtomicAbsolutePath(request.worktree, "Atomic admission worktree");
-  assert(request.worktree.startsWith(`${request.cwd}/`) || request.worktree === request.cwd, "Atomic admission worktree is outside the bound project cwd");
+  bridgeAssertWorktreeWithinCwd(request.cwd, request.worktree);
   bridgeAtomicReference(request.custody_ref, "Atomic admission custody reference");
   bridgeAtomicReference(request.prompt_ref, "Atomic admission prompt reference");
   bridgeAtomicText(request.title, "Atomic admission title");

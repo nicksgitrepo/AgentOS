@@ -13,6 +13,8 @@
  */
 
 import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import fs from "node:fs";
+import path from "node:path";
 import {
   admitAgentSpawnerIsolatedLocalCustody,
   validateAgentSpawnerCompilerContinuation,
@@ -251,6 +253,41 @@ function atomicAbsolutePath(value, label) {
   assert(value !== "/", `${label} cannot be the host root`);
 }
 
+function atomicCanonicalPath(value, label) {
+  atomicAbsolutePath(value, label);
+  const lexical = path.resolve(value);
+  let probe = lexical;
+  const missing = [];
+  while (true) {
+    try {
+      const stat = fs.lstatSync(probe);
+      const resolved = fs.realpathSync.native(probe);
+      if (stat.isSymbolicLink() || missing.length > 0) return path.resolve(resolved, ...missing.reverse());
+      return resolved;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw new Error(`${label} cannot be canonicalized`);
+      const parent = path.dirname(probe);
+      if (parent === probe) throw new Error(`${label} cannot be canonicalized`);
+      missing.push(path.basename(probe));
+      probe = parent;
+    }
+  }
+}
+
+function atomicRequireWorktreeWithinCwd(cwd, worktree) {
+  let resolvedCwd;
+  let resolvedWorktree;
+  try {
+    resolvedCwd = atomicCanonicalPath(cwd, "Atomic admission cwd");
+    resolvedWorktree = atomicCanonicalPath(worktree, "Atomic admission worktree");
+  } catch (error) {
+    atomicRequire(false, ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH, error.message);
+  }
+  atomicRequire(resolvedCwd !== path.parse(resolvedCwd).root, ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "Atomic admission cwd resolves to the host root");
+  atomicRequire(resolvedWorktree !== path.parse(resolvedWorktree).root, ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH, "Atomic admission worktree resolves to the host root");
+  atomicRequire(resolvedWorktree === resolvedCwd || resolvedWorktree.startsWith(`${resolvedCwd}${path.sep}`), ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH, "Atomic admission worktree is outside the bound project cwd");
+}
+
 function atomicReference(value, label) {
   assert(typeof value === "string" && /^(?:opaque:|ref:)[^\s]+$/u.test(value), `${label} must be an opaque reference`);
 }
@@ -338,7 +375,7 @@ function validateAtomicRequest(request) {
   atomicAbsolutePath(request.cwd, "Atomic admission cwd");
   atomicRequire(request.cwd !== "/" && request.cwd.startsWith("/"), ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "Atomic admission cwd cannot be the host root");
   atomicAbsolutePath(request.worktree, "Atomic admission worktree");
-  atomicRequire(request.worktree.startsWith(`${request.cwd}/`) || request.worktree === request.cwd, ATOMIC_BLOCKER_CODES.CUSTODY_BINDING_MISMATCH, "Atomic admission worktree is outside the bound project cwd");
+  atomicRequireWorktreeWithinCwd(request.cwd, request.worktree);
   atomicReference(request.custody_ref, "Atomic admission custody reference");
   atomicReference(request.prompt_ref, "Atomic admission prompt reference");
   atomicText(request.title, "Atomic admission title");

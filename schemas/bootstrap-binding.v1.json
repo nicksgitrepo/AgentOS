@@ -1126,7 +1126,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "7a35dcfa87d814ffb4b17f12cc10e694e7e85e14fbcf43e126b00d218de363e6"
+      "sha256": "5db8c98a58d5589fc1a47ff2c31fb525e73680f7371e49265e4de5222a3ab456"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1142,7 +1142,7 @@
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "fc3d2b5aa580b068ba40530337c90885fcfa12003ece95675531b737dff2ca3f"
+      "sha256": "08520b268b345f42f35b07144620a6b7ff300ff8e0cd5fe4639d202f5e19cbab"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
@@ -2358,7 +2358,7 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "9a0c9754f4c2528b6b0ab6191ebe28507d4e499d874f811accb628bdce3cab09"
+      "sha256": "d70f4927f5fed266823faaadab4112f9338044a36db102c4361a7558ed526565"
     },
     "agent_spawner_governed_admission_contract": {
       "path": "schemas/agent-spawner-governed-admission.v1.json",
@@ -2366,7 +2366,7 @@
     },
     "agent_spawner_governed_admission_verifier": {
       "path": "tests/verify-agent-spawner-governed-admission.mjs",
-      "sha256": "162af19f4dea094f9e233b4eacacd1d86bde3293db6895cf3ec132366ea4de13"
+      "sha256": "ab554dbb40d8b4cda839582391032f99f6674ae9e7061dea6934b1ef4956ef1c"
     },
     "project_controller_lifecycle_recovery_gate": {
       "path": "specialist-blocks/wave-01/project-controller/gates/11-lifecycle-recovery-archive.gate",
