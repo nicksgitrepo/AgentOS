@@ -85,6 +85,11 @@ loop = routeDualKeyCandidateToAuditor(loop, {actor: worker, recipientTaskId: aud
 const wrongCandidate = {...candidate, candidate_id: "STALE-CANDIDATE"};
 rejected(() => recordDualKeyAuditorVerdict(loop, {actor: auditor, candidate: wrongCandidate, verdict: {status: "PASS"}}), /stale|wrong|candidate/u);
 rejected(() => recordDualKeyAuditorVerdict(loop, {actor: worker, verdict: {status: "PASS"}}), /Auditor|authorized/u);
+rejected(() => transitionDualKeyRepairLoop(loop, {
+  to: "PASS",
+  actor: auditor,
+  verdict: {status: "REPAIR_REQUIRED", evidence_sha256: "d".repeat(64)},
+}), /VERDICT_STATE_MISMATCH_DENIED/u);
 
 const failed = recordDualKeyAuditorVerdict(loop, {actor: auditor, verdict: {status: "FAIL", evidence_sha256: "d".repeat(64)}});
 assert.equal(failed.state, "REPAIR_REQUIRED");

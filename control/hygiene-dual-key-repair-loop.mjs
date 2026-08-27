@@ -561,7 +561,9 @@ export function transitionDualKeyRepairLoop(loop, {to, actor, candidate = null, 
     assert(candidateSame(loop.candidate, candidate === null ? loop.candidate : normalizeCandidate(candidate)), "STALE_DUPLICATE_OR_WRONG_CANDIDATE_VERDICT_DENIED: auditor route candidate is stale or wrong");
   } else if (to === "PASS" || to === "REPAIR_REQUIRED") {
     assert(candidateSame(loop.candidate, candidate === null ? loop.candidate : normalizeCandidate(candidate)), "STALE_DUPLICATE_OR_WRONG_CANDIDATE_VERDICT_DENIED: verdict candidate is stale or wrong");
-    next.verdict = normalizeVerdict(verdict, loop.candidate, loop.auditor);
+    const normalizedVerdict = normalizeVerdict(verdict, loop.candidate, loop.auditor);
+    assert(normalizedVerdict.status === to, "VERDICT_STATE_MISMATCH_DENIED: transition target and verdict status must agree");
+    next.verdict = normalizedVerdict;
     next.receipts.verdict_receipts = 1;
   } else if (to === "RUNTIME_ONLY_DELIVERY_HANDOFF") {
     assert(candidateSame(loop.candidate, candidate === null ? loop.candidate : normalizeCandidate(candidate)), "STALE_DUPLICATE_OR_WRONG_CANDIDATE_VERDICT_DENIED: runtime delivery candidate is stale or wrong");
