@@ -374,6 +374,8 @@ export function recordAgentSpawnerAtomicAdmission(lifecycle, admissionReceipt) {
   assert(admissionReceipt.status === "ADMITTED", "Atomic admission receipt is not admitted");
   assert(admissionReceipt.environment === "local", "Atomic admission receipt environment must be local");
   for (const field of ["task_id", "role_id", "role_kind", "project_id", "cwd", "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam"]) requireString(admissionReceipt[field], `Atomic admission ${field}`);
+  assert(admissionReceipt.cwd.startsWith("/") && admissionReceipt.cwd !== "/", "Atomic admission cwd must be a non-root absolute project path");
+  assert(admissionReceipt.worktree.startsWith(`${admissionReceipt.cwd}/`) || admissionReceipt.worktree === admissionReceipt.cwd, "Atomic admission worktree escaped the bound project cwd");
   assert(admissionReceipt.model === "gpt-5.6-luna" && admissionReceipt.reasoning_effort === "max", "Atomic admission model or reasoning binding is invalid");
   assert(admissionReceipt.substantive_prompt_sent === false && admissionReceipt.process_started === false, "Atomic admission crossed the substantive-work boundary");
   assert(admissionReceipt.cleanup_action === "NONE" && admissionReceipt.retry_allowed === false, "Atomic admission cleanup/retry state is invalid");
