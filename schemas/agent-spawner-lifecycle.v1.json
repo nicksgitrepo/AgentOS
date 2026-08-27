@@ -98,7 +98,7 @@
       "additionalProperties": false,
       "required": [
         "schema", "version", "lifecycle_id", "admission_id", "task_id", "role_id", "project_id", "environment", "cwd", "worktree",
-        "custody_ref", "receipt_sha256", "readback_bundle_sha256", "binding_sha256"
+        "custody_ref", "source_lifecycle_sha256", "receipt_sha256", "readback_bundle_sha256", "binding_sha256"
       ],
       "properties": {
         "schema": {"const": "agentos.agent_spawner_atomic_admission_lifecycle_binding.v1"},
@@ -112,6 +112,7 @@
         "cwd": {"type": "string", "pattern": "^/[^\\u0000-\\u001f\\u007f]+$"},
         "worktree": {"type": "string", "pattern": "^/[^\\u0000-\\u001f\\u007f]+$"},
         "custody_ref": {"type": "string", "pattern": "^(?:opaque:|ref:)[^\\s]+$"},
+        "source_lifecycle_sha256": {"$ref": "#/$defs/sha256"},
         "receipt_sha256": {"$ref": "#/$defs/sha256"},
         "readback_bundle_sha256": {"$ref": "#/$defs/sha256"},
         "binding_sha256": {"$ref": "#/$defs/sha256"}
@@ -225,7 +226,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "schema", "version", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
+        "schema", "version", "lifecycle_id", "lifecycle_sha256", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
         "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "status", "host_readback_sha256",
         "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256", "existing_claims_readback_sha256", "existing_claims_authority", "existing_claims_provenance", "substantive_prompt_sent",
         "process_started", "cleanup_action", "retry_allowed", "material_transition", "hostile_fixture_refs", "receipt_sha256"
@@ -233,6 +234,8 @@
       "properties": {
         "schema": {"const": "agentos.agent_spawner_atomic_admission.v1"},
         "version": {"const": 1},
+        "lifecycle_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "lifecycle_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
         "admission_id": {"type": "string", "minLength": 1},
         "task_id": {"type": "string", "minLength": 1},
         "role_id": {"$ref": "#/$defs/identifier"},

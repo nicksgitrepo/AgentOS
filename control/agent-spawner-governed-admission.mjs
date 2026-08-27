@@ -218,7 +218,7 @@ const ATOMIC_PROCESS_KEYS = Object.freeze(["process_id", "task_id", "role_id", "
 const ATOMIC_CLAIM_KEYS = Object.freeze(["kind", "identity", "status"]);
 const ATOMIC_CLAIMS_READBACK_KEYS = Object.freeze(["schema", "version", "fresh", "authority", "provenance", "claims", "readback_sha256"]);
 const ATOMIC_RECEIPT_KEYS = Object.freeze([
-  "schema", "version", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
+  "schema", "version", "lifecycle_id", "lifecycle_sha256", "admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd",
   "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "status",
   "host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256",
   "existing_claims_readback_sha256", "existing_claims_authority", "existing_claims_provenance",
@@ -479,11 +479,21 @@ function validateAtomicClaimsReadback(existingClaimsReadback, existingClaims, re
 
 function atomicReceiptBody(receipt) { return atomicBody(receipt, "receipt_sha256"); }
 
-export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, hostReadback = null, taskIndexReadback = null, stateReadback = null, processReadback = null, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
+export function validateAgentSpawnerAtomicAdmission(receipt, {request = null, hostReadback = null, taskIndexReadback = null, stateReadback = null, processReadback = null, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null, lifecycle = null} = {}) {
   try {
     atomicExact(receipt, ATOMIC_RECEIPT_KEYS, "Atomic admission receipt", ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH);
     atomicRequire(receipt.schema === AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA && receipt.version === 1, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt identity is invalid");
     atomicRequire(receipt.status === AGENT_SPAWNER_ATOMIC_ADMISSION_STATUS && receipt.cleanup_action === ATOMIC_RECEIPT_CLEANUP && receipt.retry_allowed === false && receipt.substantive_prompt_sent === false && receipt.process_started === false, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt crossed the substantive-work boundary");
+    if (receipt.lifecycle_id === null || receipt.lifecycle_id === undefined) {
+      atomicRequire(receipt.lifecycle_sha256 === null || receipt.lifecycle_sha256 === undefined, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission lifecycle identity is incomplete");
+    } else {
+      atomicIdentifier(receipt.lifecycle_id, "Atomic admission receipt lifecycle ID");
+      atomicSha(receipt.lifecycle_sha256, "Atomic admission receipt lifecycle digest");
+    }
+    if (lifecycle !== null) {
+      validateAgentSpawnerLifecycle(lifecycle);
+      atomicRequire(receipt.lifecycle_id !== null && receipt.lifecycle_id === lifecycle.lifecycle_id && receipt.lifecycle_sha256 === lifecycle.lifecycle_sha256, ATOMIC_BLOCKER_CODES.READBACK_DIGEST_MISMATCH, "Atomic admission receipt lifecycle identity is not bound to the authoritative lifecycle");
+    }
     for (const field of ["admission_id", "task_id", "role_id", "role_kind", "project_id", "environment", "cwd", "worktree", "custody_ref", "model", "reasoning_effort", "queue", "seam", "material_transition"]) atomicText(receipt[field], `Atomic admission receipt ${field}`);
     atomicRequire(receipt.environment === "local", ATOMIC_BLOCKER_CODES.PROJECT_BINDING_MISMATCH, "Atomic admission receipt environment is invalid");
     for (const field of ["host_readback_sha256", "task_index_readback_sha256", "state_readback_sha256", "process_readback_sha256"]) atomicSha(receipt[field], `Atomic admission receipt ${field}`);
@@ -526,11 +536,18 @@ export function validateAtomicAdmissionInputs({request, hostReadback, taskIndexR
   }
 }
 
-export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null} = {}) {
+export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims = undefined, existingClaimsReadback = undefined, projectBinding = null, expectedProjectId = null, expectedCwd = null, lifecycle = null} = {}) {
   const inputs = validateAtomicAdmissionInputs({request, hostReadback, taskIndexReadback, stateReadback, processReadback, existingClaims, existingClaimsReadback, projectBinding, expectedProjectId, expectedCwd});
+  if (lifecycle !== null) {
+    validateAgentSpawnerLifecycle(lifecycle);
+    assert(lifecycle.mode === "GOVERNED_SPAWN" && lifecycle.state === "SPAWN_ADMITTED", "Atomic admission lifecycle source must be an admitted governed lifecycle");
+    assert(lifecycle.atomic_admission_binding === null, "Atomic admission lifecycle source is already bound");
+  }
   const receipt = {
     schema: AGENT_SPAWNER_ATOMIC_ADMISSION_SCHEMA,
     version: 1,
+    lifecycle_id: lifecycle?.lifecycle_id ?? null,
+    lifecycle_sha256: lifecycle?.lifecycle_sha256 ?? null,
     admission_id: request.request_id,
     task_id: request.task_id,
     role_id: request.role_id,
@@ -561,7 +578,7 @@ export function compileAgentSpawnerAtomicAdmission({request, hostReadback, taskI
     receipt_sha256: null,
   };
   receipt.receipt_sha256 = canonicalDigest(atomicReceiptBody(receipt));
-  return validateAgentSpawnerAtomicAdmission(receipt, inputs);
+  return validateAgentSpawnerAtomicAdmission(receipt, {...inputs, lifecycle});
 }
 
 export function evaluateAgentSpawnerAtomicAdmission(input = {}) {

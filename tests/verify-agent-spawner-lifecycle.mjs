@@ -215,7 +215,7 @@ const bridgeReadbacks = {
   existingClaims: [],
   existingClaimsReadback: lifecycleClaimsReadback,
 };
-const bridgeAdmissionReceipt = compileAgentSpawnerAtomicAdmission(bridgeReadbacks);
+const bridgeAdmissionReceipt = compileAgentSpawnerAtomicAdmission({...bridgeReadbacks, lifecycle: isolatedLocal});
 isolatedLocal = bindAgentSpawnerAtomicAdmissionLifecycle(isolatedLocal, {admissionReceipt: bridgeAdmissionReceipt, readbacks: bridgeReadbacks});
 const escapedBridgeReadbacks = structuredClone(bridgeReadbacks);
 escapedBridgeReadbacks.request.worktree = `${lifecycleFixtureCwd}/../outside-project`;
@@ -243,6 +243,11 @@ assert.throws(
   () => recordAgentSpawnerAtomicAdmission(copiedBindingLifecycle, bridgeAdmissionReceipt, bridgeReadbacks),
   /lifecycle binding lifecycle_id is not bound/u,
   "bridge must reject a copied admission binding attached to a different lifecycle identity",
+);
+assert.throws(
+  () => bindAgentSpawnerAtomicAdmissionLifecycle(unrelatedLifecycle, {admissionReceipt: bridgeAdmissionReceipt, readbacks: bridgeReadbacks}),
+  /receipt lifecycle (?:identity|digest).*authoritative lifecycle/u,
+  "binding establishment must reject a freshly rebound receipt from an unrelated lifecycle",
 );
 const reboundBridgeReceipt = structuredClone(bridgeAdmissionReceipt);
 reboundBridgeReceipt.admission_id = "REQ.GOV02.LIFECYCLE.REBOUND";

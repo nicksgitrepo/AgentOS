@@ -104,9 +104,12 @@ API acknowledgement cannot substitute for persisted metadata.
 The governed lifecycle record also carries an optional, self-digesting
 `atomic_admission_binding`. Compiler-only and pre-admission lifecycle records
 keep this field `null`; before the lifecycle bridge exposes
-`START_GOVERNED_SPAWN`, the binding must identify the exact admission receipt
-and fresh-readback bundle (admission, task, role, project, cwd, worktree, and
-custody). The bridge recomputes those anchors and rejects an unrelated
-lifecycle, even when its own lifecycle digest and the admission receipt are
-otherwise valid. Corrections therefore require a newly bound lifecycle record
-rather than reusing a different governed lifecycle identity.
+`START_GOVERNED_SPAWN`, the admission receipt must carry the exact source
+lifecycle ID and digest and the binding must persist that source digest along
+with the exact admission receipt and fresh-readback bundle (admission, task,
+role, project, cwd, worktree, and custody). Binding establishment validates
+the complete receipt/readback set and requires that source lifecycle identity
+to equal the admitted lifecycle before adding the binding; a self-consistent
+receipt from another lifecycle cannot be freshly rebound. Corrections
+therefore require a newly bound lifecycle record rather than reusing a
+different governed lifecycle identity.
