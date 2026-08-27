@@ -1126,7 +1126,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "890d92ce24dc22a3186093f83f6f8e58b90bb9389926e0fceaf3c425f6776433"
+      "sha256": "d5be5bc70db254c3d385f3f730eddde7ffa9338f9a161704dcdc4b18896788e6"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -1142,7 +1142,7 @@
     },
     "agent_spawner_lifecycle_verifier": {
       "path": "tests/verify-agent-spawner-lifecycle.mjs",
-      "sha256": "43ae06d32ada2617ed098dff99a871bd5e3f889eb93822f6e5e1f43cf9c25bb5"
+      "sha256": "112c23558cb629c77dbbdda51f1baa8455934d6816e3d10b322d3457bdfd1779"
     },
     "agent_spawner_lifecycle_article": {
       "path": "docs/agent-spawner-lifecycle.md",
@@ -2782,7 +2782,7 @@
       "mechanical_paths": [
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "c523230b7952292fa7995306c69a499e43e836dc8709db0e37b97f543502d885"
+          "sha256": "5dd85d149a999e3e92ad9e6aaff3ccf2bf65f0b4d7ed31125e1880dcd9da06cd"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
@@ -3395,7 +3395,7 @@
         },
         {
           "path": "schemas/bootstrap-binding.v1.json",
-          "sha256": "c523230b7952292fa7995306c69a499e43e836dc8709db0e37b97f543502d885"
+          "sha256": "5dd85d149a999e3e92ad9e6aaff3ccf2bf65f0b4d7ed31125e1880dcd9da06cd"
         },
         {
           "path": "specialist-blocks/CURRENT_STATE.md",
