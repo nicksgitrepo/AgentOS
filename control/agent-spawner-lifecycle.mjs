@@ -428,23 +428,24 @@ function bridgeAtomicAbsolutePath(value, label) {
 
 function bridgeAtomicCanonicalPath(value, label) {
   bridgeAtomicAbsolutePath(value, label);
-  const lexical = path.resolve(value);
-  let probe = lexical;
-  const missing = [];
-  while (true) {
+  const root = path.parse(value).root;
+  let current = root;
+  for (const component of value.slice(root.length).split(path.sep)) {
+    if (component === "" || component === ".") continue;
+    if (component === "..") {
+      current = path.dirname(current);
+      continue;
+    }
+    const candidate = path.join(current, component);
     try {
-      const stat = fs.lstatSync(probe);
-      const resolved = fs.realpathSync.native(probe);
-      if (stat.isSymbolicLink() || missing.length > 0) return path.resolve(resolved, ...missing.reverse());
-      return resolved;
+      const stat = fs.lstatSync(candidate);
+      current = stat.isSymbolicLink() ? fs.realpathSync.native(candidate) : candidate;
     } catch (error) {
       if (error?.code !== "ENOENT") throw new Error(`${label} cannot be canonicalized`);
-      const parent = path.dirname(probe);
-      if (parent === probe) throw new Error(`${label} cannot be canonicalized`);
-      missing.push(path.basename(probe));
-      probe = parent;
+      current = candidate;
     }
   }
+  return current;
 }
 
 function bridgeAssertWorktreeWithinCwd(cwd, worktree) {

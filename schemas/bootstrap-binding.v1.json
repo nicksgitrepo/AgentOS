@@ -1126,7 +1126,7 @@
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
-      "sha256": "5db8c98a58d5589fc1a47ff2c31fb525e73680f7371e49265e4de5222a3ab456"
+      "sha256": "d48821993c7e6bd8e733d3c261f2b6a23a9e35244f39aa8e531c35a5d4e7feba"
     },
     "agent_spawner_compiler_continuation_contract": {
       "path": "schemas/agent-spawner-compiler-continuation.v1.json",
@@ -2358,7 +2358,7 @@
     },
     "agent_spawner_governed_admission_controller": {
       "path": "control/agent-spawner-governed-admission.mjs",
-      "sha256": "d70f4927f5fed266823faaadab4112f9338044a36db102c4361a7558ed526565"
+      "sha256": "3e9e969e9cde1a0af93d37e86f9f949262763015401cc884fae7a538e6b91f07"
     },
     "agent_spawner_governed_admission_contract": {
       "path": "schemas/agent-spawner-governed-admission.v1.json",
