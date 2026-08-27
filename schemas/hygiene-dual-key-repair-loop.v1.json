@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agentos.hygiene_dual_key_repair_loop.v1",
+  "title": "Portable AgentOS hygiene dual-key repair loop",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "version",
+    "issue_id",
+    "generation",
+    "state",
+    "writer",
+    "auditor",
+    "active_issue_count",
+    "active_candidate_count",
+    "candidate",
+    "routing",
+    "receipts",
+    "transition_sequence",
+    "transition_history",
+    "loop_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "agentos.hygiene_dual_key_repair_loop.v1"},
+    "version": {"const": 1},
+    "issue_id": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 1},
+    "state": {
+      "enum": [
+        "ISSUE_READY",
+        "WORKING",
+        "CANDIDATE_FROZEN",
+        "AUDITING",
+        "PASS",
+        "REPAIR_REQUIRED",
+        "RUNTIME_ONLY_DELIVERY_HANDOFF"
+      ]
+    },
+    "writer": {"$ref": "#/$defs/worker"},
+    "auditor": {"$ref": "#/$defs/auditor"},
+    "active_issue_count": {"const": 1},
+    "active_candidate_count": {"type": "integer", "minimum": 0, "maximum": 1},
+    "candidate": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/candidate"}]},
+    "verdict": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/verdict"}]},
+    "routing": {"$ref": "#/$defs/routing"},
+    "receipts": {"$ref": "#/$defs/receipts"},
+    "transition_sequence": {"type": "integer", "minimum": 0},
+    "transition_history": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/transition"}},
+    "loop_sha256": {"$ref": "#/$defs/sha256"},
+    "delivery": {"$ref": "#/$defs/runtime_delivery"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "content_identity": {"type": "string", "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"},
+    "worker": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["role", "task_id", "model", "read_only", "can_write"],
+      "properties": {
+        "role": {"const": "AGENTOS.HYGIENE_REPAIR_WORKER"},
+        "task_id": {"type": "string", "minLength": 1},
+        "model": {"type": "string", "minLength": 1},
+        "read_only": {"type": "boolean"},
+        "can_write": {"const": true}
+      }
+    },
+    "auditor": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["role", "task_id", "model", "read_only", "can_write"],
+      "properties": {
+        "role": {"const": "AGENTOS.HYGIENE_AUDITOR"},
+        "task_id": {"type": "string", "minLength": 1},
+        "model": {"type": "string", "minLength": 1},
+        "read_only": {"const": true},
+        "can_write": {"const": false}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["candidate_id", "commit", "tree", "parent", "candidate_sha256"],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "commit": {"$ref": "#/$defs/content_identity"},
+        "tree": {"$ref": "#/$defs/content_identity"},
+        "parent": {"$ref": "#/$defs/content_identity"},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["status", "candidate_sha256", "auditor_task_id", "evidence_sha256", "verdict_sha256"],
+      "properties": {
+        "status": {"enum": ["PASS", "REPAIR_REQUIRED"]},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "auditor_task_id": {"type": "string", "minLength": 1},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"},
+        "verdict_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_route", "repair_route", "intermediary_queue_allowed", "runtime_delivery_role", "controller_true_blocked_only"],
+      "properties": {
+        "candidate_route": {"const": "DIRECT_WORKER_TO_AUDITOR"},
+        "repair_route": {"const": "DIRECT_AUDITOR_TO_SAME_WORKER"},
+        "intermediary_queue_allowed": {"const": false},
+        "runtime_delivery_role": {"const": "AGENTOS.RUNTIME"},
+        "controller_true_blocked_only": {"const": true}
+      }
+    },
+    "receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_receipts", "verdict_receipts", "failure_receipts"],
+      "properties": {
+        "candidate_receipts": {"type": "integer", "minimum": 0, "maximum": 1},
+        "verdict_receipts": {"type": "integer", "minimum": 0, "maximum": 1},
+        "failure_receipts": {"type": "integer", "minimum": 0, "maximum": 1}
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["sequence", "from", "to", "actor_role", "actor_task_id", "generation"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1},
+        "from": {"type": "string", "minLength": 1},
+        "to": {"type": "string", "minLength": 1},
+        "actor_role": {"type": "string", "minLength": 1},
+        "actor_task_id": {"type": "string", "minLength": 1},
+        "generation": {"type": "integer", "minimum": 1}
+      }
+    },
+    "runtime_delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "actor_task_id", "candidate_sha256", "route", "delivery_sha256"],
+      "properties": {
+        "role": {"const": "AGENTOS.RUNTIME"},
+        "actor_task_id": {"type": "string", "minLength": 1},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "route": {"const": "RUNTIME_ONLY_DELIVERY"},
+        "delivery_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "stable_identity": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": true
+    },
+    "selected_object": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["path", "stable_identity", "object_type", "logical_bytes_measured", "allocated_or_physical_estimate_bytes", "cleanup_gate_result"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "stable_identity": {"$ref": "#/$defs/stable_identity"},
+        "object_type": {"enum": ["FILE", "DIRECTORY"]},
+        "logical_bytes_measured": {"type": "integer", "minimum": 0},
+        "allocated_or_physical_estimate_bytes": {"type": "integer", "minimum": 0},
+        "cleanup_gate_result": {"type": "string", "minLength": 1}
+      }
+    },
+    "zero_recovery_scope_inventory": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema", "version", "aggregate_root", "selected_objects", "selected_recoverable_logical_bytes", "selected_recoverable_physical_bytes", "selection_granularity", "aggregate_measurement_source", "recovery_measurement_source", "empty_selection_forces_zero", "aggregate_bytes_attributed_to_selected_children", "inventory_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.storage.zero_recovery_scope.v1"},
+        "version": {"const": 1},
+        "aggregate_root": {
+          "type": "object",
+          "required": ["path", "stable_identity", "logical_bytes_measured", "allocated_bytes_measured"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "stable_identity": {"$ref": "#/$defs/stable_identity"},
+            "logical_bytes_measured": {"type": "integer", "minimum": 0},
+            "allocated_bytes_measured": {"type": "integer", "minimum": 0}
+          }
+        },
+        "selected_objects": {"type": "array", "items": {"$ref": "#/$defs/selected_object"}},
+        "selected_recoverable_logical_bytes": {"type": "integer", "minimum": 0},
+        "selected_recoverable_physical_bytes": {"type": "integer", "minimum": 0},
+        "selection_granularity": {"const": "EXACT_SELECTED_OBJECTS"},
+        "aggregate_measurement_source": {"const": "AGGREGATE_ROOT_ONLY"},
+        "recovery_measurement_source": {"const": "SELECTED_OBJECTS_ONLY"},
+        "empty_selection_forces_zero": {"type": "boolean"},
+        "aggregate_bytes_attributed_to_selected_children": {"const": false},
+        "inventory_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "x-allowed-transitions": [
+    "ISSUE_READY->WORKING",
+    "WORKING->CANDIDATE_FROZEN",
+    "CANDIDATE_FROZEN->AUDITING",
+    "AUDITING->PASS",
+    "AUDITING->REPAIR_REQUIRED",
+    "REPAIR_REQUIRED->WORKING_SAME_WORKER_NEW_GENERATION",
+    "PASS->RUNTIME_ONLY_DELIVERY_HANDOFF"
+  ],
+  "x-required-hostile-cases": [
+    "PROTOTYPER_SUBSTITUTION_DENIED",
+    "GENERAL_ROSTER_AUDITOR_SUBSTITUTION_DENIED",
+    "DUPLICATE_OR_MISSING_WRITER_DENIED",
+    "DUPLICATE_OR_MISSING_AUDITOR_DENIED",
+    "INTERMEDIARY_QUEUE_GATE_DENIED",
+    "STALE_DUPLICATE_OR_WRONG_CANDIDATE_VERDICT_DENIED",
+    "MULTIPLE_ACTIVE_ISSUES_OR_CANDIDATES_DENIED",
+    "WRITER_SELF_ACCEPTANCE_DENIED",
+    "NON_RUNTIME_DELIVERY_DENIED",
+    "BLANK_UI_WITH_DURABLE_PASS_OR_FAIL_RECOVERED_EXACTLY_ONCE",
+    "BLANK_UI_WITHOUT_VALID_FALLBACK_EMITS_TYPED_TRUE_BLOCKED_NOT_FALSE_STALL",
+    "REPEATED_FAILURE_DEDUPLICATED",
+    "AGGREGATE_DIRECTORY_BYTES_MAPPED_TO_TINY_RECEIPT_FILES_DENIED",
+    "AGGREGATE_ROOT_AND_SELECTED_CHILD_IDENTITIES_REQUIRED_SEPARATELY",
+    "CHILD_SIZE_OR_TYPE_MISMATCH_DENIED",
+    "EMPTY_SELECTED_OBJECT_SET_FORCES_ZERO_RECOVERY",
+    "SELECTED_RECOVERY_SUM_CANNOT_EXCEED_EXACT_ELIGIBLE_CHILD_SUM"
+  ]
+}

@@ -135,3 +135,26 @@ an identity change resets the correlation. APFS calibration records estimated
 bytes, actual bytes, and both ratio directions for every executed batch. These
 receipts preserve the existing lifecycle classes and strict gates and are
 safe to hand off without granting execution authority.
+
+## Dual-key hygiene repair and zero-recovery scope
+
+The hygiene repair lane is a portable, single-issue state machine with one
+dedicated `AGENTOS.HYGIENE_REPAIR_WORKER` and one strictly read-only
+`AGENTOS.HYGIENE_AUDITOR`. The Worker owns the bounded write custody and may
+freeze at most one immutable candidate. The candidate routes directly to the
+bound Auditor; a bounded failure returns the same issue to the same Worker for
+a new generation. A Worker cannot accept its own candidate, and a general
+roster or prototyping role cannot substitute for either key. Runtime alone may
+deliver a fresh Auditor `PASS`; Controller alone may emit an
+evidence-complete `TRUE_BLOCKED` liveness result. Receipts are compact and
+deduplicated by issue, candidate, failure class, and evidence digest.
+
+Zero-recovery inventory keeps the measured aggregate root and every selected
+child as separate path, stable-identity, object-type, logical-byte, and
+allocated-byte records. Recovery is the sum of exact eligible selected
+objects only. An aggregate directory measurement is never assigned to tiny
+receipt children; an empty selected-object set forces zero recovery, and any
+child type, size, identity, escape, symlink, or sum mismatch fails closed.
+Blank UI projections are corrected from an exact durable PASS/FAIL result once;
+without a valid durable result, the typed Controller liveness blocker is
+retained instead of being reported as a false stall.

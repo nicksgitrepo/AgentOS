@@ -3494,13 +3494,44 @@
     },
     "storage_autopilot_controller": {
       "path": "control/storage-autopilot.mjs",
-      "sha256": "2dcf5f360a3ec40587a65d5a92749bb68359241b6047aed5be0792994080bfb8",
-      "authority": "orchestrator-storage-autopilot-architecture-modularization-successor-110",
-      "authority_sha256": "e6618a9c3c048abb7db13e3d835414a66facdbc54eb296a8c02d8e3a75e0b3dc",
-      "direct_path_count": 14,
+      "sha256": "141f848d23eaa969438210ee96f423c82e7aa89e49ad07d9e3d7a76ac0db9529",
+      "authority": "orchestrator-hygiene-dual-key-zero-recovery-governance-activation-successor-115",
+      "authority_sha256": "90336d9881962c54d460b0a98a693298f8dfe24237cf564bf09f23f858ac6d8c",
+      "direct_path_count": 12,
       "mechanical_path_count": 1,
-      "maximum_total_path_count": 15,
+      "maximum_total_path_count": 13,
       "public_api": "HYGIENE_EXECUTOR_COMPATIBILITY_REEXPORT",
+      "filesystem_mutation": false
+    },
+    "hygiene_dual_key_zero_recovery_governance": {
+      "path": "control/hygiene-dual-key-repair-loop.mjs",
+      "sha256": "1b971dcacf685219a77e47a4b93bf0aa12cb7a2292135e79beb8bdee3c9ec09e",
+      "authority": "orchestrator-hygiene-dual-key-zero-recovery-governance-activation-successor-115",
+      "authority_sha256": "90336d9881962c54d460b0a98a693298f8dfe24237cf564bf09f23f858ac6d8c",
+      "issue_id": "AGENTOS-GOV-HYGIENE-DUAL-KEY-ZERO-RECOVERY-SCOPE-INTEGRITY-001",
+      "direct_path_count": 12,
+      "mechanical_path_count": 1,
+      "maximum_total_path_count": 13,
+      "authorized_direct_paths": [
+        {"path": "control/hygiene-dual-key-repair-loop.mjs", "sha256": "1b971dcacf685219a77e47a4b93bf0aa12cb7a2292135e79beb8bdee3c9ec09e"},
+        {"path": "schemas/hygiene-dual-key-repair-loop.v1.json", "sha256": "d868d613c5fee916b2ddf007783b79d7741a238524d8964c500b92ff15e60421"},
+        {"path": "tests/verify-hygiene-dual-key-repair-loop.mjs", "sha256": "636852e12fdd208531d309738c331d4271264fd25bb28ed8ddd966ea9313d0fa"},
+        {"path": "control/campaign-closeout-contracts.mjs", "sha256": "218d0c86921a6b88036c908151160af90c7ee9699539b6a6219054633578b692"},
+        {"path": "control/campaign-closeout-lifecycle.mjs", "sha256": "872e7cf666517cc3232081f435d1cf4860891075981c108090d4a2756847b482"},
+        {"path": "schemas/campaign-closeout-lifecycle.v1.json", "sha256": "88b21fb7f57b5e5a5287fc1f4db577ae4040e52ba8978ff172ce6898031f90e1"},
+        {"path": "tests/verify-campaign-closeout-contracts.mjs", "sha256": "65c1d4ef8f31f5b2c101db7418a5c32e947456a081a0e72820b1fe6c5ade32fa"},
+        {"path": "tests/verify-campaign-closeout-lifecycle.mjs", "sha256": "64ae3f852d4f9e040c2fd0295e6d4a5d6070203858521ebce9db687ea0d3a054"},
+        {"path": "docs/campaign-closeout-memory-archive-hygiene.md", "sha256": "359f85fa71d9083ee237728db0cb21a98ff019aff77a3239778ce7192b081f82"},
+        {"path": "control/storage-autopilot.mjs", "sha256": "141f848d23eaa969438210ee96f423c82e7aa89e49ad07d9e3d7a76ac0db9529"},
+        {"path": "control/hygiene-executor.mjs", "sha256": "98bb8acdd873a86dde729172a2a0ad97fc40a703b9077fa5a3fad021e4925e57"},
+        {"path": "tests/verify-hygiene-executor.mjs", "sha256": "2595952eb40be131bb2399f78dfa4b83d2738e32e7dc2196d6db9a9f7e63eb30"}
+      ],
+      "mechanical_last": {
+        "path": "schemas/bootstrap-binding.v1.json",
+        "sha256": null,
+        "rule": "RAW_SHA256_WITH_SELF_ENTRY_NULL; refresh only after all direct paths are frozen"
+      },
+      "public_api": "HYGIENE_EXECUTOR_AND_CAMPAIGN_CLOSEOUT_COMPATIBILITY_REEXPORT",
       "filesystem_mutation": false
     }
   },

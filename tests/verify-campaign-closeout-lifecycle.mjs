@@ -23,6 +23,19 @@ import {
   reconcileThreadReadbackProjection,
   readStableAuthorityDigest,
   validateProjectionDivergenceReceipt,
+  DUAL_KEY_AUDITOR_ROLE,
+  DUAL_KEY_CONTROLLER_ROLE,
+  DUAL_KEY_RUNTIME_ROLE,
+  DUAL_KEY_WORKER_ROLE,
+  authorizeRuntimeOnlyDelivery,
+  createBlankProjectionFallback,
+  createDualKeyRepairLoop,
+  createFailureDedupeLedger,
+  deduplicateFailure,
+  freezeDualKeyCandidate,
+  recordDualKeyAuditorVerdict,
+  routeDualKeyCandidateToAuditor,
+  transitionDualKeyRepairLoop,
 } from "../control/campaign-closeout-lifecycle.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -302,5 +315,33 @@ const storageLifecycle = createCloseoutLifecycle({
   storageDecision,
 });
 assert.equal(storageLifecycle.read().storage_decision.receipt_sha256, storageDecision.receipt_sha256);
+
+const dualKeyWriter = {role: DUAL_KEY_WORKER_ROLE, task_id: "WORKER-LIFECYCLE-DUAL-KEY", model: "gpt-5.6-luna"};
+const dualKeyAuditor = {role: DUAL_KEY_AUDITOR_ROLE, task_id: "AUDITOR-LIFECYCLE-DUAL-KEY", model: "gpt-5.6-luna", read_only: true, can_write: false};
+let dualKey = createDualKeyRepairLoop({issueId: "ISSUE-LIFECYCLE-DUAL-KEY", writer: dualKeyWriter, auditor: dualKeyAuditor});
+dualKey = transitionDualKeyRepairLoop(dualKey, {to: "WORKING", actor: dualKeyWriter});
+dualKey = freezeDualKeyCandidate(dualKey, {actor: dualKeyWriter, candidate: {candidate_id: "CANDIDATE-LIFECYCLE-DUAL-KEY", commit: "a".repeat(40), tree: "b".repeat(40), parent: "c".repeat(40)}});
+dualKey = routeDualKeyCandidateToAuditor(dualKey, {actor: dualKeyWriter, recipientTaskId: dualKeyAuditor.task_id});
+dualKey = recordDualKeyAuditorVerdict(dualKey, {actor: dualKeyAuditor, verdict: {status: "PASS", evidence_sha256: "d".repeat(64)}});
+const runtimeDelivery = authorizeRuntimeOnlyDelivery(dualKey, {actor: {role: DUAL_KEY_RUNTIME_ROLE, task_id: "RUNTIME-LIFECYCLE-DUAL-KEY"}});
+assert.equal(runtimeDelivery.allowed, true);
+const fallback = createBlankProjectionFallback({
+  taskId: "TASK-LIFECYCLE-FALLBACK",
+  turnId: "TURN-LIFECYCLE-FALLBACK",
+  projection: {status: "completed", items: [], items_count: 0},
+  durableResult: {status: "PASS", task_id: "TASK-LIFECYCLE-FALLBACK", turn_id: "TURN-LIFECYCLE-FALLBACK", evidence_sha256: "e".repeat(64)},
+});
+assert.equal(fallback.classification, "DURABLE_RESULT_RECOVERED");
+const fallbackBlocked = createBlankProjectionFallback({
+  taskId: "TASK-LIFECYCLE-BLOCKED",
+  turnId: "TURN-LIFECYCLE-BLOCKED",
+  projection: {status: "completed", items: [], items_count: 0},
+  controllerEvidence: {role: DUAL_KEY_CONTROLLER_ROLE, evidence_complete: true, evidence_sha256: "f".repeat(64)},
+});
+assert.equal(fallbackBlocked.status, "TRUE_BLOCKED");
+const failureLedger = createFailureDedupeLedger();
+const failure = {issue_id: "ISSUE-LIFECYCLE-DUAL-KEY", candidate_id: "CANDIDATE-LIFECYCLE-DUAL-KEY", failure_class: "BOUNDED_FAIL", evidence_sha256: "1".repeat(64)};
+assert.equal(deduplicateFailure({failure, ledger: failureLedger}).duplicate, false);
+assert.equal(deduplicateFailure({failure, ledger: failureLedger}).duplicate, true);
 
 console.log("PASS campaign closeout lifecycle: durable projection divergence, PASS/FAIL/blocker recovery, exact correlation, stability gating, exactly-once consumption, no replay, and ordered audit closeout");

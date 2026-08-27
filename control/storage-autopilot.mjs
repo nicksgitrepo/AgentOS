@@ -4,6 +4,21 @@
 
 import path from "node:path";
 import {canonicalDigest} from "./content-addressing.mjs";
+import {
+  ZERO_RECOVERY_SCOPE_HOSTILE_CASES,
+  ZERO_RECOVERY_SCOPE_SCHEMA,
+  ZERO_RECOVERY_SCOPE_SELECTION_DEFECT,
+  compileZeroRecoveryScopeInventory,
+  validateZeroRecoveryScopeInventory,
+} from "./hygiene-dual-key-repair-loop.mjs";
+
+export {
+  ZERO_RECOVERY_SCOPE_HOSTILE_CASES,
+  ZERO_RECOVERY_SCOPE_SCHEMA,
+  ZERO_RECOVERY_SCOPE_SELECTION_DEFECT,
+  compileZeroRecoveryScopeInventory,
+  validateZeroRecoveryScopeInventory,
+} from "./hygiene-dual-key-repair-loop.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 
@@ -40,6 +55,7 @@ export const CLEANUP_TARGET_KINDS = Object.freeze([
   "DEPENDENCY_COPY",
   "RUNTIME_STATE",
 ]);
+
 export function validateStorageAsset(asset, label = "storage asset") {
   record(asset, label);
   const relative = storageAutoSafeRelative(asset.path);

@@ -20,6 +20,13 @@ import {
   correctFalseBlocker,
   reconcileThreadReadbackProjection,
   validateProjectionDivergenceReceipt,
+  DUAL_KEY_AUDITOR_ROLE,
+  DUAL_KEY_REPAIR_LOOP_SCHEMA,
+  DUAL_KEY_WORKER_ROLE,
+  createDualKeyRepairLoop,
+  transitionDualKeyRepairLoop,
+  compileZeroRecoveryScopeInventory,
+  validateZeroRecoveryScopeInventory,
   compileStorageAutopilotDecision,
   validateStorageAutopilotDecision,
 } from "../control/campaign-closeout-contracts.mjs";
@@ -92,5 +99,19 @@ assert.throws(() => correctFalseBlocker({originalClassification: "UNRELATED_FAIL
 const storageContract = compileStorageAutopilotDecision({receiptId: "STORAGE.CONTRACTS.037", observedAtUtc: "2026-08-26T18:00:00.000Z", freeGib: 26});
 assert.equal(storageContract.threshold_class, "OWNER_WARNING");
 validateStorageAutopilotDecision(storageContract);
+
+const dualKeyContract = createDualKeyRepairLoop({
+  issueId: "ISSUE-CONTRACT-DUAL-KEY",
+  writer: {role: DUAL_KEY_WORKER_ROLE, task_id: "WORKER-CONTRACT-DUAL-KEY", model: "gpt-5.6-luna"},
+  auditor: {role: DUAL_KEY_AUDITOR_ROLE, task_id: "AUDITOR-CONTRACT-DUAL-KEY", model: "gpt-5.6-luna", read_only: true, can_write: false},
+});
+assert.equal(dualKeyContract.schema, DUAL_KEY_REPAIR_LOOP_SCHEMA);
+assert.equal(transitionDualKeyRepairLoop(dualKeyContract, {to: "WORKING", actor: dualKeyContract.writer}).state, "WORKING");
+const contractInventory = compileZeroRecoveryScopeInventory({
+  aggregateRoot: {path: "Temp", stable_identity: {inode: 1, mtime_ns: 2}, logical_bytes_measured: 3, allocated_bytes_measured: 4},
+  selectedObjects: [],
+});
+validateZeroRecoveryScopeInventory(contractInventory);
+assert.equal(contractInventory.selected_recoverable_logical_bytes, 0);
 
 console.log("PASS campaign closeout contracts: project-agnostic divergence identity, false-blocker correction, and exactly-once route contract");

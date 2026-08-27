@@ -13,7 +13,24 @@
     "state": {"enum": ["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "AUDIT_CONSUMED", "CLOSED"]},
     "transition_sequence": {"type": "integer", "minimum": 0},
     "idempotency_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "storage_decision": {"$ref": "#/$defs/storage_decision"}
+    "storage_decision": {"$ref": "#/$defs/storage_decision"},
+    "dual_key_repair_loop": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema", "version", "issue_id", "state", "writer", "auditor", "candidate", "routing", "receipts", "loop_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.hygiene_dual_key_repair_loop.v1"},
+        "version": {"const": 1},
+        "issue_id": {"type": "string", "minLength": 1},
+        "state": {"type": "string", "minLength": 1},
+        "writer": {"type": "object"},
+        "auditor": {"type": "object"},
+        "candidate": {"type": ["object", "null"]},
+        "routing": {"type": "object"},
+        "receipts": {"type": "object"},
+        "loop_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
   },
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
@@ -33,8 +50,51 @@
         "hostile_fixture_refs": {"type": "array", "minItems": 21},
         "receipt_sha256": {"$ref": "#/$defs/sha256"}
       }
+    },
+    "zero_recovery_scope": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schema", "version", "aggregate_root", "selected_objects", "selected_recoverable_logical_bytes", "selected_recoverable_physical_bytes", "selection_granularity", "aggregate_measurement_source", "recovery_measurement_source", "empty_selection_forces_zero", "aggregate_bytes_attributed_to_selected_children", "inventory_sha256"],
+      "properties": {
+        "schema": {"const": "agentos.storage.zero_recovery_scope.v1"},
+        "version": {"const": 1},
+        "aggregate_root": {
+          "type": "object",
+          "required": ["path", "stable_identity", "logical_bytes_measured", "allocated_bytes_measured"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "stable_identity": {"type": "object", "minProperties": 1},
+            "logical_bytes_measured": {"type": "integer", "minimum": 0},
+            "allocated_bytes_measured": {"type": "integer", "minimum": 0}
+          }
+        },
+        "selected_objects": {"type": "array", "items": {"$ref": "#/$defs/zero_recovery_selected_object"}},
+        "selected_recoverable_logical_bytes": {"type": "integer", "minimum": 0},
+        "selected_recoverable_physical_bytes": {"type": "integer", "minimum": 0},
+        "selection_granularity": {"const": "EXACT_SELECTED_OBJECTS"},
+        "aggregate_measurement_source": {"const": "AGGREGATE_ROOT_ONLY"},
+        "recovery_measurement_source": {"const": "SELECTED_OBJECTS_ONLY"},
+        "empty_selection_forces_zero": {"type": "boolean"},
+        "aggregate_bytes_attributed_to_selected_children": {"const": false},
+        "inventory_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "zero_recovery_selected_object": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["path", "stable_identity", "object_type", "logical_bytes_measured", "allocated_or_physical_estimate_bytes", "cleanup_gate_result"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "stable_identity": {"type": "object", "minProperties": 1},
+        "object_type": {"enum": ["FILE", "DIRECTORY"]},
+        "logical_bytes_measured": {"type": "integer", "minimum": 0},
+        "allocated_or_physical_estimate_bytes": {"type": "integer", "minimum": 0},
+        "cleanup_gate_result": {"type": "string", "minLength": 1}
+      }
     }
   },
   "x-projection-divergence-rule": "An empty API items projection never proves absence when an injected read-only durable final_agent_item_id resolves exactly to the requested task and turn.",
-  "x-no-replay-rule": "Recovered results are consumed once and never wake, rerun, redeliver, or duplicate-route completed work."
+  "x-no-replay-rule": "Recovered results are consumed once and never wake, rerun, redeliver, or duplicate-route completed work.",
+  "x-dual-key-rule": "A portable dedicated Worker freezes at most one immutable candidate for one issue; a strictly read-only Auditor independently accepts or returns the same issue to that Worker; Runtime alone may deliver a fresh PASS candidate.",
+  "x-zero-recovery-rule": "Aggregate-root measurements and selected-child measurements are separate identities and granularities; aggregate directory bytes may never be mapped to tiny receipt files, and an empty selected-object set forces zero recovery."
 }

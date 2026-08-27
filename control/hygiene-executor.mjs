@@ -53,7 +53,40 @@ import {
   validateControllerStorageAutopilot,
   evaluateStorageThreshold,
   storageThresholdClass,
+  ZERO_RECOVERY_SCOPE_SCHEMA,
+  ZERO_RECOVERY_SCOPE_SELECTION_DEFECT,
+  ZERO_RECOVERY_SCOPE_HOSTILE_CASES,
+  compileZeroRecoveryScopeInventory,
+  validateZeroRecoveryScopeInventory,
 } from "./storage-autopilot.mjs";
+export {
+  DUAL_KEY_REPAIR_LOOP_SCHEMA,
+  DUAL_KEY_REPAIR_LOOP_VERSION,
+  DUAL_KEY_WORKER_ROLE,
+  DUAL_KEY_AUDITOR_ROLE,
+  DUAL_KEY_RUNTIME_ROLE,
+  DUAL_KEY_CONTROLLER_ROLE,
+  DUAL_KEY_STATES,
+  DUAL_KEY_FORBIDDEN_SUBSTITUTIONS,
+  DUAL_KEY_HOSTILE_CASES,
+  DUAL_KEY_RECEIPT_LIMITS,
+  DUAL_KEY_ROUTING,
+  TRUE_BLOCKED,
+  TRUE_BLOCKED_LIVENESS,
+  DURABLE_RESULT_RECOVERED,
+  createDualKeyRepairLoop,
+  validateDualKeyRepairLoop,
+  transitionDualKeyRepairLoop,
+  freezeDualKeyCandidate,
+  routeDualKeyCandidateToAuditor,
+  recordDualKeyAuditorVerdict,
+  authorizeRuntimeOnlyDelivery,
+  createBlankProjectionFallback,
+  recoverBlankProjectionResult,
+  createFailureDedupeLedger,
+  normalizeFailureDedupeKey,
+  deduplicateFailure,
+} from "./hygiene-dual-key-repair-loop.mjs";
 export {
   STORAGE_HYGIENE_PLAN_SCHEMA,
   STORAGE_LIFECYCLE_CLASSES,
@@ -100,8 +133,12 @@ export {
   validateControllerStorageAutopilot,
   evaluateStorageThreshold,
   storageThresholdClass,
+  ZERO_RECOVERY_SCOPE_SCHEMA,
+  ZERO_RECOVERY_SCOPE_SELECTION_DEFECT,
+  ZERO_RECOVERY_SCOPE_HOSTILE_CASES,
+  compileZeroRecoveryScopeInventory,
+  validateZeroRecoveryScopeInventory,
 } from "./storage-autopilot.mjs";
-
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 

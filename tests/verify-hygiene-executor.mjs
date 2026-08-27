@@ -20,6 +20,7 @@ import {
   compileStorageAutopilotDecision,
   compileStorageDeletionDecision,
   compileStorageHygienePlan,
+  compileZeroRecoveryScopeInventory,
   compileUniversalDiscovery,
   executeHygiene,
   validateApfsCalibration,
@@ -28,6 +29,7 @@ import {
   validateHygieneAfterState,
   validateStorageAccounting,
   validateStorageAutopilotDecision,
+  validateZeroRecoveryScopeInventory,
   validateGeneratedTempMetadata,
   compileRetentionDefaults,
   validateRetentionDefaults,
@@ -233,6 +235,35 @@ try {
   assert.deepEqual(plan.retained_paths, ["active-worktree", "receipts/candidate.json"]);
   assert.equal(plan.estimated_cleanup_bytes, 2048);
   assert.match(plan.plan_sha256, /^[0-9a-f]{64}$/u);
+
+  const aggregateIdentity = {device: 1, inode: 10, mode: 16877, links: 1, uid: 501, gid: 20, mtime_ns: 100, ctime_ns: 100, birthtime_ns: 99};
+  const scopedInventory = compileZeroRecoveryScopeInventory({
+    aggregateRoot: {path: "AgentOS/Temp", stable_identity: aggregateIdentity, logical_bytes_measured: 10000, allocated_bytes_measured: 12000, object_type: "DIRECTORY", is_symlink: false, realpath: "AgentOS/Temp"},
+    selectedObjects: [{
+      path: "AgentOS/Temp/candidate-receipt.json",
+      stable_identity: {...aggregateIdentity, inode: 11, mode: 33188},
+      object_type: "FILE",
+      logical_bytes_measured: 456,
+      allocated_or_physical_estimate_bytes: 8192,
+      cleanup_gate_result: "DELIVERY_EVIDENCE",
+      is_symlink: false,
+      realpath: "AgentOS/Temp/candidate-receipt.json",
+    }],
+  });
+  validateZeroRecoveryScopeInventory(scopedInventory);
+  assert.equal(scopedInventory.selected_recoverable_logical_bytes, 0);
+  assert.equal(scopedInventory.selected_recoverable_physical_bytes, 0);
+  assert.equal(scopedInventory.aggregate_bytes_attributed_to_selected_children, false);
+  assert.throws(() => compileZeroRecoveryScopeInventory({
+    aggregateRoot: {path: "AgentOS/Temp", stable_identity: aggregateIdentity, logical_bytes_measured: 10000, allocated_bytes_measured: 12000},
+    selectedObjects: [{path: "AgentOS/Temp/tiny.json", stable_identity: {...aggregateIdentity, inode: 12}, object_type: "FILE", logical_bytes_measured: 456, allocated_or_physical_estimate_bytes: 8192, cleanup_gate_result: "CLEANUP_ELIGIBLE"}],
+    selectedRecoverableLogicalBytes: 10000,
+    selectedRecoverablePhysicalBytes: 12000,
+  }), /exact eligible child sum|exceeds/u);
+  assert.throws(() => compileZeroRecoveryScopeInventory({
+    aggregateRoot: {path: "AgentOS/Temp", stable_identity: {...aggregateIdentity, mtime_ns: undefined}, logical_bytes_measured: 1, allocated_bytes_measured: 1},
+    selectedObjects: [],
+  }), /undefined|concrete/u);
   const sharedCache = {...manifest, targets: [eligibleTarget("shared-cache", "CACHE", {shared: true})], manifest_sha256: null};
   sharedCache.manifest_sha256 = canonicalDigest({...sharedCache, manifest_sha256: null});
   assert.throws(() => validateDeletionManifest(sharedCache), /safely removable/u);
