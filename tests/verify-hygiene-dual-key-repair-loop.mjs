@@ -9,9 +9,13 @@ import {
   DUAL_KEY_RUNTIME_ROLE,
   DUAL_KEY_STATES,
   DUAL_KEY_WORKER_ROLE,
+  PAIR_LOCAL_CONDITIONS,
+  PAIR_LOCAL_CONTINUATION,
   TRUE_BLOCKED,
+  TRUE_BLOCKER_CONDITIONS,
   TRUE_BLOCKED_LIVENESS,
   authorizeRuntimeOnlyDelivery,
+  classifyDualKeyLaneCondition,
   compileZeroRecoveryScopeInventory,
   createBlankProjectionFallback,
   createDualKeyRepairLoop,
@@ -42,6 +46,11 @@ const requiredHostileCases = [
   "BLANK_UI_WITH_DURABLE_PASS_OR_FAIL_RECOVERED_EXACTLY_ONCE",
   "BLANK_UI_WITHOUT_VALID_FALLBACK_EMITS_TYPED_TRUE_BLOCKED_NOT_FALSE_STALL",
   "REPEATED_FAILURE_DEDUPLICATED",
+  "ORDINARY_PAIR_LOCAL_TRANSITION_CANNOT_ESCALATE_CENTRALLY",
+  "BOUNDED_FAIL_RETURNS_DIRECTLY_TO_SAME_WORKER",
+  "EVIDENCE_CORRECTION_REMAINS_PAIR_LOCAL",
+  "BLOCKED_SEAM_CANNOT_STOP_UNRELATED_LANES",
+  "TRUE_BLOCKER_REQUIRES_EXTERNAL_DECISION_AND_COMPLETE_EVIDENCE",
   "AGGREGATE_DIRECTORY_BYTES_MAPPED_TO_TINY_RECEIPT_FILES_DENIED",
   "AGGREGATE_ROOT_AND_SELECTED_CHILD_IDENTITIES_REQUIRED_SEPARATELY",
   "CHILD_SIZE_OR_TYPE_MISMATCH_DENIED",
@@ -71,6 +80,32 @@ rejected(() => createDualKeyRepairLoop({issueId, writer: worker, auditor: [audit
 
 let loop = createDualKeyRepairLoop({issueId, writer, auditor});
 validateDualKeyRepairLoop(loop);
+assert.equal(loop.routing.standing_lane_authority, true);
+assert.equal(loop.routing.serial_successors_allowed, true);
+assert.equal(loop.routing.fresh_central_approval_for_ordinary_transition, false);
+assert.equal(loop.routing.blocked_seam_stops_other_lanes, false);
+assert.equal(loop.routing.auditor_researches_next_ready_seam_while_waiting, true);
+
+for (const condition of PAIR_LOCAL_CONDITIONS) {
+  const decision = classifyDualKeyLaneCondition({condition});
+  assert.equal(decision.classification, PAIR_LOCAL_CONTINUATION);
+  assert.equal(decision.central_approval_required, false);
+  assert.equal(decision.controller_route_allowed, false);
+  assert.equal(decision.orchestrator_route_allowed, false);
+  assert.equal(decision.spawner_route_allowed, false);
+  assert.equal(decision.owner_route_allowed, false);
+}
+assert.equal(classifyDualKeyLaneCondition({condition: "BOUNDED_AUDIT_FAIL"}).route, "DIRECT_AUDITOR_TO_SAME_WORKER");
+rejected(() => classifyDualKeyLaneCondition({condition: "EVIDENCE_CORRECTION", externalDecisionRequired: true}), /cannot claim an external decision/u);
+rejected(() => classifyDualKeyLaneCondition({condition: "BOUNDED_AUDIT_FAIL", existingAuthorityCovers: false}), /standing authority/u);
+rejected(() => classifyDualKeyLaneCondition({condition: "UNKNOWN_ESCALATION", evidenceComplete: true, existingAuthorityCovers: false, externalDecisionRequired: true}), /unknown lane condition/u);
+for (const condition of TRUE_BLOCKER_CONDITIONS) {
+  const decision = classifyDualKeyLaneCondition({condition, evidenceComplete: true, existingAuthorityCovers: false, externalDecisionRequired: true});
+  assert.equal(decision.classification, TRUE_BLOCKED);
+  assert.equal(decision.preserve_custody, true);
+}
+rejected(() => classifyDualKeyLaneCondition({condition: "HOST_CAPABILITY_UNAVAILABLE", evidenceComplete: false, existingAuthorityCovers: false, externalDecisionRequired: true}), /evidence-complete/u);
+rejected(() => classifyDualKeyLaneCondition({condition: "EXTERNAL_DEPENDENCY_AUTHORITY_REQUIRED", evidenceComplete: true, existingAuthorityCovers: true, externalDecisionRequired: true}), /standing lane authority covers/u);
 loop = transitionDualKeyRepairLoop(loop, {to: "WORKING", actor: worker});
 const candidate = {
   candidate_id: "CANDIDATE-ZERO-RECOVERY-R1",

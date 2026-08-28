@@ -386,6 +386,7 @@ const rejectedResult = await runCanonicalCampaign({
   projectBinding: {project_id: PROJECT_ID},
   persistCampaignState: rejectedRecorder.persist,
   clock: () => NOW,
+  maxPairLocalRepairGenerations: 1,
 });
 assert.equal(rejectedResult.status, "BLOCKED");
 assert.equal(rejectedResult.closure, null);

@@ -92,6 +92,11 @@ export const DUAL_KEY_HOSTILE_CASES = Object.freeze([
   "BLANK_UI_WITH_DURABLE_PASS_OR_FAIL_RECOVERED_EXACTLY_ONCE",
   "BLANK_UI_WITHOUT_VALID_FALLBACK_EMITS_TYPED_TRUE_BLOCKED_NOT_FALSE_STALL",
   "REPEATED_FAILURE_DEDUPLICATED",
+  "ORDINARY_PAIR_LOCAL_TRANSITION_CANNOT_ESCALATE_CENTRALLY",
+  "BOUNDED_FAIL_RETURNS_DIRECTLY_TO_SAME_WORKER",
+  "EVIDENCE_CORRECTION_REMAINS_PAIR_LOCAL",
+  "BLOCKED_SEAM_CANNOT_STOP_UNRELATED_LANES",
+  "TRUE_BLOCKER_REQUIRES_EXTERNAL_DECISION_AND_COMPLETE_EVIDENCE",
   ...ZERO_RECOVERY_SCOPE_HOSTILE_CASES,
 ]);
 export const DUAL_KEY_RECEIPT_LIMITS = Object.freeze({
@@ -105,10 +110,30 @@ export const DUAL_KEY_ROUTING = Object.freeze({
   intermediary_queue_allowed: false,
   runtime_delivery_role: DUAL_KEY_RUNTIME_ROLE,
   controller_true_blocked_only: true,
+  standing_lane_authority: true,
+  serial_successors_allowed: true,
+  fresh_central_approval_for_ordinary_transition: false,
+  blocked_seam_stops_other_lanes: false,
+  auditor_researches_next_ready_seam_while_waiting: true,
 });
 export const TRUE_BLOCKED = "TRUE_BLOCKED";
 export const TRUE_BLOCKED_LIVENESS = "TRUE_BLOCKED_LIVENESS";
 export const DURABLE_RESULT_RECOVERED = "DURABLE_RESULT_RECOVERED";
+export const PAIR_LOCAL_CONTINUATION = "PAIR_LOCAL_CONTINUATION";
+export const PAIR_LOCAL_CONDITIONS = Object.freeze([
+  "BOUNDED_AUDIT_FAIL",
+  "CANDIDATE_SUCCESSOR",
+  "EVIDENCE_CORRECTION",
+  "NEXT_READY_SEAM",
+  "RECEIPT_DIGEST_CORRECTION",
+  "TEST_SETUP_WITHIN_BOUNDARY",
+]);
+export const TRUE_BLOCKER_CONDITIONS = Object.freeze([
+  "DESTRUCTIVE_CUSTODY_CONFLICT",
+  "EXTERNAL_DEPENDENCY_AUTHORITY_REQUIRED",
+  "HOST_CAPABILITY_UNAVAILABLE",
+  "OWNER_INTENT_DECISION_REQUIRED",
+]);
 
 function zeroRecoveryRecord(value, label) {
   assert(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
@@ -396,6 +421,54 @@ function assertRouting(routing) {
   assert(routing.intermediary_queue_allowed === false, "intermediary queue is not allowed");
   assert(routing.runtime_delivery_role === DUAL_KEY_RUNTIME_ROLE, "runtime-only delivery role is not bound");
   assert(routing.controller_true_blocked_only === true, "TRUE_BLOCKED/liveness ownership is not Controller-only");
+  assert(routing.standing_lane_authority === true, "Repair/Auditor pair lacks standing lane authority");
+  assert(routing.serial_successors_allowed === true, "serial same-lane successor candidates are not authorized");
+  assert(routing.fresh_central_approval_for_ordinary_transition === false, "ordinary pair-local transitions cannot require fresh central approval");
+  assert(routing.blocked_seam_stops_other_lanes === false, "one blocked seam cannot stop unrelated lanes");
+  assert(routing.auditor_researches_next_ready_seam_while_waiting === true, "Auditor must keep one next READY seam while Repair is legitimately waiting");
+}
+
+/**
+ * Decide whether a lane condition stays inside the admitted Repair/Auditor
+ * pair or qualifies for central escalation.  Fail-closed means preserving
+ * custody while continuing locally whenever standing authority covers the
+ * action; it never means asking central roles to approve ordinary work.
+ */
+export function classifyDualKeyLaneCondition({
+  condition,
+  evidenceComplete = false,
+  existingAuthorityCovers = true,
+  externalDecisionRequired = false,
+} = {}) {
+  identifier(condition, "lane condition");
+  if (PAIR_LOCAL_CONDITIONS.includes(condition)) {
+    assert(existingAuthorityCovers === true, "ordinary pair-local condition must remain inside admitted standing authority");
+    assert(externalDecisionRequired === false, "ordinary pair-local condition cannot claim an external decision");
+    return {
+      classification: PAIR_LOCAL_CONTINUATION,
+      route: condition === "BOUNDED_AUDIT_FAIL" ? "DIRECT_AUDITOR_TO_SAME_WORKER" : "PAIR_LOCAL",
+      central_approval_required: false,
+      controller_route_allowed: false,
+      orchestrator_route_allowed: false,
+      spawner_route_allowed: false,
+      owner_route_allowed: false,
+      preserve_custody: true,
+    };
+  }
+  assert(TRUE_BLOCKER_CONDITIONS.includes(condition), "unknown lane condition cannot be escalated by inference");
+  assert(existingAuthorityCovers === false, "true blocker cannot be emitted while standing lane authority covers the transition");
+  assert(externalDecisionRequired === true, "true blocker requires a concrete external decision");
+  assert(evidenceComplete === true, "true blocker requires evidence-complete custody and reproduction");
+  return {
+    classification: TRUE_BLOCKED,
+    route: condition === "OWNER_INTENT_DECISION_REQUIRED" ? "PROJECT_OWNER" : "CONTROLLER",
+    central_approval_required: true,
+    controller_route_allowed: condition !== "OWNER_INTENT_DECISION_REQUIRED",
+    orchestrator_route_allowed: false,
+    spawner_route_allowed: false,
+    owner_route_allowed: condition === "OWNER_INTENT_DECISION_REQUIRED",
+    preserve_custody: true,
+  };
 }
 
 function assertReceiptLimits(receipts) {

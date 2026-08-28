@@ -87,6 +87,7 @@ export async function runCanonicalCampaign({
   leaseDurationSeconds = 60,
   schedulerRoot = null,
   schedulerPolicy = null,
+  maxPairLocalRepairGenerations = 32,
 } = {}) {
   assertUniversalDevelopmentMode("CAMPAIGN");
   assert(typeof clock === "function", "canonical campaign clock must be callable");
@@ -200,6 +201,7 @@ export async function runCanonicalCampaign({
       plan: parallelPlan,
       persist,
       clock,
+      maxPairLocalRepairGenerations,
     });
     lifecycle = initialState;
     campaignState = lifecycle.snapshot();
@@ -366,21 +368,20 @@ export async function runCanonicalCampaign({
             const receipt = await closeIfLive(team, session, {schema: handoff.schema, status: "AUDIT_HANDOFF_CLOSED"});
             assert(receipt !== null, "native Auditor did not produce a closure receipt", "NATIVE_SESSION_CLOSURE_REQUIRED");
             auditorEvidence.set(sessionRef, {request_sha256: request.request_sha256, session_sha256: session.session_sha256, closure: structuredClone(receipt), closure_sha256: receipt.receipt_sha256});
-            const acceptedSnapshot = compileSnapshot(admission, {progressStatus: "PROGRESS_RECORDED", acceptanceStatus: audit.accepted ? "ACCEPTED" : "CANDIDATE", evidenceIdentityOk: audit.accepted, rosterExact: team.roster().length === 1});
+            const acceptedSnapshot = compileSnapshot(admission, {progressStatus: "PROGRESS_RECORDED", acceptanceStatus: audit.accepted ? "ACCEPTED" : "CANDIDATE", evidenceIdentityOk: true, rosterExact: team.roster().length === 1});
             await tickRuntime(acceptedSnapshot, {accepted: worker.worker_ref, audit: audit.audit_sha256}, clock());
             const acceptedCheckpoint = compileCheckpoint(admission, {
               checkpointId: stableKey(audit.accepted ? "CHECKPOINT_ACCEPTED" : "CHECKPOINT_REJECTED", audit.audit_sha256),
               laneIndex: parallelPlan.lanes.findIndex((lane) => lane.lane_id === worker.lane_id),
               step: `LANE_${worker.lane_id}_${audit.accepted ? "ACCEPTED" : "REJECTED"}`,
-              nextAction: audit.accepted ? "CAMPAIGN_ORCHESTRATOR" : "OWNER_REVIEW",
+              nextAction: audit.accepted ? "CAMPAIGN_ORCHESTRATOR" : "SAME_LANE_REPAIR",
               progressStatus: "PROGRESS_RECORDED",
               meaningfulProgress: meaningfulProgressFromHandoff(handoff),
               lastMeaningfulProgressAtUtc: handoff.observed_at_utc,
-              evidenceIdentityOk: audit.accepted,
+              evidenceIdentityOk: true,
               createdAtUtc: clock(),
             });
-            if (audit.accepted) await recordRuntimeCheckpoint(acceptedCheckpoint);
-            else await hardStopRuntime({worker: worker.worker_ref, audit: audit.audit_sha256});
+            await recordRuntimeCheckpoint(acceptedCheckpoint);
 
             const workerEvidence = liveSessions.get(worker.session_ref);
             assert(workerEvidence !== undefined, "worker native session is not retained for typed closure", "NATIVE_SESSION_CLOSURE_REQUIRED");

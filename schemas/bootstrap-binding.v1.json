@@ -1750,11 +1750,27 @@
     },
     "audited_canonical_campaign_orchestration_adapter": {
       "path": "control/canonical-campaign-orchestration-adapter.mjs",
-      "sha256": "ed401364c086f903085ac594068d7e37a7d7883e94e47b181c45eb77fd30ea3e"
+      "sha256": "fa18e94e0983b85450de99f7be9a61a8a7c4381e805466fe9ca064eebd43af02"
     },
     "audited_canonical_campaign_orchestration_support": {
       "path": "control/canonical-campaign-orchestration-support.mjs",
-      "sha256": "237ce6a13cdb4ef87fcd1438a52311253b2d9ccb5392c7cdbc3781a225cc30cc"
+      "sha256": "47d892843f3dd265bb8372a5f93b72443dc25bb628068ea922fac72416957988"
+    },
+    "pair_local_parallel_campaign_lifecycle": {
+      "path": "control/parallel-campaign-lifecycle.mjs",
+      "sha256": "4dec53e2c12694746b986ea62e3292b184e281702ca248b4180731139b1eb1ed"
+    },
+    "pair_local_parallel_campaign_lifecycle_verifier": {
+      "path": "tests/verify-parallel-campaign-lifecycle.mjs",
+      "sha256": "6b64ce5758bac6683181b2db7937dd981e548b2d93d515dbb25e877d53a88e19"
+    },
+    "pair_local_canonical_campaign_orchestration_verifier": {
+      "path": "tests/verify-canonical-campaign-orchestration.mjs",
+      "sha256": "2a70c06a72fa6fd0574516fbae5cf7f2b6933450a31d76410c8084ef7b287875"
+    },
+    "pair_local_repair_autonomy_article": {
+      "path": "governance/2.1rc/pair-local-repair-autonomy.md",
+      "sha256": "f3ca70ebf0fb314644fbd168e356af7148b204efb84c4fa3824a9fc5fa582389"
     },
     "hybrid_scheduler_controller": {
       "path": "control/hybrid-scheduler.mjs",
@@ -3505,17 +3521,18 @@
     },
     "hygiene_dual_key_zero_recovery_governance": {
       "path": "control/hygiene-dual-key-repair-loop.mjs",
-      "sha256": "ff5e173c4985ecff2fc5263e8ab566be0ef1b0137ccfcfe93b8f7c169d0e92d6",
+      "sha256": "53e6a039e09fa02c3852e633f4fcb0851f2538668e8b039c4a76abe96f08d56c",
       "authority": "orchestrator-hygiene-dual-key-zero-recovery-governance-activation-successor-115",
       "authority_sha256": "90336d9881962c54d460b0a98a693298f8dfe24237cf564bf09f23f858ac6d8c",
       "issue_id": "AGENTOS-GOV-HYGIENE-DUAL-KEY-ZERO-RECOVERY-SCOPE-INTEGRITY-001",
-      "direct_path_count": 12,
+      "direct_path_count": 13,
       "mechanical_path_count": 1,
-      "maximum_total_path_count": 13,
+      "maximum_total_path_count": 14,
       "authorized_direct_paths": [
-        {"path": "control/hygiene-dual-key-repair-loop.mjs", "sha256": "ff5e173c4985ecff2fc5263e8ab566be0ef1b0137ccfcfe93b8f7c169d0e92d6"},
-        {"path": "schemas/hygiene-dual-key-repair-loop.v1.json", "sha256": "d868d613c5fee916b2ddf007783b79d7741a238524d8964c500b92ff15e60421"},
-        {"path": "tests/verify-hygiene-dual-key-repair-loop.mjs", "sha256": "ec19209cf91dbdf32f32592694c628861620a7c89acdeb81d7ea74d37c772154"},
+        {"path": "control/hygiene-dual-key-repair-loop.mjs", "sha256": "53e6a039e09fa02c3852e633f4fcb0851f2538668e8b039c4a76abe96f08d56c"},
+        {"path": "schemas/hygiene-dual-key-repair-loop.v1.json", "sha256": "8fa90344e2a2edec93c0aefb0b09cfec5c860236a7bd70b6eec5718d4e220aff"},
+        {"path": "tests/verify-hygiene-dual-key-repair-loop.mjs", "sha256": "742d324d11320cff3bbbfbc8779d55a2b547720f8733ae0c32454e52aa3a0c02"},
+        {"path": "governance/2.1rc/pair-local-repair-autonomy.md", "sha256": "f3ca70ebf0fb314644fbd168e356af7148b204efb84c4fa3824a9fc5fa582389"},
         {"path": "control/campaign-closeout-contracts.mjs", "sha256": "218d0c86921a6b88036c908151160af90c7ee9699539b6a6219054633578b692"},
         {"path": "control/campaign-closeout-lifecycle.mjs", "sha256": "872e7cf666517cc3232081f435d1cf4860891075981c108090d4a2756847b482"},
         {"path": "schemas/campaign-closeout-lifecycle.v1.json", "sha256": "88b21fb7f57b5e5a5287fc1f4db577ae4040e52ba8978ff172ce6898031f90e1"},

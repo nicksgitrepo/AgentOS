@@ -105,13 +105,18 @@
     "routing": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["candidate_route", "repair_route", "intermediary_queue_allowed", "runtime_delivery_role", "controller_true_blocked_only"],
+      "required": ["candidate_route", "repair_route", "intermediary_queue_allowed", "runtime_delivery_role", "controller_true_blocked_only", "standing_lane_authority", "serial_successors_allowed", "fresh_central_approval_for_ordinary_transition", "blocked_seam_stops_other_lanes", "auditor_researches_next_ready_seam_while_waiting"],
       "properties": {
         "candidate_route": {"const": "DIRECT_WORKER_TO_AUDITOR"},
         "repair_route": {"const": "DIRECT_AUDITOR_TO_SAME_WORKER"},
         "intermediary_queue_allowed": {"const": false},
         "runtime_delivery_role": {"const": "AGENTOS.RUNTIME"},
-        "controller_true_blocked_only": {"const": true}
+        "controller_true_blocked_only": {"const": true},
+        "standing_lane_authority": {"const": true},
+        "serial_successors_allowed": {"const": true},
+        "fresh_central_approval_for_ordinary_transition": {"const": false},
+        "blocked_seam_stops_other_lanes": {"const": false},
+        "auditor_researches_next_ready_seam_while_waiting": {"const": true}
       }
     },
     "receipts": {
@@ -218,6 +223,11 @@
     "BLANK_UI_WITH_DURABLE_PASS_OR_FAIL_RECOVERED_EXACTLY_ONCE",
     "BLANK_UI_WITHOUT_VALID_FALLBACK_EMITS_TYPED_TRUE_BLOCKED_NOT_FALSE_STALL",
     "REPEATED_FAILURE_DEDUPLICATED",
+    "ORDINARY_PAIR_LOCAL_TRANSITION_CANNOT_ESCALATE_CENTRALLY",
+    "BOUNDED_FAIL_RETURNS_DIRECTLY_TO_SAME_WORKER",
+    "EVIDENCE_CORRECTION_REMAINS_PAIR_LOCAL",
+    "BLOCKED_SEAM_CANNOT_STOP_UNRELATED_LANES",
+    "TRUE_BLOCKER_REQUIRES_EXTERNAL_DECISION_AND_COMPLETE_EVIDENCE",
     "AGGREGATE_DIRECTORY_BYTES_MAPPED_TO_TINY_RECEIPT_FILES_DENIED",
     "AGGREGATE_ROOT_AND_SELECTED_CHILD_IDENTITIES_REQUIRED_SEPARATELY",
     "CHILD_SIZE_OR_TYPE_MISMATCH_DENIED",

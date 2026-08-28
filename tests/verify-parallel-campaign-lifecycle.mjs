@@ -218,7 +218,7 @@ async function main() {
     source: SOURCE,
     lanes: [{lane_id: "reviewed", dependencies: [], writable_scope: "SCOPE-REVIEWED", task_sha256: SHA_A}],
   });
-  const rejected = createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START});
+  const rejected = createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START, maxPairLocalRepairGenerations: 2});
   const rejectedLease = rejected.acquireWorker("reviewed", {atUtc: START}).workers[0].lease.lease_id;
   rejected.startWorker("reviewed", rejectedLease, opaqueSessionRef("worker:reviewed"), {atUtc: START});
   rejected.recordProgress("reviewed", rejectedLease, progress(), {atUtc: START});
@@ -229,10 +229,36 @@ async function main() {
     accepted: false,
     evidence_sha256: SHA_A,
   }, {atUtc: START});
-  assert.equal(rejectedState.status, "BLOCKED");
-  assert.equal(rejectedState.workers[0].state, "REPAIR_REQUIRED");
-  assert.equal(rejectedState.workers[0].lease.status, "FENCED");
-  assert.throws(() => rejected.closeWorker("reviewed", rejectedLease, {atUtc: START}), /not active/u);
+  assert.equal(rejectedState.status, "RUNNING");
+  assert.equal(rejectedState.workers[0].state, "READY");
+  assert.equal(rejectedState.workers[0].lease, null);
+  assert.equal(rejectedState.events.at(-1).event_type, "WORKER_HANDOFF_REJECTED");
+  assert.equal(rejectedState.events.at(-1).to_campaign_status, "RUNNING");
+  const repairLease = rejected.acquireWorker("reviewed", {atUtc: START}).workers[0].lease.lease_id;
+  rejected.startWorker("reviewed", repairLease, opaqueSessionRef("worker:reviewed-repair"), {atUtc: START});
+  rejected.recordProgress("reviewed", repairLease, progress(), {atUtc: START});
+  rejected.recordHandoff("reviewed", repairLease, {atUtc: START});
+  const secondRepair = rejected.acceptHandoff("reviewed", repairLease, {
+    auditor_ref: "opaque-auditor-reviewed-repair",
+    auditor_session_ref: opaqueSessionRef("auditor:reviewed-repair"),
+    accepted: false,
+    evidence_sha256: SHA_B,
+  }, {atUtc: START});
+  assert.equal(secondRepair.status, "RUNNING");
+  assert.equal(secondRepair.workers[0].state, "READY");
+  const terminalLease = rejected.acquireWorker("reviewed", {atUtc: START}).workers[0].lease.lease_id;
+  rejected.startWorker("reviewed", terminalLease, opaqueSessionRef("worker:reviewed-terminal"), {atUtc: START});
+  rejected.recordProgress("reviewed", terminalLease, progress(), {atUtc: START});
+  rejected.recordHandoff("reviewed", terminalLease, {atUtc: START});
+  const boundedTerminal = rejected.acceptHandoff("reviewed", terminalLease, {
+    auditor_ref: "opaque-auditor-reviewed-terminal",
+    auditor_session_ref: opaqueSessionRef("auditor:reviewed-terminal"),
+    accepted: false,
+    evidence_sha256: SHA_C,
+  }, {atUtc: START});
+  assert.equal(boundedTerminal.status, "BLOCKED");
+  assert.equal(boundedTerminal.workers[0].state, "REPAIR_REQUIRED");
+  assert.equal(boundedTerminal.workers[0].lease.status, "FENCED");
 
   const exclusivePlan = compileParallelCampaignPlan({
     campaignId: "CAMPAIGN-EXCLUSIVE-1",

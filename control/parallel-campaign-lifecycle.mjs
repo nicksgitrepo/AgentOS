@@ -119,10 +119,12 @@ export function createParallelCampaignLifecycle({
   initialState = null,
   persist = null,
   clock = () => new Date().toISOString(),
+  maxPairLocalRepairGenerations = 32,
 } = {}) {
   validateParallelCampaignPlan(plan);
   assert(typeof clock === "function", "parallel campaign clock must be a function");
   assert(persist === null || typeof persist === "function", "parallel campaign persist callback must be a function");
+  assert(Number.isSafeInteger(maxPairLocalRepairGenerations) && maxPairLocalRepairGenerations >= 1 && maxPairLocalRepairGenerations <= 1000, "pair-local repair generation limit is invalid");
 
   let state = initialState === null ? createParallelCampaignState(plan) : clone(initialState);
   validateParallelCampaignState(state, plan);
@@ -407,6 +409,8 @@ export function createParallelCampaignLifecycle({
       observedAtUtc: now,
     });
     validateParallelCampaignAudit(audit, plan, worker, worker.handoff);
+    const priorRejectedAudits = state.events.filter((event) => event.event_type === "WORKER_HANDOFF_REJECTED" && event.worker_ref === worker.worker_ref).length;
+    const pairLocalRepairAllowed = audit.accepted === false && priorRejectedAudits < maxPairLocalRepairGenerations;
     return commit({
       eventType: audit.accepted ? "WORKER_HANDOFF_ACCEPTED" : "WORKER_HANDOFF_REJECTED",
       workerRef: worker.worker_ref,
@@ -419,12 +423,25 @@ export function createParallelCampaignLifecycle({
         accepted: audit.accepted,
       },
       atUtc,
-      toCampaignStatus: audit.accepted ? state.status : "BLOCKED",
+      toCampaignStatus: audit.accepted || pairLocalRepairAllowed ? state.status : "BLOCKED",
       mutate(next) {
         const target = findWorker(next, laneId);
         target.audit = audit;
         if (audit.accepted) {
           target.state = "CLOSING";
+        } else if (pairLocalRepairAllowed) {
+          // The event ledger retains the rejected immutable handoff.  Release
+          // execution custody and return the same lane directly to READY so
+          // the same Repair/Auditor pair can produce one bounded successor
+          // without central approval or blocking unrelated lanes.
+          target.state = "READY";
+          target.lease = null;
+          target.session_ref = null;
+          target.progress = null;
+          target.handoff = null;
+          target.autonomous_handoff = null;
+          target.audit = null;
+          target.failure = null;
         } else {
           target.state = "REPAIR_REQUIRED";
           target.lease.status = "FENCED";
