@@ -1758,11 +1758,11 @@
     },
     "pair_local_parallel_campaign_lifecycle": {
       "path": "control/parallel-campaign-lifecycle.mjs",
-      "sha256": "4dec53e2c12694746b986ea62e3292b184e281702ca248b4180731139b1eb1ed"
+      "sha256": "14d365063dba527032fb136207e1aada4f83bdbbbf34e3c3efaf0d97c5bccc07"
     },
     "pair_local_parallel_campaign_lifecycle_verifier": {
       "path": "tests/verify-parallel-campaign-lifecycle.mjs",
-      "sha256": "6b64ce5758bac6683181b2db7937dd981e548b2d93d515dbb25e877d53a88e19"
+      "sha256": "6f6ff319b888591c6b4c12b023331d5c3bbb0e2a86b969ed4b5b20b51c027f13"
     },
     "pair_local_canonical_campaign_orchestration_verifier": {
       "path": "tests/verify-canonical-campaign-orchestration.mjs",

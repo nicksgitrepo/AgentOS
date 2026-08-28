@@ -411,6 +411,7 @@ export function createParallelCampaignLifecycle({
     validateParallelCampaignAudit(audit, plan, worker, worker.handoff);
     const priorRejectedAudits = state.events.filter((event) => event.event_type === "WORKER_HANDOFF_REJECTED" && event.worker_ref === worker.worker_ref).length;
     const pairLocalRepairAllowed = audit.accepted === false && priorRejectedAudits < maxPairLocalRepairGenerations;
+    const unrelatedLaneCanContinue = state.workers.some((candidate) => candidate.lane_id !== laneId && !["CLOSED", "FAILED", "REPAIR_REQUIRED"].includes(candidate.state));
     return commit({
       eventType: audit.accepted ? "WORKER_HANDOFF_ACCEPTED" : "WORKER_HANDOFF_REJECTED",
       workerRef: worker.worker_ref,
@@ -423,7 +424,7 @@ export function createParallelCampaignLifecycle({
         accepted: audit.accepted,
       },
       atUtc,
-      toCampaignStatus: audit.accepted || pairLocalRepairAllowed ? state.status : "BLOCKED",
+      toCampaignStatus: audit.accepted || pairLocalRepairAllowed || unrelatedLaneCanContinue ? state.status : "BLOCKED",
       mutate(next) {
         const target = findWorker(next, laneId);
         target.audit = audit;
@@ -448,7 +449,7 @@ export function createParallelCampaignLifecycle({
           target.lease.released_at_utc = now;
           target.lease.release_reason = "AUDIT_REJECTED";
           target.lease.lease_sha256 = digestWithout(target.lease, "lease_sha256");
-          next.status = "BLOCKED";
+          if (!unrelatedLaneCanContinue) next.status = "BLOCKED";
         }
       },
     });
@@ -566,6 +567,20 @@ export function createParallelCampaignLifecycle({
       const selected = selectReadyWorkers(state);
       if (selected.length === 0) {
         if (state.workers.every((worker) => worker.state === "CLOSED")) break;
+        if (state.workers.some((worker) => ["FAILED", "REPAIR_REQUIRED"].includes(worker.state))) {
+          const now = timestamp(null, clock);
+          commit({
+            eventType: "CAMPAIGN_TERMINAL_LANE_BLOCKED",
+            payload: {
+              blocked_lane_ids: state.workers.filter((worker) => ["FAILED", "REPAIR_REQUIRED"].includes(worker.state)).map((worker) => worker.lane_id).sort(compareUtf8),
+              completed_unrelated_lane_count: state.workers.filter((worker) => worker.state === "CLOSED").length,
+            },
+            atUtc: now,
+            toCampaignStatus: "BLOCKED",
+            mutate(next) { next.status = "BLOCKED"; },
+          });
+          break;
+        }
         throw new Error("parallel campaign scheduler found no runnable lane");
       }
       const leases = selected.map((worker) => {

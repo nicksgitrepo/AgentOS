@@ -260,6 +260,45 @@ async function main() {
   assert.equal(boundedTerminal.workers[0].state, "REPAIR_REQUIRED");
   assert.equal(boundedTerminal.workers[0].lease.status, "FENCED");
 
+  const independentContinuationPlan = compileParallelCampaignPlan({
+    campaignId: "CAMPAIGN-INDEPENDENT-CONTINUATION-1",
+    campaignVersion: "v3.0.0-rc.1",
+    logicalLineageId: "LINEAGE-INDEPENDENT-CONTINUATION-1",
+    goalId: "GOAL-INDEPENDENT-CONTINUATION-1",
+    goalSha256: SHA_A,
+    source: SOURCE,
+    maxConcurrentWorkers: 1,
+    lanes: [
+      {lane_id: "a-blocked", dependencies: [], writable_scope: "SCOPE-BLOCKED", task_sha256: SHA_A},
+      {lane_id: "z-independent", dependencies: [], writable_scope: "SCOPE-INDEPENDENT", task_sha256: SHA_B},
+    ],
+  });
+  const independentContinuation = createParallelCampaignLifecycle({plan: independentContinuationPlan, clock: () => START});
+  const executions = new Map();
+  const independentContinuationResult = await independentContinuation.run({
+    async executeWorker({assignment}) {
+      const count = (executions.get(assignment.lane_id) ?? 0) + 1;
+      executions.set(assignment.lane_id, count);
+      return {session_ref: opaqueSessionRef(`continuation:${assignment.lane_id}:${count}`), progress: progress()};
+    },
+    async auditHandoff({worker}) {
+      const count = executions.get(worker.lane_id);
+      return {
+        auditor_ref: `opaque-auditor-${worker.lane_id}-${count}`,
+        auditor_session_ref: opaqueSessionRef(`continuation-auditor:${worker.lane_id}:${count}`),
+        accepted: worker.lane_id === "z-independent",
+        evidence_sha256: worker.lane_id === "z-independent" ? SHA_B : SHA_A,
+      };
+    },
+  });
+  assert.equal(independentContinuationResult.status, "BLOCKED");
+  assert.equal(executions.get("a-blocked"), 33);
+  assert.equal(executions.get("z-independent"), 1, "unrelated lane must execute after another lane exhausts its pair-local repair budget");
+  assert.equal(independentContinuationResult.workers.find((worker) => worker.lane_id === "a-blocked").state, "REPAIR_REQUIRED");
+  assert.equal(independentContinuationResult.workers.find((worker) => worker.lane_id === "z-independent").state, "CLOSED");
+  assert.equal(independentContinuationResult.events.filter((event) => event.event_type === "WORKER_HANDOFF_REJECTED" && event.worker_ref.includes("a-blocked")).length, 33);
+  assert.equal(independentContinuationResult.events.at(-1).event_type, "CAMPAIGN_TERMINAL_LANE_BLOCKED");
+
   const exclusivePlan = compileParallelCampaignPlan({
     campaignId: "CAMPAIGN-EXCLUSIVE-1",
     campaignVersion: "v3.0.0-rc.1",
