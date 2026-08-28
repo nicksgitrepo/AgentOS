@@ -7,10 +7,47 @@ export const ZERO_OUTPUT_MINIMUM_ELAPSED_SECONDS = 30;
 
 const SHA = /^[0-9a-f]{64}$/u;
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
+const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function id(value, label) { assert(typeof value === "string" && ID.test(value), `${label} is invalid`); }
 function sha(value, label) { assert(typeof value === "string" && SHA.test(value), `${label} must be SHA-256`); }
 function count(value, label) { assert(Number.isSafeInteger(value) && value >= 0, `${label} must be a non-negative integer`); }
+function validateTurn(turn) {
+  assert(turn && typeof turn === "object", "turn observation is required");
+  assert(turn.status === "COMPLETED" && turn.error === null, "only a completed non-error turn may be classified as silent");
+  count(turn.elapsed_seconds, "turn elapsed seconds");
+  assert(turn.elapsed_seconds >= ZERO_OUTPUT_MINIMUM_ELAPSED_SECONDS, "turn is below the zero-output observation floor");
+  for (const field of ["assistant_items", "tool_items", "command_items", "durable_result_items", "live_process_count"]) count(turn[field], `turn ${field}`);
+  assert(turn.assistant_items + turn.tool_items + turn.command_items + turn.durable_result_items === 0, "turn contains material output and may not be replaced as silent");
+  assert(turn.live_process_count === 0, "session still has a live process");
+  sha(turn.turn_readback_sha256, "turn readback digest");
+  assert(turn.turn_readback_sha256 === canonicalDigest({...turn, turn_readback_sha256: null}), "turn readback digest does not bind the observation");
+  return turn;
+}
+function validateCustody(custody) {
+  assert(custody && typeof custody === "object", "custody is required");
+  for (const field of ["worktree_ref", "branch_ref"]) id(custody[field], `custody ${field}`);
+  for (const field of ["head", "tree", "status_sha256", "handoff_sha256"]) sha(custody[field], `custody ${field}`);
+  assert(custody.preserved === true && custody.reset_or_cleanup === false, "custody must be preserved without reset or cleanup");
+  return custody;
+}
+function validateReplacement(replacement, {failedSessionId, pairedSessionId, custody}) {
+  assert(replacement && typeof replacement === "object", "replacement probe is required");
+  for (const field of ["session_id", "project_ref", "cwd_ref", "worktree_ref"]) id(replacement[field], `replacement ${field}`);
+  assert(replacement.session_id !== failedSessionId && replacement.session_id !== pairedSessionId, "replacement identity collides with the pair");
+  assert(replacement.project_bound === true && replacement.cwd_verified === true, "replacement must be project-bound with verified cwd");
+  assert(typeof replacement.observed_at_utc === "string" && UTC.test(replacement.observed_at_utc), "replacement observation must be UTC");
+  count(replacement.freshness_seconds, "replacement freshness seconds");
+  assert(replacement.freshness_seconds <= 300, "replacement execution proof is stale");
+  count(replacement.visible_assistant_items, "replacement visible assistant items");
+  count(replacement.visible_tool_items, "replacement visible tool items");
+  assert(replacement.visible_assistant_items + replacement.visible_tool_items > 0, "replacement visible-execution probe failed");
+  assert(replacement.worktree_ref === custody.worktree_ref, "replacement worktree does not match preserved custody");
+  assert(replacement.same_worktree === true && replacement.custody_mutated === false, "replacement must adopt preserved custody without mutation");
+  sha(replacement.probe_readback_sha256, "replacement probe digest");
+  assert(replacement.probe_readback_sha256 === canonicalDigest({...replacement, probe_readback_sha256: null}), "replacement probe digest does not bind project/cwd/worktree evidence");
+  return replacement;
+}
 
 export function compileZeroOutputSessionReplacement({
   replacementId,
@@ -24,29 +61,10 @@ export function compileZeroOutputSessionReplacement({
   unrelatedLanesContinue = true,
 } = {}) {
   for (const [value, label] of [[replacementId, "replacement ID"], [laneId, "lane ID"], [role, "role"], [failedSessionId, "failed session ID"], [pairedSessionId, "paired session ID"]]) id(value, label);
-  assert(turn && typeof turn === "object", "turn observation is required");
-  assert(turn.status === "COMPLETED" && turn.error === null, "only a completed non-error turn may be classified as silent");
-  count(turn.elapsed_seconds, "turn elapsed seconds");
-  assert(turn.elapsed_seconds >= ZERO_OUTPUT_MINIMUM_ELAPSED_SECONDS, "turn is below the zero-output observation floor");
-  for (const field of ["assistant_items", "tool_items", "command_items", "durable_result_items"]) count(turn[field], `turn ${field}`);
-  assert(turn.assistant_items + turn.tool_items + turn.command_items + turn.durable_result_items === 0, "turn contains material output and may not be replaced as silent");
-  assert(turn.live_process_count === 0, "session still has a live process");
-  sha(turn.turn_readback_sha256, "turn readback digest");
-
-  assert(custody && typeof custody === "object", "custody is required");
-  for (const field of ["worktree_ref", "branch_ref"]) id(custody[field], `custody ${field}`);
-  for (const field of ["head", "tree", "status_sha256", "handoff_sha256"]) sha(custody[field], `custody ${field}`);
-  assert(custody.preserved === true && custody.reset_or_cleanup === false, "custody must be preserved without reset or cleanup");
-
-  assert(replacement && typeof replacement === "object", "replacement probe is required");
-  id(replacement.session_id, "replacement session ID");
-  assert(replacement.session_id !== failedSessionId && replacement.session_id !== pairedSessionId, "replacement identity collides with the pair");
-  assert(replacement.project_bound === true && replacement.cwd_verified === true, "replacement must be project-bound with verified cwd");
-  count(replacement.visible_assistant_items, "replacement visible assistant items");
-  count(replacement.visible_tool_items, "replacement visible tool items");
-  assert(replacement.visible_assistant_items + replacement.visible_tool_items > 0, "replacement visible-execution probe failed");
-  sha(replacement.probe_readback_sha256, "replacement probe digest");
-  assert(replacement.same_worktree === true && replacement.custody_mutated === false, "replacement must adopt preserved custody without mutation");
+  assert(replacementId !== failedSessionId && replacementId !== pairedSessionId, "replacement operation identity collides with the pair");
+  validateTurn(turn);
+  validateCustody(custody);
+  validateReplacement(replacement, {failedSessionId, pairedSessionId, custody});
   assert(unrelatedLanesContinue === true, "one silent session may not stop unrelated lanes");
 
   const decision = {
@@ -63,6 +81,7 @@ export function compileZeroOutputSessionReplacement({
     ordinary_pair_autonomy_preserved: true,
     unrelated_lanes_continue: true,
     retry_same_session: false,
+    turn: structuredClone(turn),
     custody: structuredClone(custody),
     replacement: structuredClone(replacement),
     decision_sha256: null,
@@ -77,6 +96,13 @@ export function validateZeroOutputSessionReplacement(decision) {
   assert(decision.action === "ADMIT_VISIBLE_REPLACEMENT_AND_ARCHIVE_FAILED_SESSION", "replacement action mismatch");
   assert(decision.controller_approval_required === false && decision.ordinary_pair_autonomy_preserved === true, "replacement added an approval gate or removed autonomy");
   assert(decision.unrelated_lanes_continue === true && decision.retry_same_session === false, "replacement may not stall other lanes or retry the failed session");
+  id(decision.replacement_id, "replacement ID");
+  id(decision.failed_session_id, "failed session ID");
+  id(decision.paired_session_id, "paired session ID");
+  assert(decision.replacement_id !== decision.failed_session_id && decision.replacement_id !== decision.paired_session_id, "replacement operation identity collides with the pair");
+  validateTurn(decision.turn);
+  validateCustody(decision.custody);
+  validateReplacement(decision.replacement, {failedSessionId: decision.failed_session_id, pairedSessionId: decision.paired_session_id, custody: decision.custody});
   sha(decision.decision_sha256, "replacement decision digest");
   assert(decision.decision_sha256 === canonicalDigest({...decision, decision_sha256: null}), "replacement decision digest mismatch");
   return decision;
