@@ -428,6 +428,7 @@ function schedulerSemanticDigest(request) {
     proof_class: request.proof_class,
     coverage: request.coverage,
     expected_proof: request.expected_proof,
+    supersedes: [...request.supersedes].sort(),
   };
   // A native session is an execution identity, not reusable proof. Its
   // session readback cannot be reconstructed from a prior scheduler result.
