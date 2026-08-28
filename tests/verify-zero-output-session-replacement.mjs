@@ -33,6 +33,11 @@ assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: 
 assert.throws(() => compileZeroOutputSessionReplacement({...input, unrelatedLanesContinue: false}), /unrelated lanes/u);
 assert.throws(() => compileZeroOutputSessionReplacement({...input, replacementId: input.failedSessionId}), /operation identity collides/u);
 assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: {...input.replacement, observed_at_utc: "9999-99-99T99:99:99Z", probe_readback_sha256: canonicalDigest({...input.replacement, observed_at_utc: "9999-99-99T99:99:99Z", probe_readback_sha256: null})}}), /valid UTC instant/u);
+for (const observed_at_utc of ["2026-02-30T15:00:00Z", "2026-04-31T15:00:00Z"]) {
+  const malformed = {...input.replacement, observed_at_utc, freshness_seconds: 0, probe_readback_sha256: null};
+  malformed.probe_readback_sha256 = canonicalDigest({...malformed, probe_readback_sha256: null});
+  assert.throws(() => compileZeroOutputSessionReplacement({...input, evaluatedAtUtc: "2026-03-02T15:00:00Z", replacement: malformed}), /valid UTC instant/u);
+}
 const staleReplacement = {...input.replacement, observed_at_utc: "2026-08-28T14:00:00Z", freshness_seconds: 5, probe_readback_sha256: null};
 staleReplacement.probe_readback_sha256 = canonicalDigest({...staleReplacement, probe_readback_sha256: null});
 assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: staleReplacement}), /freshness is not bound/u);

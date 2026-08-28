@@ -15,7 +15,8 @@ function count(value, label) { assert(Number.isSafeInteger(value) && value >= 0,
 function utcMillis(value, label) {
   assert(typeof value === "string" && UTC.test(value), `${label} must be UTC`);
   const millis = Date.parse(value);
-  assert(Number.isFinite(millis) && new Date(millis).toISOString() === new Date(value).toISOString(), `${label} is not a valid UTC instant`);
+  const canonicalInput = value.includes(".") ? value : value.replace(/Z$/u, ".000Z");
+  assert(Number.isFinite(millis) && new Date(millis).toISOString() === canonicalInput, `${label} is not a valid UTC instant`);
   return millis;
 }
 function validateTurn(turn) {
