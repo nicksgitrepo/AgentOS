@@ -1758,15 +1758,15 @@
     },
     "pair_local_parallel_campaign_lifecycle": {
       "path": "control/parallel-campaign-lifecycle.mjs",
-      "sha256": "14d365063dba527032fb136207e1aada4f83bdbbbf34e3c3efaf0d97c5bccc07"
+      "sha256": "9f20b2cca40be6f446f225ac61b2c6c24614758bea2fdba428ecda0b4aee918d"
     },
     "pair_local_parallel_campaign_lifecycle_verifier": {
       "path": "tests/verify-parallel-campaign-lifecycle.mjs",
-      "sha256": "6f6ff319b888591c6b4c12b023331d5c3bbb0e2a86b969ed4b5b20b51c027f13"
+      "sha256": "9ff3a078c403ba4cd9454dd35db712487a20797668e551fc06985d0a874f534d"
     },
     "pair_local_canonical_campaign_orchestration_verifier": {
       "path": "tests/verify-canonical-campaign-orchestration.mjs",
-      "sha256": "2a70c06a72fa6fd0574516fbae5cf7f2b6933450a31d76410c8084ef7b287875"
+      "sha256": "9441152923fc5ed72707321c7997c81455edf0d6b10553a28533159b6ec3b8eb"
     },
     "pair_local_repair_autonomy_article": {
       "path": "governance/2.1rc/pair-local-repair-autonomy.md",

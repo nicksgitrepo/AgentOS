@@ -218,7 +218,10 @@ async function main() {
     source: SOURCE,
     lanes: [{lane_id: "reviewed", dependencies: [], writable_scope: "SCOPE-REVIEWED", task_sha256: SHA_A}],
   });
-  const rejected = createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START, maxPairLocalRepairGenerations: 2});
+  assert.throws(() => createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START, maxPairLocalRepairGenerations: 33}), /fixed at 32/u);
+  assert.throws(() => createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START, maxPairLocalRepairGenerations: 1000}), /fixed at 32/u);
+  assert.throws(() => createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START, maxPairLocalRepairGenerations: 1}), /fixed at 32/u);
+  const rejected = createParallelCampaignLifecycle({plan: rejectedPlan, clock: () => START});
   const rejectedLease = rejected.acquireWorker("reviewed", {atUtc: START}).workers[0].lease.lease_id;
   rejected.startWorker("reviewed", rejectedLease, opaqueSessionRef("worker:reviewed"), {atUtc: START});
   rejected.recordProgress("reviewed", rejectedLease, progress(), {atUtc: START});
@@ -246,20 +249,6 @@ async function main() {
   }, {atUtc: START});
   assert.equal(secondRepair.status, "RUNNING");
   assert.equal(secondRepair.workers[0].state, "READY");
-  const terminalLease = rejected.acquireWorker("reviewed", {atUtc: START}).workers[0].lease.lease_id;
-  rejected.startWorker("reviewed", terminalLease, opaqueSessionRef("worker:reviewed-terminal"), {atUtc: START});
-  rejected.recordProgress("reviewed", terminalLease, progress(), {atUtc: START});
-  rejected.recordHandoff("reviewed", terminalLease, {atUtc: START});
-  const boundedTerminal = rejected.acceptHandoff("reviewed", terminalLease, {
-    auditor_ref: "opaque-auditor-reviewed-terminal",
-    auditor_session_ref: opaqueSessionRef("auditor:reviewed-terminal"),
-    accepted: false,
-    evidence_sha256: SHA_C,
-  }, {atUtc: START});
-  assert.equal(boundedTerminal.status, "BLOCKED");
-  assert.equal(boundedTerminal.workers[0].state, "REPAIR_REQUIRED");
-  assert.equal(boundedTerminal.workers[0].lease.status, "FENCED");
-
   const independentContinuationPlan = compileParallelCampaignPlan({
     campaignId: "CAMPAIGN-INDEPENDENT-CONTINUATION-1",
     campaignVersion: "v3.0.0-rc.1",

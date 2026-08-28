@@ -124,7 +124,7 @@ export function createParallelCampaignLifecycle({
   validateParallelCampaignPlan(plan);
   assert(typeof clock === "function", "parallel campaign clock must be a function");
   assert(persist === null || typeof persist === "function", "parallel campaign persist callback must be a function");
-  assert(Number.isSafeInteger(maxPairLocalRepairGenerations) && maxPairLocalRepairGenerations >= 1 && maxPairLocalRepairGenerations <= 1000, "pair-local repair generation limit is invalid");
+  assert(maxPairLocalRepairGenerations === 32, "pair-local repair generation limit must remain fixed at 32");
 
   let state = initialState === null ? createParallelCampaignState(plan) : clone(initialState);
   validateParallelCampaignState(state, plan);
