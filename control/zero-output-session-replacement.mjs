@@ -12,6 +12,12 @@ function assert(condition, message) { if (!condition) throw new Error(message); 
 function id(value, label) { assert(typeof value === "string" && ID.test(value), `${label} is invalid`); }
 function sha(value, label) { assert(typeof value === "string" && SHA.test(value), `${label} must be SHA-256`); }
 function count(value, label) { assert(Number.isSafeInteger(value) && value >= 0, `${label} must be a non-negative integer`); }
+function utcMillis(value, label) {
+  assert(typeof value === "string" && UTC.test(value), `${label} must be UTC`);
+  const millis = Date.parse(value);
+  assert(Number.isFinite(millis) && new Date(millis).toISOString() === new Date(value).toISOString(), `${label} is not a valid UTC instant`);
+  return millis;
+}
 function validateTurn(turn) {
   assert(turn && typeof turn === "object", "turn observation is required");
   assert(turn.status === "COMPLETED" && turn.error === null, "only a completed non-error turn may be classified as silent");
@@ -31,13 +37,16 @@ function validateCustody(custody) {
   assert(custody.preserved === true && custody.reset_or_cleanup === false, "custody must be preserved without reset or cleanup");
   return custody;
 }
-function validateReplacement(replacement, {failedSessionId, pairedSessionId, custody}) {
+function validateReplacement(replacement, {failedSessionId, pairedSessionId, custody, evaluatedAtUtc}) {
   assert(replacement && typeof replacement === "object", "replacement probe is required");
   for (const field of ["session_id", "project_ref", "cwd_ref", "worktree_ref"]) id(replacement[field], `replacement ${field}`);
   assert(replacement.session_id !== failedSessionId && replacement.session_id !== pairedSessionId, "replacement identity collides with the pair");
   assert(replacement.project_bound === true && replacement.cwd_verified === true, "replacement must be project-bound with verified cwd");
-  assert(typeof replacement.observed_at_utc === "string" && UTC.test(replacement.observed_at_utc), "replacement observation must be UTC");
+  const observedMillis = utcMillis(replacement.observed_at_utc, "replacement observation");
+  const evaluatedMillis = utcMillis(evaluatedAtUtc, "replacement evaluation");
+  assert(evaluatedMillis >= observedMillis, "replacement observation is in the future");
   count(replacement.freshness_seconds, "replacement freshness seconds");
+  assert(replacement.freshness_seconds === Math.floor((evaluatedMillis - observedMillis) / 1000), "replacement freshness is not bound to observation and evaluation time");
   assert(replacement.freshness_seconds <= 300, "replacement execution proof is stale");
   count(replacement.visible_assistant_items, "replacement visible assistant items");
   count(replacement.visible_tool_items, "replacement visible tool items");
@@ -58,13 +67,15 @@ export function compileZeroOutputSessionReplacement({
   turn,
   custody,
   replacement,
+  evaluatedAtUtc,
   unrelatedLanesContinue = true,
 } = {}) {
   for (const [value, label] of [[replacementId, "replacement ID"], [laneId, "lane ID"], [role, "role"], [failedSessionId, "failed session ID"], [pairedSessionId, "paired session ID"]]) id(value, label);
   assert(replacementId !== failedSessionId && replacementId !== pairedSessionId, "replacement operation identity collides with the pair");
   validateTurn(turn);
   validateCustody(custody);
-  validateReplacement(replacement, {failedSessionId, pairedSessionId, custody});
+  utcMillis(evaluatedAtUtc, "replacement evaluation");
+  validateReplacement(replacement, {failedSessionId, pairedSessionId, custody, evaluatedAtUtc});
   assert(unrelatedLanesContinue === true, "one silent session may not stop unrelated lanes");
 
   const decision = {
@@ -81,6 +92,7 @@ export function compileZeroOutputSessionReplacement({
     ordinary_pair_autonomy_preserved: true,
     unrelated_lanes_continue: true,
     retry_same_session: false,
+    evaluated_at_utc: evaluatedAtUtc,
     turn: structuredClone(turn),
     custody: structuredClone(custody),
     replacement: structuredClone(replacement),
@@ -102,7 +114,8 @@ export function validateZeroOutputSessionReplacement(decision) {
   assert(decision.replacement_id !== decision.failed_session_id && decision.replacement_id !== decision.paired_session_id, "replacement operation identity collides with the pair");
   validateTurn(decision.turn);
   validateCustody(decision.custody);
-  validateReplacement(decision.replacement, {failedSessionId: decision.failed_session_id, pairedSessionId: decision.paired_session_id, custody: decision.custody});
+  utcMillis(decision.evaluated_at_utc, "replacement evaluation");
+  validateReplacement(decision.replacement, {failedSessionId: decision.failed_session_id, pairedSessionId: decision.paired_session_id, custody: decision.custody, evaluatedAtUtc: decision.evaluated_at_utc});
   sha(decision.decision_sha256, "replacement decision digest");
   assert(decision.decision_sha256 === canonicalDigest({...decision, decision_sha256: null}), "replacement decision digest mismatch");
   return decision;

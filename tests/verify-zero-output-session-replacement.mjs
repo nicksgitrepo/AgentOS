@@ -13,6 +13,7 @@ const input = {
   role: "REPAIR",
   failedSessionId: "SESSION.OLD",
   pairedSessionId: "SESSION.AUDITOR",
+  evaluatedAtUtc: "2026-08-28T15:00:05Z",
   turn,
   custody: {worktree_ref: "WORKTREE.A", branch_ref: "BRANCH.A", head: digest("head"), tree: digest("tree"), status_sha256: digest("status"), handoff_sha256: digest("handoff"), preserved: true, reset_or_cleanup: false},
   replacement,
@@ -31,6 +32,13 @@ assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: 
 assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: {...input.replacement, custody_mutated: true}}), /without mutation/u);
 assert.throws(() => compileZeroOutputSessionReplacement({...input, unrelatedLanesContinue: false}), /unrelated lanes/u);
 assert.throws(() => compileZeroOutputSessionReplacement({...input, replacementId: input.failedSessionId}), /operation identity collides/u);
+assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: {...input.replacement, observed_at_utc: "9999-99-99T99:99:99Z", probe_readback_sha256: canonicalDigest({...input.replacement, observed_at_utc: "9999-99-99T99:99:99Z", probe_readback_sha256: null})}}), /valid UTC instant/u);
+const staleReplacement = {...input.replacement, observed_at_utc: "2026-08-28T14:00:00Z", freshness_seconds: 5, probe_readback_sha256: null};
+staleReplacement.probe_readback_sha256 = canonicalDigest({...staleReplacement, probe_readback_sha256: null});
+assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: staleReplacement}), /freshness is not bound/u);
+const futureReplacement = {...input.replacement, observed_at_utc: "2026-08-28T15:01:00Z", freshness_seconds: 0, probe_readback_sha256: null};
+futureReplacement.probe_readback_sha256 = canonicalDigest({...futureReplacement, probe_readback_sha256: null});
+assert.throws(() => compileZeroOutputSessionReplacement({...input, replacement: futureReplacement}), /future/u);
 const tampered = structuredClone(decision); tampered.controller_approval_required = true;
 assert.throws(() => validateZeroOutputSessionReplacement(tampered), /approval gate/u);
 for (const mutate of [
