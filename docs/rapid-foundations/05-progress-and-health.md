@@ -99,6 +99,19 @@ is not a disguised success. `UNPROVEN` is not `PASS`.
 - If a heartbeat is absent or stale, mark liveness `STALE` or `UNKNOWN`. Keep
   the last exact record, perform only an authorized bounded reconciliation,
   and do not claim progress, success, or a silently replaced session.
+
+### Completed zero-output host sessions
+
+A turn that runs for at least 30 seconds, completes without a reported error,
+persists zero assistant, tool, command, and durable-result items, and has no
+remaining process is a host-session failure—not an idle lane, blocker, or
+successful retry. Preserve the exact worktree, branch, HEAD/tree, status digest,
+and pair handoff. Do not retry that session repeatedly and do not stop unrelated
+lanes. Admit a fresh project-bound session only after a visible-execution probe
+persists an assistant or tool item and verifies the required cwd; bind it to the
+same custody without reset or cleanup, then archive the failed session. This is
+a lifecycle repair and adds no Controller approval to ordinary Repair/Auditor
+work. Once admitted, the pair resumes direct autonomous operation.
 - If a required capability or dependency is unavailable, return `WAITING` or
   `UNAVAILABLE` with the exact blocker and resume condition. Do not authenticate,
   spend, retry without a changed observation, invent a substitute, or pause
