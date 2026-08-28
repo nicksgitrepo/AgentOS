@@ -151,6 +151,20 @@ Checks should report `PASS`, `FAIL`, `CHECK_UNAVAILABLE`, or `NOT_APPLICABLE`
 with a reason. `NOT_APPLICABLE` must be justified by the changed surface, not
 used as a shortcut around an unresolved risk.
 
+## Build-output retention and low-space routing
+
+- Build and test lanes reuse one content-addressed cache for a compatible
+  toolchain and lockfile. Creating a fresh multi-gigabyte target tree for every
+  proof is forbidden.
+- Nested fixture copies are forbidden. Proof custody retains the command, exit
+  status, output digests, test summary, and immutable candidate identity;
+  compiled artifacts are regenerable rather than durable evidence.
+- After each proof, the lane identifies unreferenced regenerable outputs for
+  custody-checked cleanup. Sentinel observes and routes but never deletes.
+- Below 40 GiB free, Sentinel emits one deduplicated alert to Controller.
+  Controller owns bounded cleanup; unchanged low-space state must not create a
+  message storm. The 25 GiB hard floor and 80–100 GiB cleanup target remain.
+
 ## Typed handoff
 
 The lane handoff is a structured record. Exact environment and session

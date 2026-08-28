@@ -151,6 +151,7 @@ export const STORAGE_AUTOPILOT_POLICY = Object.freeze({
   monitor_interval_hours: 24,
   cleanup_target_free_gib: Object.freeze({minimum: 80, maximum: 100, work_stopping_floor: false}),
   owner_warning_at_or_below_free_gib: 50,
+  sentinel_controller_alert_below_free_gib: 40,
   hard_operating_floor_at_or_below_free_gib: 25,
   update_headroom_gib: 20,
   system_residue_escalation_gib: 15,
@@ -158,6 +159,14 @@ export const STORAGE_AUTOPILOT_POLICY = Object.freeze({
   task_growth_alert_ratio: 2,
   ordinary_agents_poll_storage: false,
   cleanup_or_deletion_authorized: false,
+  build_output_policy: Object.freeze({
+    cache_scope: "CONTENT_ADDRESSED_TOOLCHAIN_AND_LOCKFILE",
+    duplicate_per_proof_targets_forbidden: true,
+    nested_fixture_copies_forbidden: true,
+    durable_evidence: Object.freeze(["COMMAND", "EXIT_STATUS", "STDOUT_STDERR_DIGESTS", "TEST_SUMMARY", "CANDIDATE_IDENTITY"]),
+    compiled_outputs_are_durable_evidence: false,
+    cleanup_after_proof: "REMOVE_UNREFERENCED_REGENERABLE_OUTPUTS_AFTER_CUSTODY_CHECK",
+  }),
 });
 export const STORAGE_RETENTION_DEFAULTS = Object.freeze({
   temporary_expiry_days: 7,
@@ -167,6 +176,10 @@ export const STORAGE_RETENTION_DEFAULTS = Object.freeze({
   build_caches: "CLEAN_AT_CLOSEOUT_ONLY_WHEN_PROVEN_SAFE",
 });
 export const STORAGE_AUTOPILOT_HOSTILE_CASES = Object.freeze([
+  "SENTINEL_ALERTS_CONTROLLER_ONCE_BELOW_FORTY_GIB",
+  "SENTINEL_DEDUPLICATES_UNCHANGED_STORAGE_ALERT",
+  "DUPLICATE_PER_PROOF_BUILD_TARGET_DENIED",
+  "NESTED_FIXTURE_COPY_DENIED",
   "EACH_THRESHOLD_BOUNDARY_AND_NON_OVERLAPPING_STATE",
   "PHYSICAL_LOGICAL_DOUBLE_COUNT_DENIAL",
   "INSUFFICIENT_UPDATE_HEADROOM",
@@ -189,6 +202,27 @@ export const STORAGE_AUTOPILOT_HOSTILE_CASES = Object.freeze([
   "BLOCKED_PATH_IDENTITY_CHANGE_RESETS_CORRELATION",
   "EXISTING_LIFECYCLE_CLASS_AND_STRICT_GATE_PRESERVATION",
 ]);
+
+export function compileSentinelStorageAlert({freeGib, observedAtUtc, previousAlertKey = null} = {}) {
+  storageAutoNumber(freeGib, "Sentinel storage free_gib");
+  string(observedAtUtc, "Sentinel storage observation time");
+  assert(previousAlertKey === null || (typeof previousAlertKey === "string" && SHA256.test(previousAlertKey)), "previous Sentinel storage alert key is invalid");
+  const threshold = STORAGE_AUTOPILOT_POLICY.sentinel_controller_alert_below_free_gib;
+  const triggered = freeGib < threshold;
+  const alertKey = triggered ? canonicalDigest({route: "SENTINEL_TO_CONTROLLER", threshold_gib: threshold, state: "BELOW_THRESHOLD"}) : null;
+  return {schema: "agentos.sentinel.storage_alert.v1", version: 1, observed_at_utc: observedAtUtc, free_gib: freeGib, threshold_gib: threshold, triggered, route: triggered && alertKey !== previousAlertKey ? "CONTROLLER" : null, deduplicated: triggered && alertKey === previousAlertKey, alert_key: alertKey, required_action: triggered ? "CONTROLLER_BOUNDED_CUSTODY_SAFE_CLEANUP" : "NONE", sentinel_cleanup_authorized: false};
+}
+
+export function validateBuildOutputPlan({cacheScope, duplicatePerProofTargets, nestedFixtureCopies, durableEvidence, cleanupAfterProof} = {}) {
+  const policy = STORAGE_AUTOPILOT_POLICY.build_output_policy;
+  assert(cacheScope === policy.cache_scope, "build cache must be content-addressed by compatible toolchain and lockfile");
+  assert(duplicatePerProofTargets === false, "duplicate per-proof build targets are forbidden");
+  assert(nestedFixtureCopies === false, "nested fixture copies are forbidden");
+  assert(Array.isArray(durableEvidence) && durableEvidence.length > 0, "durable build evidence is required");
+  assert(durableEvidence.every((entry) => policy.durable_evidence.includes(entry)), "compiled outputs may not be retained as durable evidence");
+  assert(cleanupAfterProof === policy.cleanup_after_proof, "build outputs must use the governed post-proof cleanup transition");
+  return true;
+}
 
 const STORAGE_AUTO_BUCKET_KINDS = new Set(["PHYSICAL", "LOGICAL"]);
 const STORAGE_AUTO_LIFECYCLE_PROTECTED = new Set(["ACTIVE_CUSTODY", "DELIVERY_EVIDENCE", "RETAINED_RUNTIME_STATE"]);

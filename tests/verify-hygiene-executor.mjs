@@ -361,7 +361,7 @@ try {
   assert.throws(() => compileUniversalDiscovery({sources: {live: {items: ["TASK-MISSING-READBACK"], complete: true}}}), /direct readback missing/u);
   const divergence = compileUniversalDiscovery({sources: {archived: {items: [{task_id: "TASK-DIVERGENCE", archived: true}], complete: true}, host_registry: {items: [{task_id: "TASK-DIVERGENCE", archived: false}], exhaustive: true}}, directReadbacks: {"TASK-DIVERGENCE": {task_id: "TASK-DIVERGENCE", classification: "PERMANENT_EXEMPT"}}});
   assert.equal(divergence.status, "ARCHIVED_REGISTRY_PROJECTION_DIVERGENCE");
-  assert.equal(STORAGE_AUTOPILOT_HOSTILE_CASES.length, 21);
+  assert.equal(STORAGE_AUTOPILOT_HOSTILE_CASES.length, 25);
 } finally {
   fs.rmSync(root, {recursive: true, force: true});
   if (outside) fs.rmSync(outside, {recursive: true, force: true});
