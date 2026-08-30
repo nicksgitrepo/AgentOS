@@ -246,6 +246,19 @@ assert.throws(() => writeIssuesMarkdownAtomic(deliveredRegistry, {operationsRoot
 assert.equal(fs.existsSync(path.join(collisionRoot, "issues.md")), false);
 assert.equal(beforeCollision, fs.readFileSync(dualWritten.path, "utf8"));
 
+// Existing symlinked projection ancestors are rejected before either canonical file is created.
+const symlinkTarget = path.resolve(process.cwd(), "../../../Temp/issue-registrar-symlink-target");
+const symlinkRoot = path.resolve(process.cwd(), "../../../Temp/issue-registrar-symlink-root");
+fs.rmSync(symlinkRoot, {recursive: true, force: true}); fs.rmSync(symlinkTarget, {recursive: true, force: true});
+try {
+  fs.mkdirSync(symlinkTarget, {recursive: true}); fs.symlinkSync(symlinkTarget, symlinkRoot, "dir");
+  assert.throws(() => writeIssuesMarkdownAtomic(deliveredRegistry, {operationsRoot: symlinkRoot, actor: ISSUE_REGISTRAR_ROLE_ID, deliveryEvidence: delivery}), /PROJECTION_COLLISION/u);
+  assert.equal(fs.existsSync(path.join(symlinkTarget, "issues.md")), false);
+  assert.equal(fs.existsSync(path.join(symlinkTarget, "cleared-issues.md")), false);
+} finally {
+  fs.rmSync(symlinkRoot, {recursive: true, force: true}); fs.rmSync(symlinkTarget, {recursive: true, force: true});
+}
+
 // Historical import is bounded and honest: uncertain/CREATED sources stay provisional.
 const historical = importHistoricalIssues([
   {source_id: "PYRAMID.FEATURE.019", source_ref: "ref:audit-pyramid/feature/019", title: "Feature historical finding", summary: "Imported from a supplied report.", category: "AUDIT_FEATURE", severity: "HIGH", source_sha256: SHA("5")},

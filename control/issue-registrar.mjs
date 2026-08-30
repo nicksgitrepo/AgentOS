@@ -632,7 +632,18 @@ export function compileClearedIssuesMarkdown(registry) {
   ]; if (cleared.length === 0) lines.push("_none_", ""); for (const issue of cleared) lines.push(...issueDetailLines(issue, {cleared: true})); return `${lines.join("\n").replace(/\n{3,}/gu, "\n\n")}\n`;
 }
 function safeProjectionTarget(target, expected, label) {
-  const resolved = path.resolve(target ?? expected); assert(resolved === expected, "ISSUE_REGISTRAR_CANONICAL_PATH_REQUIRED", `${label} is restricted to its canonical path`); try {
+  const resolved = path.resolve(target ?? expected); assert(resolved === expected, "ISSUE_REGISTRAR_CANONICAL_PATH_REQUIRED", `${label} is restricted to its canonical path`);
+  const root = path.dirname(expected); const rootParts = root.split(path.sep).filter(Boolean); let current = path.parse(root).root;
+  for (const part of rootParts) {
+    current = path.join(current, part);
+    try {
+      const stat = fs.lstatSync(current); assert(!stat.isSymbolicLink(), "ISSUE_REGISTRAR_PROJECTION_COLLISION", `${label} has a symlinked ancestor`); assert(stat.isDirectory(), "ISSUE_REGISTRAR_PROJECTION_COLLISION", `${label} has a non-directory ancestor`);
+    } catch (error) {
+      if (error?.code === "ENOENT") break; throw error;
+    }
+  }
+  const relative = path.relative(root, resolved); assert(relative !== "" && !relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative), "ISSUE_REGISTRAR_CANONICAL_PATH_REQUIRED", `${label} escapes its authorized root`);
+  try {
     const stat = fs.lstatSync(resolved); assert(!stat.isSymbolicLink() && stat.isFile(), "ISSUE_REGISTRAR_PROJECTION_COLLISION", `${label} collides with a non-regular file`);
   } catch (error) {
     if (error?.code !== "ENOENT") throw error;
@@ -675,7 +686,7 @@ export function writeIssuesMarkdownAtomic(registry, {operationsRoot, canonicalPa
   assert(clearedCount === 0 || isRuntimeDeliveryVerified(deliveryEvidence), "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "cleared projections require independent PASS and equal Runtime identities");
   assert(deliveryEvidence === undefined || deliveryEvidence?.status === "DELIVERED_VERIFIED" || deliveryEvidence?.delivered === true, "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "supplied projection delivery evidence must be explicitly verified");
   const markdown = compileIssueMarkdown(registry); const clearedMarkdown = compileClearedIssuesMarkdown(registry); const projection = reconcileIssueProjections(registry, {issuesMarkdown: markdown, clearedMarkdown});
-  fs.mkdirSync(path.dirname(expected), {recursive: true}); const token = `${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`; const entries = [
+  fs.mkdirSync(path.dirname(expected), {recursive: true}); safeProjectionTarget(expected, expected, "issues.md"); safeProjectionTarget(expectedCleared, expectedCleared, "cleared-issues.md"); const token = `${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`; const entries = [
     {target: expected, data: markdown, suffix: "issues"},
     {target: expectedCleared, data: clearedMarkdown, suffix: "cleared"},
   ]; const created = []; const backups = []; let installed = []; try {
