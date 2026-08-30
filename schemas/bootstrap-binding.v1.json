@@ -1774,7 +1774,7 @@
     },
     "hybrid_scheduler_controller": {
       "path": "control/hybrid-scheduler.mjs",
-      "sha256": "69e2c9e7935f64d0e0bd99b26519f63bdc2fbc496e4f8200c356f225a4d12752"
+      "sha256": "671d879f7e42c1d668289f1b0bf4aa8e370844c59da4482667d08d76fc6d728d"
     },
     "hybrid_scheduler_contract": {
       "path": "schemas/hybrid-scheduler.v1.json",
@@ -3510,7 +3510,7 @@
     },
     "storage_autopilot_controller": {
       "path": "control/storage-autopilot.mjs",
-      "sha256": "141f848d23eaa969438210ee96f423c82e7aa89e49ad07d9e3d7a76ac0db9529",
+      "sha256": "d9936a706e7d03a3726b4f28779eb567e7c171d0d9dfba66a29aa4f12d9ca535",
       "authority": "orchestrator-hygiene-dual-key-zero-recovery-governance-activation-successor-115",
       "authority_sha256": "90336d9881962c54d460b0a98a693298f8dfe24237cf564bf09f23f858ac6d8c",
       "direct_path_count": 12,
