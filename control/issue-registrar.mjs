@@ -140,9 +140,24 @@ function isRuntimeDeliveryVerified(delivery) {
     && delivery.origin_tree === delivery.github_tree
     && validTree(delivery.github_tree); const delivered = delivery.status === "DELIVERED_VERIFIED" || delivery.delivered === true; return delivered && pass && identical && commitsEqual && treesEqual;
 }
+function validateDeliveredRecord(issue) {
+  assert(isRecord(issue.candidate), "ISSUE_REGISTRAR_DELIVERY_CANDIDATE_REQUIRED", "DELIVERED issues require a bound immutable candidate");
+  for (const field of ["commit", "tree", "scope", "verification_contract"]) requireText(issue.candidate[field], `delivered candidate ${field}`, 1, "ISSUE_REGISTRAR_DELIVERY_CANDIDATE_REQUIRED");
+  assert(HEX40.test(issue.candidate.commit) || SHA256.test(issue.candidate.commit), "ISSUE_REGISTRAR_DELIVERY_CANDIDATE_REQUIRED", "delivered candidate commit is invalid");
+  assert(HEX40.test(issue.candidate.tree) || SHA256.test(issue.candidate.tree), "ISSUE_REGISTRAR_DELIVERY_CANDIDATE_REQUIRED", "delivered candidate tree is invalid");
+  assert(isRecord(issue.delivery), "ISSUE_REGISTRAR_DELIVERY_EVIDENCE_REQUIRED", "DELIVERED issues require delivery evidence");
+  const independentPass = issue.delivery.independent_pass ?? issue.delivery.independentPass ?? issue.delivery.audit_pass ?? issue.delivery.auditPass;
+  assert(isRecord(independentPass) && (independentPass.status === "PASS" || independentPass.pass === true) && (independentPass.identical_bytes === true || independentPass.identicalBytes === true), "ISSUE_REGISTRAR_RUNTIME_PASS_REQUIRED", "DELIVERED issues require an explicit identical-byte independent PASS");
+  for (const [field, expected] of [["candidate_commit", issue.candidate.commit], ["candidate_tree", issue.candidate.tree]]) {
+    if (issue.delivery[field] !== undefined) assert(issue.delivery[field] === expected, "ISSUE_REGISTRAR_DELIVERY_IDENTITY_MISMATCH", `delivery ${field} must bind the candidate`);
+    for (const alias of [field === "candidate_commit" ? "candidateCommit" : "candidateTree"]) if (independentPass[alias] !== undefined) assert(independentPass[alias] === expected, "ISSUE_REGISTRAR_DELIVERY_IDENTITY_MISMATCH", `independent PASS ${alias} must bind the candidate`);
+  }
+  assert(isRuntimeDeliveryVerified(issue.delivery), "ISSUE_REGISTRAR_DELIVERY_EVIDENCE_REQUIRED", "DELIVERED issues require verified Runtime identities");
+  assert(issue.delivery.local_commit === issue.candidate.commit && issue.delivery.local_tree === issue.candidate.tree, "ISSUE_REGISTRAR_DELIVERY_IDENTITY_MISMATCH", "delivery identities must equal the bound candidate");
+}
 function isClearedIssue(issue) {
-  const candidate = issue.candidate; const candidateMatches = candidate === null || candidate === undefined
-    || (issue.delivery?.local_commit === candidate.commit && issue.delivery?.local_tree === candidate.tree); return ["DELIVERED", ...ISSUE_TERMINAL_OWNER_STATUSES].includes(issue.status)
+  const candidate = issue.candidate; const candidateMatches = isRecord(candidate)
+    && issue.delivery?.local_commit === candidate.commit && issue.delivery?.local_tree === candidate.tree; return ["DELIVERED", ...ISSUE_TERMINAL_OWNER_STATUSES].includes(issue.status)
     && isRuntimeDeliveryVerified(issue.delivery)
     && candidateMatches;
 }
@@ -231,7 +246,7 @@ export function validateIssueRecord(issue) {
     requireUtc(entry.at_utc, "history timestamp");
   }); if (issue.candidate !== null) normalizeCandidate(issue.candidate);
   for (const field of ["audit", "delivery", "owner_decision"]) assert(issue[field] === null || isRecord(issue[field]), "ISSUE_REGISTRAR_INVALID_RECORD", `${field} must be an object or null`);
-  if (issue.status === "DELIVERED") assert(isRuntimeDeliveryVerified(issue.delivery), "ISSUE_REGISTRAR_DELIVERY_EVIDENCE_REQUIRED", "delivered issues require independent PASS and equal Runtime identities");
+  if (issue.status === "DELIVERED") validateDeliveredRecord(issue);
   requireSha(issue.issue_sha256, "issue digest"); assert(issue.issue_sha256 === digestWithout(issue, "issue_sha256"), "ISSUE_REGISTRAR_DIGEST_MISMATCH", "issue digest mismatch"); return issue;
 }
 export function compileIssueRegistry({productPrefixes = ["SOCIUNA"], reservations = [], nextNumbers = {}, issues = [], duplicateSubmissions = []} = {}) {

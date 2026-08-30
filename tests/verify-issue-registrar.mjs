@@ -207,6 +207,17 @@ assert.throws(() => validateIssueRuntimeDelivery({
 assert.throws(() => validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery: {...delivery, origin_commit: "c".repeat(40)}}), /IDENTITY_MISMATCH/u);
 assert.throws(() => validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery: {...delivery, status: "DELIVERED_VERIFIED", github_tree: "d".repeat(40)}}), /IDENTITY_MISMATCH/u);
 
+// A lower-level DELIVERED transition cannot bypass the bound candidate and independent PASS gate.
+const forgedDirectDelivery = {
+  status: "DELIVERED_VERIFIED",
+  independent_pass: {status: "PASS", identical_bytes: true},
+  local_commit: "c".repeat(40), origin_commit: "c".repeat(40), github_commit: "c".repeat(40),
+  local_tree: "d".repeat(40), origin_tree: "d".repeat(40), github_tree: "d".repeat(40),
+};
+assert.throws(() => updateIssue(registry, first.issue.issue_id, {status: "DELIVERED", delivery: forgedDirectDelivery}, {nowUtc: NOW, actor: "PROJECT_OWNER"}), /DELIVERY_CANDIDATE_REQUIRED/u);
+assert.equal(registry.issues.find((issue) => issue.issue_id === first.issue.issue_id).status, "READY");
+assert.doesNotMatch(compileClearedIssuesMarkdown(registry), new RegExp(first.issue.issue_id, "u"));
+
 // Deterministic projection sections and sole-writer/canonical-path enforcement.
 const markdown = compileIssueMarkdown(registry);
 assert.match(markdown, /<a id="provisional"><\/a>/u);
