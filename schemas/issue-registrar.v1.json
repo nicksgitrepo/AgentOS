@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.issue_registrar.v1",
+  "version": 1,
+  "title": "AgentOS Issue Registrar — Permanent",
+  "description": "Portable single-writer issue registration, immutable numbering, typed lifecycle, and deterministic projection contract.",
+  "additionalProperties": false,
+  "role": {
+    "role_id": "AGENTOS.ISSUE_REGISTRAR",
+    "title": "AgentOS Issue Registrar — Permanent",
+    "canonical_filename": "issues.md",
+    "writer_scope": "OPERATIONS_ROOT_ISSUES_MD_AFTER_DELIVERY_ONLY",
+    "self_acceptance_forbidden": true
+  },
+  "enums": {
+    "status": ["INTAKE_FAILED", "DUPLICATE", "READY", "IN_REPAIR", "AUDITING", "BLOCKED", "NOT_READY", "DELIVERED", "REGRESSION", "REOPENED", "SUPERSEDED", "DEFERRED", "ACCEPTED_RISK", "WONT_FIX"],
+    "lifecycle_stage": ["NOT_AUTHORIZED", "PROVISIONAL", "READY", "IN_REPAIR", "AUDITING", "BLOCKED", "NOT_READY", "DELIVERED", "REGRESSION", "REOPENED", "SUPERSEDED", "DEFERRED", "ACCEPTED_RISK", "WONT_FIX", "DUPLICATE"],
+    "severity": ["BLOCKER", "HIGH", "MEDIUM", "LOW", "INFO"]
+  },
+  "required": ["schema", "version", "role", "enums"],
+  "properties": {
+    "schema": {"const": "agentos.issue_registrar.v1"},
+    "version": {"const": 1},
+    "role": {"type": "object"},
+    "enums": {"type": "object"}
+  },
+  "state_rules": {
+    "numbering": "Reserve a unique number before validating non-duplicate input; issue IDs are never reused, deleted, or renumbered.",
+    "incomplete": "Incomplete standardized input remains visible as INTAKE_FAILED/NOT_AUTHORIZED with failure code INCOMPLETE_STANDARDIZED_ISSUE and every missing/invalid field.",
+    "duplicates": "A duplicate preserves the reporter snapshot and evidence and links to the existing issue without consuming a number.",
+    "owner_decisions": "Only Project Owner authority may set DEFERRED, ACCEPTED_RISK, or WONT_FIX.",
+    "writer": "Only AGENTOS.ISSUE_REGISTRAR may atomically write operations-root/issues.md, and only after DELIVERED_VERIFIED evidence.",
+    "privacy": "Security-sensitive evidence is represented by controlled opaque references and never stores raw secret payloads."
+  }
+}

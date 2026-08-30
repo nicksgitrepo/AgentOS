@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.issue_submission.v1",
+  "version": 1,
+  "title": "Typed Issue Registrar submission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action", "issue_id", "status", "lifecycle_stage", "issue_sha256", "at_utc", "receipt_sha256"],
+  "properties": {
+    "action": {"enum": ["SUBMITTED", "DUPLICATE_LINKED", "COMPLETED", "UPDATED"]},
+    "issue_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9]{1,31}-ISSUE-[0-9]{4}-[0-9]{4,}$"},
+    "status": {"type": "string"},
+    "lifecycle_stage": {"type": "string"},
+    "issue_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "at_utc": {"type": "string", "format": "date-time"},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "state_rules": {
+    "reservation": "A SUBMITTED receipt for a non-duplicate binds the newly reserved immutable number.",
+    "duplicate": "DUPLICATE_LINKED binds the existing issue and preserves submitted reporter/evidence attribution.",
+    "self_digest": "receipt_sha256 is canonicalDigest with receipt_sha256 set to null."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "agentos.issue_registrar_historical_import.v1",
+  "version": 1,
+  "sources": [
+    {"source_id": "AUDIT-PYRAMID-001-FEATURE-019", "source_ref": "ref:audit-pyramid/001/feature/019", "title": "Feature audit finding", "summary": "Observed feature result retained from an immutable report.", "category": "AUDIT_FEATURE", "severity": "HIGH", "uncertain": false, "source_sha256": "1111111111111111111111111111111111111111111111111111111111111111"},
+    {"source_id": "AUDIT-PYRAMID-001-PLATFORM-008", "source_ref": "ref:audit-pyramid/001/platform/008", "title": "Platform audit finding", "summary": "Observed platform result retained from an immutable report.", "category": "AUDIT_PLATFORM", "severity": "MEDIUM", "uncertain": false, "source_sha256": "2222222222222222222222222222222222222222222222222222222222222222"},
+    {"source_id": "LEGACY-CREATED-TEMPLATE-001", "source_ref": "ref:legacy/template/001", "title": "Untouched created template", "summary": "Template remains provisional pending evidence.", "category": "LEGACY_TEMPLATE", "severity": "MEDIUM", "status": "CREATED", "uncertain": true, "missing_evidence_reasons": ["Source is a CREATED template without verification evidence."]},
+    {"source_id": "NOT-READY-BACKLOG-001", "source_ref": "ref:backlog/not-ready/001", "title": "Not ready backlog item", "summary": "Legacy backlog item retained without inventing a result.", "category": "NOT_READY_BACKLOG", "severity": "LOW", "uncertain": true, "missing_evidence_reasons": ["No independent acceptance evidence was supplied."]}
+  ]
+}

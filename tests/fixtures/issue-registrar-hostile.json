@@ -1,0 +1,16 @@
+{
+  "schema": "agentos.issue_registrar_hostile_fixtures.v1",
+  "version": 1,
+  "cases": [
+    {"id": "ISSUE_REGISTRAR.NUMBER_RESERVED_ON_MALFORMED", "expect": "INTAKE_FAILED"},
+    {"id": "ISSUE_REGISTRAR.DUPLICATE_ATTRIBUTION_PRESERVED", "expect": "DUPLICATE_LINKED"},
+    {"id": "ISSUE_REGISTRAR.OWNER_ONLY_TERMINAL", "expect": "REJECT_NON_OWNER"},
+    {"id": "ISSUE_REGISTRAR.SOLE_WRITER_DENIAL", "expect": "REJECT_NON_REGISTRAR"},
+    {"id": "ISSUE_REGISTRAR.DELIVERY_IDENTITY_MISMATCH", "expect": "REJECT"},
+    {"id": "ISSUE_REGISTRAR.SECURITY_REDACTION", "expect": "OPAQUE_REFERENCE"},
+    {"id": "ISSUE_REGISTRAR.TEMPLATE_NOT_VALID", "expect": "PROVISIONAL"},
+    {"id": "ISSUE_REGISTRAR.SILENT_LOSS", "expect": "PRESERVED"},
+    {"id": "ISSUE_REGISTRAR.ONE_LANE", "expect": "REJECT_CONFLICT"},
+    {"id": "ISSUE_REGISTRAR.DETERMINISTIC_ORDER", "expect": "CANONICAL"}
+  ]
+}

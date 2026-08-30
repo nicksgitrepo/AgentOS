@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.issue_transition.v1",
+  "version": 1,
+  "title": "Typed issue lifecycle transition contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "terminal_owner_statuses", "allowed_advance_actions", "rules"],
+  "properties": {
+    "schema": {"const": "agentos.issue_transition.v1"},
+    "version": {"const": 1},
+    "terminal_owner_statuses": {"const": ["DEFERRED", "ACCEPTED_RISK", "WONT_FIX"]},
+    "allowed_advance_actions": {"const": ["ADVANCE", "REOPEN", "LINK", "SUPERSEDE"]},
+    "rules": {"type": "object"}
+  },
+  "state_rules": {
+    "same_root": "A recurrence with the same root issue reopens the existing ID; a different root creates a linked new issue.",
+    "regression": "A regression is a new immutable issue linked by regression_of.",
+    "terminal": "Only Project Owner authority may set DEFERRED, ACCEPTED_RISK, or WONT_FIX; terminal records cannot be deleted."
+  }
+}
