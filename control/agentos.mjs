@@ -27,6 +27,16 @@ export {compileAgentSpawnerDefectIntake, validateAgentSpawnerDefectIntake, accep
 export {compileAgentSpawnerControllerBridge, validateAgentSpawnerControllerBridge, SPAWNER_ROUTE_TO_CONTROLLER_ACTION, AGENT_SPAWNER_CONTROLLER_BRIDGE_SCHEMA, AGENT_SPAWNER_CONTROLLER_BRIDGE_VERSION} from "./agent-spawner-controller-bridge.mjs";
 export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAgentSpawnerDefectQueue, writeAgentSpawnerDefectQueueCompareAndSwap, appendAgentSpawnerDefectQueueRecord, acceptAgentSpawnerDefectQueueRecord} from "./agent-spawner-defect-queue.mjs";
 export {compilePermanentRoleCandidate, validatePermanentRoleCandidate, compilePermanentRoleRoster, validatePermanentRoleRoster, admitNextPermanentRole, PERMANENT_ROLE_ROSTER_SCHEMA, PERMANENT_ROLE_CANDIDATE_SCHEMA, PERMANENT_ROLE_ROSTER_VERSION, PERMANENT_ROLE_IDS, PERMANENT_ROLE_KINDS, PERMANENT_ROLE_ROSTER_NEXT_ACTIONS} from "./permanent-role-roster.mjs";
+export {
+  ISSUE_REGISTRAR_SCHEMA, ISSUE_REGISTRAR_VERSION, ISSUE_REGISTRAR_ROLE_ID, ISSUE_REGISTRAR_ROLE_TITLE, ISSUE_REGISTRAR_ROLE_KIND,
+  ISSUE_REGISTRAR_FAILURE_CODE, ISSUE_REGISTRAR_RESERVATION_POLICY, ISSUE_STATUSES, ISSUE_LIFECYCLE_STAGES, ISSUE_SEVERITIES,
+  ISSUE_TERMINAL_OWNER_STATUSES, ISSUE_REGISTRY_SCHEMA, ISSUE_SUBMISSION_SCHEMA, ISSUE_TRANSITION_SCHEMA,
+  IssueRegistrar, createIssueRegistrar, submitIssue, completeIssue, updateIssue, reopenIssue, submitRegression,
+  compileIssueRegistry, validateIssueRegistry, validateIssueRecord, reserveIssueNumber, compileIssueMarkdown,
+  writeIssuesMarkdownAtomic, importHistoricalIssues, reconcileIssueRegistry, compileIssueRegistrarRole, validateIssueRegistrarRole,
+  validateIssueWorkflowAdmission, validateIssueAuditAdmission, validateIssueRuntimeDelivery,
+  compileIssueSubmission, validateIssueSubmission, compileIssueTransition, validateIssueTransition, compileIssueIntake, validateIssueIntake, compileIssueRole,
+} from "./issue-registrar.mjs";
 export {compileIndependentClearanceApplicability, validateIndependentClearanceApplicability} from "./independent-clearance-applicability.mjs";
 export {compileImportOrchestrator, validateImportOrchestrator, advanceImportOrchestrator, resumeBoundedLocalClearanceHold, resumeBoundedLocalIntegration, LOCAL_CLEARANCE_ONLY_BOUNDARY_IDS, readImportOrchestratorRecord, writeImportOrchestratorRecordCompareAndSwap, advanceImportOrchestratorRecord} from "./import-orchestrator.mjs";
 export {dispatchOrchestratorSuccessor, validateAutonomousSuccessorMetadata, validateOrchestratorSuccessorDispatchReadback, ORCHESTRATOR_SUCCESSOR_DISPATCH_SCHEMA, ORCHESTRATOR_SUCCESSOR_DISPATCH_VERSION, ORCHESTRATOR_LOCAL_RUNTIME_SUCCESSOR_ACTIONS, ORCHESTRATOR_PROTECTED_RUNTIME_SUCCESSOR_ACTIONS, ORCHESTRATOR_SAFE_TRANSITION_CAP, ORCHESTRATOR_DISPATCHABLE_ACTIONS} from "./orchestrator-successor-dispatch.mjs";
@@ -121,6 +131,7 @@ export * as agentSpawnerDefectIntake from "./agent-spawner-defect-intake.mjs";
 export * as agentSpawnerControllerBridge from "./agent-spawner-controller-bridge.mjs";
 export * as agentSpawnerDefectQueue from "./agent-spawner-defect-queue.mjs";
 export * as permanentRoleRoster from "./permanent-role-roster.mjs";
+export * as issueRegistrar from "./issue-registrar.mjs";
 export * as independentClearanceApplicability from "./independent-clearance-applicability.mjs";
 export * as importOrchestrator from "./import-orchestrator.mjs";
 export * as orchestratorSuccessorDispatch from "./orchestrator-successor-dispatch.mjs";

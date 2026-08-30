@@ -25,8 +25,19 @@ for (const name of [
   "compilePermanentRoleRoster",
   "validatePermanentRoleRoster",
   "admitNextPermanentRole",
+  "createIssueRegistrar",
+  "submitIssue",
+  "compileIssueRegistry",
+  "writeIssuesMarkdownAtomic",
+  "validateIssueRuntimeDelivery",
 ]) {
   assert.equal(typeof publicKernel[name], "function", `public kernel export is unavailable: ${name}`);
+}
+
+const issueRegistrar = await import(pathToFileURL(path.join(root, "control", "issue-registrar.mjs")).href);
+for (const name of ["createIssueRegistrar", "submitIssue", "compileIssueRegistry", "writeIssuesMarkdownAtomic", "validateIssueRuntimeDelivery", "ISSUE_REGISTRAR_ROLE_ID"]) {
+  assert.equal(publicKernel[name], issueRegistrar[name], `public kernel issue registrar export drifted: ${name}`);
+  assert.equal(publicKernel.issueRegistrar[name], issueRegistrar[name], `public kernel issue registrar namespace drifted: ${name}`);
 }
 
 for (const name of [

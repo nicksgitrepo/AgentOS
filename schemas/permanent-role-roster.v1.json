@@ -9,7 +9,7 @@
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "id": {"type": "string", "pattern": "^[A-Z][A-Z0-9._:-]*$"},
-    "roleId": {"enum": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER"]},
+    "roleId": {"enum": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.ISSUE_REGISTRAR", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER"]},
     "continuation": {
       "type": "object", "additionalProperties": false,
       "required": ["mode", "timer_deferral", "heartbeat_deferral", "same_turn_dispatch", "protected_event_id", "resume_condition"],
@@ -23,7 +23,7 @@
       "required": ["schema", "version", "role_id", "role_kind", "block_set_sha256", "independent_evaluation_sha256", "hostile_fixture_ids", "authority", "stop_conditions", "qa_status", "admission_state", "activation_state", "worker_spawned", "candidate_sha256"],
       "properties": {
         "schema": {"const": "agentos.permanent_role_candidate.v1"}, "version": {"const": 1}, "role_id": {"$ref": "#/$defs/roleId"},
-        "role_kind": {"enum": ["INTENT_REGULATOR", "MEMORY", "RUNTIME", "SCHEDULER"]}, "block_set_sha256": {"$ref": "#/$defs/sha256"},
+        "role_kind": {"enum": ["INTENT_REGULATOR", "ISSUE_REGISTRAR", "MEMORY", "RUNTIME", "SCHEDULER"]}, "block_set_sha256": {"$ref": "#/$defs/sha256"},
         "independent_evaluation_sha256": {"$ref": "#/$defs/sha256"}, "hostile_fixture_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
         "authority": {"const": "INDEPENDENT_ADMISSION_AUTHORITY"}, "stop_conditions": {"type": "string", "minLength": 24},
         "qa_status": {"const": "QA_PASS_INDEPENDENT_EVALUATION"}, "admission_state": {"enum": ["QA_READY_NOT_ADMITTED", "ADMITTED_CONTROL_PLANE_ONLY"]},
@@ -34,8 +34,8 @@
   "properties": {
     "schema": {"const": "agentos.permanent_role_roster.v1"}, "version": {"const": 1}, "spawner_admission_sha256": {"$ref": "#/$defs/sha256"},
     "controller_role_alias": {"const": "AGENTOS.INTENT_REGULATOR"}, "duplicate_controller_forbidden": {"const": true},
-    "permanent_role_ids": {"const": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER"]},
-    "candidates": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/$defs/candidate"}},
+    "permanent_role_ids": {"const": ["AGENTOS.INTENT_REGULATOR", "AGENTOS.ISSUE_REGISTRAR", "AGENTOS.MEMORY", "AGENTOS.RUNTIME", "AGENTOS.SCHEDULER"]},
+    "candidates": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/candidate"}},
     "admitted_role_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/roleId"}},
     "next_role_id": {"anyOf": [{"$ref": "#/$defs/roleId"}, {"type": "null"}]},
     "status": {"enum": ["READY_FOR_NEXT_ROLE", "PERMANENT_ROSTER_READY"]}, "activation_state": {"const": "OFF"},
@@ -47,7 +47,7 @@
   "required": ["schema", "version", "spawner_admission_sha256", "controller_role_alias", "duplicate_controller_forbidden", "permanent_role_ids", "candidates", "admitted_role_ids", "next_role_id", "status", "activation_state", "worker_spawned_count", "next_action", "next_handler", "continuation", "continuation_sha256", "roster_sha256"],
   "state_rules": {
     "order": "Only the typed next_role_id may be admitted; admitted_role_ids must be a canonical prefix.",
-    "roles": "The Intent Regulator is the Controller alias; a duplicate Controller role is forbidden. The canonical permanent roles are Intent Regulator, Memory, Runtime, and Scheduler.",
+    "roles": "The Intent Regulator is the Controller alias; a duplicate Controller role is forbidden. The canonical permanent roles are Intent Regulator, Issue Registrar, Memory, Runtime, and Scheduler.",
     "custody": "Every role admission must revalidate the complete current typed Spawner admission against spawner_admission_sha256; a roster digest alone cannot authorize a transition.",
     "qa": "Every candidate must have complete non-placeholder blocks, hostile fixtures, independent evaluation, explicit authority, and stop conditions before admission.",
     "closeout": "All roles admitted yields next_action=INJECT_ORCHESTRATOR_GOVERNANCE with a registered next_handler and same-turn continuation; activation remains OFF."

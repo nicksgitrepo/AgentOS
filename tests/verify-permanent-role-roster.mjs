@@ -23,8 +23,8 @@ import {controllerActionHandlerFor, controllerContinuationDigest} from "../contr
 
 const SHA = (char) => char.repeat(64);
 const NOW = "2026-08-16T00:00:00.000Z";
-const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b"];
-const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f"];
+const BLOCK_DIGEST_CHARS = ["8", "9", "a", "b", "0"];
+const EVALUATION_DIGEST_CHARS = ["c", "d", "e", "f", "1"];
 const redigest = (value, field) => {
   value[field] = canonicalDigest({...value, [field]: null});
   return value;
