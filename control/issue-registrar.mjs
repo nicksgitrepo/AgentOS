@@ -754,7 +754,14 @@ function validateSeamCompanion(companion, rootId, activeById) {
   const issueId = String(companion.issue_id ?? companion.issueId ?? "");
   assert(ISSUE_ID.test(issueId), "ISSUE_REGISTRAR_SEAM_ID_REQUIRED", "every causal companion requires a registered issue ID");
   const registered = activeById.get(issueId) ?? companion;
-  if (activeById.has(issueId)) validateIssueRecord(registered);
+  if (activeById.has(issueId)) {
+    // Routing metadata such as lane is supplied beside, not inside, the
+    // digest-bound issue record.  Validate the registered record itself
+    // without allowing that metadata to invalidate its immutable digest.
+    const registeredRecord = clone(registered);
+    delete registeredRecord.lane;
+    validateIssueRecord(registeredRecord);
+  }
   const kind = normalizeFindingKind(companion.finding_kind ?? companion.findingKind ?? registered.finding_kind ?? "ISSUE");
   assert(kind === "SEAM_FINDING" || kind === "SCOPE_AMENDMENT", "ISSUE_REGISTRAR_SEAM_FINDING_REQUIRED", "every companion must arrive as SEAM_FINDING or SCOPE_AMENDMENT intake");
   const relation = normalizeRelationType(companion.relation_type ?? companion.relationType ?? registered.relation_type ?? null);
