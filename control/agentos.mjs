@@ -29,10 +29,12 @@ export {compileAgentSpawnerDefectQueue, validateAgentSpawnerDefectQueue, readAge
 export {compilePermanentRoleCandidate, validatePermanentRoleCandidate, compilePermanentRoleRoster, validatePermanentRoleRoster, admitNextPermanentRole, PERMANENT_ROLE_ROSTER_SCHEMA, PERMANENT_ROLE_CANDIDATE_SCHEMA, PERMANENT_ROLE_ROSTER_VERSION, PERMANENT_ROLE_IDS, PERMANENT_ROLE_KINDS, PERMANENT_ROLE_ROSTER_NEXT_ACTIONS} from "./permanent-role-roster.mjs";
 export {
   ISSUE_REGISTRAR_SCHEMA, ISSUE_REGISTRAR_VERSION, ISSUE_REGISTRAR_ROLE_ID, ISSUE_REGISTRAR_ROLE_TITLE, ISSUE_REGISTRAR_ROLE_KIND,
+  ISSUE_REGISTRAR_CANONICAL_FILENAME, ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME, ISSUE_REGISTRAR_SEAM_RELATIONS, ISSUE_REGISTRAR_FINDING_KINDS,
   ISSUE_REGISTRAR_FAILURE_CODE, ISSUE_REGISTRAR_RESERVATION_POLICY, ISSUE_STATUSES, ISSUE_LIFECYCLE_STAGES, ISSUE_SEVERITIES,
   ISSUE_TERMINAL_OWNER_STATUSES, ISSUE_REGISTRY_SCHEMA, ISSUE_SUBMISSION_SCHEMA, ISSUE_TRANSITION_SCHEMA,
-  IssueRegistrar, createIssueRegistrar, submitIssue, completeIssue, updateIssue, reopenIssue, submitRegression,
-  compileIssueRegistry, validateIssueRegistry, validateIssueRecord, reserveIssueNumber, compileIssueMarkdown,
+  IssueRegistrar, createIssueRegistrar, submitIssue, completeIssue, updateIssue, reopenIssue, submitRegression, submitSeamFinding,
+  compileIssueRegistry, validateIssueRegistry, validateIssueRecord, reserveIssueNumber, compileIssueMarkdown, compileClearedIssuesMarkdown,
+  reconcileIssueProjections, compileIssueProjectionReceipt, validateIssueSeamClosure,
   writeIssuesMarkdownAtomic, importHistoricalIssues, reconcileIssueRegistry, compileIssueRegistrarRole, validateIssueRegistrarRole,
   validateIssueWorkflowAdmission, validateIssueAuditAdmission, validateIssueRuntimeDelivery,
   compileIssueSubmission, validateIssueSubmission, compileIssueTransition, validateIssueTransition, compileIssueIntake, validateIssueIntake, compileIssueRole,

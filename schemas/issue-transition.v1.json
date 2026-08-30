@@ -16,6 +16,9 @@
   "state_rules": {
     "same_root": "A recurrence with the same root issue reopens the existing ID; a different root creates a linked new issue.",
     "regression": "A regression is a new immutable issue linked by regression_of.",
-    "terminal": "Only Project Owner authority may set DEFERRED, ACCEPTED_RISK, or WONT_FIX; terminal records cannot be deleted."
+    "terminal": "Only Project Owner authority may set DEFERRED, ACCEPTED_RISK, or WONT_FIX; terminal records cannot be deleted.",
+    "repair_scope": "A repair claim names exactly one compliant READY root and a bounded causal closure. Every companion is typed SEAM_FINDING or SCOPE_AMENDMENT and links by CHILD_OF, DEPENDS_ON, SAME_ROOT_CAUSE, or OWNER_ATOMIC_SEAM.",
+    "scope_amendment": "Each material companion has a stable registered ID, explicit Owner authority, rationale, bounded path list, and verification mapping; self-authorization and unrelated scope fail closed.",
+    "projection": "Transitions to delivered/resolved state require the dual issues.md/cleared-issues.md projection reconciliation and immutable delivery evidence."
   }
 }

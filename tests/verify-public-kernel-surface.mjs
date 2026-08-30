@@ -35,7 +35,7 @@ for (const name of [
 }
 
 const issueRegistrar = await import(pathToFileURL(path.join(root, "control", "issue-registrar.mjs")).href);
-for (const name of ["createIssueRegistrar", "submitIssue", "compileIssueRegistry", "writeIssuesMarkdownAtomic", "validateIssueRuntimeDelivery", "ISSUE_REGISTRAR_ROLE_ID"]) {
+for (const name of ["createIssueRegistrar", "submitIssue", "submitSeamFinding", "compileIssueRegistry", "writeIssuesMarkdownAtomic", "compileClearedIssuesMarkdown", "reconcileIssueProjections", "validateIssueSeamClosure", "validateIssueRuntimeDelivery", "ISSUE_REGISTRAR_ROLE_ID", "ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME"]) {
   assert.equal(publicKernel[name], issueRegistrar[name], `public kernel issue registrar export drifted: ${name}`);
   assert.equal(publicKernel.issueRegistrar[name], issueRegistrar[name], `public kernel issue registrar namespace drifted: ${name}`);
 }

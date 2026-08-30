@@ -19,6 +19,10 @@
   "state_rules": {
     "ordering": "issues, prefixes, reservations, and duplicate submissions are canonical UTF-8 sorted sequences.",
     "integrity": "registry_sha256 is canonicalDigest of the registry with registry_sha256 set to null.",
-    "history": "Records and reservations are append-only; failed or blocked material cannot disappear."
+    "history": "Records and reservations are append-only; failed or blocked material cannot disappear.",
+    "projection": "The Registrar maintains issues.md and cleared-issues.md as a single dual-file projection; cleared IDs remain as stable tombstones in issues.md.",
+    "reconciliation": "Projection counts, disjoint ID sets, registry digest, and both projection digests must reconcile before either file is replaced.",
+    "delivery": "Cleared records require independent PASS with identical bytes and equal local/fetched-origin/GitHub identities.",
+    "scope": "An active repair has exactly one READY root and only registered bounded same-root causal companions; unrelated records remain visible follow-ons."
   }
 }

@@ -18,6 +18,9 @@
   "state_rules": {
     "reservation": "A SUBMITTED receipt for a non-duplicate binds the newly reserved immutable number.",
     "duplicate": "DUPLICATE_LINKED binds the existing issue and preserves submitted reporter/evidence attribution.",
-    "self_digest": "receipt_sha256 is canonicalDigest with receipt_sha256 set to null."
+    "self_digest": "receipt_sha256 is canonicalDigest with receipt_sha256 set to null.",
+    "seam_finding": "A material companion is submitted as a typed SEAM_FINDING or SCOPE_AMENDMENT and receives a stable issue ID linked to its READY root.",
+    "scope_amendment": "A scope amendment carries explicit Owner authority, same-root relation, bounded paths, and verification mapping.",
+    "projection": "A completed delivered submission is eligible for the full cleared-issues.md projection only after independent PASS and Runtime identity equality."
   }
 }

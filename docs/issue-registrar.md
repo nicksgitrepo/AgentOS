@@ -32,24 +32,52 @@ at intake, so reporter disappearance cannot erase an issue.
 ## Workflow gates
 
 The registrar exposes deterministic gates for repair, audit, and Runtime
-delivery. Repair requires a registered PASS+READY record and one lane unless an
-exact Owner atomic group is supplied. Audit requires an issue ID, immutable
-commit/tree, scope, and verification contract. Runtime requires an
-identical-byte independent PASS and equality of local, fetched-origin, and
-GitHub identities. The Markdown projection can be written only by the admitted
-Registrar role to the operations-root `issues.md` path after
-`DELIVERED_VERIFIED` evidence.
+delivery. Repair claims exactly one registered PASS+READY root issue. A bounded
+causal seam-closure set is permitted only when each material companion arrives
+as a typed `SEAM_FINDING` or `SCOPE_AMENDMENT`, receives its own immutable ID,
+links to the same root with `CHILD_OF`, `DEPENDS_ON`, `SAME_ROOT_CAUSE`, or an
+explicit Owner atomic-seam relation, and is covered by an Owner-authorized
+rationale, bounded path list, and verification mapping. Broad audits,
+opportunistic feature work, product-intent decisions, self-authorization,
+custody conflicts, and unrelated findings fail closed; unrelated records remain
+visible provisional/READY follow-ons. The handoff enumerates the root, every
+companion ID, the in-seam rationale, paths, and verification mapping so an
+Auditor can reject unjustified expansion.
+
+Audit requires an issue ID, immutable commit/tree, scope, and verification
+contract. Runtime requires an identical-byte independent PASS and equality of
+local, fetched-origin, and GitHub commit/tree identities; a claimed delivery
+status cannot override a mismatch.
+
+## Dual canonical projections
+
+The admitted Registrar is the sole writer of both operations-root `issues.md`
+and `cleared-issues.md`. The two files are prepared and replaced as one
+dual-file transaction, with symlink/non-regular collisions and partial writes
+failing closed. `issues.md` contains provisional, issued/READY, active,
+auditing, blocked/NOT_READY, and regression records plus compact stable
+tombstones linking cleared IDs. `cleared-issues.md` contains full delivered or
+resolved records only after the independent PASS and three-way Runtime identity
+check. IDs and history are never deleted, reused, or renumbered.
+
+`reconcileIssueProjections()` returns canonical registry/projection counts,
+disjoint ID sets, and content digests. A projection is not accepted when either
+file is missing, substituted, stale, colliding, or inconsistent with typed
+state.
 
 ## Projection and history
 
 `issues.md` has stable anchors and deterministic sections for provisional or
 compliance failures, READY, in-repair, auditing, blocked/NOT_READY, delivered,
-and regressions. Details are sorted by issue ID and contain only typed fields
-and controlled evidence references.
+regressions, and cleared tombstones. Details are sorted by issue ID and contain
+only typed fields and controlled evidence references. `cleared-issues.md` has a
+stable full-record section for the cleared set.
 
-Historical import is bounded to supplied typed source records. Audit Pyramid
-feature/platform reports, later feature-status and verified-functional audits,
-issue packets/candidates, and NOT_READY backlogs may be imported when their
-source references are provided. `CREATED` templates and uncertain legacy
-findings remain provisional and retain explicit missing-evidence reasons; the
-Registrar never fabricates a finding or silently upgrades a legacy record.
+Historical import is bounded to supplied typed source records discovered under
+authorized Projects roots. `audit.md`, `auditreport.md`, issue/research
+packets, candidate verdicts, feature/platform inventories,
+consumption/seam ledgers, Runtime receipts, NOT_READY/backlog sources, and
+equivalent artifacts may be imported when their source references and digests
+are provided. `CREATED` templates, duplicates, and uncertain legacy findings
+remain provisional or linked with explicit missing-evidence reasons; the
+Registrar never fabricates a finding, delivery, acceptance, or PASS.

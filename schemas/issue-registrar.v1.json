@@ -9,13 +9,17 @@
     "role_id": "AGENTOS.ISSUE_REGISTRAR",
     "title": "AgentOS Issue Registrar — Permanent",
     "canonical_filename": "issues.md",
+    "cleared_canonical_filename": "cleared-issues.md",
+    "projection_contract": "DUAL_FILE_ATOMIC_PROJECTION",
     "writer_scope": "OPERATIONS_ROOT_ISSUES_MD_AFTER_DELIVERY_ONLY",
     "self_acceptance_forbidden": true
   },
   "enums": {
     "status": ["INTAKE_FAILED", "DUPLICATE", "READY", "IN_REPAIR", "AUDITING", "BLOCKED", "NOT_READY", "DELIVERED", "REGRESSION", "REOPENED", "SUPERSEDED", "DEFERRED", "ACCEPTED_RISK", "WONT_FIX"],
     "lifecycle_stage": ["NOT_AUTHORIZED", "PROVISIONAL", "READY", "IN_REPAIR", "AUDITING", "BLOCKED", "NOT_READY", "DELIVERED", "REGRESSION", "REOPENED", "SUPERSEDED", "DEFERRED", "ACCEPTED_RISK", "WONT_FIX", "DUPLICATE"],
-    "severity": ["BLOCKER", "HIGH", "MEDIUM", "LOW", "INFO"]
+    "severity": ["BLOCKER", "HIGH", "MEDIUM", "LOW", "INFO"],
+    "finding_kind": ["ISSUE", "SEAM_FINDING", "SCOPE_AMENDMENT", "REGRESSION"],
+    "seam_relation": ["CHILD_OF", "DEPENDS_ON", "SAME_ROOT_CAUSE", "OWNER_ATOMIC_SEAM"]
   },
   "required": ["schema", "version", "role", "enums"],
   "properties": {
@@ -29,7 +33,11 @@
     "incomplete": "Incomplete standardized input remains visible as INTAKE_FAILED/NOT_AUTHORIZED with failure code INCOMPLETE_STANDARDIZED_ISSUE and every missing/invalid field.",
     "duplicates": "A duplicate preserves the reporter snapshot and evidence and links to the existing issue without consuming a number.",
     "owner_decisions": "Only Project Owner authority may set DEFERRED, ACCEPTED_RISK, or WONT_FIX.",
-    "writer": "Only AGENTOS.ISSUE_REGISTRAR may atomically write operations-root/issues.md, and only after DELIVERED_VERIFIED evidence.",
-    "privacy": "Security-sensitive evidence is represented by controlled opaque references and never stores raw secret payloads."
+    "writer": "Only AGENTOS.ISSUE_REGISTRAR may atomically write operations-root/issues.md and operations-root/cleared-issues.md; partial writes, symlink targets, and collisions fail closed.",
+    "delivery": "A full record enters cleared-issues.md only after an identical-byte independent PASS and equal local, fetched-origin, and GitHub commit/tree identities.",
+    "privacy": "Security-sensitive evidence is represented by controlled opaque references and never stores raw secret payloads.",
+    "repair_scope": "Admission requires exactly one compliant READY root issue plus a bounded causal seam-closure set. Every companion is a registered SEAM_FINDING or SCOPE_AMENDMENT with CHILD_OF, DEPENDS_ON, SAME_ROOT_CAUSE, or explicit Owner atomic-seam relation.",
+    "scope_safety": "Unrelated, speculative, broad-audit, product-intent, self-authorized, or custody-conflicting findings remain visible as provisional/READY follow-ons and are excluded from the active candidate.",
+    "handoff": "Immutable handoffs enumerate the root issue, every companion ID, in-seam rationale, bounded paths, and verification mapping."
   }
 }

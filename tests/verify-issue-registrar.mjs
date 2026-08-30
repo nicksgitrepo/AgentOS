@@ -10,18 +10,22 @@ import {
   ISSUE_TERMINAL_OWNER_STATUSES,
   IssueRegistrar,
   compileIssueMarkdown,
+  compileClearedIssuesMarkdown,
+  reconcileIssueProjections,
   compileIssueRegistry,
   compileIssueRegistrarRole,
   completeIssue,
   importHistoricalIssues,
   reopenIssue,
   submitIssue,
+  submitSeamFinding,
   submitRegression,
   updateIssue,
   validateIssueAuditAdmission,
   validateIssueRegistrarRole,
   validateIssueRuntimeDelivery,
   validateIssueWorkflowAdmission,
+  validateIssueSeamClosure,
   validateIssueRecord,
   validateIssueRegistry,
   writeIssuesMarkdownAtomic,
@@ -117,12 +121,90 @@ assert.throws(() => updateIssue(deferred.registry, first.issue.issue_id, {status
 assert.throws(() => validateIssueWorkflowAdmission({issue: first.issue, registration: {pass: false, ready: true}}), /REPAIR_NOT_READY/u);
 assert.throws(() => validateIssueWorkflowAdmission({issue: first.issue, registration: {pass: true, ready: true}, lane: "LANE.A", activeIssues: [{issue_id: "SOCIUNA-ISSUE-2026-0099", lane: "LANE.A", status: "IN_REPAIR"}]}), /ONE_LANE_ONLY/u);
 assert.deepEqual(validateIssueWorkflowAdmission({issue: first.issue, registration: {pass: true, ready: true}, lane: "LANE.A"}).accepted, true);
+
+// A compliant READY root may admit only a bounded, typed same-root seam closure.
+const seamRootResult = submitIssue(compileIssueRegistry(), {...BASE, title: "Causal seam root", dedupe_key: "SEAM.ROOT"}, {nowUtc: NOW});
+const seamRoot = seamRootResult.issue;
+const seamScope = {
+  type: "SEAM_FINDING",
+  source_issue_id: seamRoot.issue_id,
+  rationale: "Required helper correction for the same root invariant.",
+  paths: ["control/issue-registrar.mjs"],
+  verification_mapping: {["SOCIUNA-ISSUE-2026-0002"]: "verify-issue-registrar"},
+  authority: "PROJECT_OWNER",
+};
+const seamCompanionResult = submitIssue(seamRootResult.registry, {
+  ...BASE,
+  title: "Causal seam companion",
+  dedupe_key: "SEAM.COMPANION",
+  finding_kind: "SEAM_FINDING",
+  root_issue_id: seamRoot.issue_id,
+  relation_type: "SAME_ROOT_CAUSE",
+  scope_amendment: seamScope,
+}, {nowUtc: NOW});
+const seamCompanion = seamCompanionResult.issue;
+seamScope.verification_mapping = {[seamCompanion.issue_id]: "verify-issue-registrar"};
+const seamAdmission = validateIssueSeamClosure({
+  issue: seamRoot,
+  registration: {pass: true, ready: true},
+  lane: "LANE.SEAM",
+  activeIssues: [{...seamCompanion, lane: "LANE.SEAM"}],
+  seamClosure: [{...seamCompanion}],
+  scopeAmendment: {...seamScope, companion_issue_ids: [seamCompanion.issue_id]},
+  actor: "PROJECT_OWNER",
+});
+assert.equal(seamAdmission.accepted, true);
+assert.deepEqual(seamAdmission.companion_issue_ids, [seamCompanion.issue_id]);
+assert.equal(seamAdmission.handoff_scope.root_issue_id, seamRoot.issue_id);
+assert.throws(() => validateIssueSeamClosure({
+  issue: seamRoot,
+  registration: {pass: true, ready: true},
+  lane: "LANE.SEAM",
+  activeIssues: [{...seamCompanion, lane: "LANE.SEAM"}],
+  seamClosure: [{...seamCompanion}],
+  scopeAmendment: {...seamScope, companion_issue_ids: [seamCompanion.issue_id]},
+  actor: ISSUE_REGISTRAR_ROLE_ID,
+}), /SELF_AUTHORIZATION/u);
+assert.throws(() => validateIssueSeamClosure({
+  issue: seamRoot,
+  registration: {pass: true, ready: true},
+  lane: "LANE.SEAM",
+  activeIssues: [{...seamCompanion, lane: "LANE.SEAM"}],
+  seamClosure: [{...seamCompanion}],
+  scopeAmendment: {...seamScope, companion_issue_ids: [seamCompanion.issue_id]},
+  auditorReview: {status: "FAIL"},
+}), /AUDITOR_SCOPE_REJECTED/u);
+assert.throws(() => validateIssueSeamClosure({
+  issue: seamRoot,
+  registration: {pass: true, ready: true},
+  lane: "LANE.SEAM",
+  activeIssues: [{...seamCompanion, lane: "LANE.SEAM", root_issue_id: "SOCIUNA-ISSUE-2026-9999"}],
+}), /ONE_LANE_ONLY|UNRELATED_SCOPE/u);
+assert.throws(() => validateIssueSeamClosure({issue: seamRoot, registration: {pass: true, ready: true}, broadAudit: true}), /UNAUTHORIZED_SCOPE/u);
 assert.throws(() => validateIssueAuditAdmission({issue: first.issue, candidate: {commit: "a".repeat(40), tree: "b".repeat(40), scope: "", verification_contract: "contract"}}), /candidate scope/u);
 const candidate = {commit: "a".repeat(40), tree: "b".repeat(40), scope: "control/issue-registrar.mjs", verification_contract: "verify-issue-registrar"};
 assert.equal(validateIssueAuditAdmission({issue: first.issue, candidate}).accepted, true);
 assert.throws(() => validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: false}, delivery: {status: "DELIVERED_VERIFIED"}}), /RUNTIME_PASS_REQUIRED/u);
-assert.equal(validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery: {local_commit: candidate.commit, origin_commit: candidate.commit, github_commit: candidate.commit, local_tree: candidate.tree, origin_tree: candidate.tree, github_tree: candidate.tree}}).accepted, true);
-assert.throws(() => validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery: {local_commit: candidate.commit, origin_commit: "c".repeat(40), github_commit: candidate.commit, local_tree: candidate.tree, origin_tree: candidate.tree, github_tree: candidate.tree}}), /IDENTITY_MISMATCH/u);
+const delivery = {status: "DELIVERED_VERIFIED", independent_pass: {status: "PASS", identical_bytes: true}, local_commit: candidate.commit, origin_commit: candidate.commit, github_commit: candidate.commit, local_tree: candidate.tree, origin_tree: candidate.tree, github_tree: candidate.tree};
+assert.equal(validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery}).accepted, true);
+// A claimed DELIVERED_VERIFIED status cannot override mismatched local/origin/GitHub identities.
+assert.throws(() => validateIssueRuntimeDelivery({
+  issue: first.issue,
+  candidate,
+  independentPass: {status: "PASS", identical_bytes: true},
+  delivery: {
+    ...delivery,
+    status: "DELIVERED_VERIFIED",
+    local_commit: "c".repeat(40),
+    origin_commit: "d".repeat(40),
+    github_commit: "e".repeat(40),
+    local_tree: "f".repeat(40),
+    origin_tree: "0".repeat(40),
+    github_tree: "1".repeat(40),
+  },
+}), /IDENTITY_MISMATCH/u);
+assert.throws(() => validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery: {...delivery, origin_commit: "c".repeat(40)}}), /IDENTITY_MISMATCH/u);
+assert.throws(() => validateIssueRuntimeDelivery({issue: first.issue, candidate, independentPass: {status: "PASS", identical_bytes: true}, delivery: {...delivery, status: "DELIVERED_VERIFIED", github_tree: "d".repeat(40)}}), /IDENTITY_MISMATCH/u);
 
 // Deterministic projection sections and sole-writer/canonical-path enforcement.
 const markdown = compileIssueMarkdown(registry);
@@ -136,6 +218,32 @@ assert.throws(() => writeIssuesMarkdownAtomic(registry, {operationsRoot: tempRoo
 const written = writeIssuesMarkdownAtomic(registry, {operationsRoot: tempRoot, actor: ISSUE_REGISTRAR_ROLE_ID, deliveryEvidence: {status: "DELIVERED_VERIFIED"}});
 assert.equal(written.path, path.join(tempRoot, "issues.md"));
 assert.equal(fs.readFileSync(written.path, "utf8"), written.markdown);
+assert.equal(written.cleared_path, path.join(tempRoot, "cleared-issues.md"));
+assert.equal(fs.readFileSync(written.cleared_path, "utf8"), written.cleared_markdown);
+assert.equal(reconcileIssueProjections(registry, {issuesMarkdown: written.markdown, clearedMarkdown: written.cleared_markdown}).accepted, true);
+
+// A delivered/resolved record moves atomically to cleared-issues.md and leaves a stable tombstone.
+const delivered = updateIssue(registry, first.issue.issue_id, {status: "DELIVERED", candidate, delivery}, {nowUtc: NOW, actor: "PROJECT_OWNER"});
+const deliveredRegistry = delivered.registry;
+const deliveredMarkdown = compileIssueMarkdown(deliveredRegistry);
+const clearedMarkdown = compileClearedIssuesMarkdown(deliveredRegistry);
+assert.match(deliveredMarkdown, /cleared-tombstones/u);
+assert.match(deliveredMarkdown, new RegExp(`${first.issue.issue_id}.*CLEARED`, "u"));
+assert.match(clearedMarkdown, new RegExp(first.issue.issue_id, "u"));
+const clearedRoot = path.resolve(process.cwd(), "../../../Temp/issue-registrar-cleared-verification");
+fs.rmSync(clearedRoot, {recursive: true, force: true});
+const dualWritten = writeIssuesMarkdownAtomic(deliveredRegistry, {operationsRoot: clearedRoot, actor: ISSUE_REGISTRAR_ROLE_ID, deliveryEvidence: delivery});
+assert.equal(dualWritten.projection.counts.cleared, 1);
+assert.equal(dualWritten.projection.counts.issues + dualWritten.projection.counts.cleared, deliveredRegistry.issues.length);
+assert.match(fs.readFileSync(dualWritten.path, "utf8"), /cleared-issues\.md/u);
+assert.match(fs.readFileSync(dualWritten.cleared_path, "utf8"), new RegExp(first.issue_id, "u"));
+const beforeCollision = fs.readFileSync(dualWritten.path, "utf8");
+const collisionRoot = path.resolve(process.cwd(), "../../../Temp/issue-registrar-collision-verification");
+fs.rmSync(collisionRoot, {recursive: true, force: true});
+fs.mkdirSync(path.join(collisionRoot, "cleared-issues.md"), {recursive: true});
+assert.throws(() => writeIssuesMarkdownAtomic(deliveredRegistry, {operationsRoot: collisionRoot, actor: ISSUE_REGISTRAR_ROLE_ID, deliveryEvidence: delivery}), /PROJECTION_COLLISION/u);
+assert.equal(fs.existsSync(path.join(collisionRoot, "issues.md")), false);
+assert.equal(beforeCollision, fs.readFileSync(dualWritten.path, "utf8"));
 
 // Historical import is bounded and honest: uncertain/CREATED sources stay provisional.
 const historical = importHistoricalIssues([

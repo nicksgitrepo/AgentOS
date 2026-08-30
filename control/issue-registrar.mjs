@@ -22,8 +22,16 @@ export const ISSUE_REGISTRAR_ROLE_ID = "AGENTOS.ISSUE_REGISTRAR";
 export const ISSUE_REGISTRAR_ROLE_TITLE = "AgentOS Issue Registrar — Permanent";
 export const ISSUE_REGISTRAR_ROLE_KIND = "ISSUE_REGISTRAR";
 export const ISSUE_REGISTRAR_CANONICAL_FILENAME = "issues.md";
+export const ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME = "cleared-issues.md";
 export const ISSUE_REGISTRAR_FAILURE_CODE = "INCOMPLETE_STANDARDIZED_ISSUE";
 export const ISSUE_REGISTRAR_RESERVATION_POLICY = "RESERVE_BEFORE_VALIDATION";
+export const ISSUE_REGISTRAR_SEAM_RELATIONS = Object.freeze([
+  "CHILD_OF", "DEPENDS_ON", "SAME_ROOT_CAUSE", "OWNER_ATOMIC_SEAM",
+]);
+export const ISSUE_REGISTRAR_FINDING_KINDS = Object.freeze([
+  "ISSUE", "SEAM_FINDING", "SCOPE_AMENDMENT", "REGRESSION",
+]);
+export const ISSUE_REGISTRAR_MAX_SEAM_CLOSURE = 32;
 
 export const ISSUE_STATUSES = Object.freeze([
   "INTAKE_FAILED", "DUPLICATE", "READY", "IN_REPAIR", "AUDITING", "BLOCKED",
@@ -48,6 +56,7 @@ const ISSUE_ID = /^([A-Z][A-Z0-9]{1,31})-ISSUE-(\d{4})-(\d{4,})$/u;
 const UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u;
 const REFERENCE = /^(?:opaque:|ref:)[^\s]+$/u;
 const CONTROL = /[\u0000-\u001f\u007f]/u;
+const PROJECTION_FILE_NAMES = new Set([ISSUE_REGISTRAR_CANONICAL_FILENAME, ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME]);
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -184,6 +193,71 @@ function normalizeRelated(values) {
   return sortedUnique(result, "related issue IDs");
 }
 
+function normalizeFindingKind(value, fallback = "ISSUE") {
+  const kind = String(value ?? fallback).trim().toUpperCase();
+  assert(ISSUE_REGISTRAR_FINDING_KINDS.includes(kind), "ISSUE_REGISTRAR_INVALID_FINDING_KIND", "finding kind is invalid");
+  return kind;
+}
+
+function normalizeRelationType(value, fallback = null) {
+  if (value === null || value === undefined || value === "") return fallback;
+  const relation = String(value).trim().toUpperCase();
+  assert(ISSUE_REGISTRAR_SEAM_RELATIONS.includes(relation), "ISSUE_REGISTRAR_INVALID_RELATION", "seam relation is invalid");
+  return relation;
+}
+
+function normalizeScopeAmendment(value) {
+  if (value === null || value === undefined) return null;
+  assert(isRecord(value), "ISSUE_REGISTRAR_INVALID_SCOPE_AMENDMENT", "scope amendment must be an object");
+  const amendment = {
+    type: String(value.type ?? value.kind ?? "SCOPE_AMENDMENT").trim().toUpperCase(),
+    rationale: asOptionalString(value.rationale ?? value.reason),
+    paths: Array.isArray(value.paths ?? value.path_list) ? [...(value.paths ?? value.path_list)].map(String).sort(compareUtf8) : [],
+    verification_mapping: isRecord(value.verification_mapping ?? value.verificationMapping) ? clone(value.verification_mapping ?? value.verificationMapping) : {},
+    authority: asOptionalString(value.authority ?? value.authority_id),
+    source_issue_id: asOptionalString(value.source_issue_id ?? value.sourceIssueId),
+  };
+  assert(amendment.type === "SCOPE_AMENDMENT" || amendment.type === "SEAM_FINDING", "ISSUE_REGISTRAR_INVALID_SCOPE_AMENDMENT", "scope amendment type is invalid");
+  if (amendment.rationale !== null) requireText(amendment.rationale, "scope amendment rationale");
+  if (amendment.paths.length > 0) sortedUnique(amendment.paths, "scope amendment paths");
+  if (amendment.authority !== null) requireIdentifier(amendment.authority, "scope amendment authority");
+  if (amendment.source_issue_id !== null) assert(ISSUE_ID.test(amendment.source_issue_id), "ISSUE_REGISTRAR_INVALID_SCOPE_AMENDMENT", "scope amendment source issue is invalid");
+  return amendment;
+}
+
+function isRuntimeDeliveryVerified(delivery) {
+  if (!isRecord(delivery)) return false;
+  const independentPass = delivery.independent_pass ?? delivery.independentPass ?? delivery.audit_pass ?? delivery.auditPass;
+  const pass = delivery.independent_pass_status === "PASS"
+    || delivery.pass === true
+    || independentPass?.status === "PASS"
+    || independentPass?.pass === true;
+  const identical = delivery.identical_bytes === true || independentPass?.identical_bytes === true || independentPass?.identicalBytes === true;
+  const validCommit = (value) => typeof value === "string" && (HEX40.test(value) || SHA256.test(value));
+  const validTree = (value) => typeof value === "string" && (HEX40.test(value) || SHA256.test(value));
+  const commitsEqual = validCommit(delivery.local_commit)
+    && delivery.local_commit === delivery.origin_commit
+    && validCommit(delivery.origin_commit)
+    && delivery.origin_commit === delivery.github_commit
+    && validCommit(delivery.github_commit);
+  const treesEqual = validTree(delivery.local_tree)
+    && delivery.local_tree === delivery.origin_tree
+    && validTree(delivery.origin_tree)
+    && delivery.origin_tree === delivery.github_tree
+    && validTree(delivery.github_tree);
+  const delivered = delivery.status === "DELIVERED_VERIFIED" || delivery.delivered === true;
+  return delivered && pass && identical && commitsEqual && treesEqual;
+}
+
+function isClearedIssue(issue) {
+  const candidate = issue.candidate;
+  const candidateMatches = candidate === null || candidate === undefined
+    || (issue.delivery?.local_commit === candidate.commit && issue.delivery?.local_tree === candidate.tree);
+  return ["DELIVERED", ...ISSUE_TERMINAL_OWNER_STATUSES].includes(issue.status)
+    && isRuntimeDeliveryVerified(issue.delivery)
+    && candidateMatches;
+}
+
 function normalizeCandidate(value) {
   if (value === null || value === undefined) return null;
   assert(isRecord(value), "ISSUE_REGISTRAR_INVALID_CANDIDATE", "candidate must be an object");
@@ -265,6 +339,13 @@ export function validateIssueRecord(issue) {
   assert(ISSUE_STATUSES.includes(issue.status), "ISSUE_REGISTRAR_INVALID_STATUS", "issue status is invalid");
   assert(ISSUE_LIFECYCLE_STAGES.includes(issue.lifecycle_stage), "ISSUE_REGISTRAR_INVALID_STATUS", "issue lifecycle stage is invalid");
   assert(ISSUE_SEVERITIES.includes(issue.severity), "ISSUE_REGISTRAR_INVALID_SEVERITY", "issue severity is invalid");
+  normalizeFindingKind(issue.finding_kind ?? "ISSUE");
+  const relationType = normalizeRelationType(issue.relation_type ?? null);
+  if (relationType !== null) {
+    assert(issue.root_issue_id !== null && issue.root_issue_id !== undefined, "ISSUE_REGISTRAR_INVALID_RELATION", "a seam relation requires a root issue");
+    assert(normalizeFindingKind(issue.finding_kind ?? "ISSUE") === "SEAM_FINDING" || normalizeFindingKind(issue.finding_kind ?? "ISSUE") === "SCOPE_AMENDMENT", "ISSUE_REGISTRAR_INVALID_RELATION", "a seam relation requires a typed seam finding");
+  }
+  if (issue.scope_amendment !== null && issue.scope_amendment !== undefined) normalizeScopeAmendment(issue.scope_amendment);
   validateReporter(issue.reporter);
   requireUtc(issue.submitted_at_utc, "issue submitted timestamp");
   requireUtc(issue.updated_at_utc, "issue updated timestamp");
@@ -298,6 +379,7 @@ export function validateIssueRecord(issue) {
   });
   if (issue.candidate !== null) normalizeCandidate(issue.candidate);
   for (const field of ["audit", "delivery", "owner_decision"]) assert(issue[field] === null || isRecord(issue[field]), "ISSUE_REGISTRAR_INVALID_RECORD", `${field} must be an object or null`);
+  if (issue.status === "DELIVERED") assert(isRuntimeDeliveryVerified(issue.delivery), "ISSUE_REGISTRAR_DELIVERY_EVIDENCE_REQUIRED", "delivered issues require independent PASS and equal Runtime identities");
   requireSha(issue.issue_sha256, "issue digest");
   assert(issue.issue_sha256 === digestWithout(issue, "issue_sha256"), "ISSUE_REGISTRAR_DIGEST_MISMATCH", "issue digest mismatch");
   return issue;
@@ -370,6 +452,10 @@ function buildSubmissionRecord(input, {prefix, year, number, nowUtc, reservation
   const severity = asOptionalString(input.severity)?.toUpperCase() ?? null;
   const reporter = normalizeReporter(input);
   const evidence = normalizeEvidence(input.evidence ?? input.evidence_refs);
+  const findingKind = normalizeFindingKind(input.finding_kind ?? input.findingKind ?? (input.seam_finding === true ? "SEAM_FINDING" : "ISSUE"));
+  const relationType = normalizeRelationType(input.relation_type ?? input.relationType ?? null);
+  const requestedRootIssueId = asOptionalString(input.root_issue_id ?? input.rootIssueId);
+  const scopeAmendment = normalizeScopeAmendment(input.scope_amendment ?? input.scopeAmendment ?? null);
   const accepted = [];
   const missing = [];
   const invalid = [];
@@ -406,12 +492,15 @@ function buildSubmissionRecord(input, {prefix, year, number, nowUtc, reservation
     resubmission_requirements: complete ? [] : [...new Set([...missing.map((field) => `Provide valid ${field}.`), ...invalid.map((field) => `Correct invalid ${field}.`)])].sort(compareUtf8),
     failure_code: complete ? null : ISSUE_REGISTRAR_FAILURE_CODE,
     reporter_disappearance_policy: "REPORTER_SNAPSHOT_PRESERVED",
+    finding_kind: findingKind,
+    relation_type: relationType,
+    scope_amendment: scopeAmendment,
     evidence,
     candidate: normalizeCandidate(input.candidate),
     audit: null,
     delivery: null,
     owner_decision: null,
-    root_issue_id: null,
+    root_issue_id: requestedRootIssueId,
     duplicate_of: null,
     related_issue_ids: normalizeRelated(input.related_issue_ids ?? input.relatedIssueIds),
     regression_of: asOptionalString(input.regression_of ?? input.regressionOf),
@@ -420,6 +509,7 @@ function buildSubmissionRecord(input, {prefix, year, number, nowUtc, reservation
     historical_source: historical ? {
       source_id: asOptionalString(input.source_id ?? input.sourceId),
       source_ref: asOptionalString(input.source_ref ?? input.sourceRef),
+      source_kind: asOptionalString(input.source_kind ?? input.sourceKind ?? input.source_type ?? input.sourceType),
       source_sha256: SHA256.test(input.source_sha256 ?? "") ? input.source_sha256 : null,
       uncertain: input.uncertain === true || input.status === "CREATED" || input.missing_evidence === true,
       missing_evidence_reasons: Array.isArray(input.missing_evidence_reasons) ? [...input.missing_evidence_reasons].map(String).sort(compareUtf8) : [],
@@ -433,7 +523,21 @@ function buildSubmissionRecord(input, {prefix, year, number, nowUtc, reservation
     issue.status = "REGRESSION";
     issue.lifecycle_stage = "REGRESSION";
   }
-  issue.root_issue_id = issue.issue_id;
+  issue.root_issue_id = requestedRootIssueId ?? issue.issue_id;
+  if (historical && issue.historical_source?.uncertain && issue.status === "READY") {
+    issue.status = "INTAKE_FAILED";
+    issue.lifecycle_stage = "NOT_AUTHORIZED";
+    issue.failure_code = ISSUE_REGISTRAR_FAILURE_CODE;
+    issue.missing_fields = [...new Set([...issue.missing_fields, "independent_verdict"])] .sort(compareUtf8);
+    issue.resubmission_requirements = [...new Set([...issue.resubmission_requirements, "Provide an independent verdict before historical promotion."])] .sort(compareUtf8);
+    issue.reason = "Historical source is uncertain; no acceptance or delivery is inferred.";
+    issue.history[0] = {sequence: 1, event: "INTAKE_FAILED", at_utc: nowUtc, actor: ISSUE_REGISTRAR_ROLE_ID, reason: ISSUE_REGISTRAR_FAILURE_CODE};
+  }
+  if (issue.relation_type !== null) {
+    assert(issue.finding_kind === "SEAM_FINDING" || issue.finding_kind === "SCOPE_AMENDMENT", "ISSUE_REGISTRAR_SEAM_FINDING_REQUIRED", "causal companions must use typed SEAM_FINDING or SCOPE_AMENDMENT intake");
+    assert(issue.root_issue_id !== issue.issue_id, "ISSUE_REGISTRAR_INVALID_RELATION", "a root issue cannot be its own seam companion");
+    assert(issue.scope_amendment !== null, "ISSUE_REGISTRAR_SCOPE_AMENDMENT_REQUIRED", "a causal seam finding requires a typed scope amendment");
+  }
   issue.issue_sha256 = digestWithout(issue, "issue_sha256");
   return validateIssueRecord(issue);
 }
@@ -511,6 +615,9 @@ function patchIssue(issue, patch, nowUtc, event, actor = ISSUE_REGISTRAR_ROLE_ID
   for (const field of ["candidate", "audit", "delivery"]) if (patch[field] !== undefined) next[field] = field === "candidate" ? normalizeCandidate(patch[field]) : clone(patch[field]);
   if (patch.evidence !== undefined) next.evidence = normalizeEvidence(patch.evidence);
   if (patch.related_issue_ids !== undefined) next.related_issue_ids = normalizeRelated(patch.related_issue_ids);
+  if (patch.finding_kind !== undefined || patch.findingKind !== undefined) next.finding_kind = normalizeFindingKind(patch.finding_kind ?? patch.findingKind);
+  if (patch.relation_type !== undefined || patch.relationType !== undefined) next.relation_type = normalizeRelationType(patch.relation_type ?? patch.relationType);
+  if (patch.scope_amendment !== undefined || patch.scopeAmendment !== undefined) next.scope_amendment = normalizeScopeAmendment(patch.scope_amendment ?? patch.scopeAmendment);
   if (patch.status !== undefined) {
     const status = String(patch.status).toUpperCase();
     assert(ISSUE_STATUSES.includes(status), "ISSUE_REGISTRAR_INVALID_STATUS", "issue status is invalid");
@@ -583,19 +690,140 @@ export function submitRegression(registry, input, regressionOf, options = {}) {
   return submitIssue(registry, {...input, regression_of: regressionOf}, options);
 }
 
-export function validateIssueWorkflowAdmission({issue, registration = null, lane = null, activeIssues = [], ownerAtomicGroup = null} = {}) {
+export function submitSeamFinding(registry, input, rootIssueId, relationType = "SAME_ROOT_CAUSE", options = {}) {
+  assert(ISSUE_ID.test(String(rootIssueId)), "ISSUE_REGISTRAR_ROOT_REQUIRED", "a seam finding requires an existing root issue ID");
+  const relation = normalizeRelationType(relationType);
+  const requestedScope = input?.scope_amendment ?? input?.scopeAmendment;
+  assert(requestedScope !== null && requestedScope !== undefined, "ISSUE_REGISTRAR_SCOPE_AMENDMENT_REQUIRED", "a causal seam finding requires an explicit scope amendment");
+  const finding = submitIssue(registry, {
+    ...input,
+    finding_kind: input?.finding_kind ?? input?.findingKind ?? "SEAM_FINDING",
+    root_issue_id: rootIssueId,
+    relation_type: relation,
+    scope_amendment: requestedScope,
+  }, options);
+  return resultWithRelation(finding, relation, rootIssueId);
+}
+
+function resultWithRelation(result, relation, rootIssueId) {
+  return {...result, seam_relation: relation, root_issue_id: rootIssueId};
+}
+
+function closureEntries(value) {
+  if (value === undefined || value === null) return [];
+  assert(Array.isArray(value), "ISSUE_REGISTRAR_SEAM_CLOSURE_INVALID", "seam closure must be an array");
+  return value.map((entry) => {
+    if (typeof entry === "string") return {issue_id: entry};
+    assert(isRecord(entry), "ISSUE_REGISTRAR_SEAM_CLOSURE_INVALID", "seam closure entries must be typed records");
+    return clone(entry);
+  });
+}
+
+function verifyScopeAmendment(scopeAmendment, rootId, companionIds) {
+  assert(isRecord(scopeAmendment), "ISSUE_REGISTRAR_SCOPE_AMENDMENT_REQUIRED", "a causal seam closure requires a typed scope-amendment intake");
+  const root = String(scopeAmendment.root_issue_id ?? scopeAmendment.rootIssueId ?? "");
+  assert(root === rootId, "ISSUE_REGISTRAR_SCOPE_ROOT_MISMATCH", "scope amendment root does not match the READY root issue");
+  const listed = scopeAmendment.companion_issue_ids ?? scopeAmendment.companionIssueIds ?? scopeAmendment.issue_ids;
+  assert(Array.isArray(listed), "ISSUE_REGISTRAR_SCOPE_IDS_REQUIRED", "scope amendment must enumerate companion issue IDs");
+  const ordered = [...listed].map(String).sort(compareUtf8);
+  assert(JSON.stringify(ordered) === JSON.stringify(listed.map(String)), "ISSUE_REGISTRAR_NONDETERMINISTIC_ORDER", "scope amendment companion IDs are not sorted");
+  assert(JSON.stringify(ordered) === JSON.stringify(companionIds), "ISSUE_REGISTRAR_SCOPE_IDS_MISMATCH", "scope amendment companions do not match the closure set");
+  const rationale = asOptionalString(scopeAmendment.rationale ?? scopeAmendment.reason);
+  requireText(rationale, "scope amendment rationale");
+  const paths = scopeAmendment.paths ?? scopeAmendment.path_list;
+  assert(Array.isArray(paths) && paths.length > 0, "ISSUE_REGISTRAR_SCOPE_PATHS_REQUIRED", "scope amendment must enumerate bounded paths");
+  const pathStrings = paths.map(String);
+  sortedUnique(pathStrings, "scope amendment paths");
+  const mapping = scopeAmendment.verification_mapping ?? scopeAmendment.verificationMapping;
+  assert(isRecord(mapping), "ISSUE_REGISTRAR_SCOPE_VERIFICATION_REQUIRED", "scope amendment must include verification mapping");
+  for (const id of companionIds) requireText(mapping[id], `verification mapping for ${id}`);
+  const authority = asOptionalString(scopeAmendment.authority ?? scopeAmendment.authorized_by ?? scopeAmendment.authorizedBy);
+  assert(authority !== null, "ISSUE_REGISTRAR_SCOPE_AUTHORITY_REQUIRED", "scope amendment requires explicit authority");
+  assert(![ISSUE_REGISTRAR_ROLE_ID, "REPAIR", "AGENTOS.REPAIR"].includes(authority), "ISSUE_REGISTRAR_SELF_AUTHORIZATION", "Repair or Registrar cannot self-authorize a scope amendment");
+  return {
+    root_issue_id: root,
+    companion_issue_ids: [...companionIds],
+    rationale,
+    paths: pathStrings,
+    verification_mapping: clone(mapping),
+    authority,
+  };
+}
+
+function validateSeamCompanion(companion, rootId, activeById) {
+  const issueId = String(companion.issue_id ?? companion.issueId ?? "");
+  assert(ISSUE_ID.test(issueId), "ISSUE_REGISTRAR_SEAM_ID_REQUIRED", "every causal companion requires a registered issue ID");
+  const registered = activeById.get(issueId) ?? companion;
+  if (activeById.has(issueId)) validateIssueRecord(registered);
+  const kind = normalizeFindingKind(companion.finding_kind ?? companion.findingKind ?? registered.finding_kind ?? "ISSUE");
+  assert(kind === "SEAM_FINDING" || kind === "SCOPE_AMENDMENT", "ISSUE_REGISTRAR_SEAM_FINDING_REQUIRED", "every companion must arrive as SEAM_FINDING or SCOPE_AMENDMENT intake");
+  const relation = normalizeRelationType(companion.relation_type ?? companion.relationType ?? registered.relation_type ?? null);
+  assert(relation !== null && ISSUE_REGISTRAR_SEAM_RELATIONS.includes(relation), "ISSUE_REGISTRAR_SEAM_RELATION_REQUIRED", "every companion requires an allowed causal relation");
+  const companionRoot = String(companion.root_issue_id ?? companion.rootIssueId ?? registered.root_issue_id ?? "");
+  assert(companionRoot === rootId, "ISSUE_REGISTRAR_UNRELATED_SCOPE", "companion issue is not same-root");
+  const status = String(companion.status ?? registered.status ?? "").toUpperCase();
+  assert(!["INTAKE_FAILED", "BLOCKED", "NOT_READY", "DEFERRED", "ACCEPTED_RISK", "WONT_FIX", "SUPERSEDED"].includes(status), "ISSUE_REGISTRAR_SEAM_COMPANION_NOT_ACTIVE", "causal companion is not eligible for the active closure set");
+  const scope = companion.scope_amendment ?? companion.scopeAmendment ?? registered.scope_amendment ?? null;
+  assert(scope !== null, "ISSUE_REGISTRAR_SCOPE_AMENDMENT_REQUIRED", "causal companion requires scope-amendment evidence");
+  return {issue_id: issueId, relation_type: relation, finding_kind: kind, root_issue_id: rootId, scope_amendment: normalizeScopeAmendment(scope)};
+}
+
+export function validateIssueSeamClosure({rootIssue, issue = rootIssue, registration = null, lane = null, activeIssues = [], ownerAtomicGroup = null, seamClosure, closureSet, companionIssues, scopeAmendment, scope_amendment, rootIssueId = null, root_issue_id = null, repairActor = null, actor = null, auditorReview = null, broadAudit = false, productIntentDecision = false, speculative = false, custodyConflict = false} = {}) {
   validateIssueRecord(issue);
-  const proof = registration ?? issue.registration ?? issue.audit ?? null;
+  const root = rootIssue ?? issue;
+  validateIssueRecord(root);
+  assert(root.issue_id === issue.issue_id, "ISSUE_REGISTRAR_ROOT_REQUIRED", "the claimed READY root must be the admitted issue");
+  const claimedRootId = rootIssueId ?? root_issue_id;
+  if (claimedRootId !== null && claimedRootId !== undefined) assert(String(claimedRootId) === root.issue_id, "ISSUE_REGISTRAR_ROOT_MISMATCH", "claimed root issue does not match the admitted issue");
+  assert(root.status === "READY" && root.lifecycle_stage === "READY", "ISSUE_REGISTRAR_ROOT_NOT_READY", "exactly one compliant READY root issue is required");
+  const proof = registration ?? root.registration ?? root.audit ?? null;
   const pass = proof?.pass === true || proof?.status === "PASS" || proof?.verification_status === "PASS";
-  const ready = proof?.ready === true || issue.status === "READY";
-  assert(pass && ready, "ISSUE_REGISTRAR_REPAIR_NOT_READY", "Repair requires a registered PASS+READY issue");
-  const conflicts = (Array.isArray(activeIssues) ? activeIssues : []).filter((candidate) => candidate && candidate.issue_id !== issue.issue_id && (lane === null || candidate.lane === lane) && ["IN_REPAIR", "AUDITING", "READY"].includes(candidate.status));
-  if (conflicts.length > 0) {
-    const group = ownerAtomicGroup;
-    const grouped = group?.owner_authorized === true && Array.isArray(group.issue_ids) && group.issue_ids.includes(issue.issue_id) && conflicts.every((candidate) => group.issue_ids.includes(candidate.issue_id));
-    assert(grouped, "ISSUE_REGISTRAR_ONE_LANE_ONLY", "one lane may have one active issue without an exact Owner atomic group");
+  const ready = proof?.ready === true || root.status === "READY";
+  assert(pass && ready, "ISSUE_REGISTRAR_REPAIR_NOT_READY", "Repair requires a registered PASS+READY root issue");
+  assert(broadAudit !== true && productIntentDecision !== true && speculative !== true && custodyConflict !== true, "ISSUE_REGISTRAR_UNAUTHORIZED_SCOPE", "broad audit, product-intent, speculative, or conflicting custody scope is forbidden");
+  if (auditorReview?.status === "FAIL" || auditorReview?.accepted === false || auditorReview?.scope_accepted === false) throw fail("ISSUE_REGISTRAR_AUDITOR_SCOPE_REJECTED", "Auditor rejected the proposed causal scope");
+  const closureValue = seamClosure ?? closureSet ?? companionIssues;
+  const entries = closureEntries(closureValue);
+  assert(entries.length <= ISSUE_REGISTRAR_MAX_SEAM_CLOSURE, "ISSUE_REGISTRAR_SEAM_CLOSURE_TOO_LARGE", "causal seam closure exceeds its bounded maximum");
+  const active = Array.isArray(activeIssues) ? activeIssues.filter((candidate) => candidate && candidate.issue_id !== root.issue_id && (lane === null || candidate.lane === undefined || candidate.lane === lane)) : [];
+  const activeById = new Map(active.map((candidate) => [candidate.issue_id, candidate]));
+  const activeStatuses = new Set(["READY", "IN_REPAIR", "AUDITING", "REOPENED"]);
+  const conflicts = active.filter((candidate) => activeStatuses.has(String(candidate.status).toUpperCase()));
+  const companionIds = entries.map((entry) => String(entry.issue_id ?? entry.issueId ?? "")).sort(compareUtf8);
+  assert(new Set(companionIds).size === companionIds.length, "ISSUE_REGISTRAR_SEAM_DUPLICATE", "causal seam companions must be unique");
+  assert(!companionIds.includes(root.issue_id), "ISSUE_REGISTRAR_SEAM_ROOT_INCLUDED", "the READY root cannot also be a companion");
+  if (conflicts.length > 0 && entries.length === 0) throw fail("ISSUE_REGISTRAR_ONE_LANE_ONLY", "one lane requires an explicit root plus bounded causal seam closure");
+  const companions = entries.map((entry) => validateSeamCompanion(entry, root.issue_id, activeById));
+  if (companions.some((companion) => companion.relation_type === "OWNER_ATOMIC_SEAM")) {
+    assert(ownerAtomicGroup?.owner_authorized === true, "ISSUE_REGISTRAR_SCOPE_AUTHORITY_REQUIRED", "OWNER_ATOMIC_SEAM requires an explicit Owner atomic group");
   }
-  return {accepted: true, status: "REPAIR_ADMITTED", issue_id: issue.issue_id, lane};
+  const conflictIds = conflicts.map((candidate) => candidate.issue_id).sort(compareUtf8);
+  for (const candidate of conflicts) {
+    if (!companionIds.includes(candidate.issue_id)) throw fail("ISSUE_REGISTRAR_UNRELATED_SCOPE", "unrelated active finding is not included in the bounded causal closure");
+    if (candidate.root_issue_id !== root.issue_id) throw fail("ISSUE_REGISTRAR_UNRELATED_SCOPE", "active finding has a different causal root");
+  }
+  if (entries.length > 0) {
+    const amendment = verifyScopeAmendment(scopeAmendment ?? scope_amendment, root.issue_id, companionIds);
+    const repairIdentity = actor ?? repairActor;
+    if (repairIdentity !== null && [ISSUE_REGISTRAR_ROLE_ID, "REPAIR", "AGENTOS.REPAIR"].includes(actorRole(repairIdentity))) throw fail("ISSUE_REGISTRAR_SELF_AUTHORIZATION", "Registrar or Repair cannot authorize its own seam expansion");
+    return {
+      accepted: true,
+      status: "REPAIR_ADMITTED",
+      issue_id: root.issue_id,
+      root_issue_id: root.issue_id,
+      companion_issue_ids: companionIds,
+      causal_seam_closure: companions,
+      scope_amendment: amendment,
+      active_conflict_issue_ids: conflictIds,
+      lane,
+      handoff_scope: {root_issue_id: root.issue_id, companion_issue_ids: companionIds, paths: amendment.paths, verification_mapping: amendment.verification_mapping},
+    };
+  }
+  return {accepted: true, status: "REPAIR_ADMITTED", issue_id: root.issue_id, root_issue_id: root.issue_id, companion_issue_ids: [], causal_seam_closure: [], scope_amendment: null, active_conflict_issue_ids: [], lane, handoff_scope: {root_issue_id: root.issue_id, companion_issue_ids: [], paths: [], verification_mapping: {}}};
+}
+
+export function validateIssueWorkflowAdmission(options = {}) {
+  return validateIssueSeamClosure(options);
 }
 
 export function validateIssueAuditAdmission({issue, candidate} = {}) {
@@ -614,21 +842,54 @@ export function validateIssueRuntimeDelivery({issue, candidate, independentPass,
   const pass = independentPass?.status === "PASS" || independentPass?.pass === true;
   assert(pass && independentPass?.identical_bytes === true, "ISSUE_REGISTRAR_RUNTIME_PASS_REQUIRED", "Runtime requires an identical-byte independent PASS");
   assert(isRecord(delivery), "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "Runtime delivery evidence is required");
-  const equal = delivery.local_commit === delivery.origin_commit && delivery.origin_commit === delivery.github_commit && delivery.local_tree === delivery.origin_tree && delivery.origin_tree === delivery.github_tree;
-  assert(equal || delivery.status === "DELIVERED_VERIFIED", "ISSUE_REGISTRAR_DELIVERY_IDENTITY_MISMATCH", "local/fetched-origin/GitHub identities must be equal");
+  for (const field of ["local_commit", "origin_commit", "github_commit", "local_tree", "origin_tree", "github_tree"]) {
+    requireText(delivery[field], `delivery ${field}`);
+    const valid = field.endsWith("commit") ? HEX40.test(delivery[field]) || SHA256.test(delivery[field]) : HEX40.test(delivery[field]) || SHA256.test(delivery[field]);
+    assert(valid, "ISSUE_REGISTRAR_DELIVERY_IDENTITY_MISMATCH", `delivery ${field} is not a commit/tree digest`);
+  }
+  const equal = delivery.local_commit === delivery.origin_commit
+    && delivery.origin_commit === delivery.github_commit
+    && delivery.local_tree === delivery.origin_tree
+    && delivery.origin_tree === delivery.github_tree
+    && delivery.local_commit === candidate.commit
+    && delivery.local_tree === candidate.tree;
+  assert(equal, "ISSUE_REGISTRAR_DELIVERY_IDENTITY_MISMATCH", "local/fetched-origin/GitHub identities must equal the audited candidate");
+  assert(delivery.status === "DELIVERED_VERIFIED" || delivery.delivered === true, "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "delivery must be explicitly verified");
   return {accepted: true, status: "DELIVERY_ADMITTED", issue_id: issue.issue_id, commit: candidate.commit, tree: candidate.tree};
+}
+
+function issueDetailLines(issue, {cleared = false} = {}) {
+  const target = cleared ? "cleared-issue" : "issue";
+  const relationship = `duplicate_of=${issue.duplicate_of ?? "none"}; regression_of=${issue.regression_of ?? "none"}; supersedes=${issue.supersedes ?? "none"}; root=${issue.root_issue_id ?? "none"}; relation=${issue.relation_type ?? "none"}`;
+  const lines = [
+    `<a id="${target}-${issue.issue_id.toLowerCase()}"></a>`,
+    `### ${issue.issue_id}`,
+    "",
+    `- Summary: ${issue.summary.replaceAll("\n", " ")}`,
+    `- Status / lifecycle: ${issue.status} / ${issue.lifecycle_stage}`,
+    `- Finding kind: ${issue.finding_kind ?? "ISSUE"}`,
+    `- Reporter task/thread: ${issue.reporter.task_id ?? "(not provided)"} / ${issue.reporter.thread_id ?? "(not provided)"}`,
+    `- Reporter turn/item: ${issue.reporter.turn_id ?? "(not provided)"} / ${issue.reporter.item_id ?? "(not provided)"}`,
+    `- Evidence: ${issue.evidence.map((entry) => `${entry.evidence_id} (${entry.reference})`).join(", ") || "(none)"}`,
+    `- Relationships: ${relationship}`,
+  ];
+  if (issue.scope_amendment !== null && issue.scope_amendment !== undefined) lines.push(`- Scope amendment: ${JSON.stringify(issue.scope_amendment)}`);
+  if (cleared) lines.push(`- Delivery: ${JSON.stringify(issue.delivery)}`);
+  lines.push("");
+  return lines;
 }
 
 export function compileIssueMarkdown(registry) {
   validateIssueRegistry(registry);
+  const visible = (issue) => !isClearedIssue(issue);
   const sections = [
-    ["provisional", "Provisional / Compliance Failures", (issue) => ["INTAKE_FAILED", "NOT_READY"].includes(issue.status) || issue.lifecycle_stage === "NOT_AUTHORIZED"],
-    ["ready", "READY", (issue) => issue.status === "READY"],
-    ["in-repair", "In Repair", (issue) => issue.status === "IN_REPAIR"],
-    ["auditing", "Auditing", (issue) => issue.status === "AUDITING"],
-    ["blocked", "Blocked / NOT_READY", (issue) => issue.status === "BLOCKED" || issue.status === "NOT_READY"],
-    ["delivered", "Delivered", (issue) => issue.status === "DELIVERED"],
-    ["regressions", "Regressions", (issue) => issue.status === "REGRESSION"],
+    ["provisional", "Provisional / Compliance Failures", (issue) => visible(issue) && (["INTAKE_FAILED", "NOT_READY"].includes(issue.status) || issue.lifecycle_stage === "NOT_AUTHORIZED")],
+    ["ready", "READY", (issue) => visible(issue) && issue.status === "READY"],
+    ["in-repair", "In Repair", (issue) => visible(issue) && issue.status === "IN_REPAIR"],
+    ["auditing", "Auditing", (issue) => visible(issue) && issue.status === "AUDITING"],
+    ["blocked", "Blocked / NOT_READY", (issue) => visible(issue) && (issue.status === "BLOCKED" || issue.status === "NOT_READY")],
+    ["delivered", "Delivered", (issue) => visible(issue) && issue.status === "DELIVERED"],
+    ["regressions", "Regressions", (issue) => visible(issue) && issue.status === "REGRESSION"],
   ];
   const lines = [
     "# AgentOS Issue Registry",
@@ -639,33 +900,169 @@ export function compileIssueMarkdown(registry) {
     "",
   ];
   for (const [anchor, heading, predicate] of sections) {
-    lines.push(`<a id=\"${anchor}\"></a>`, `## ${heading}`, "", "| Issue | Title | Status | Severity | Lifecycle |", "| --- | --- | --- | --- | --- |");
+    lines.push(`<a id="${anchor}"></a>`, `## ${heading}`, "", "| Issue | Title | Status | Severity | Lifecycle |", "| --- | --- | --- | --- | --- |");
     const selected = registry.issues.filter(predicate).sort((left, right) => compareUtf8(left.issue_id, right.issue_id));
     for (const issue of selected) lines.push(`| [${issue.issue_id}](#issue-${issue.issue_id.toLowerCase()}) | ${issue.title.replaceAll("|", "\\|")} | ${issue.status} | ${issue.severity} | ${issue.lifecycle_stage} |`);
     if (selected.length === 0) lines.push("| _none_ |  |  |  |  |");
     lines.push("");
   }
+  const cleared = registry.issues.filter(isClearedIssue).sort((left, right) => compareUtf8(left.issue_id, right.issue_id));
+  lines.push(`<a id="cleared-tombstones"></a>`, "## Cleared issue tombstones", "", "| Issue | State | Full record | Delivery commit/tree |", "| --- | --- | --- | --- |");
+  for (const issue of cleared) lines.push(`| [${issue.issue_id}](#cleared-issue-${issue.issue_id.toLowerCase()}) | CLEARED | [cleared-issues.md](cleared-issues.md#cleared-issue-${issue.issue_id.toLowerCase()}) | ${issue.delivery.local_commit} / ${issue.delivery.local_tree} |`);
+  if (cleared.length === 0) lines.push("| _none_ |  |  |  |");
+  lines.push("");
   lines.push("## Permanent details", "");
-  for (const issue of registry.issues) {
-    lines.push(`<a id=\"issue-${issue.issue_id.toLowerCase()}\"></a>`, `### ${issue.issue_id}`, "", `- Summary: ${issue.summary.replaceAll("\n", " ")}`, `- Reporter task/thread: ${issue.reporter.task_id ?? "(not provided)"} / ${issue.reporter.thread_id ?? "(not provided)"}`, `- Reporter turn/item: ${issue.reporter.turn_id ?? "(not provided)"} / ${issue.reporter.item_id ?? "(not provided)"}`, `- Evidence: ${issue.evidence.map((entry) => `${entry.evidence_id} (${entry.reference})`).join(", ") || "(none)"}`, `- Relationships: duplicate_of=${issue.duplicate_of ?? "none"}; regression_of=${issue.regression_of ?? "none"}; supersedes=${issue.supersedes ?? "none"}`, "");
-  }
+  for (const issue of registry.issues.filter(visible)) lines.push(...issueDetailLines(issue));
   return `${lines.join("\n").replace(/\n{3,}/gu, "\n\n")}\n`;
 }
 
-export function writeIssuesMarkdownAtomic(registry, {operationsRoot, canonicalPath = null, targetPath = null, actor, deliveryEvidence} = {}) {
+export function compileClearedIssuesMarkdown(registry) {
   validateIssueRegistry(registry);
-  assert(actorRole(actor) === ISSUE_REGISTRAR_ROLE_ID, "ISSUE_REGISTRAR_SOLE_WRITER_REQUIRED", "only the admitted Issue Registrar may write issues.md");
+  const cleared = registry.issues.filter(isClearedIssue).sort((left, right) => compareUtf8(left.issue_id, right.issue_id));
+  const lines = [
+    "# AgentOS Cleared Issues",
+    "",
+    `Registry digest: \`${registry.registry_sha256}\``,
+    "",
+    "This projection contains full records only after identical-byte independent PASS and verified local/fetched-origin/GitHub equality.",
+    "",
+    "<a id=\"cleared\"></a>",
+    "## Delivered / Resolved",
+    "",
+  ];
+  if (cleared.length === 0) lines.push("_none_", "");
+  for (const issue of cleared) lines.push(...issueDetailLines(issue, {cleared: true}));
+  return `${lines.join("\n").replace(/\n{3,}/gu, "\n\n")}\n`;
+}
+
+function safeProjectionTarget(target, expected, label) {
+  const resolved = path.resolve(target ?? expected);
+  assert(resolved === expected, "ISSUE_REGISTRAR_CANONICAL_PATH_REQUIRED", `${label} is restricted to its canonical path`);
+  try {
+    const stat = fs.lstatSync(resolved);
+    assert(!stat.isSymbolicLink() && stat.isFile(), "ISSUE_REGISTRAR_PROJECTION_COLLISION", `${label} collides with a non-regular file`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  return resolved;
+}
+
+function projectionReceipt(registry, issuesMarkdown, clearedMarkdown) {
+  const cleared = registry.issues.filter(isClearedIssue).sort((left, right) => compareUtf8(left.issue_id, right.issue_id));
+  const visible = registry.issues.filter((issue) => !isClearedIssue(issue)).sort((left, right) => compareUtf8(left.issue_id, right.issue_id));
+  const receipt = {
+    schema: "agentos.issue_projection_receipt.v1",
+    version: ISSUE_REGISTRAR_VERSION,
+    registry_sha256: registry.registry_sha256,
+    issues_filename: ISSUE_REGISTRAR_CANONICAL_FILENAME,
+    cleared_filename: ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME,
+    counts: {registry: registry.issues.length, issues: visible.length, cleared: cleared.length},
+    issue_ids: visible.map((issue) => issue.issue_id),
+    cleared_issue_ids: cleared.map((issue) => issue.issue_id),
+    issues_markdown_sha256: canonicalDigest({markdown: issuesMarkdown}),
+    cleared_markdown_sha256: canonicalDigest({markdown: clearedMarkdown}),
+    projection_sha256: null,
+  };
+  receipt.projection_sha256 = digestWithout(receipt, "projection_sha256");
+  return receipt;
+}
+
+export function reconcileIssueProjections(registry, {issuesMarkdown = undefined, clearedMarkdown = undefined} = {}) {
+  validateIssueRegistry(registry);
+  const expectedIssues = compileIssueMarkdown(registry);
+  const expectedCleared = compileClearedIssuesMarkdown(registry);
+  if (issuesMarkdown !== undefined) assert(issuesMarkdown === expectedIssues, "ISSUE_REGISTRAR_PROJECTION_DIGEST_MISMATCH", "issues.md projection bytes do not match typed state");
+  if (clearedMarkdown !== undefined) assert(clearedMarkdown === expectedCleared, "ISSUE_REGISTRAR_PROJECTION_DIGEST_MISMATCH", "cleared-issues.md projection bytes do not match typed state");
+  const receipt = projectionReceipt(registry, expectedIssues, expectedCleared);
+  assert(new Set(receipt.issue_ids).size === receipt.issue_ids.length && new Set(receipt.cleared_issue_ids).size === receipt.cleared_issue_ids.length, "ISSUE_REGISTRAR_PROJECTION_COLLISION", "projection IDs are not unique");
+  assert(receipt.issue_ids.every((id) => !receipt.cleared_issue_ids.includes(id)), "ISSUE_REGISTRAR_PROJECTION_COLLISION", "an issue cannot appear in both projections");
+  assert(receipt.issue_ids.length + receipt.cleared_issue_ids.length === registry.issues.length, "ISSUE_REGISTRAR_PROJECTION_RECONCILIATION_FAILED", "projection counts do not reconcile to registry");
+  return {accepted: true, status: "PROJECTIONS_RECONCILED", ...receipt, issues_markdown: expectedIssues, cleared_markdown: expectedCleared};
+}
+
+export const compileIssueProjectionReceipt = reconcileIssueProjections;
+
+export function writeIssuesMarkdownAtomic(registry, {operationsRoot, canonicalPath = null, targetPath = null, clearedCanonicalPath = null, clearedTargetPath = null, actor, deliveryEvidence} = {}) {
+  validateIssueRegistry(registry);
+  assert(actorRole(actor) === ISSUE_REGISTRAR_ROLE_ID, "ISSUE_REGISTRAR_SOLE_WRITER_REQUIRED", "only the admitted Issue Registrar may write both issue projections");
   requireText(operationsRoot, "operations root");
   const expected = path.resolve(operationsRoot, ISSUE_REGISTRAR_CANONICAL_FILENAME);
-  const requested = path.resolve(targetPath ?? canonicalPath ?? expected);
-  assert(requested === expected, "ISSUE_REGISTRAR_CANONICAL_PATH_REQUIRED", "writes are restricted to the canonical issues.md path");
-  assert(deliveryEvidence?.status === "DELIVERED_VERIFIED" || (deliveryEvidence?.delivered === true && deliveryEvidence?.independent_pass === true), "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "issues.md may be written only after verified delivery");
+  const expectedCleared = path.resolve(operationsRoot, ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME);
+  const requested = safeProjectionTarget(targetPath ?? canonicalPath ?? expected, expected, "issues.md");
+  const requestedCleared = safeProjectionTarget(clearedTargetPath ?? clearedCanonicalPath ?? expectedCleared, expectedCleared, "cleared-issues.md");
+  assert(requested !== requestedCleared, "ISSUE_REGISTRAR_PROJECTION_COLLISION", "projection targets must be distinct");
+  const clearedCount = registry.issues.filter(isClearedIssue).length;
+  assert(clearedCount === 0 || isRuntimeDeliveryVerified(deliveryEvidence), "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "cleared projections require independent PASS and equal Runtime identities");
+  assert(deliveryEvidence?.status === "DELIVERED_VERIFIED" || deliveryEvidence?.delivered === true || clearedCount === 0, "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "issue projections require explicit verified delivery evidence");
   const markdown = compileIssueMarkdown(registry);
+  const clearedMarkdown = compileClearedIssuesMarkdown(registry);
+  const projection = reconcileIssueProjections(registry, {issuesMarkdown: markdown, clearedMarkdown});
   fs.mkdirSync(path.dirname(expected), {recursive: true});
-  const temporary = `${expected}.tmp-${process.pid}`;
-  fs.writeFileSync(temporary, markdown, {encoding: "utf8", flag: "w"});
-  fs.renameSync(temporary, expected);
-  return {path: expected, bytes: Buffer.byteLength(markdown), sha256: canonicalDigest({markdown}), markdown};
+  const token = `${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const entries = [
+    {target: expected, data: markdown, suffix: "issues"},
+    {target: expectedCleared, data: clearedMarkdown, suffix: "cleared"},
+  ];
+  const created = [];
+  const backups = [];
+  let installed = [];
+  try {
+    for (const entry of entries) {
+      const temporary = `${entry.target}.tmp-${token}-${entry.suffix}`;
+      const fd = fs.openSync(temporary, "wx", 0o644);
+      try {
+        fs.writeFileSync(fd, entry.data, "utf8");
+        fs.fsyncSync(fd);
+      } finally {
+        fs.closeSync(fd);
+      }
+      created.push(temporary);
+    }
+    for (const entry of entries) {
+      if (fs.existsSync(entry.target)) {
+        const backup = `${entry.target}.bak-${token}-${entry.suffix}`;
+        fs.renameSync(entry.target, backup);
+        backups.push({target: entry.target, backup});
+      }
+    }
+    for (let index = 0; index < entries.length; index += 1) {
+      fs.renameSync(created[index], entries[index].target);
+      installed.push(entries[index].target);
+    }
+    for (const backup of backups) fs.unlinkSync(backup.backup);
+    installed = [];
+  } catch (error) {
+    for (const targetPath of installed) {
+      try { fs.unlinkSync(targetPath); } catch {}
+    }
+    for (const temporary of created) {
+      try { fs.unlinkSync(temporary); } catch {}
+    }
+    for (const backup of backups.reverse()) {
+      try { if (fs.existsSync(backup.target)) fs.unlinkSync(backup.target); } catch {}
+      try { fs.renameSync(backup.backup, backup.target); } catch {}
+    }
+    throw fail("ISSUE_REGISTRAR_PROJECTION_ATOMIC_WRITE_FAILED", `dual projection write rolled back: ${error.message}`);
+  } finally {
+    for (const temporary of created) {
+      try { fs.unlinkSync(temporary); } catch {}
+    }
+    for (const backup of backups) {
+      try { fs.unlinkSync(backup.backup); } catch {}
+    }
+  }
+  return {
+    path: requested,
+    cleared_path: requestedCleared,
+    paths: [requested, requestedCleared],
+    bytes: Buffer.byteLength(markdown),
+    cleared_bytes: Buffer.byteLength(clearedMarkdown),
+    sha256: canonicalDigest({markdown}),
+    cleared_sha256: canonicalDigest({markdown: clearedMarkdown}),
+    markdown,
+    cleared_markdown: clearedMarkdown,
+    projection,
+  };
 }
 
 export function importHistoricalIssues(sources, {registry = compileIssueRegistry(), productPrefix = "SOCIUNA", year = normalizeYear(), nowUtc} = {}) {
@@ -778,7 +1175,15 @@ export class IssueRegistrar {
   markdown() { return compileIssueMarkdown(this.registry); }
 
   write(options = {}) {
-    return writeIssuesMarkdownAtomic(this.registry, {operationsRoot: options.operationsRoot ?? this.operationsRoot, canonicalPath: options.canonicalPath, targetPath: options.targetPath, actor: options.actor ?? this.writerIdentity, deliveryEvidence: options.deliveryEvidence});
+    return writeIssuesMarkdownAtomic(this.registry, {
+      operationsRoot: options.operationsRoot ?? this.operationsRoot,
+      canonicalPath: options.canonicalPath,
+      targetPath: options.targetPath,
+      clearedCanonicalPath: options.clearedCanonicalPath,
+      clearedTargetPath: options.clearedTargetPath,
+      actor: options.actor ?? this.writerIdentity,
+      deliveryEvidence: options.deliveryEvidence,
+    });
   }
 }
 
@@ -790,5 +1195,7 @@ export const validateIssueTransition = updateIssue;
 export const compileIssueIntake = submitIssue;
 export const validateIssueIntake = validateIssueRecord;
 export const compileIssueRole = compileIssueRegistrarRole;
+export const compileIssueSeamFinding = submitSeamFinding;
+export const validateIssueSeam = validateIssueSeamClosure;
 
 if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Issue Registrar contract loaded\n");
