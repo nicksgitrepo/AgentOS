@@ -63,6 +63,11 @@ assert.ok(malformed.issue.missing_fields.includes("title"));
 assert.ok(malformed.issue.resubmission_requirements.length > 0);
 assert.equal(malformed.reserved, true);
 
+// An incomplete provisional intake cannot be promoted directly to READY or admitted as a root.
+assert.throws(() => updateIssue(registry, malformed.issue.issue_id, {status: "READY"}, {nowUtc: NOW, actor: ISSUE_REGISTRAR_ROLE_ID}), /READY_REQUIRES_COMPLETE/u);
+assert.equal(registry.issues.find((issue) => issue.issue_id === malformed.issue.issue_id).status, "INTAKE_FAILED");
+assert.throws(() => validateIssueSeamClosure({issue: malformed.issue, registration: {pass: true, ready: true}, actor: "PROJECT_OWNER"}), /ROOT_NOT_READY/u);
+
 // Completion upgrades the same immutable number rather than creating a record.
 const completed = completeIssue(registry, malformed.issue.issue_id, {
   title: "Completed malformed intake",

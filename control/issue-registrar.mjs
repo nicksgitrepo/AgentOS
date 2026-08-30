@@ -77,6 +77,33 @@ function normalizeReporter(input = {}) {
 function reporterPresent(reporter) {
   return Object.values(reporter).some((value) => value !== null);
 }
+const ISSUE_STATUS_LIFECYCLE = Object.freeze({
+  INTAKE_FAILED: "NOT_AUTHORIZED",
+  DUPLICATE: "DUPLICATE",
+  READY: "READY",
+  IN_REPAIR: "IN_REPAIR",
+  AUDITING: "AUDITING",
+  BLOCKED: "BLOCKED",
+  NOT_READY: "NOT_READY",
+  DELIVERED: "DELIVERED",
+  REGRESSION: "REGRESSION",
+  REOPENED: "REOPENED",
+  SUPERSEDED: "SUPERSEDED",
+  DEFERRED: "DEFERRED",
+  ACCEPTED_RISK: "ACCEPTED_RISK",
+  WONT_FIX: "WONT_FIX",
+});
+const READY_REQUIRED_FIELDS = Object.freeze(["title", "summary", "category", "severity", "reporter", "evidence"]);
+function validateReadyCompleteness(issue) {
+  assert(issue.status === "READY" && issue.lifecycle_stage === "READY", "ISSUE_REGISTRAR_STATUS_LIFECYCLE_MISMATCH", "READY issues must use the READY lifecycle stage");
+  assert(issue.missing_fields.length === 0, "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", "READY issues cannot have missing standardized fields");
+  assert(issue.invalid_fields.length === 0, "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", "READY issues cannot have invalid standardized fields");
+  assert(issue.resubmission_requirements.length === 0, "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", "READY issues cannot require resubmission");
+  assert(issue.failure_code === null, "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", "READY issues cannot retain an intake failure code");
+  for (const field of READY_REQUIRED_FIELDS) assert(issue.accepted_fields.includes(field), "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", `READY issues must accept ${field}`);
+  assert(reporterPresent(issue.reporter), "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", "READY issues require reporter evidence");
+  assert(issue.evidence.length > 0, "ISSUE_REGISTRAR_READY_REQUIRES_COMPLETE", "READY issues require evidence");
+}
 function normalizeEvidence(values) {
   if (values === undefined || values === null) return []; assert(Array.isArray(values), "ISSUE_REGISTRAR_INVALID_EVIDENCE", "evidence must be an array"); const result = values.map((entry, index) => {
     const source = isRecord(entry) ? entry : {kind: "UNSTRUCTURED", payload: entry}; const evidenceId = asOptionalString(source.evidence_id ?? source.evidenceId) ?? `EVIDENCE.${String(index + 1).padStart(4, "0")}`;
@@ -218,6 +245,7 @@ export function validateIssueRecord(issue) {
   assert(parsed && parsed[1] === issue.product_prefix && Number(parsed[2]) === issue.year && Number(parsed[3]) === issue.number, "ISSUE_REGISTRAR_INVALID_IDENTIFIER", "issue ID does not match its number");
   assert(ISSUE_STATUSES.includes(issue.status), "ISSUE_REGISTRAR_INVALID_STATUS", "issue status is invalid");
   assert(ISSUE_LIFECYCLE_STAGES.includes(issue.lifecycle_stage), "ISSUE_REGISTRAR_INVALID_STATUS", "issue lifecycle stage is invalid");
+  assert(ISSUE_STATUS_LIFECYCLE[issue.status] === issue.lifecycle_stage, "ISSUE_REGISTRAR_STATUS_LIFECYCLE_MISMATCH", "issue status and lifecycle stage must agree");
   assert(ISSUE_SEVERITIES.includes(issue.severity), "ISSUE_REGISTRAR_INVALID_SEVERITY", "issue severity is invalid"); normalizeFindingKind(issue.finding_kind ?? "ISSUE");
   const relationType = normalizeRelationType(issue.relation_type ?? null); if (relationType !== null) {
     assert(issue.root_issue_id !== null && issue.root_issue_id !== undefined, "ISSUE_REGISTRAR_INVALID_RELATION", "a seam relation requires a root issue");
@@ -237,6 +265,7 @@ export function validateIssueRecord(issue) {
   }
   const orderedEvidence = [...issue.evidence].sort((left, right) => compareUtf8(left.evidence_id, right.evidence_id));
   assert(JSON.stringify(orderedEvidence) === JSON.stringify(issue.evidence), "ISSUE_REGISTRAR_NONDETERMINISTIC_ORDER", "evidence is not sorted");
+  if (issue.status === "READY") validateReadyCompleteness(issue);
   if (issue.duplicate_of !== null) assert(ISSUE_ID.test(issue.duplicate_of), "ISSUE_REGISTRAR_INVALID_RELATION", "duplicate_of is invalid");
   if (issue.root_issue_id !== null) assert(ISSUE_ID.test(issue.root_issue_id), "ISSUE_REGISTRAR_INVALID_RELATION", "root_issue_id is invalid");
   if (issue.regression_of !== null) assert(ISSUE_ID.test(issue.regression_of), "ISSUE_REGISTRAR_INVALID_RELATION", "regression_of is invalid");
@@ -420,6 +449,7 @@ function patchIssue(issue, patch, nowUtc, event, actor = ISSUE_REGISTRAR_ROLE_ID
     if (ISSUE_TERMINAL_OWNER_STATUSES.includes(status)) assertOwner(actor); next.status = status; next.lifecycle_stage = status === "INTAKE_FAILED" ? "NOT_AUTHORIZED" : status;
     if (ISSUE_TERMINAL_OWNER_STATUSES.includes(status)) next.owner_decision = {status, decided_by: actorRole(actor), decided_at_utc: nowUtc};
   }
+  if (next.status === "READY") validateReadyCompleteness(next);
   if (patch.regression_of !== undefined) {
     assert(ISSUE_ID.test(String(patch.regression_of)), "ISSUE_REGISTRAR_INVALID_RELATION", "regression_of is invalid"); next.regression_of = String(patch.regression_of); next.status = "REGRESSION";
     next.lifecycle_stage = "REGRESSION";
