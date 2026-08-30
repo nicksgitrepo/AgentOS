@@ -906,7 +906,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "fc13ef34f6586a773f6ca558f829e9850cedf7fa68d5f98c42a73c35a6eae035"
+      "sha256": "03829e23c3bd61b3e562446c8e418da9696a09cc8aa3bc395a7014fba350169e"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -1618,7 +1618,7 @@
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
-      "sha256": "0696d62afc571d3a10ce6257231070206e075ae5903f9b36cf0876fa45814d1f"
+      "sha256": "0653dc80c7f302f08cef3ec0c0cef2790d1dde282098f6d76454474fcc3f7ed1"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
@@ -3592,39 +3592,39 @@
     },
     "issue_registrar_controller": {
       "path": "control/issue-registrar.mjs",
-      "sha256": "9e409cce0ec79f4781f457e3803915f07b9fdaa9e2f1d5cc0256cbb81829e253"
+      "sha256": "ec5341cb2b053692ebaf3739f26e8b1655a937b8c1a06756fd8a6f2c43d55e2e"
     },
     "issue_registrar_contract": {
       "path": "schemas/issue-registrar.v1.json",
-      "sha256": "b9ead9fbad167ab7b648968a3d5637b61713c1de8969227db82c368b9416a1c9"
+      "sha256": "5cdfc581a0f3cf332b75008c3fff9aa8324e73ebba7f7a145f2309d1fd446ead"
     },
     "issue_registry_contract": {
       "path": "schemas/issue-registry.v1.json",
-      "sha256": "fd66f181fc9be8c1b6ba4f1272fdf19787924e9cbc0c32d12cc59dcb7ab3107a"
+      "sha256": "fdd04d25a679075a505b4fcf454b66cbb1f680cbac3a0fe98181852732a73d8c"
     },
     "issue_submission_contract": {
       "path": "schemas/issue-submission.v1.json",
-      "sha256": "52e6fa0dcea4fbce5bee09d98c19c34f09f5f53599983cea73fbf29f18da9218"
+      "sha256": "0fe81065085e66c6656375e1f5810c59d91c3c7646704a682f7732d66046fcf6"
     },
     "issue_transition_contract": {
       "path": "schemas/issue-transition.v1.json",
-      "sha256": "20ed4cd8d0e81b0acc00ec59fb8443e89aa0a7fac0115430707c0d4ea9a0650c"
+      "sha256": "b563fe0bc93ef95e7846fb9123ecc71e8f3ed66389f08bfbd74e5e270506a96c"
     },
     "issue_registrar_documentation": {
       "path": "docs/issue-registrar.md",
-      "sha256": "0aafa1961df27eff390098ae642e18dec156178031366014230b06c6d3966d35"
+      "sha256": "13929232fc21739af82fff00e21ee8cdcbd41d7aa2af453a97e5547f887b3570"
     },
     "issue_registrar_verifier": {
       "path": "tests/verify-issue-registrar.mjs",
-      "sha256": "fb9ad34fb5ac6ccc66444e56f9f2ab6af2150502468ec613e8528a4dc2ce0fcd"
+      "sha256": "9ae7ddd7449e6b9b1f0693e0b790589ce9a354496ffa5e4981fdb9d6f544efd2"
     },
     "issue_registrar_hostile_fixtures": {
       "path": "tests/fixtures/issue-registrar-hostile.json",
-      "sha256": "62d9ca93c43b8aeebaa1b608b87776568211ebc15616b7793001d575b0664317"
+      "sha256": "4cf495a5d4751cd31e5361524c9bebb4d3ad11adf744fc98d359fda021c56761"
     },
     "issue_registrar_historical_fixtures": {
       "path": "tests/fixtures/issue-registrar-historical-import.json",
-      "sha256": "1a70f5ec40ed0985db8ea4fa9b927929c146e3aff69b4c5620d9d9e7802433a3"
+      "sha256": "c811963bce20c10c12b9aa36c55ca65c59ce9b48f803478489eb7f349923a4ff"
     }
   },
   "compatibility_only": {
