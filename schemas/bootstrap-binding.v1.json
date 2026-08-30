@@ -3592,7 +3592,7 @@
     },
     "issue_registrar_controller": {
       "path": "control/issue-registrar.mjs",
-      "sha256": "ec5341cb2b053692ebaf3739f26e8b1655a937b8c1a06756fd8a6f2c43d55e2e"
+      "sha256": "3c05ad7ddbb645d3895c2e6ef0e6096f2e7d628697f780dd2e8bc94ee26344c4"
     },
     "issue_registrar_contract": {
       "path": "schemas/issue-registrar.v1.json",
