@@ -3592,7 +3592,7 @@
     },
     "issue_registrar_controller": {
       "path": "control/issue-registrar.mjs",
-      "sha256": "8c3c5497512d88ed97a6a2fc92b73fcdd2d184872c71c65d5b98b3956eafa11b"
+      "sha256": "2ec807c5a6e617b308292ee99950abcacc631463c6fd809878818a3f323d86ec"
     },
     "issue_registrar_contract": {
       "path": "schemas/issue-registrar.v1.json",
@@ -3616,7 +3616,7 @@
     },
     "issue_registrar_verifier": {
       "path": "tests/verify-issue-registrar.mjs",
-      "sha256": "d749d9de78d62af5be6a953c8dcb44843a99195c91d3486c87968d792c96915a"
+      "sha256": "0aa007fdc4c21ad51f9af9adede88ad0d9f33c80e23300f1e34b392f8d7a0ef1"
     },
     "issue_registrar_hostile_fixtures": {
       "path": "tests/fixtures/issue-registrar-hostile.json",
