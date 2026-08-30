@@ -1000,7 +1000,7 @@ export function writeIssuesMarkdownAtomic(registry, {operationsRoot, canonicalPa
   assert(requested !== requestedCleared, "ISSUE_REGISTRAR_PROJECTION_COLLISION", "projection targets must be distinct");
   const clearedCount = registry.issues.filter(isClearedIssue).length;
   assert(clearedCount === 0 || isRuntimeDeliveryVerified(deliveryEvidence), "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "cleared projections require independent PASS and equal Runtime identities");
-  assert(deliveryEvidence?.status === "DELIVERED_VERIFIED" || deliveryEvidence?.delivered === true || clearedCount === 0, "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "issue projections require explicit verified delivery evidence");
+  assert(deliveryEvidence === undefined || deliveryEvidence?.status === "DELIVERED_VERIFIED" || deliveryEvidence?.delivered === true, "ISSUE_REGISTRAR_DELIVERY_REQUIRED", "supplied projection delivery evidence must be explicitly verified");
   const markdown = compileIssueMarkdown(registry);
   const clearedMarkdown = compileClearedIssuesMarkdown(registry);
   const projection = reconcileIssueProjections(registry, {issuesMarkdown: markdown, clearedMarkdown});
