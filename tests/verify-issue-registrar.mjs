@@ -127,6 +127,7 @@ const seamRootResult = submitIssue(compileIssueRegistry(), {...BASE, title: "Cau
 const seamRoot = seamRootResult.issue;
 const seamScope = {
   type: "SEAM_FINDING",
+  root_issue_id: seamRoot.issue_id,
   source_issue_id: seamRoot.issue_id,
   rationale: "Required helper correction for the same root invariant.",
   paths: ["control/issue-registrar.mjs"],
