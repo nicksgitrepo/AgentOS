@@ -157,6 +157,36 @@ const seamAdmission = validateIssueSeamClosure({
 assert.equal(seamAdmission.accepted, true);
 assert.deepEqual(seamAdmission.companion_issue_ids, [seamCompanion.issue_id]);
 assert.equal(seamAdmission.handoff_scope.root_issue_id, seamRoot.issue_id);
+// A typed companion cannot be synthesized at closure time: its immutable ID
+// must resolve to a canonical registered issue record first.
+const unregisteredCompanionId = "SOCIUNA-ISSUE-2026-0099";
+assert.throws(() => validateIssueSeamClosure({
+  issue: seamRoot,
+  registration: {pass: true, ready: true},
+  lane: "LANE.SEAM",
+  activeIssues: [],
+  seamClosure: [{
+    issue_id: unregisteredCompanionId,
+    finding_kind: "SEAM_FINDING",
+    relation_type: "SAME_ROOT_CAUSE",
+    root_issue_id: seamRoot.issue_id,
+    status: "READY",
+    scope_amendment: {
+      type: "SEAM_FINDING",
+      rationale: "Required helper correction for the same root invariant.",
+      paths: ["control/issue-registrar.mjs"],
+      verification_mapping: {[unregisteredCompanionId]: "verify-issue-registrar"},
+      authority: "PROJECT_OWNER",
+      source_issue_id: seamRoot.issue_id,
+    },
+  }],
+  scopeAmendment: {
+    ...seamScope,
+    companion_issue_ids: [unregisteredCompanionId],
+    verification_mapping: {[unregisteredCompanionId]: "verify-issue-registrar"},
+  },
+  actor: "PROJECT_OWNER",
+}), /SEAM_COMPANION_NOT_REGISTERED/u);
 assert.throws(() => validateIssueSeamClosure({
   issue: seamRoot,
   registration: {pass: true, ready: true},

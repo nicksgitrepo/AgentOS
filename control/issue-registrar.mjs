@@ -502,21 +502,34 @@ function verifyScopeAmendment(scopeAmendment, rootId, companionIds) {
     authority,
   };
 }
-function validateSeamCompanion(companion, rootId, activeById) {
+function validateSeamCompanion(companion, rootId, registeredById) {
   const issueId = String(companion.issue_id ?? companion.issueId ?? ""); assert(ISSUE_ID.test(issueId), "ISSUE_REGISTRAR_SEAM_ID_REQUIRED", "every causal companion requires a registered issue ID");
-  const registered = activeById.get(issueId) ?? companion; if (activeById.has(issueId)) {
-    const registeredRecord = clone(registered); delete registeredRecord.lane; validateIssueRecord(registeredRecord);
-  }
-  const kind = normalizeFindingKind(companion.finding_kind ?? companion.findingKind ?? registered.finding_kind ?? "ISSUE");
+  const registered = registeredById.get(issueId);
+  assert(registered !== undefined, "ISSUE_REGISTRAR_SEAM_COMPANION_NOT_REGISTERED", "causal companion must resolve to an authoritative registered issue record");
+  const registeredRecord = clone(registered); delete registeredRecord.lane; validateIssueRecord(registeredRecord);
+  const registeredKind = normalizeFindingKind(registered.finding_kind ?? "ISSUE");
+  const suppliedKind = companion.finding_kind ?? companion.findingKind;
+  if (suppliedKind !== undefined) assert(normalizeFindingKind(suppliedKind) === registeredKind, "ISSUE_REGISTRAR_SEAM_RECORD_MISMATCH", "typed companion finding kind differs from its registered issue");
+  const kind = registeredKind;
   assert(kind === "SEAM_FINDING" || kind === "SCOPE_AMENDMENT", "ISSUE_REGISTRAR_SEAM_FINDING_REQUIRED", "every companion must arrive as SEAM_FINDING or SCOPE_AMENDMENT intake");
-  const relation = normalizeRelationType(companion.relation_type ?? companion.relationType ?? registered.relation_type ?? null);
+  const registeredRelation = normalizeRelationType(registered.relation_type ?? null);
+  const suppliedRelation = companion.relation_type ?? companion.relationType;
+  if (suppliedRelation !== undefined) assert(normalizeRelationType(suppliedRelation) === registeredRelation, "ISSUE_REGISTRAR_SEAM_RECORD_MISMATCH", "typed companion relation differs from its registered issue");
+  const relation = registeredRelation;
   assert(relation !== null && ISSUE_REGISTRAR_SEAM_RELATIONS.includes(relation), "ISSUE_REGISTRAR_SEAM_RELATION_REQUIRED", "every companion requires an allowed causal relation");
-  const companionRoot = String(companion.root_issue_id ?? companion.rootIssueId ?? registered.root_issue_id ?? ""); assert(companionRoot === rootId, "ISSUE_REGISTRAR_UNRELATED_SCOPE", "companion issue is not same-root");
-  const status = String(companion.status ?? registered.status ?? "").toUpperCase();
+  const registeredRoot = String(registered.root_issue_id ?? "");
+  const suppliedRoot = companion.root_issue_id ?? companion.rootIssueId;
+  if (suppliedRoot !== undefined) assert(String(suppliedRoot) === registeredRoot, "ISSUE_REGISTRAR_SEAM_RECORD_MISMATCH", "typed companion root differs from its registered issue");
+  assert(registeredRoot === rootId, "ISSUE_REGISTRAR_UNRELATED_SCOPE", "companion issue is not same-root");
+  const status = String(registered.status ?? "").toUpperCase();
+  const suppliedStatus = companion.status;
+  if (suppliedStatus !== undefined) assert(String(suppliedStatus).toUpperCase() === status, "ISSUE_REGISTRAR_SEAM_RECORD_MISMATCH", "typed companion status differs from its registered issue");
   assert(!["INTAKE_FAILED", "BLOCKED", "NOT_READY", "DEFERRED", "ACCEPTED_RISK", "WONT_FIX", "SUPERSEDED"].includes(status), "ISSUE_REGISTRAR_SEAM_COMPANION_NOT_ACTIVE", "causal companion is not eligible for the active closure set");
-  const scope = companion.scope_amendment ?? companion.scopeAmendment ?? registered.scope_amendment ?? null;
-  assert(scope !== null, "ISSUE_REGISTRAR_SCOPE_AMENDMENT_REQUIRED", "causal companion requires scope-amendment evidence");
-  return {issue_id: issueId, relation_type: relation, finding_kind: kind, root_issue_id: rootId, scope_amendment: normalizeScopeAmendment(scope)};
+  const registeredScope = registered.scope_amendment ?? null;
+  assert(registeredScope !== null, "ISSUE_REGISTRAR_SCOPE_AMENDMENT_REQUIRED", "causal companion requires scope-amendment evidence");
+  const suppliedScope = companion.scope_amendment ?? companion.scopeAmendment;
+  if (suppliedScope !== undefined) assert(JSON.stringify(normalizeScopeAmendment(suppliedScope)) === JSON.stringify(normalizeScopeAmendment(registeredScope)), "ISSUE_REGISTRAR_SEAM_RECORD_MISMATCH", "typed companion scope differs from its registered issue");
+  return {issue_id: issueId, relation_type: relation, finding_kind: kind, root_issue_id: rootId, scope_amendment: normalizeScopeAmendment(registeredScope)};
 }
 export function validateIssueSeamClosure({rootIssue, issue = rootIssue, registration = null, lane = null, activeIssues = [], ownerAtomicGroup = null, seamClosure, closureSet, companionIssues, scopeAmendment, scope_amendment, rootIssueId = null, root_issue_id = null, repairActor = null, actor = null, auditorReview = null, broadAudit = false, productIntentDecision = false, speculative = false, custodyConflict = false} = {}) {
   validateIssueRecord(issue); const root = rootIssue ?? issue; validateIssueRecord(root); assert(root.issue_id === issue.issue_id, "ISSUE_REGISTRAR_ROOT_REQUIRED", "the claimed READY root must be the admitted issue");
@@ -529,13 +542,14 @@ export function validateIssueSeamClosure({rootIssue, issue = rootIssue, registra
   if (auditorReview?.status === "FAIL" || auditorReview?.accepted === false || auditorReview?.scope_accepted === false) throw fail("ISSUE_REGISTRAR_AUDITOR_SCOPE_REJECTED", "Auditor rejected the proposed causal scope");
   const closureValue = seamClosure ?? closureSet ?? companionIssues; const entries = closureEntries(closureValue);
   assert(entries.length <= ISSUE_REGISTRAR_MAX_SEAM_CLOSURE, "ISSUE_REGISTRAR_SEAM_CLOSURE_TOO_LARGE", "causal seam closure exceeds its bounded maximum");
-  const active = Array.isArray(activeIssues) ? activeIssues.filter((candidate) => candidate && candidate.issue_id !== root.issue_id && (lane === null || candidate.lane === undefined || candidate.lane === lane)) : [];
-  const activeById = new Map(active.map((candidate) => [candidate.issue_id, candidate])); const activeStatuses = new Set(["READY", "IN_REPAIR", "AUDITING", "REOPENED"]);
+  const registered = Array.isArray(activeIssues) ? activeIssues.filter((candidate) => candidate && candidate.issue_id !== root.issue_id) : [];
+  const registeredById = new Map(registered.map((candidate) => [candidate.issue_id, candidate]));
+  const active = registered.filter((candidate) => lane === null || candidate.lane === undefined || candidate.lane === lane); const activeStatuses = new Set(["READY", "IN_REPAIR", "AUDITING", "REOPENED"]);
   const conflicts = active.filter((candidate) => activeStatuses.has(String(candidate.status).toUpperCase())); const companionIds = entries.map((entry) => String(entry.issue_id ?? entry.issueId ?? "")).sort(compareUtf8);
   assert(new Set(companionIds).size === companionIds.length, "ISSUE_REGISTRAR_SEAM_DUPLICATE", "causal seam companions must be unique");
   assert(!companionIds.includes(root.issue_id), "ISSUE_REGISTRAR_SEAM_ROOT_INCLUDED", "the READY root cannot also be a companion");
   if (conflicts.length > 0 && entries.length === 0) throw fail("ISSUE_REGISTRAR_ONE_LANE_ONLY", "one lane requires an explicit root plus bounded causal seam closure");
-  const companions = entries.map((entry) => validateSeamCompanion(entry, root.issue_id, activeById)); if (companions.some((companion) => companion.relation_type === "OWNER_ATOMIC_SEAM")) {
+  const companions = entries.map((entry) => validateSeamCompanion(entry, root.issue_id, registeredById)); if (companions.some((companion) => companion.relation_type === "OWNER_ATOMIC_SEAM")) {
     assert(ownerAtomicGroup?.owner_authorized === true, "ISSUE_REGISTRAR_SCOPE_AUTHORITY_REQUIRED", "OWNER_ATOMIC_SEAM requires an explicit Owner atomic group");
   }
   const conflictIds = conflicts.map((candidate) => candidate.issue_id).sort(compareUtf8); for (const candidate of conflicts) {
