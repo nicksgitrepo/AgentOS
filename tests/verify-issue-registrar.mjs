@@ -129,7 +129,7 @@ const markdown = compileIssueMarkdown(registry);
 assert.match(markdown, /<a id="provisional"><\/a>/u);
 assert.match(markdown, /<a id="ready"><\/a>/u);
 assert.match(markdown, /<a id="regressions"><\/a>/u);
-const tempRoot = path.resolve("/Users/nicholaspacheco/Projects/AgentOS/Temp/issue-registrar-verification");
+const tempRoot = path.resolve(process.cwd(), "../../../Temp/issue-registrar-verification");
 fs.rmSync(tempRoot, {recursive: true, force: true});
 assert.throws(() => writeIssuesMarkdownAtomic(registry, {operationsRoot: tempRoot, actor: "OTHER.ROLE", deliveryEvidence: {status: "DELIVERED_VERIFIED"}}), /SOLE_WRITER_REQUIRED/u);
 assert.throws(() => writeIssuesMarkdownAtomic(registry, {operationsRoot: tempRoot, actor: ISSUE_REGISTRAR_ROLE_ID, deliveryEvidence: {status: "PENDING"}}), /DELIVERY_REQUIRED/u);

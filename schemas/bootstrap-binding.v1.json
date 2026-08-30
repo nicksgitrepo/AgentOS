@@ -906,7 +906,7 @@
     },
     "public_agentos_kernel_surface": {
       "path": "control/agentos.mjs",
-      "sha256": "42c64a740a9755af91734baaae420753cc9df85a7250fd344751c88b60aeb0c2"
+      "sha256": "fc13ef34f6586a773f6ca558f829e9850cedf7fa68d5f98c42a73c35a6eae035"
     },
     "harness_collision_gate_controller": {
       "path": "control/harness-collision-gate.mjs",
@@ -1114,15 +1114,15 @@
     },
     "permanent_role_roster_controller": {
       "path": "control/permanent-role-roster.mjs",
-      "sha256": "40143c6a4df5195ff968f0d12062019179f912c63d9adc5fec3926e50f211844"
+      "sha256": "60b61a43dd1c1022caf1d9c8bc4d11e4386e90706ec2101ff62c4ad3a27f8469"
     },
     "permanent_role_roster_contract": {
       "path": "schemas/permanent-role-roster.v1.json",
-      "sha256": "1d71bba4817e96c48d2575bc755785d138320b150a008104510a7c4dfd48c3f1"
+      "sha256": "cf60647328e2cfacdad3b633040ad610a1f45d41b59933ff994377f338e1188c"
     },
     "permanent_role_roster_verifier": {
       "path": "tests/verify-permanent-role-roster.mjs",
-      "sha256": "7d64a799278fe2f9ffaaf3a01695651be524f7a3b85da31ce33a9e79948dd41f"
+      "sha256": "be98114a1376ebd7e5afb2bd287bfbc1440222a39c3d2cc3ca7caff150e5df9b"
     },
     "agent_spawner_lifecycle_controller": {
       "path": "control/agent-spawner-lifecycle.mjs",
@@ -1618,7 +1618,7 @@
     },
     "public_kernel_surface_verifier": {
       "path": "tests/verify-public-kernel-surface.mjs",
-      "sha256": "fddd8ed2fce11ae220bd00a02f272a5544dc01ad2b9bc267e351f694f0bdf7ef"
+      "sha256": "0696d62afc571d3a10ce6257231070206e075ae5903f9b36cf0876fa45814d1f"
     },
     "pre_live_fine_tooth_audit": {
       "path": "docs/pre-live-fine-tooth-audit-2026-08-12.md",
@@ -3529,19 +3529,58 @@
       "mechanical_path_count": 1,
       "maximum_total_path_count": 14,
       "authorized_direct_paths": [
-        {"path": "control/hygiene-dual-key-repair-loop.mjs", "sha256": "53e6a039e09fa02c3852e633f4fcb0851f2538668e8b039c4a76abe96f08d56c"},
-        {"path": "schemas/hygiene-dual-key-repair-loop.v1.json", "sha256": "8fa90344e2a2edec93c0aefb0b09cfec5c860236a7bd70b6eec5718d4e220aff"},
-        {"path": "tests/verify-hygiene-dual-key-repair-loop.mjs", "sha256": "742d324d11320cff3bbbfbc8779d55a2b547720f8733ae0c32454e52aa3a0c02"},
-        {"path": "governance/2.1rc/pair-local-repair-autonomy.md", "sha256": "f3ca70ebf0fb314644fbd168e356af7148b204efb84c4fa3824a9fc5fa582389"},
-        {"path": "control/campaign-closeout-contracts.mjs", "sha256": "218d0c86921a6b88036c908151160af90c7ee9699539b6a6219054633578b692"},
-        {"path": "control/campaign-closeout-lifecycle.mjs", "sha256": "872e7cf666517cc3232081f435d1cf4860891075981c108090d4a2756847b482"},
-        {"path": "schemas/campaign-closeout-lifecycle.v1.json", "sha256": "88b21fb7f57b5e5a5287fc1f4db577ae4040e52ba8978ff172ce6898031f90e1"},
-        {"path": "tests/verify-campaign-closeout-contracts.mjs", "sha256": "65c1d4ef8f31f5b2c101db7418a5c32e947456a081a0e72820b1fe6c5ade32fa"},
-        {"path": "tests/verify-campaign-closeout-lifecycle.mjs", "sha256": "64ae3f852d4f9e040c2fd0295e6d4a5d6070203858521ebce9db687ea0d3a054"},
-        {"path": "docs/campaign-closeout-memory-archive-hygiene.md", "sha256": "359f85fa71d9083ee237728db0cb21a98ff019aff77a3239778ce7192b081f82"},
-        {"path": "control/storage-autopilot.mjs", "sha256": "141f848d23eaa969438210ee96f423c82e7aa89e49ad07d9e3d7a76ac0db9529"},
-        {"path": "control/hygiene-executor.mjs", "sha256": "98bb8acdd873a86dde729172a2a0ad97fc40a703b9077fa5a3fad021e4925e57"},
-        {"path": "tests/verify-hygiene-executor.mjs", "sha256": "2595952eb40be131bb2399f78dfa4b83d2738e32e7dc2196d6db9a9f7e63eb30"}
+        {
+          "path": "control/hygiene-dual-key-repair-loop.mjs",
+          "sha256": "53e6a039e09fa02c3852e633f4fcb0851f2538668e8b039c4a76abe96f08d56c"
+        },
+        {
+          "path": "schemas/hygiene-dual-key-repair-loop.v1.json",
+          "sha256": "8fa90344e2a2edec93c0aefb0b09cfec5c860236a7bd70b6eec5718d4e220aff"
+        },
+        {
+          "path": "tests/verify-hygiene-dual-key-repair-loop.mjs",
+          "sha256": "742d324d11320cff3bbbfbc8779d55a2b547720f8733ae0c32454e52aa3a0c02"
+        },
+        {
+          "path": "governance/2.1rc/pair-local-repair-autonomy.md",
+          "sha256": "f3ca70ebf0fb314644fbd168e356af7148b204efb84c4fa3824a9fc5fa582389"
+        },
+        {
+          "path": "control/campaign-closeout-contracts.mjs",
+          "sha256": "218d0c86921a6b88036c908151160af90c7ee9699539b6a6219054633578b692"
+        },
+        {
+          "path": "control/campaign-closeout-lifecycle.mjs",
+          "sha256": "872e7cf666517cc3232081f435d1cf4860891075981c108090d4a2756847b482"
+        },
+        {
+          "path": "schemas/campaign-closeout-lifecycle.v1.json",
+          "sha256": "88b21fb7f57b5e5a5287fc1f4db577ae4040e52ba8978ff172ce6898031f90e1"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-contracts.mjs",
+          "sha256": "65c1d4ef8f31f5b2c101db7418a5c32e947456a081a0e72820b1fe6c5ade32fa"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-lifecycle.mjs",
+          "sha256": "64ae3f852d4f9e040c2fd0295e6d4a5d6070203858521ebce9db687ea0d3a054"
+        },
+        {
+          "path": "docs/campaign-closeout-memory-archive-hygiene.md",
+          "sha256": "359f85fa71d9083ee237728db0cb21a98ff019aff77a3239778ce7192b081f82"
+        },
+        {
+          "path": "control/storage-autopilot.mjs",
+          "sha256": "141f848d23eaa969438210ee96f423c82e7aa89e49ad07d9e3d7a76ac0db9529"
+        },
+        {
+          "path": "control/hygiene-executor.mjs",
+          "sha256": "98bb8acdd873a86dde729172a2a0ad97fc40a703b9077fa5a3fad021e4925e57"
+        },
+        {
+          "path": "tests/verify-hygiene-executor.mjs",
+          "sha256": "2595952eb40be131bb2399f78dfa4b83d2738e32e7dc2196d6db9a9f7e63eb30"
+        }
       ],
       "mechanical_last": {
         "path": "schemas/bootstrap-binding.v1.json",
@@ -3550,6 +3589,42 @@
       },
       "public_api": "HYGIENE_EXECUTOR_AND_CAMPAIGN_CLOSEOUT_COMPATIBILITY_REEXPORT",
       "filesystem_mutation": false
+    },
+    "issue_registrar_controller": {
+      "path": "control/issue-registrar.mjs",
+      "sha256": "9e409cce0ec79f4781f457e3803915f07b9fdaa9e2f1d5cc0256cbb81829e253"
+    },
+    "issue_registrar_contract": {
+      "path": "schemas/issue-registrar.v1.json",
+      "sha256": "b9ead9fbad167ab7b648968a3d5637b61713c1de8969227db82c368b9416a1c9"
+    },
+    "issue_registry_contract": {
+      "path": "schemas/issue-registry.v1.json",
+      "sha256": "fd66f181fc9be8c1b6ba4f1272fdf19787924e9cbc0c32d12cc59dcb7ab3107a"
+    },
+    "issue_submission_contract": {
+      "path": "schemas/issue-submission.v1.json",
+      "sha256": "52e6fa0dcea4fbce5bee09d98c19c34f09f5f53599983cea73fbf29f18da9218"
+    },
+    "issue_transition_contract": {
+      "path": "schemas/issue-transition.v1.json",
+      "sha256": "20ed4cd8d0e81b0acc00ec59fb8443e89aa0a7fac0115430707c0d4ea9a0650c"
+    },
+    "issue_registrar_documentation": {
+      "path": "docs/issue-registrar.md",
+      "sha256": "0aafa1961df27eff390098ae642e18dec156178031366014230b06c6d3966d35"
+    },
+    "issue_registrar_verifier": {
+      "path": "tests/verify-issue-registrar.mjs",
+      "sha256": "fb9ad34fb5ac6ccc66444e56f9f2ab6af2150502468ec613e8528a4dc2ce0fcd"
+    },
+    "issue_registrar_hostile_fixtures": {
+      "path": "tests/fixtures/issue-registrar-hostile.json",
+      "sha256": "62d9ca93c43b8aeebaa1b608b87776568211ebc15616b7793001d575b0664317"
+    },
+    "issue_registrar_historical_fixtures": {
+      "path": "tests/fixtures/issue-registrar-historical-import.json",
+      "sha256": "1a70f5ec40ed0985db8ea4fa9b927929c146e3aff69b4c5620d9d9e7802433a3"
     }
   },
   "compatibility_only": {
