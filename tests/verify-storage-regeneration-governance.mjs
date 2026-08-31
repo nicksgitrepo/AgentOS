@@ -193,6 +193,7 @@ const unchanged = compileStorageDailyInspection({inspectionId: "INSPECT.2", cont
 assert.equal(validateStorageDailyInspection(unchanged).deduplicated, true);
 assert.throws(() => compileStorageDailyInspection({inspectionId: "INSPECT.BAD.POLL", controllerId: "CONTROLLER.STORAGE", observedAtUtc: later, cycles: [], pollKey: "POLL.1", previousPollKey: "POLL.1", unchangedObservation: true, deltaReceiptSha256: "c".repeat(64)}), /POLLING_LOOP/u);
 assert.throws(() => compileStorageDailyInspection({inspectionId: "INSPECT.BAD.DELTA", controllerId: "CONTROLLER.STORAGE", observedAtUtc: later, cycles: [], pollKey: "POLL.3", previousPollKey: "POLL.2", unchangedObservation: true}), /POLLING_LOOP/u);
+assert.throws(() => compileStorageDailyInspection({inspectionId: "INSPECT.BAD.FULL", controllerId: "CONTROLLER.STORAGE", observedAtUtc: later, cycles: [], pollKey: "POLL.4", previousPollKey: "POLL.3", deltaReceiptSha256: "c".repeat(64), unchangedObservation: true, fullEvidence: true}), /POLLING_LOOP/u);
 
 const retained = compileRetainedDeliveredWorktreeCloseout({worktreeId: "WORKTREE.STORAGE.1175", issueId: issue, delivery, custodyReleased: true, retainedPaths: ["README.md"], observedAtUtc: later});
 assert.equal(validateRetainedDeliveredWorktreeCloseout(retained, {delivery}).disposable_output_clear, true);

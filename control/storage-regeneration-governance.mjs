@@ -397,7 +397,6 @@ export function compileDisposableOutputManifest({
   if (operationRoot !== null) string(operationRoot, "disposable manifest operation root");
   const source = outputs ?? entries;
   array(source, "disposable output entries");
-  assert(source.length > 0, "disposable output entries may not be empty");
   const normalized = source.map((entry, index) => normalizeDisposableEntry(entry, boundIssue, root, index));
   assert(new Set(normalized.map((entry) => entry.path)).size === normalized.length, "disposable output paths must be unique", "STORAGE_REGENERATION_MANIFEST_DUPLICATE_PATH");
   const verified = delivery_verified ?? deliveryVerified;
@@ -675,7 +674,7 @@ export function compileSharedDependencyCustody({
   releaseReceiptSha256 = null, release_receipt_sha256, observedAtUtc, observed_at_utc,
 } = {}) {
   id(dependencyId ?? dependency_id, "shared dependency ID");
-  string(rootPath ?? root_path, "shared dependency root");
+  safeRelative(rootPath ?? root_path, "shared dependency root");
   string(contentIdentity ?? content_identity, "shared dependency content identity");
   string(compatibleIdentity ?? compatible_identity, "shared dependency compatible identity");
   string(owner, "shared dependency owner");
@@ -715,7 +714,7 @@ export function validateSharedDependencyCustody(custody) {
   exactKeys(custody, ["schema", "version", "dependency_id", "root_path", "content_identity", "compatible_identity", "owner", "consumers", "live_consumers", "issue_refs", "shared", "release_requested", "release_receipt_sha256", "observed_at_utc", "custody_sha256"], "shared dependency custody");
   assert(custody.schema === STORAGE_SHARED_DEPENDENCY_CUSTODY_SCHEMA && custody.version === 1, "shared dependency custody identity is invalid");
   id(custody.dependency_id, "shared dependency ID");
-  string(custody.root_path, "shared dependency root");
+  safeRelative(custody.root_path, "shared dependency root");
   string(custody.content_identity, "shared dependency content identity");
   string(custody.compatible_identity, "shared dependency compatible identity");
   string(custody.owner, "shared dependency owner");
@@ -758,7 +757,7 @@ export function compileFleetReplayCustody({
   id(laneId ?? lane_id, "Fleet replay lane ID");
   positiveInteger(generation, "Fleet replay generation");
   string(rootIdentity ?? root_identity, "Fleet replay root identity");
-  string(rootPath ?? root_path, "Fleet replay root path");
+  safeRelative(rootPath ?? root_path, "Fleet replay root path");
   assert(status === "ACTIVE" || status === "STOPPED", "Fleet replay status is invalid");
   bool(active, "Fleet replay active flag");
   bool(terminal, "Fleet replay terminal flag");
@@ -801,7 +800,7 @@ export function validateFleetReplayCustody(custody) {
   id(custody.lane_id, "Fleet replay lane ID");
   positiveInteger(custody.generation, "Fleet replay generation");
   string(custody.root_identity, "Fleet replay root identity");
-  string(custody.root_path, "Fleet replay root path");
+  safeRelative(custody.root_path, "Fleet replay root path");
   assert(custody.status === "ACTIVE" || custody.status === "STOPPED", "Fleet replay status is invalid");
   bool(custody.active, "Fleet replay active flag");
   bool(custody.terminal, "Fleet replay terminal flag");
@@ -1121,7 +1120,7 @@ export function compileStorageDailyInspection({
   bool(full, "daily inspection full evidence flag");
   assert(!(unchanged && delta === null), "unchanged polling requires a delta receipt", "STORAGE_REGENERATION_POLLING_LOOP");
   assert(!(poll !== null && poll === previousPoll), "repeated unchanged storage polling is rejected", "STORAGE_REGENERATION_POLLING_LOOP");
-  if (full && unchanged) assert(delta !== null, "repeated full evidence requires a delta receipt", "STORAGE_REGENERATION_POLLING_LOOP");
+  if (full && unchanged) assert(false, "unchanged polling must use a delta receipt rather than repeated full evidence", "STORAGE_REGENERATION_POLLING_LOOP");
   const recurrenceKeys = cycles.filter((cycle) => cycle.recurrence_detected).map((cycle) => cycle.recurrence_key);
   const priorKeys = prior?.recurrence_keys ?? [];
   const repeated = [...new Set([...priorKeys, ...recurrenceKeys])];
@@ -1178,6 +1177,7 @@ export function validateStorageDailyInspection(inspection) {
   bool(inspection.full_evidence, "daily inspection full evidence flag");
   assert(!(inspection.unchanged_observation && inspection.delta_receipt_sha256 === null), "unchanged polling requires a delta receipt", "STORAGE_REGENERATION_POLLING_LOOP");
   assert(!(inspection.poll_key !== null && inspection.poll_key === inspection.previous_poll_key), "repeated unchanged storage polling is rejected", "STORAGE_REGENERATION_POLLING_LOOP");
+  assert(!(inspection.unchanged_observation && inspection.full_evidence), "unchanged polling must use a delta receipt rather than repeated full evidence", "STORAGE_REGENERATION_POLLING_LOOP");
   assert(inspection.deduplicated === (inspection.unchanged_observation === true), "daily deduplication flag is stale");
   assert(inspection.protected_state_preserved === true, "daily inspection must preserve protected state");
   assert(inspection.deletion_execution_authorized === false, "daily inspection cannot authorize deletion");
