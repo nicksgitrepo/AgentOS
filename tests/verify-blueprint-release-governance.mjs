@@ -157,11 +157,24 @@ const camelNotice = {...notice, acknowledgementRequired: true, notice_sha256: nu
 assert.throws(() => validateBlueprintProducerNotice(camelNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 const camelPerIssueNotice = {...notice, perIssue: true, notice_sha256: null}; camelPerIssueNotice.notice_sha256 = canonicalDigest(camelPerIssueNotice);
 assert.throws(() => validateBlueprintProducerNotice(camelPerIssueNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+for (const alias of ["acknowledgmentRequired", "acknowledgment_required", "requiresAcknowledgment", "requires_acknowledgment", "acknowledgment"]) {
+  const americanNotice = {...notice, [alias]: true, notice_sha256: null}; americanNotice.notice_sha256 = canonicalDigest(americanNotice);
+  assert.throws(() => validateBlueprintProducerNotice(americanNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+}
+for (const alias of ["perIssueNotice", "per_issue_notice", "perIssueAcknowledgment", "per_issue_acknowledgment", "requiresPerIssue"]) {
+  const perIssueAliasNotice = {...notice, [alias]: true, notice_sha256: null}; perIssueAliasNotice.notice_sha256 = canonicalDigest(perIssueAliasNotice);
+  assert.throws(() => validateBlueprintProducerNotice(perIssueAliasNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+}
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "BLUEPRINT_CONSUMED"}), /CONSUMED_TRAFFIC_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "PER_ISSUE_NOTICE", acknowledgement_required: true}), /ACKNOWLEDGEMENT_FORBIDDEN|TRAFFIC_FORBIDDEN/u);
 const camelAcknowledgement = {kind: "ISSUE_STARTED", acknowledgementRequired: true};
 assert.throws(() => validateBlueprintLifecycleTraffic(camelAcknowledgement), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, traffic: [camelAcknowledgement]}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+const americanAcknowledgement = {kind: "ISSUE_STARTED", acknowledgmentRequired: true};
+assert.throws(() => validateBlueprintLifecycleTraffic(americanAcknowledgement), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, messages: [americanAcknowledgement]}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+const americanSnakeAcknowledgement = {kind: "ISSUE_STARTED", acknowledgment_required: true};
+assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, traffic: [americanSnakeAcknowledgement]}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "ISSUE_STARTED", perIssue: true}), /PER_ISSUE_NOTICE_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "ISSUE_STARTED", issueNotice: true}), /PER_ISSUE_NOTICE_FORBIDDEN/u);
 for (const kind of BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC) assert.deepEqual(validateBlueprintLifecycleTraffic({kind}), {kind});

@@ -40,7 +40,19 @@ const BLUEPRINT_RELEASE_KEYS = Object.freeze([
   "schema", "version", "release_id", "release_sequence", "status", "published_at_utc", "release_path", "manifest", "issue_ids", "entries", "factual_inputs", "advisory_inputs", "producer_notice_id", "acknowledgement_required", "coordination", "supersedes", "release_sha256",
 ]);
 const BLUEPRINT_FORBIDDEN_RELEASE_ALIASES = Object.freeze([
-  "acknowledgementRequired", "ackRequired", "acknowledgmentRequired", "acknowledgment_required", "requiresAcknowledgement", "requires_acknowledgement", "requiresAck", "requires_ack", "perIssue", "issueNotice", "perIssueNotice", "per_issue", "issue_notice", "per_issue_notice", "perIssueAcknowledgement", "per_issue_acknowledgement",
+  "acknowledgementRequired", "ackRequired", "acknowledgmentRequired", "acknowledgment_required", "requiresAcknowledgement", "requires_acknowledgement", "requiresAcknowledgment", "requires_acknowledgment", "requiresAck", "requires_ack", "acknowledgement", "acknowledgment", "perIssue", "issueNotice", "perIssueNotice", "per_issue", "issue_notice", "per_issue_notice", "perIssueAcknowledgement", "per_issue_acknowledgement", "perIssueAcknowledgment", "per_issue_acknowledgment", "issueAcknowledgement", "issue_acknowledgement", "issueAcknowledgment", "issue_acknowledgment", "requiresPerIssue", "requires_per_issue", "perIssueAck", "per_issue_ack",
+]);
+const BLUEPRINT_NOTICE_KEYS = Object.freeze([
+  "schema", "version", "notice_id", "release_id", "issue_ids", "notice_kind", "sent_at_utc", "acknowledgement_required", "per_issue", "notice_sha256",
+]);
+const BLUEPRINT_NOTICE_FORBIDDEN_ALIASES = Object.freeze([
+  "acknowledgementRequired", "ackRequired", "acknowledgmentRequired", "acknowledgment_required", "requiresAcknowledgement", "requires_acknowledgement", "requiresAcknowledgment", "requires_acknowledgment", "requiresAck", "requires_ack", "acknowledgement", "acknowledgment", "perIssue", "issueNotice", "perIssueNotice", "issue_notice", "per_issue_notice", "perIssueAcknowledgement", "per_issue_acknowledgement", "perIssueAcknowledgment", "per_issue_acknowledgment", "issueAcknowledgement", "issue_acknowledgement", "issueAcknowledgment", "issue_acknowledgment", "requiresPerIssue", "requires_per_issue", "perIssueAck", "per_issue_ack",
+]);
+const BLUEPRINT_TRAFFIC_ACK_ALIASES = Object.freeze([
+  "acknowledgement_required", "ack_required", "acknowledgementRequired", "ackRequired", "acknowledgment_required", "acknowledgmentRequired", "requiresAcknowledgement", "requires_acknowledgement", "requiresAcknowledgment", "requires_acknowledgment", "requiresAck", "requires_ack", "acknowledgement", "acknowledgment",
+]);
+const BLUEPRINT_TRAFFIC_PER_ISSUE_ALIASES = Object.freeze([
+  "per_issue", "issue_notice", "perIssue", "issueNotice", "perIssueNotice", "per_issue_notice", "perIssueAcknowledgement", "per_issue_acknowledgement", "perIssueAcknowledgment", "per_issue_acknowledgment", "issueAcknowledgement", "issue_acknowledgement", "issueAcknowledgment", "issue_acknowledgment", "requiresPerIssue", "requires_per_issue", "perIssueAck", "per_issue_ack",
 ]);
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u;
@@ -376,9 +388,13 @@ export function compileBlueprintProducerNotice({noticeId = null, notice_id = nul
 
 export function validateBlueprintProducerNotice(notice) {
   assert(isRecord(notice) && notice.schema === BLUEPRINT_NOTICE_SCHEMA && notice.version === BLUEPRINT_VERSION, "BLUEPRINT_INVALID_NOTICE", "Blueprint notice schema/version is invalid");
+  for (const alias of BLUEPRINT_NOTICE_FORBIDDEN_ALIASES) assert(!Object.prototype.hasOwnProperty.call(notice, alias), "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", `Blueprint notice field ${alias} is forbidden`);
+  const actualKeys = Object.keys(notice).sort(compareUtf8);
+  const expectedKeys = [...BLUEPRINT_NOTICE_KEYS].sort(compareUtf8);
+  assert(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), "BLUEPRINT_INVALID_NOTICE", "Blueprint notice fields are not canonical");
   requireIdentifier(notice.notice_id, "Blueprint producer notice ID"); requireIdentifier(notice.release_id, "Blueprint notice release ID");
   const ids = sortedStrings(notice.issue_ids, "Blueprint notice issue IDs", {allowEmpty: false}); assert(JSON.stringify(ids) === JSON.stringify(notice.issue_ids), "BLUEPRINT_NONDETERMINISTIC_ORDER", "Blueprint notice issue IDs are not sorted");
-  requireUtc(notice.sent_at_utc, "Blueprint notice time"); assert(notice.notice_kind === "FINAL_CONSOLIDATED_BATCH", "BLUEPRINT_NOTICE_KIND_INVALID", "only one consolidated final notice is permitted"); assert(notice.acknowledgement_required === false && notice.per_issue === false && notice.acknowledgementRequired !== true && notice.ackRequired !== true && notice.perIssue !== true && notice.issueNotice !== true && notice.perIssueNotice !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "Blueprint notices cannot require acknowledgement or become per-issue traffic");
+  requireUtc(notice.sent_at_utc, "Blueprint notice time"); assert(notice.notice_kind === "FINAL_CONSOLIDATED_BATCH", "BLUEPRINT_NOTICE_KIND_INVALID", "only one consolidated final notice is permitted"); assert(notice.acknowledgement_required === false && notice.per_issue === false, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "Blueprint notices cannot require acknowledgement or become per-issue traffic");
   requireSha(notice.notice_sha256, "Blueprint notice digest"); assert(notice.notice_sha256 === digestWithout(notice, "notice_sha256"), "BLUEPRINT_DIGEST_MISMATCH", "Blueprint notice digest mismatch"); return notice;
 }
 
@@ -439,8 +455,8 @@ export function validateBlueprintLifecycleTraffic(message) {
   const kind = String(message.kind ?? message.type ?? message.event ?? "").toUpperCase();
   assert(kind.length > 0, "BLUEPRINT_TRAFFIC_INVALID", "lifecycle traffic requires an event kind");
   assert(!BLUEPRINT_FORBIDDEN_TRAFFIC.includes(kind), "BLUEPRINT_CONSUMED_TRAFFIC_FORBIDDEN", "BLUEPRINT_CONSUMED traffic is forbidden");
-  assert(message.acknowledgement_required !== true && message.ack_required !== true && message.acknowledgementRequired !== true && message.ackRequired !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "acknowledgement traffic is forbidden");
-  assert(message.per_issue !== true && message.issue_notice !== true && message.perIssue !== true && message.issueNotice !== true && message.perIssueNotice !== true, "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", "per-issue Blueprint notices are forbidden");
+  for (const alias of BLUEPRINT_TRAFFIC_ACK_ALIASES) assert(message[alias] !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "acknowledgement traffic is forbidden");
+  for (const alias of BLUEPRINT_TRAFFIC_PER_ISSUE_ALIASES) assert(message[alias] !== true, "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", "per-issue Blueprint notices are forbidden");
   if (kind.length > 0) assert(BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC.includes(kind), "BLUEPRINT_TRAFFIC_FORBIDDEN", `lifecycle traffic ${kind} is not allowed`);
   return message;
 }
