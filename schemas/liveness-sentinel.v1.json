@@ -38,7 +38,7 @@
     },
     "permanentSessionRollover": {
       "type": "object",
-      "required": ["schema", "version", "status", "task_id", "role_id", "old_session", "successor_session", "continuity", "retained_old_session", "exactly_one_successor", "rollover_sha256"],
+      "required": ["schema", "version", "status", "task_id", "role_id", "old_session", "successor_session", "supersedes_session_id", "successor_session_id", "continuity", "retained_old_session", "exactly_one_successor", "rollover_sha256"],
       "properties": {
         "schema": {"const": "agentos.permanent_session_rollover.v1"},
         "version": {"const": 1},
@@ -47,6 +47,8 @@
         "role_id": {"type": "string", "minLength": 1},
         "old_session": {"type": "object"},
         "successor_session": {"type": "object"},
+        "supersedes_session_id": {"type": "string", "minLength": 1},
+        "successor_session_id": {"type": "string", "minLength": 1},
         "continuity": {"type": "object", "required": ["queue", "custody", "incident", "stopping_point"]},
         "retained_old_session": {"const": true},
         "exactly_one_successor": {"const": true},

@@ -33,8 +33,10 @@ import {
   PERMANENT_SESSION_ROLLOVER_SCHEMA,
   compilePermanentSessionRollover,
   compilePermanentTaskSessionRollover,
+  compilePermanentTaskSessionSuccessor,
   validatePermanentSessionRollover,
   validatePermanentTaskSessionRollover,
+  validatePermanentTaskSessionSuccessor,
 } from "./zero-output-session-replacement.mjs";
 
 export {
@@ -57,8 +59,10 @@ export {
   PERMANENT_SESSION_ROLLOVER_SCHEMA,
   compilePermanentSessionRollover,
   compilePermanentTaskSessionRollover,
+  compilePermanentTaskSessionSuccessor,
   validatePermanentSessionRollover,
   validatePermanentTaskSessionRollover,
+  validatePermanentTaskSessionSuccessor,
 };
 
 export const LIVENESS_SENTINEL_SCHEMA = "agentos.liveness_sentinel.v1";

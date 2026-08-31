@@ -1114,16 +1114,33 @@ export function validateSchedulerProjectionLivenessObservation(receipt) {
   expectedState.source_state_sha256 = canonicalDigest({...expectedState, source_state_sha256: null});
   assert(receipt.source_state.source_state_sha256 === expectedState.source_state_sha256, "scheduler projection/liveness source state digest mismatch");
   for (const key of Object.keys(expectedState)) assert(receipt.source_state[key] === expectedState[key], `scheduler projection/liveness source state ${key} mismatch`);
-  assert([ACTIVE_OR_PROJECTION_LAG, MATERIAL_LIVENESS_ACTIVE, SAME_TASK_RECOVERY_REQUIRED, MATERIAL_LIVENESS_STAGNANT].includes(receipt.classification), "scheduler projection/liveness classification is invalid");
-  assert(receipt.status === receipt.classification, "scheduler projection/liveness status diverges from classification");
-  assert(receipt.replacement_allowed === false, "projection/liveness observation cannot authorize replacement");
-  assert(receipt.stalled === (receipt.classification === MATERIAL_LIVENESS_STAGNANT), "projection/liveness stall flag is inconsistent");
-  if (receipt.classification === ACTIVE_OR_PROJECTION_LAG) assert(receipt.projection.items.length === 0 && receipt.stalled === false, "projection lag classification must remain non-stalled");
-  if (receipt.classification === MATERIAL_LIVENESS_STAGNANT) assert(receipt.escalation?.classification === TYPED_HOST_CAPABILITY_ESCALATION, "stagnant liveness must retain typed escalation");
   requireRecord(receipt.recovery, "scheduler projection/liveness recovery bounds");
   nonNegativeInteger(receipt.recovery.attempt, "scheduler projection/liveness recovery attempt");
   nonNegativeInteger(receipt.recovery.maximum_attempts, "scheduler projection/liveness maximum recovery attempts");
   assert(receipt.recovery.bounded === true && receipt.recovery.same_task_only === true, "scheduler recovery must remain bounded and same-task");
+  assert([ACTIVE_OR_PROJECTION_LAG, MATERIAL_LIVENESS_ACTIVE, SAME_TASK_RECOVERY_REQUIRED, MATERIAL_LIVENESS_STAGNANT].includes(receipt.classification), "scheduler projection/liveness classification is invalid");
+  assert(receipt.status === receipt.classification, "scheduler projection/liveness status diverges from classification");
+  assert(receipt.replacement_allowed === false, "projection/liveness observation cannot authorize replacement");
+  assert(receipt.stalled === (receipt.classification === MATERIAL_LIVENESS_STAGNANT), "projection/liveness stall flag is inconsistent");
+  requireRecord(receipt.signals, "scheduler projection/liveness source signals");
+  const expectedSignals = {
+    projected_empty: receipt.projection.items.length === 0,
+    material_receipt: sourceHasMaterialEntries(receipts),
+    material_result: sourceHasMaterialEntries(results),
+    live_process: sourceHasLiveEntries(processes),
+    active_lease: sourceHasLiveEntries(leases),
+  };
+  for (const [key, value] of Object.entries(expectedSignals)) assert(receipt.signals[key] === value, `scheduler projection/liveness signal ${key} mismatch`);
+  const hasIndependentSignal = receipt.signals.durable_ordinal_advanced === true || receipt.signals.durable_mtime_advanced === true || receipt.signals.durable_activity_advanced === true || receipt.signals.receipts_advanced === true || receipt.signals.results_advanced === true || expectedSignals.material_receipt || expectedSignals.material_result || expectedSignals.live_process || expectedSignals.active_lease;
+  if (receipt.projection.items.length === 0 && hasIndependentSignal) assert(receipt.classification === ACTIVE_OR_PROJECTION_LAG && receipt.stalled === false, "independent material/liveness evidence must remain active or lagging");
+  if (receipt.classification === ACTIVE_OR_PROJECTION_LAG) assert(receipt.projection.items.length === 0 && receipt.stalled === false, "projection lag classification must remain non-stalled");
+  if (receipt.classification === SAME_TASK_RECOVERY_REQUIRED) assert(receipt.recovery.attempt < receipt.recovery.maximum_attempts && !hasIndependentSignal, "same-task recovery is only for a stagnant bounded observation");
+  if (receipt.classification === MATERIAL_LIVENESS_STAGNANT) {
+    assert(receipt.recovery.attempt >= receipt.recovery.maximum_attempts && !hasIndependentSignal, "stagnant liveness requires exhausted recovery and no independent progress");
+    assert(receipt.escalation?.classification === TYPED_HOST_CAPABILITY_ESCALATION, "stagnant liveness must retain typed escalation");
+    const expectedKey = canonicalDigest({task_id: receipt.task_id, lane_id: receipt.lane_id, source_state_sha256: receipt.source_state.source_state_sha256, recovery_attempt: receipt.recovery.attempt});
+    assert(receipt.escalation.key === expectedKey && receipt.escalation.evidence_sha256 === receipt.source_state.source_state_sha256, "stagnant liveness escalation is not source-bound");
+  }
   requireSha(receipt.receipt_sha256, "scheduler projection/liveness receipt digest");
   assert(receipt.receipt_sha256 === digestBody(receipt, "receipt_sha256"), "scheduler projection/liveness receipt digest mismatch");
   return receipt;

@@ -82,6 +82,7 @@ assert.equal(rollover.status, "ROLLOVER_ADMITTED");
 assert.equal(rollover.retained_old_session, true);
 assert.equal(rollover.exactly_one_successor, true);
 assert.throws(() => compilePermanentSessionRollover({...rolloverInput, existingSessions: [{session_id: "SESSION-NEW-037"}]}), /duplicate permanent successor/u);
+assert.throws(() => compilePermanentSessionRollover({...rolloverInput, existingSessions: [{session_id: "SESSION-OTHER-037", task_id: "TASK-ROLLOVER-037", successor: true}]}), /more than one permanent successor/u);
 assert.throws(() => compilePermanentSessionRollover({...rolloverInput, existingRoles: [{role_id: "ROLE-PERMANENT-037"}]}), /duplicate permanent role/u);
 assert.throws(() => compilePermanentSessionRollover({...rolloverInput, existingTimers: [{timer_id: "TIMER-NEW-037"}]}), /duplicate permanent timer/u);
 assert.throws(() => compilePermanentSessionRollover({...rolloverInput, existingJobs: [{job_id: "JOB-NEW-037"}]}), /duplicate Scheduler job/u);

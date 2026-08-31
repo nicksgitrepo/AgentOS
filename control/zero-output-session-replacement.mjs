@@ -210,12 +210,18 @@ export function compilePermanentSessionRollover({
   assert(oldSession.retained !== false && oldSession.archived !== true, "old permanent session must remain retained");
   assert(["CLEAN", "CLEAN_STOPPING_POINT", "STOPPED", "CHECKPOINT_REACHED", "COMPLETED"].includes(String(oldSession.status ?? oldSession.lifecycle ?? "CLEAN_STOPPING_POINT").toUpperCase()), "old session is not at a clean stopping point");
   assert(successorSession.successor === true || successorSession.role_id === undefined || successorSession.role_id === roleId, "successor role binding is invalid");
-  const sessions = Array.isArray(existingSessions) ? existingSessions : [];
+  assert(Array.isArray(existingSessions), "existing permanent sessions must be an array");
+  assert(Array.isArray(existingRoles), "existing permanent roles must be an array");
+  assert(Array.isArray(existingTimers), "existing permanent timers must be an array");
+  assert(Array.isArray(existingJobs), "existing Scheduler jobs must be an array");
+  const sessions = existingSessions;
   const duplicateSession = sessions.some((entry) => entryIdentity(entry, ["session_id", "sessionId", "id"]) === successorId);
   assert(!duplicateSession, "duplicate permanent successor session is forbidden");
-  const roles = Array.isArray(existingRoles) ? existingRoles : [];
-  const timers = Array.isArray(existingTimers) ? existingTimers : [];
-  const jobs = Array.isArray(existingJobs) ? existingJobs : [];
+  const parallelSuccessor = sessions.some((entry) => entryIdentity(entry, ["task_id", "taskId"]) === taskId && entryIdentity(entry, ["session_id", "sessionId", "id"]) !== oldId && (entry.successor === true || entry.permanent === true || entry.role_id !== undefined || entry.roleId !== undefined));
+  assert(!parallelSuccessor, "a task may not have more than one permanent successor");
+  const roles = existingRoles;
+  const timers = existingTimers;
+  const jobs = existingJobs;
   const successorRole = entryIdentity(successorSession, ["role_id", "roleId", "role"]);
   if (successorRole) assert(!roles.some((entry) => entryIdentity(entry, ["role_id", "roleId", "role"]) === successorRole), "duplicate permanent role is forbidden");
   const successorTimer = entryIdentity(successorSession, ["timer_id", "timerId"]);
@@ -237,6 +243,8 @@ export function compilePermanentSessionRollover({
     status: PERMANENT_SESSION_ROLLOVER_ADMITTED,
     task_id: taskId,
     role_id: roleId,
+    supersedes_session_id: oldId,
+    successor_session_id: successorId,
     old_session: {...oldSession, session_id: oldId},
     successor_session: {...successorSession, session_id: successorId},
     continuity: {queue: structuredClone(queue), custody: structuredClone(custody), incident: structuredClone(incident), stopping_point: structuredClone(stoppingPoint), owner: "AGENTOS_STATE"},
@@ -261,6 +269,8 @@ export function validatePermanentSessionRollover(decision) {
   rolloverIdentifier(decision.role_id, "rollover role ID");
   rolloverRecord(decision.old_session, "rollover old session");
   rolloverRecord(decision.successor_session, "rollover successor session");
+  assert(decision.supersedes_session_id === (decision.old_session.session_id ?? decision.old_session.id), "rollover supersedes linkage is invalid");
+  assert(decision.successor_session_id === (decision.successor_session.session_id ?? decision.successor_session.id), "rollover successor linkage is invalid");
   assert(decision.retained_old_session === true && decision.exactly_one_successor === true, "rollover cardinality/retention is invalid");
   assert(decision.duplicate_role_denied === true && decision.duplicate_timer_denied === true && decision.duplicate_scheduler_job_denied === true && decision.chat_history_owned_state_denied === true, "rollover denial invariants are missing");
   stateOwned(decision.continuity?.queue, "rollover queue");
@@ -274,3 +284,5 @@ export function validatePermanentSessionRollover(decision) {
 
 export const compilePermanentTaskSessionRollover = compilePermanentSessionRollover;
 export const validatePermanentTaskSessionRollover = validatePermanentSessionRollover;
+export const compilePermanentTaskSessionSuccessor = compilePermanentSessionRollover;
+export const validatePermanentTaskSessionSuccessor = validatePermanentSessionRollover;
