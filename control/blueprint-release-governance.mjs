@@ -412,11 +412,11 @@ export function validateBlueprintRepairPreflight(preflight) {
 
 export function validateBlueprintReference(reference) {
   assert(isRecord(reference) && reference.schema === BLUEPRINT_REFERENCE_SCHEMA && reference.version === BLUEPRINT_VERSION, "BLUEPRINT_REFERENCE_INVALID", "Blueprint reference schema/version is invalid");
+  for (const field of ["content", "blueprint", "advice", "advisory", "producer_notice", "acknowledgement_required"]) assert(reference[field] === undefined || reference[field] === null, "BLUEPRINT_REFERENCE_EMBEDDED_CONTENT", "Registrar references cannot embed Blueprint content or advice");
   const expectedKeys = ["schema", "version", "release_id", "path", "sha256", "reference_sha256"].sort(compareUtf8);
   const actualKeys = Object.keys(reference).sort(compareUtf8);
   assert(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), "BLUEPRINT_REFERENCE_INVALID", "Blueprint reference fields are not canonical");
   requireIdentifier(reference.release_id, "Blueprint reference release ID"); relativeReference(reference.path, "Blueprint reference path"); requireSha(reference.sha256, "Blueprint reference digest");
-  assert(reference.content === undefined && reference.blueprint === undefined && reference.advice === undefined && reference.advisory === undefined, "BLUEPRINT_REFERENCE_EMBEDDED_CONTENT", "Registrar references cannot embed Blueprint content or advice");
   requireSha(reference.reference_sha256, "Blueprint reference digest"); assert(reference.reference_sha256 === digestWithout(reference, "reference_sha256"), "BLUEPRINT_DIGEST_MISMATCH", "Blueprint reference self-digest mismatch"); return reference;
 }
 

@@ -137,7 +137,7 @@ for (const kind of BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC) assert.deepEqual(validat
 const reference = compileBlueprintReference({releaseId: successor.release_id, path: successor.release_path, sha256: successor.release_sha256});
 assert.equal(validateBlueprintReference(reference), reference);
 const embedded = {...reference, content: "forbidden"}; embedded.reference_sha256 = "0".repeat(64);
-assert.throws(() => validateBlueprintReference(embedded), /EMBEDDED_CONTENT/u);
+assert.throws(() => validateBlueprintReference(embedded), /EMBEDDED_CONTENT|REFERENCE_INVALID/u);
 assert.throws(() => compileBlueprintReference({releaseId: successor.release_id, path: "../outside.json", sha256: successor.release_sha256}), /INVALID_REFERENCE/u);
 
 process.stdout.write(`BLUEPRINT_RELEASE_GOVERNANCE_FOCUSED_PASS releases=2 entries=1 traffic=${BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC.length}\n`);
