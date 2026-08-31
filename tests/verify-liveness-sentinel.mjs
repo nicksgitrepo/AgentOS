@@ -54,4 +54,25 @@ const result = classifySilentTurn({
 assert.equal(result.classification, "THREAD_READBACK_PROJECTION_DIVERGENCE");
 assert.equal(result.receipt.correction.corrected, false); // no ledger means no consumption is allowed
 
+const projectionSentinel = createLivenessSentinel();
+const projectionLag = projectionSentinel.observeProjection({
+  taskId: "TASK-SENTINEL-PROJECTION-037",
+  laneId: "LANE-SENTINEL-037",
+  projection: {status: "COMPLETED", items: [], items_count: 0},
+  durableSession: {session_id: "SESSION-SENTINEL-037", ordinal: 1, mtime: 1, activity: "one"},
+  observedAtUtc: "2026-08-28T15:00:00.000Z",
+});
+const projectionLagNext = projectionSentinel.observe({
+  taskId: "TASK-SENTINEL-PROJECTION-037",
+  laneId: "LANE-SENTINEL-037",
+  projection: {status: "COMPLETED", items: [], items_count: 0},
+  durableSession: {session_id: "SESSION-SENTINEL-037", ordinal: 2, mtime: 2, activity: "two"},
+  previousObservation: projectionLag,
+  observedAtUtc: "2026-08-28T15:00:01.000Z",
+});
+assert.equal(projectionLag.classification, "SAME_TASK_RECOVERY_REQUIRED");
+assert.equal(projectionLagNext.classification, "ACTIVE_OR_PROJECTION_LAG");
+assert.equal(projectionLagNext.stalled, false);
+assert.equal(projectionLagNext.replacement_allowed, false);
+
 console.log("PASS liveness sentinel: dynamic roster/process observation, deduplicated reports, quiescent boundary, and projection divergence routing");

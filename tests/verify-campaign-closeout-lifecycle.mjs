@@ -36,6 +36,15 @@ import {
   recordDualKeyAuditorVerdict,
   routeDualKeyCandidateToAuditor,
   transitionDualKeyRepairLoop,
+  ACTIVE_OR_PROJECTION_LAG,
+  MATERIAL_LIVENESS_ACTIVE,
+  MATERIAL_LIVENESS_STAGNANT,
+  SAME_TASK_RECOVERY_REQUIRED,
+  TYPED_HOST_CAPABILITY_ESCALATION,
+  compileSchedulerProjectionLivenessObservation,
+  validateSchedulerProjectionLivenessObservation,
+  createMaterialLivenessEscalationLedger,
+  deduplicateMaterialLivenessEscalation,
 } from "../control/campaign-closeout-lifecycle.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -343,5 +352,62 @@ const failureLedger = createFailureDedupeLedger();
 const failure = {issue_id: "ISSUE-LIFECYCLE-DUAL-KEY", candidate_id: "CANDIDATE-LIFECYCLE-DUAL-KEY", failure_class: "BOUNDED_FAIL", evidence_sha256: "1".repeat(64)};
 assert.equal(deduplicateFailure({failure, ledger: failureLedger}).duplicate, false);
 assert.equal(deduplicateFailure({failure, ledger: failureLedger}).duplicate, true);
+
+// Scheduler projection/liveness triangulation: a blank app view never proves
+// a stall while any durable, material, process, or lease source advances.
+const projectionLivenessBase = {
+  taskId: "TASK-PROJECTION-LAG-037",
+  laneId: "LANE-PROJECTION-037",
+  projection: {status: "COMPLETED", items: [], items_count: 0, source: "SYNTHETIC_APP"},
+  durableSession: {session_id: "SESSION-PROJECTION-037", ordinal: 1, mtime: 100, activity: "activity-one"},
+  observedAtUtc: "2026-08-28T15:00:00.000Z",
+};
+const recoveryRequired = compileSchedulerProjectionLivenessObservation(projectionLivenessBase);
+assert.equal(recoveryRequired.classification, SAME_TASK_RECOVERY_REQUIRED);
+assert.equal(recoveryRequired.stalled, false);
+assert.equal(recoveryRequired.replacement_allowed, false);
+validateSchedulerProjectionLivenessObservation(recoveryRequired);
+const ordinalAdvanced = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  durableSession: {...projectionLivenessBase.durableSession, ordinal: 2, mtime: 200, activity: "activity-two"},
+  previousObservation: recoveryRequired,
+});
+assert.equal(ordinalAdvanced.classification, ACTIVE_OR_PROJECTION_LAG);
+assert.equal(ordinalAdvanced.stalled, false);
+assert.equal(ordinalAdvanced.same_task_recovery_required, false);
+const materialReceipt = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  previousObservation: recoveryRequired,
+  receipts: [{receipt_id: "RECEIPT-MATERIAL-037", material: true, status: "PASS"}],
+});
+assert.equal(materialReceipt.classification, ACTIVE_OR_PROJECTION_LAG);
+const liveProcess = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  previousObservation: recoveryRequired,
+  processes: [{process_id: "PROCESS-037", active: true}],
+});
+assert.equal(liveProcess.classification, ACTIVE_OR_PROJECTION_LAG);
+const activeLease = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  previousObservation: recoveryRequired,
+  leases: [{lease_id: "LEASE-037", status: "ACTIVE"}],
+});
+assert.equal(activeLease.classification, ACTIVE_OR_PROJECTION_LAG);
+const stagnantLedger = createMaterialLivenessEscalationLedger();
+const stagnant = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  escalationLedger: stagnantLedger,
+});
+assert.equal(stagnant.classification, MATERIAL_LIVENESS_STAGNANT);
+assert.equal(stagnant.stalled, true);
+assert.equal(stagnant.escalation.classification, TYPED_HOST_CAPABILITY_ESCALATION);
+assert.equal(stagnant.escalation.emitted, true);
+validateSchedulerProjectionLivenessObservation(stagnant);
+const duplicateEscalation = deduplicateMaterialLivenessEscalation({escalation: stagnant.escalation, ledger: stagnantLedger});
+assert.equal(duplicateEscalation.duplicate, true);
+assert.equal(duplicateEscalation.emitted, false);
+assert.throws(() => validateSchedulerProjectionLivenessObservation({...stagnant, replacement_allowed: true}), /replacement/u);
 
 console.log("PASS campaign closeout lifecycle: durable projection divergence, PASS/FAIL/blocker recovery, exact correlation, stability gating, exactly-once consumption, no replay, and ordered audit closeout");

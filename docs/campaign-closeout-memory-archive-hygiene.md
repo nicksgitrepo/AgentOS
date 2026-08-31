@@ -158,3 +158,30 @@ child type, size, identity, escape, symlink, or sum mismatch fails closed.
 Blank UI projections are corrected from an exact durable PASS/FAIL result once;
 without a valid durable result, the typed Controller liveness blocker is
 retained instead of being reported as a false stall.
+
+## Scheduler projection triangulation and permanent-session rollover
+
+The application task projection is an advisory view.  The liveness sentinel
+triangulates it with the durable session ordinal, modification/activity
+evidence, typed receipts and Scheduler results, relevant processes, and active
+leases.  An empty `items` list is therefore classified as
+`ACTIVE_OR_PROJECTION_LAG` whenever any independent source advances, contains
+material output, or remains live.  That classification never authorizes a
+stall, replacement, duplicate recovery, or deletion.  Source snapshots are
+content-bound and include the task and lane identities, so an unchanged
+projection cannot hide durable progress.
+
+Only an all-source stagnant snapshot after the bounded same-task recovery
+budget is exhausted may produce `MATERIAL_LIVENESS_STAGNANT`.  It emits one
+deduplicated `TYPED_HOST_CAPABILITY_ESCALATION`; repeated observations retain
+the same evidence key and do not wake, rerun, or route a second operation.
+Missing or malformed source evidence is a typed evidence hold, never a silent
+absence claim.
+
+At a clean stopping point, the permanent task may roll to exactly one distinct
+successor session.  The old session remains retained, while the durable
+AgentOS State queue, custody, incident, and stopping-point records are carried
+forward atomically.  Duplicate permanent roles, timers, Scheduler jobs,
+successor identities, discarded old sessions, and chat-history-owned queue or
+custody are rejected before any work is started.  This rollover is a pure
+admission receipt; it does not itself wake a task or mutate a host projection.

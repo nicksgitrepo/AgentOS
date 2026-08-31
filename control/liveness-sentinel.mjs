@@ -9,10 +9,35 @@
 
 import {canonicalDigest} from "./content-addressing.mjs";
 import {
+  ACTIVE_OR_PROJECTION_LAG,
   LOW_CONFIDENCE_CORRELATION_BLOCKER,
+  MATERIAL_LIVENESS_ACTIVE,
+  MATERIAL_LIVENESS_STAGNANT,
+  PROJECTION_LIVENESS_EVIDENCE_REQUIRED,
+  SAME_TASK_RECOVERY_REQUIRED,
+  SCHEDULER_PROJECTION_LIVENESS_SCHEMA,
+  TYPED_HOST_CAPABILITY_ESCALATION,
+  compileProjectionLivenessObservation,
+  compileSchedulerProjectionLivenessObservation,
   THREAD_READBACK_PROJECTION_DIVERGENCE,
   reconcileThreadReadbackProjection,
+  validateProjectionLivenessObservation,
+  validateSchedulerProjectionLivenessObservation,
 } from "./campaign-closeout-lifecycle.mjs";
+
+export {
+  ACTIVE_OR_PROJECTION_LAG,
+  MATERIAL_LIVENESS_ACTIVE,
+  MATERIAL_LIVENESS_STAGNANT,
+  PROJECTION_LIVENESS_EVIDENCE_REQUIRED,
+  SAME_TASK_RECOVERY_REQUIRED,
+  SCHEDULER_PROJECTION_LIVENESS_SCHEMA,
+  TYPED_HOST_CAPABILITY_ESCALATION,
+  compileProjectionLivenessObservation,
+  compileSchedulerProjectionLivenessObservation,
+  validateProjectionLivenessObservation,
+  validateSchedulerProjectionLivenessObservation,
+};
 
 export const LIVENESS_SENTINEL_SCHEMA = "agentos.liveness_sentinel.v1";
 export const LIVENESS_STATES = Object.freeze(["ACTIVE_MONITORING", "QUIESCENT"]);
@@ -115,7 +140,20 @@ export function createLivenessSentinel({readRoster = null, readProcesses = null}
   const signatures = new Set();
   let state = "QUIESCENT";
   let sequence = 0;
+  const observeProjection = (input = {}) => {
+    const result = compileSchedulerProjectionLivenessObservation(input);
+    validateSchedulerProjectionLivenessObservation(result);
+    return result;
+  };
   const observe = (input = {}) => {
+    if (input.projection !== undefined || input.durable_session !== undefined || input.durableSession !== undefined) {
+      return observeProjection({
+        ...input,
+        durableSession: input.durableSession ?? input.durable_session,
+        taskId: input.taskId ?? input.task_id,
+        laneId: input.laneId ?? input.lane_id ?? input.lane ?? "LIVENESS-SENTINEL",
+      });
+    }
     const rawTasks = input.tasks ?? (readRoster ? readRoster() : []);
     const rawProcesses = input.processes ?? (readProcesses ? readProcesses() : []);
     const observation = validateLivenessObservation({tasks: rawTasks, processes: rawProcesses});
@@ -144,5 +182,5 @@ export function createLivenessSentinel({readRoster = null, readProcesses = null}
       custody_mutated: false,
     };
   };
-  return Object.freeze({observe, read: () => ({state, sequence, signatures: sorted([...signatures])})});
+  return Object.freeze({observe, observeProjection, read: () => ({state, sequence, signatures: sorted([...signatures])})});
 }
