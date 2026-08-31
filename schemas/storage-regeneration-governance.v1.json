@@ -50,6 +50,11 @@
     "cacheIdentity": "agentos.storage_cache_identity.v1",
     "sharedDependencyCustody": "agentos.storage_shared_dependency_custody.v1",
     "regenerationCycle": "agentos.storage_regeneration_cycle.v1",
-    "dailyInspection": "agentos.storage_daily_inspection.v1"
+    "dailyInspection": "agentos.storage_daily_inspection.v1",
+    "retainedDeliveredWorktree": "agentos.storage_retained_worktree_closeout.v1",
+    "fleetReplayCustody": "agentos.storage_fleet_replay_custody.v1",
+    "runtimePostgresqlCustody": "agentos.storage_runtime_postgresql_custody.v1",
+    "sessionRollover": "agentos.storage_session_rollover.v1",
+    "sharedTargetPruneDecision": "agentos.storage_shared_target_prune_decision.v1"
   }
 }

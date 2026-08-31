@@ -589,4 +589,6 @@ export {
   validatePostDeliveryCleanup,
   compileDeliveryCleanupDecision,
   validateDeliveryCleanupDecision,
+  compileRetainedDeliveredWorktreeCloseout,
+  validateRetainedDeliveredWorktreeCloseout,
 } from "./storage-regeneration-governance.mjs";

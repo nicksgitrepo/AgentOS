@@ -860,6 +860,14 @@ export {
   validateStorageDailyInspection,
   compileStorageRegenerationCycle,
   validateStorageRegenerationCycle,
+  compileRetainedDeliveredWorktreeCloseout,
+  validateRetainedDeliveredWorktreeCloseout,
+  compileFleetReplayCustody,
+  validateFleetReplayCustody,
+  compileRuntimePostgresqlCustody,
+  validateRuntimePostgresqlCustody,
+  compileStorageSessionRollover,
+  validateStorageSessionRollover,
 } from "./storage-regeneration-governance.mjs";
 const CLOSEOUT_STATES = Object.freeze(["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "AUDIT_CONSUMED", "CLOSED"]);
 const CLOSEOUT_NEXT = Object.freeze({CHECKPOINT_REACHED: "HANDOFF_READY", HANDOFF_READY: "AUDIT_ROUTED", AUDIT_ROUTED: "AUDIT_CONSUMED", AUDIT_CONSUMED: "CLOSED"});
