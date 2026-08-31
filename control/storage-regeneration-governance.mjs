@@ -753,7 +753,7 @@ export function compileFleetReplayCustody({
   laneId, lane_id, generation = 1, rootIdentity, root_identity, rootPath, root_path,
   status = "ACTIVE", active = true, terminal = false, lifecycleHold = false,
   lifecycle_hold, receiptsPreserved = false, receipts_preserved,
-  existingRoots = [], existing_roots = [], owner, observedAtUtc, observed_at_utc,
+  existingRoots = null, existing_roots = null, owner, observedAtUtc, observed_at_utc,
 } = {}) {
   id(laneId ?? lane_id, "Fleet replay lane ID");
   positiveInteger(generation, "Fleet replay generation");
