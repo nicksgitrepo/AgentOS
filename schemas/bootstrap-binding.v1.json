@@ -3662,11 +3662,11 @@
     },
     "issue_registrar_controller": {
       "path": "control/issue-registrar.mjs",
-      "sha256": "1989cb39b5ea0d219fad2533e2fbc53d23be05b984cc68a7463b19834ec33395"
+      "sha256": "c1bc72cc2a4a3558d92e51bc0c57c800c29a1a24cbdc136d5971a106fee6832f"
     },
     "issue_registrar_contract": {
       "path": "schemas/issue-registrar.v1.json",
-      "sha256": "5cdfc581a0f3cf332b75008c3fff9aa8324e73ebba7f7a145f2309d1fd446ead"
+      "sha256": "fa4ee27b329e36221506cefee1b933d62dfbf0239de18f6fd9448551753c51cb"
     },
     "issue_registry_contract": {
       "path": "schemas/issue-registry.v1.json",
@@ -3682,11 +3682,11 @@
     },
     "issue_registrar_documentation": {
       "path": "docs/issue-registrar.md",
-      "sha256": "13929232fc21739af82fff00e21ee8cdcbd41d7aa2af453a97e5547f887b3570"
+      "sha256": "67be9a4bc1c95408537acdf3595244749205b4c75f97d02acf97bf83d9386a1a"
     },
     "issue_registrar_verifier": {
       "path": "tests/verify-issue-registrar.mjs",
-      "sha256": "c608a2d65c4ee3f7700b3d318cab96b00fe960c7e252dd03fbef18eb864e1f4d"
+      "sha256": "329a9c9ff71abac964c2c1afe6b34b99447438370ca2235d92dc4d9ce33b4d91"
     },
     "issue_registrar_hostile_fixtures": {
       "path": "tests/fixtures/issue-registrar-hostile.json",
@@ -3695,6 +3695,89 @@
     "issue_registrar_historical_fixtures": {
       "path": "tests/fixtures/issue-registrar-historical-import.json",
       "sha256": "c811963bce20c10c12b9aa36c55ca65c59ce9b48f803478489eb7f349923a4ff"
+    },
+    "blueprint_coordination_hygiene": {
+      "path": "control/blueprint-release-governance.mjs",
+      "sha256": "dea0527a8b5e3cc76090b34233b66ac643f6079be660c7ae47c9ba452feb6073",
+      "authority": "orchestrator-blueprint-coordination-hygiene-active-custody-1174",
+      "authority_sha256": "50ed5cfca87a3e030114f672a40a183cca98e32f2cf0003a8ea234154a902b86",
+      "serial_authority": "orchestrator-blueprint-coordination-hygiene-serial-binding-1173",
+      "serial_authority_sha256": "ecaaf65472c4cc9b8c43452ad5dc60b262423c01bdae13072000d57028d0d11a",
+      "direct_path_count": 8,
+      "mechanical_path_count": 1,
+      "maximum_total_path_count": 9,
+      "authorized_direct_paths": [
+        {
+          "path": "control/blueprint-release-governance.mjs",
+          "sha256": "dea0527a8b5e3cc76090b34233b66ac643f6079be660c7ae47c9ba452feb6073"
+        },
+        {
+          "path": "schemas/blueprint-release-governance.v1.json",
+          "sha256": "2cb5aa45e98566c26d44de680ca6731cef7f69e78d2b1c1d09622e3387195895"
+        },
+        {
+          "path": "tests/verify-blueprint-release-governance.mjs",
+          "sha256": "e44f0e0f5366053c2b76054660532c770946652a6f3c3c82588fed93ff1e758f"
+        },
+        {
+          "path": "docs/blueprint-release-governance.md",
+          "sha256": "2355904a35dc3ac055f43e31027dab89c7fe2f8dca5725c63deee99105a6f217"
+        },
+        {
+          "path": "control/issue-registrar.mjs",
+          "sha256": "c1bc72cc2a4a3558d92e51bc0c57c800c29a1a24cbdc136d5971a106fee6832f"
+        },
+        {
+          "path": "schemas/issue-registrar.v1.json",
+          "sha256": "fa4ee27b329e36221506cefee1b933d62dfbf0239de18f6fd9448551753c51cb"
+        },
+        {
+          "path": "tests/verify-issue-registrar.mjs",
+          "sha256": "329a9c9ff71abac964c2c1afe6b34b99447438370ca2235d92dc4d9ce33b4d91"
+        },
+        {
+          "path": "docs/issue-registrar.md",
+          "sha256": "67be9a4bc1c95408537acdf3595244749205b4c75f97d02acf97bf83d9386a1a"
+        }
+      ],
+      "mechanical_last": {
+        "path": "schemas/bootstrap-binding.v1.json",
+        "sha256": null,
+        "rule": "RAW_SHA256_WITH_SELF_ENTRY_NULL; refresh exactly once after all direct paths are frozen"
+      },
+      "required_behavior": {
+        "immutable_publications": true,
+        "direct_file_consumption": true,
+        "single_consolidated_no_ack_notice": true,
+        "fresh_repair_preflight": true,
+        "registrar_reference_only": true,
+        "allowed_lifecycle_traffic": [
+          "ISSUE_STARTED",
+          "SCOPE_ADDITION_REQUIRES_ISSUE_ID",
+          "EVIDENCE_COMPLETE_TRUE_BLOCKER",
+          "DELIVERED_VERIFIED"
+        ],
+        "forbidden_lifecycle_traffic": ["BLUEPRINT_CONSUMED"],
+        "factual_advisory_separation": true,
+        "successor_only_corrections": true
+      },
+      "filesystem_mutation": false
+    },
+    "blueprint_release_governance_controller": {
+      "path": "control/blueprint-release-governance.mjs",
+      "sha256": "dea0527a8b5e3cc76090b34233b66ac643f6079be660c7ae47c9ba452feb6073"
+    },
+    "blueprint_release_governance_contract": {
+      "path": "schemas/blueprint-release-governance.v1.json",
+      "sha256": "2cb5aa45e98566c26d44de680ca6731cef7f69e78d2b1c1d09622e3387195895"
+    },
+    "blueprint_release_governance_documentation": {
+      "path": "docs/blueprint-release-governance.md",
+      "sha256": "2355904a35dc3ac055f43e31027dab89c7fe2f8dca5725c63deee99105a6f217"
+    },
+    "blueprint_release_governance_verifier": {
+      "path": "tests/verify-blueprint-release-governance.mjs",
+      "sha256": "e44f0e0f5366053c2b76054660532c770946652a6f3c3c82588fed93ff1e758f"
     }
   },
   "compatibility_only": {
