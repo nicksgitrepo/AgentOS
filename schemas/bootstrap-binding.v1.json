@@ -2062,7 +2062,7 @@
     },
     "delivery_operation_governance_verifier": {
       "path": "tests/verify-runtime-operation-governance.mjs",
-      "sha256": "b3a6ba124b4e0ada413a4d4a32d980118a9a9dc341b7dc34a7eba3518f4a52f3"
+      "sha256": "9106132dd2163f40a94c3b6cef4ab32ee74b5a20bc185a02d47f40bd7addb867"
     },
     "delivery_operation_governance_article": {
       "path": "docs/delivery-operation-governance.md",
