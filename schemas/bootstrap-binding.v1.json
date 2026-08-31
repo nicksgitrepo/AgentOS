@@ -3521,7 +3521,7 @@
     },
     "scheduler_projection_liveness_rollover": {
       "path": "control/liveness-sentinel.mjs",
-      "sha256": "4937b1c8fe2ff62f4ed7438f08d64bcec3d740ff101a06c396b2899999a50315",
+      "sha256": "b0274b771b09ec1ce1eaf0502458f3b605ce6f0706960b8532310326cd5848d9",
       "authority": "orchestrator-scheduler-projection-liveness-rollover-active-custody-1172",
       "authority_sha256": "c8be79e9de71536eae3b7d6318cd59b2d81c4648e840d615e528a08c6c2ccfcc",
       "owner_correction": "THREAD_READBACK_PROJECTION_DIVERGENCE",
@@ -3535,11 +3535,11 @@
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
-          "sha256": "aee0cba286228ec015edf88a7ede7966d5323ee14f05d95e9e242e12458fc03a"
+          "sha256": "84d9c58b811afb0faf486716eeb950f79dfff1fd6609f45b2b14e316eae138b9"
         },
         {
           "path": "control/liveness-sentinel.mjs",
-          "sha256": "4937b1c8fe2ff62f4ed7438f08d64bcec3d740ff101a06c396b2899999a50315"
+          "sha256": "b0274b771b09ec1ce1eaf0502458f3b605ce6f0706960b8532310326cd5848d9"
         },
         {
           "path": "schemas/liveness-sentinel.v1.json",
@@ -3547,11 +3547,11 @@
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
-          "sha256": "2912a938f128f89b844188e95d9b3901a81e7a8e24d7ae6c4f382b13ebe580ab"
+          "sha256": "c911b0ea32d6a9aa1d641847b44e122af1217029c81168922981d1d16c55b429"
         },
         {
           "path": "control/zero-output-session-replacement.mjs",
-          "sha256": "a757ebc5e43bd76c681fdb1b7af234e21f6a8f7a9eb2337789b1ccfb74f18f02"
+          "sha256": "6dcec58a3c8fe7e340a9a5ba4943f2d3422e4919894014a9f10377f7ee60a681"
         },
         {
           "path": "tests/verify-zero-output-session-replacement.mjs",
