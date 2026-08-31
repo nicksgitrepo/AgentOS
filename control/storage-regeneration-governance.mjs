@@ -846,3 +846,29 @@ export function compileStorageRegenerationDecision({asset, manifest = null, deli
 }
 
 export const compileStorageAutopilotRegenerationDecision = compileStorageRegenerationDecision;
+
+export function validateStorageRegenerationDecision(decision) {
+  exactKeys(decision, ["schema", "version", "action", "cleanup_allowed", "protected_data_preserved", "reason", "asset", "manifest_sha256", "delivery_verified", "cache_sha256", "inspection_sha256", "decision_sha256"], "storage regeneration decision");
+  assert(decision.schema === "agentos.storage_regeneration_decision.v1" && decision.version === 1, "storage regeneration decision identity is invalid");
+  string(decision.action, "storage regeneration decision action");
+  bool(decision.cleanup_allowed, "storage regeneration cleanup authority");
+  assert(decision.cleanup_allowed === false, "storage regeneration decision cannot authorize deletion");
+  assert(decision.protected_data_preserved === true, "storage regeneration decision must preserve protected data");
+  string(decision.reason, "storage regeneration decision reason");
+  nullableSha(decision.manifest_sha256, "storage regeneration decision manifest digest");
+  bool(decision.delivery_verified, "storage regeneration decision delivery flag");
+  nullableSha(decision.cache_sha256, "storage regeneration decision cache digest");
+  nullableSha(decision.inspection_sha256, "storage regeneration decision inspection digest");
+  sha(decision.decision_sha256, "storage regeneration decision digest");
+  assert(decision.decision_sha256 === digestWithout(decision, "decision_sha256"), "storage regeneration decision digest mismatch");
+  return decision;
+}
+
+export const compileStorageCleanupDecision = compilePostDeliveryCleanup;
+export const validateStorageCleanupDecision = validatePostDeliveryCleanup;
+export const compileGeneratorTempRootCloseout = compileGeneratedTempCloseout;
+export const validateGeneratorTempRootCloseout = validateGeneratedTempCloseout;
+export const compileStorageRegeneration = compileStorageRegenerationCycle;
+export const validateStorageRegeneration = validateStorageRegenerationCycle;
+export const compileStorageInspection = compileStorageDailyInspection;
+export const validateStorageInspection = validateStorageDailyInspection;
