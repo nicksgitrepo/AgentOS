@@ -399,9 +399,33 @@ const activeLease = compileSchedulerProjectionLivenessObservation({
   leases: [{lease_id: "LEASE-037", status: "ACTIVE"}],
 });
 assert.equal(activeLease.classification, ACTIVE_OR_PROJECTION_LAG);
+assert.throws(() => compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  escalationLedger: createMaterialLivenessEscalationLedger(),
+}), /same-task prior observation is required/u);
+assert.throws(() => compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  laneId: "LANE-PROJECTION-OTHER",
+  previousObservation: recoveryRequired,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  escalationLedger: createMaterialLivenessEscalationLedger(),
+}), /same-task prior observation is required/u);
+const forgedPriorObservation = structuredClone(recoveryRequired);
+forgedPriorObservation.receipt_sha256 = "0".repeat(64);
+assert.throws(() => compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  previousObservation: forgedPriorObservation,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  escalationLedger: createMaterialLivenessEscalationLedger(),
+}), /prior observation is not content-bound/u);
 const stagnantLedger = createMaterialLivenessEscalationLedger();
 const stagnant = compileSchedulerProjectionLivenessObservation({
   ...projectionLivenessBase,
+  previousObservation: recoveryRequired,
   recoveryAttempt: 1,
   maxRecoveryAttempts: 1,
   escalationLedger: stagnantLedger,

@@ -80,6 +80,32 @@ function normalizePriorSourceState(previous) {
   return isRecord(sourceState) ? sourceState : null;
 }
 
+function requirePriorSameTaskObservation(previousObservation, {taskId, laneId, recoveryAttempt, maxRecoveryAttempts} = {}) {
+  if (recoveryAttempt === 0) return;
+  if (!isRecord(previousObservation)
+    || previousObservation.task_id !== taskId
+    || previousObservation.lane_id !== laneId
+    || normalizePriorSourceState(previousObservation) === null) {
+    const error = new Error("same-task prior observation is required before retry or stall classification");
+    error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_REQUIRED";
+    throw error;
+  }
+  if (!Number.isSafeInteger(previousObservation.recovery?.attempt)
+    || previousObservation.recovery.attempt !== recoveryAttempt - 1
+    || previousObservation.recovery.maximum_attempts !== maxRecoveryAttempts) {
+    const error = new Error("same-task prior observation must precede the requested recovery attempt");
+    error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_ORDER_INVALID";
+    throw error;
+  }
+  try {
+    validateSchedulerProjectionLivenessObservation(previousObservation);
+  } catch (cause) {
+    const error = new Error(`same-task prior observation is not content-bound: ${cause.message}`);
+    error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_INVALID";
+    throw error;
+  }
+}
+
 function compareMtimeKey(left, right) {
   if (left === right) return 0;
   const leftNumber = typeof left === "string" && left.startsWith("N:") ? Number(left.slice(2)) : null;
@@ -140,6 +166,7 @@ export function compileSchedulerProjectionLivenessObservation({
   assert(maxRecoveryAttempts >= 1, "same-task recovery must have a positive bounded maximum");
   assert(recoveryAttempt <= maxRecoveryAttempts, "same-task recovery attempt exceeds its bounded maximum");
   validUtcInstant(observedAtUtc, "scheduler liveness observation time");
+  requirePriorSameTaskObservation(previousObservation, {taskId, laneId, recoveryAttempt, maxRecoveryAttempts});
 
   const sourceState = {
     app_projection_sha256: canonicalDigest(normalizedProjection),
