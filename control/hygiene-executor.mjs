@@ -354,3 +354,39 @@ export function validateHygieneAfterState({execution, afterState, afterTargets =
 
 export const planHygiene = compileHygieneDryRun;
 export const runHygiene = executeHygiene;
+
+// Storage regeneration contracts are exposed through the hygiene boundary so
+// generators and closeout callers share one custody-safe, content-addressed
+// implementation rather than maintaining parallel cleanup rules.
+export {
+  STORAGE_REGENERATION_GOVERNANCE_SCHEMA,
+  STORAGE_REGENERATION_VERSION,
+  STORAGE_REGENERATION_HOSTILE_CASES,
+  STORAGE_REGENERATION_PROTECTED_CLASSES,
+  STORAGE_REGENERATION_MEASURED_SOURCES,
+  STORAGE_DISPOSABLE_OUTPUT_MANIFEST_SCHEMA,
+  STORAGE_GENERATED_TEMP_CLOSEOUT_SCHEMA,
+  STORAGE_CACHE_IDENTITY_SCHEMA,
+  STORAGE_REGENERATION_CYCLE_SCHEMA,
+  STORAGE_DAILY_INSPECTION_SCHEMA,
+  STORAGE_SHARED_DEPENDENCY_CUSTODY_SCHEMA,
+  STORAGE_POST_DELIVERY_CLEANUP_SCHEMA,
+  compileStorageRegenerationGovernance,
+  validateStorageRegenerationGovernance,
+  compileDisposableOutputManifest,
+  validateDisposableOutputManifest,
+  compileGeneratedTempCloseout,
+  validateGeneratedTempCloseout,
+  compilePostDeliveryCleanup,
+  validatePostDeliveryCleanup,
+  compileCacheIdentity,
+  validateCacheIdentity,
+  compileSharedDependencyCustody,
+  validateSharedDependencyCustody,
+  validateSharedDependencyCustodySet,
+  compileStorageRegenerationCycle,
+  validateStorageRegenerationCycle,
+  compileStorageDailyInspection,
+  validateStorageDailyInspection,
+  compileStorageRegenerationDecision,
+} from "./storage-regeneration-governance.mjs";

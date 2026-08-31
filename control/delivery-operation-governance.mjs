@@ -575,3 +575,18 @@ export function createRuntimeOperationDecisionPacket(prepared) {
     }),
   };
 }
+
+// Delivery closeout uses the same issue-bound disposable-output contract as
+// storage generation.  Re-exporting it here keeps the Runtime boundary as the
+// sole place that can turn an independently verified delivery into a cleanup
+// decision; the underlying helpers remain pure and never delete a path.
+export {
+  STORAGE_DISPOSABLE_OUTPUT_MANIFEST_SCHEMA,
+  STORAGE_POST_DELIVERY_CLEANUP_SCHEMA,
+  compileDisposableOutputManifest,
+  validateDisposableOutputManifest,
+  compilePostDeliveryCleanup,
+  validatePostDeliveryCleanup,
+  compileDeliveryCleanupDecision,
+  validateDeliveryCleanupDecision,
+} from "./storage-regeneration-governance.mjs";
