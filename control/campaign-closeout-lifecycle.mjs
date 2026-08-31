@@ -1010,9 +1010,9 @@ export function compileSchedulerProjectionLivenessObservation({
   if (!projectedEmpty) {
     classification = MATERIAL_LIVENESS_ACTIVE;
     action = "CONTINUE_MONITORING";
-  } else if (previousState === null || advancing || materialReceipt || materialResult || live) {
+  } else if ((previousState === null && recoveryAttempt === 0) || advancing || materialReceipt || materialResult || live) {
     classification = ACTIVE_OR_PROJECTION_LAG;
-    action = previousState === null ? "REQUIRE_SAME_TASK_READBACK_BEFORE_STALL" : "CONTINUE_SAME_TASK_AND_RECHECK_PROJECTION";
+    action = previousState === null && recoveryAttempt === 0 ? "REQUIRE_SAME_TASK_READBACK_BEFORE_STALL" : "CONTINUE_SAME_TASK_AND_RECHECK_PROJECTION";
   } else if (recoveryAttempt < maxRecoveryAttempts) {
     classification = SAME_TASK_RECOVERY_REQUIRED;
     action = "RECOVER_SAME_TASK_ONCE";
