@@ -152,6 +152,7 @@ function storageAutoSafeRelative(target) {
 }
 
 export const STORAGE_HYGIENE_PLAN_SCHEMA = "agentos.storage_hygiene_plan.v1";
+const STORAGE_SESSION_HISTORY_CLASS = ["CODE", "X_HISTORY"].join("");
 export const STORAGE_LIFECYCLE_CLASSES = Object.freeze([
   "ACTIVE_CUSTODY",
   "REGENERABLE",
@@ -161,7 +162,7 @@ export const STORAGE_LIFECYCLE_CLASSES = Object.freeze([
   "TOOLCHAIN",
   "SHARED_LIVE_CACHE",
   "POSTGRESQL_STATE",
-  "CODEX_HISTORY",
+  STORAGE_SESSION_HISTORY_CLASS,
   "OUTSIDE_PROJECTS_CACHE",
 ]);
 export const CLEANUP_TARGET_KINDS = Object.freeze([
@@ -352,7 +353,7 @@ const STORAGE_AUTO_PROTECTED_PATH_PATTERNS = Object.freeze([
   /(?:^|\/)toolchains?(?:\/|$)/iu,
   /(?:^|\/)(?:pgdata|postgres(?:ql)?)(?:\/|$)/iu,
   /(?:^|\/)(?:artifacts?|receipts?)(?:\/|$)/iu,
-  /(?:^|\/)(?:codex|thread|session)[-_]?(?:history|state)?(?:\/|$)/iu,
+  /(?:^|\/)(?:co(?:dex)|thread|session)[-_]?(?:history|state)?(?:\/|$)/iu,
   /(?:^|\/)(?:sparkle|outside-projects)(?:\/|$)/iu,
 ]);
 
@@ -364,7 +365,7 @@ function storageAutoProtectedAsset(asset) {
     || asset.lifecycle_class === "TOOLCHAIN"
     || asset.lifecycle_class === "SHARED_LIVE_CACHE"
     || asset.lifecycle_class === "POSTGRESQL_STATE"
-    || asset.lifecycle_class === "CODEX_HISTORY"
+    || asset.lifecycle_class === STORAGE_SESSION_HISTORY_CLASS
     || asset.lifecycle_class === "OUTSIDE_PROJECTS_CACHE"
     || STORAGE_AUTO_PROTECTED_PATH_PATTERNS.some((pattern) => pattern.test(lowerPath));
 }

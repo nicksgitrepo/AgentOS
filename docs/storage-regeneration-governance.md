@@ -10,7 +10,7 @@ Every generator owns one unique temporary root beneath the project’s
 Projects-contained `Temp` area.  A closeout receipt is required on both PASS
 and FAIL and can preserve only explicitly durable receipt paths.  Shared or
 sibling roots, broad globs, worktrees, `.git`, AgentOS State, Artifacts,
-receipt files, toolchains, PostgreSQL state, Codex history, and outside-
+receipt files, toolchains, PostgreSQL state, session history, and outside-
 Projects caches are never deletion targets.
 
 Disposable-output manifests are issue- and operation-bound.  They are held
@@ -35,7 +35,7 @@ the governance record cannot authorize deletion.
 
 The measured source addendum is represented explicitly: Fleet pgdata roots,
 OT projection dependencies, OT Well Cargo, shared Cargo targets, durable
-Runtime PostgreSQL, Codex thread/session history, and outside-Projects
+Runtime PostgreSQL, session history, and outside-Projects
 Sparkle caches each have a rule set and hostile coverage.  Any host-side
 effect still requires a separate, exact Runtime/Controller admission.
 
@@ -44,7 +44,7 @@ generation; stopped fixtures retain receipts or an active hold.  Shared Cargo
 and OT dependencies require owner/use/release records, and shared-target
 pruning is represented as a denial unless a safe checkpoint proves no live
 consumer and orphaned or old-fingerprint content.  Durable PostgreSQL and
-Codex history are protected classes, never generic cleanup targets.  Outside
+Session history is a protected class, never a generic cleanup target.  Outside
 Projects caches produce a deduplicated owner alert only.  Daily polling uses
 one changing key and a delta receipt for unchanged observations, while
 supported session rollover retains predecessor history and State ownership.

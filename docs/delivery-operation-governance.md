@@ -55,7 +55,7 @@ and GitHub commit/tree identities must be equal and independently verified.
 After that proof, `compilePostDeliveryCleanup` emits a content-addressed
 decision that may clear only the listed issue-scoped regenerable entries.
 Worktrees, active custody, shared live caches, toolchains, PostgreSQL state,
-Artifacts, receipts, Codex history, and outside-Projects caches remain
+Artifacts, receipts, session history, and outside-Projects caches remain
 protected and require their own lifecycle authority.  The contract is
 idempotent and records the manifest and delivered candidate digests so a
 partial or replayed cleanup fails closed.

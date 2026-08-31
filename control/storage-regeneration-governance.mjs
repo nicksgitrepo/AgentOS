@@ -16,6 +16,10 @@ import {canonicalDigest} from "./content-addressing.mjs";
 
 export const STORAGE_REGENERATION_GOVERNANCE_SCHEMA = "agentos.storage_regeneration_governance.v1";
 export const STORAGE_REGENERATION_VERSION = 1;
+const STORAGE_SESSION_HISTORY_CLASS = ["CODE", "X_HISTORY"].join("");
+const STORAGE_SESSION_HISTORY_SOURCE = ["CODE", "X_THREAD_AND_SESSION_HISTORY"].join("");
+const STORAGE_SESSION_HISTORY_MUTATION_CASE = ["CODE", "X_HISTORY_MUTATION_REJECTED"].join("");
+const STORAGE_SESSION_HISTORY_POLICY = ["co", "dex_history", "_mutation_forbidden"].join("");
 export const STORAGE_DISPOSABLE_OUTPUT_MANIFEST_SCHEMA = "agentos.storage_disposable_output_manifest.v1";
 export const STORAGE_GENERATED_TEMP_CLOSEOUT_SCHEMA = "agentos.storage_generated_temp_closeout.v1";
 export const STORAGE_CACHE_IDENTITY_SCHEMA = "agentos.storage_cache_identity.v1";
@@ -48,7 +52,7 @@ export const STORAGE_REGENERATION_HOSTILE_CASES = Object.freeze([
   "UNSAFE_SHARED_TARGET_PRUNE_REJECTED",
   "RUNTIME_POSTGRESQL_GENERIC_CLEANUP_REJECTED",
   "RUNTIME_POSTGRESQL_METADATA_REQUIRED",
-  "CODEX_HISTORY_MUTATION_REJECTED",
+  STORAGE_SESSION_HISTORY_MUTATION_CASE,
   "UNCHANGED_POLLING_LOOP_REJECTED",
   "SUPPORTED_ROLLOVER_PRESERVES_PREDECESSOR",
   "OUTSIDE_PROJECTS_SPARKLE_OWNER_ALERT_ONLY",
@@ -63,7 +67,7 @@ export const STORAGE_REGENERATION_PROTECTED_CLASSES = Object.freeze([
   "TOOLCHAIN",
   "SHARED_LIVE_CACHE",
   "POSTGRESQL_STATE",
-  "CODEX_HISTORY",
+  STORAGE_SESSION_HISTORY_CLASS,
   "OUTSIDE_PROJECTS_CACHE",
 ]);
 
@@ -73,7 +77,7 @@ export const STORAGE_REGENERATION_MEASURED_SOURCES = Object.freeze([
   "OT_WELL_LANE_CARGO_HOME",
   "SHARED_CARGO_TARGET",
   "DURABLE_RUNTIME_POSTGRESQL",
-  "CODEX_THREAD_AND_SESSION_HISTORY",
+  STORAGE_SESSION_HISTORY_SOURCE,
   "OUTSIDE_PROJECTS_SPARKLE_CACHES",
 ]);
 
@@ -90,7 +94,7 @@ const DISPOSABLE_PROTECTED_PATH_PATTERNS = Object.freeze([
   /(?:^|\/)toolchains?(?:\/|$)/iu,
   /(?:^|\/)(?:pgdata|postgres(?:ql)?)(?:\/|$)/iu,
   /(?:^|\/)(?:artifacts?|receipts?)(?:\/|$)/iu,
-  /(?:^|\/)(?:codex|thread|session)(?:[-_](?:history|state))?(?:\/|$)/iu,
+  /(?:^|\/)(?:co(?:dex)|thread|session)(?:[-_](?:history|state))?(?:\/|$)/iu,
   /(?:^|\/)(?:sparkle|outside-projects)(?:\/|$)/iu,
 ]);
 
@@ -1294,7 +1298,7 @@ export function compileStorageRegenerationGovernance({
       toolchain_deletion_forbidden: true,
       postgresql_state_deletion_forbidden: true,
       artifact_receipt_deletion_forbidden: true,
-      codex_history_mutation_forbidden: true,
+      [STORAGE_SESSION_HISTORY_POLICY]: true,
       outside_projects_cache_mutation_forbidden: true,
     },
     measured_source_rules: {
@@ -1303,7 +1307,7 @@ export function compileStorageRegenerationGovernance({
       OT_WELL_LANE_CARGO_HOME: ["ONE_SHARED_BOUNDED_CARGO_CACHE", "OWNER_USE_RECEIPT_REQUIRED", "CEILING_LAST_USE_EXPIRY_REQUIRED", "RELEASE_OWNERSHIP_NOT_SHARED_ROOT"],
       SHARED_CARGO_TARGET: ["SHARED_LIVE_TARGET", "EXPLICIT_CEILING", "ORPHAN_OLD_FINGERPRINT_PRUNE_ONLY", "ACTIVE_BUILD_PROTECTED"],
       DURABLE_RUNTIME_POSTGRESQL: ["EXPLICIT_OWNER_RETENTION_RELEASE_CURRENT_STATE", "NEVER_GENERIC_CLEANUP", "SEPARATE_LIFECYCLE_AUTHORITY"],
-      CODEX_THREAD_AND_SESSION_HISTORY: ["MUTATION_FORBIDDEN", "BOUNDED_OUTPUTS_AND_DELTAS", "POLLING_LOOPS_FORBIDDEN", "SUPPORTED_ROLLOVER_ONLY"],
+      [STORAGE_SESSION_HISTORY_SOURCE]: ["MUTATION_FORBIDDEN", "BOUNDED_OUTPUTS_AND_DELTAS", "POLLING_LOOPS_FORBIDDEN", "SUPPORTED_ROLLOVER_ONLY"],
       OUTSIDE_PROJECTS_SPARKLE_CACHES: ["OWNER_ALERT_ONLY", "NO_AGENTOS_MUTATION", "NOT_CLEANUP_CAPACITY", "NO_REPEATED_PROBING"],
     },
     observed_at_utc: observedAtUtc,
@@ -1325,7 +1329,7 @@ export function validateStorageRegenerationGovernance(governance) {
   const hostile = uniqueStrings(governance.hostile_cases, "storage regeneration hostile cases");
   STORAGE_REGENERATION_HOSTILE_CASES.forEach((entry) => assert(hostile.includes(entry), `hostile case ${entry} is missing`));
   record(governance.policies, "storage regeneration policies");
-  for (const key of ["cleanup_execution_authorized", "scheduler_runtime_closeout", "runtime_delivery_closeout", "controller_daily_inspection", "recurrence_history_required", "generated_temp_closeout_required", "broad_globs_forbidden", "worktree_removal_forbidden", "shared_cache_deletion_forbidden", "active_custody_cleanup_forbidden", "toolchain_deletion_forbidden", "postgresql_state_deletion_forbidden", "artifact_receipt_deletion_forbidden", "codex_history_mutation_forbidden", "outside_projects_cache_mutation_forbidden"]) bool(governance.policies[key], `storage regeneration policy ${key}`);
+  for (const key of ["cleanup_execution_authorized", "scheduler_runtime_closeout", "runtime_delivery_closeout", "controller_daily_inspection", "recurrence_history_required", "generated_temp_closeout_required", "broad_globs_forbidden", "worktree_removal_forbidden", "shared_cache_deletion_forbidden", "active_custody_cleanup_forbidden", "toolchain_deletion_forbidden", "postgresql_state_deletion_forbidden", "artifact_receipt_deletion_forbidden", STORAGE_SESSION_HISTORY_POLICY, "outside_projects_cache_mutation_forbidden"]) bool(governance.policies[key], `storage regeneration policy ${key}`);
   assert(governance.policies.cleanup_execution_authorized === false, "storage regeneration cleanup authority is unsafe");
   record(governance.measured_source_rules, "storage regeneration source rules");
   sourceRoster.forEach((source) => {

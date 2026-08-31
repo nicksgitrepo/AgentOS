@@ -69,6 +69,6 @@
     "Every protected operation requires a complete cost projection and an explicit owner decision before Runtime authorization.",
     "A route or policy deviation returns a decision packet; it never silently overrides project governance.",
     "Unknown provider cost, quota, or rollback impact fails closed for the affected operation only.",
-    "Post-delivery storage regeneration may clear only issue-scoped disposable outputs after independently verified delivery; active custody, shared caches, toolchains, PostgreSQL state, Artifacts, receipts, Codex history, and outside-Projects caches remain protected."
+    "Post-delivery storage regeneration may clear only issue-scoped disposable outputs after independently verified delivery; active custody, shared caches, toolchains, PostgreSQL state, Artifacts, receipts, session history, and outside-Projects caches remain protected."
   ]
 }

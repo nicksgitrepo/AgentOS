@@ -2046,7 +2046,7 @@
     },
     "delivery_operation_governance_contract": {
       "path": "schemas/delivery-operation-governance.v1.json",
-      "sha256": "5ab453b5ab28d72721aede797642e4203ffb9f3ec6dd75bca46cab0af646c051"
+      "sha256": "72947e84a5d71a1515b04d1bde83346caf74a5e87427adcbd0e1ec0bbaded848"
     },
     "runtime_operation_authorization_contract": {
       "path": "schemas/runtime-operation-authorization.v1.json",
@@ -2066,7 +2066,7 @@
     },
     "delivery_operation_governance_article": {
       "path": "docs/delivery-operation-governance.md",
-      "sha256": "51804ec48213ce02a4973a9d50747425f96a816f068048ef036d96f4a3c6e8ab"
+      "sha256": "a545e244b07b65b86b3a7c8e1a711c4fcdea87f8bca9a605000437f06847c837"
     },
     "delivery_closure_contract": {
       "path": "schemas/delivery-closure.v1.json",
@@ -3510,7 +3510,7 @@
     },
     "storage_autopilot_controller": {
       "path": "control/storage-autopilot.mjs",
-      "sha256": "4615a9438ddac08b78cacbde27037700bb5a88906889f542bbaf52925329ad18",
+      "sha256": "c51d2dc5cd5a526d10986746935f3aeed796b5831140234b6682a5b087643b71",
       "authority": "orchestrator-hygiene-dual-key-zero-recovery-governance-activation-successor-115",
       "authority_sha256": "90336d9881962c54d460b0a98a693298f8dfe24237cf564bf09f23f858ac6d8c",
       "direct_path_count": 12,
@@ -3521,7 +3521,7 @@
     },
     "storage_regeneration_recurrence_governance": {
       "path": "control/storage-regeneration-governance.mjs",
-      "sha256": "2d6e3f32a3a021cbd3bd4fd7b35aab5b0e1a95daf3f0a31c25e0dea26380edd1",
+      "sha256": "eec1be3cbec26e4e9cc763dcef56dd32b3ace5fe0e75d1f53cb6669588ef689c",
       "authority": "orchestrator-storage-regeneration-recurrence-active-custody-1177",
       "authority_sha256": "8046d1a8aa1cdc47c600ad091bad4b95b2c997c7b93083c2406e775a47eb8da5",
       "serial_binding_sha256": "b3419798056eab5ed1a15428684b88e7e44be275cb7057490fef88c3f8898419",
@@ -3530,17 +3530,17 @@
       "mechanical_path_count": 1,
       "maximum_total_path_count": 15,
       "authorized_direct_paths": [
-        {"path": "control/storage-regeneration-governance.mjs", "sha256": "2d6e3f32a3a021cbd3bd4fd7b35aab5b0e1a95daf3f0a31c25e0dea26380edd1"},
+        {"path": "control/storage-regeneration-governance.mjs", "sha256": "eec1be3cbec26e4e9cc763dcef56dd32b3ace5fe0e75d1f53cb6669588ef689c"},
         {"path": "schemas/storage-regeneration-governance.v1.json", "sha256": "879104aed2e30c78f49cd41ec384ad5b9d571144cf1f019ae4e13ae5903c5d3e"},
         {"path": "tests/verify-storage-regeneration-governance.mjs", "sha256": "7acf49fd5a0ede4670d328fc15f11c9ea8683fb16cfd9fabfdd1ef30b231fc1e"},
-        {"path": "docs/storage-regeneration-governance.md", "sha256": "38b0efc5f3087e9286de99cec8697542c0b2d36f762f919975fee33510a546d1"},
-        {"path": "control/storage-autopilot.mjs", "sha256": "4615a9438ddac08b78cacbde27037700bb5a88906889f542bbaf52925329ad18"},
+        {"path": "docs/storage-regeneration-governance.md", "sha256": "f1379770b2576c1928a1b721ffd20ae3dcc889c1d0dc1cfdd86d334a006a69a2"},
+        {"path": "control/storage-autopilot.mjs", "sha256": "c51d2dc5cd5a526d10986746935f3aeed796b5831140234b6682a5b087643b71"},
         {"path": "tests/verify-storage-build-cache-sentinel.mjs", "sha256": "8cc3a5d43bd7d9513b3ba084a5ebe5e7e43c5984088759510c443cb6c6d7e20c"},
         {"path": "control/hygiene-executor.mjs", "sha256": "efbfecf1540ed1d550ac32e48d4911cb14724c26a9edc306b40f9ae3328efab9"},
         {"path": "tests/verify-hygiene-executor.mjs", "sha256": "16baeed97b137c710db67bab96e820b34b7e63b2a91df37f15bad55a181f1bc2"},
         {"path": "control/delivery-operation-governance.mjs", "sha256": "0b72537c43e133c0a56add7de3bfd72ce2454449aa7e73eb4553e91782a0c32b"},
-        {"path": "schemas/delivery-operation-governance.v1.json", "sha256": "5ab453b5ab28d72721aede797642e4203ffb9f3ec6dd75bca46cab0af646c051"},
-        {"path": "docs/delivery-operation-governance.md", "sha256": "51804ec48213ce02a4973a9d50747425f96a816f068048ef036d96f4a3c6e8ab"},
+        {"path": "schemas/delivery-operation-governance.v1.json", "sha256": "72947e84a5d71a1515b04d1bde83346caf74a5e87427adcbd0e1ec0bbaded848"},
+        {"path": "docs/delivery-operation-governance.md", "sha256": "a545e244b07b65b86b3a7c8e1a711c4fcdea87f8bca9a605000437f06847c837"},
         {"path": "tests/verify-runtime-operation-governance.mjs", "sha256": "9106132dd2163f40a94c3b6cef4ab32ee74b5a20bc185a02d47f40bd7addb867"},
         {"path": "control/campaign-closeout-lifecycle.mjs", "sha256": "b26b0cb237d31c33a7152e155aa486175d77e8ffb84936c024ece7ca31e45df9"},
         {"path": "tests/verify-campaign-closeout-lifecycle.mjs", "sha256": "1cf565b321504713727e3096e3f0aae4cc84e4931582a4031423e514d05ddb3d"}
