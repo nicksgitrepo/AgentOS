@@ -142,7 +142,7 @@ function rolloverDigest(value, label) {
 
 function stateOwned(value, label) {
   rolloverRecord(value, label);
-  assert(value.state_owned === true || value.owner === "AGENTOS_STATE" || value.owner_scope === "AGENTOS_STATE", `${label} must be owned by durable AgentOS State`);
+  assert(value.state_owned === true || value.state_owned === "AGENTOS_STATE" || value.stateOwned === true || value.stateOwned === "AGENTOS_STATE" || value.owner === "AGENTOS_STATE" || value.owner_scope === "AGENTOS_STATE" || value.state_owner === "AGENTOS_STATE", `${label} must be owned by durable AgentOS State`);
   return value;
 }
 
@@ -159,19 +159,45 @@ function entryIdentity(entry, keys) {
  */
 export function compilePermanentSessionRollover({
   taskId,
+  task_id,
   roleId,
+  role_id,
   oldSession,
+  old_session,
   successorSession,
+  successor_session,
   queue,
+  state_queue,
   custody,
+  state_custody,
   incident,
+  state_incident,
   stoppingPoint,
+  stopping_point,
   existingSessions = [],
+  existing_sessions,
   existingRoles = [],
+  existing_roles,
   existingTimers = [],
+  existing_timers,
   existingJobs = [],
+  existing_jobs,
   evaluatedAtUtc = new Date().toISOString(),
+  evaluated_at_utc,
 } = {}) {
+  taskId = taskId ?? task_id;
+  roleId = roleId ?? role_id;
+  oldSession = oldSession ?? old_session;
+  successorSession = successorSession ?? successor_session;
+  queue = queue ?? state_queue;
+  custody = custody ?? state_custody;
+  incident = incident ?? state_incident;
+  stoppingPoint = stoppingPoint ?? stopping_point;
+  existingSessions = existing_sessions ?? existingSessions;
+  existingRoles = existing_roles ?? existingRoles;
+  existingTimers = existing_timers ?? existingTimers;
+  existingJobs = existing_jobs ?? existingJobs;
+  evaluatedAtUtc = evaluated_at_utc ?? evaluatedAtUtc;
   rolloverIdentifier(taskId, "rollover task ID");
   rolloverIdentifier(roleId, "rollover permanent role ID");
   rolloverRecord(oldSession, "old permanent session");
@@ -182,7 +208,7 @@ export function compilePermanentSessionRollover({
   assert(oldSession.task_id === undefined || oldSession.task_id === taskId, "old session task identity mismatch");
   assert(successorSession.task_id === undefined || successorSession.task_id === taskId, "successor session task identity mismatch");
   assert(oldSession.retained !== false && oldSession.archived !== true, "old permanent session must remain retained");
-  assert(["CLEAN_STOPPING_POINT", "STOPPED", "CHECKPOINT_REACHED", "COMPLETED"].includes(String(oldSession.status ?? oldSession.lifecycle ?? "CLEAN_STOPPING_POINT").toUpperCase()), "old session is not at a clean stopping point");
+  assert(["CLEAN", "CLEAN_STOPPING_POINT", "STOPPED", "CHECKPOINT_REACHED", "COMPLETED"].includes(String(oldSession.status ?? oldSession.lifecycle ?? "CLEAN_STOPPING_POINT").toUpperCase()), "old session is not at a clean stopping point");
   assert(successorSession.successor === true || successorSession.role_id === undefined || successorSession.role_id === roleId, "successor role binding is invalid");
   const sessions = Array.isArray(existingSessions) ? existingSessions : [];
   const duplicateSession = sessions.some((entry) => entryIdentity(entry, ["session_id", "sessionId", "id"]) === successorId);
@@ -201,8 +227,8 @@ export function compilePermanentSessionRollover({
   stateOwned(custody, "rollover custody");
   stateOwned(incident, "rollover incident");
   stateOwned(stoppingPoint, "rollover stopping point");
-  assert(stoppingPoint.clean === true || stoppingPoint.complete === true || stoppingPoint.status === "CLEAN_STOPPING_POINT", "rollover requires a clean stopping point");
-  for (const [value, label] of [[queue.queue_sha256 ?? queue.digest_sha256 ?? queue.sha256, "rollover queue digest"], [custody.custody_sha256 ?? custody.digest_sha256 ?? custody.sha256, "rollover custody digest"], [incident.incident_sha256 ?? incident.digest_sha256 ?? incident.sha256, "rollover incident digest"], [stoppingPoint.stopping_point_sha256 ?? stoppingPoint.digest_sha256 ?? stoppingPoint.sha256, "rollover stopping-point digest"]]) rolloverDigest(value, label);
+  assert(stoppingPoint.clean === true || stoppingPoint.complete === true || stoppingPoint.clean_stopping_point === true || stoppingPoint.status === "CLEAN_STOPPING_POINT", "rollover requires a clean stopping point");
+  for (const [value, label] of [[queue.queue_sha256 ?? queue.queue_digest_sha256 ?? queue.digest_sha256 ?? queue.sha256, "rollover queue digest"], [custody.custody_sha256 ?? custody.custody_digest_sha256 ?? custody.digest_sha256 ?? custody.sha256, "rollover custody digest"], [incident.incident_sha256 ?? incident.incident_digest_sha256 ?? incident.digest_sha256 ?? incident.sha256, "rollover incident digest"], [stoppingPoint.stopping_point_sha256 ?? stoppingPoint.stopping_point_digest_sha256 ?? stoppingPoint.digest_sha256 ?? stoppingPoint.sha256, "rollover stopping-point digest"]]) rolloverDigest(value, label);
   assert(queue.chat_history_owned !== true && custody.chat_history_owned !== true && incident.chat_history_owned !== true && stoppingPoint.chat_history_owned !== true, "chat-history-owned rollover continuity is forbidden");
   assert(typeof evaluatedAtUtc === "string" && Number.isFinite(Date.parse(evaluatedAtUtc)), "rollover evaluation time must be UTC");
   const decision = {

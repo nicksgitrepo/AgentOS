@@ -1131,6 +1131,9 @@ export function validateSchedulerProjectionLivenessObservation(receipt) {
 
 export const compileProjectionLivenessObservation = compileSchedulerProjectionLivenessObservation;
 export const validateProjectionLivenessObservation = validateSchedulerProjectionLivenessObservation;
+export const compileSchedulerProjectionLiveness = compileSchedulerProjectionLivenessObservation;
+export const validateSchedulerProjectionLiveness = validateSchedulerProjectionLivenessObservation;
+export const createSchedulerProjectionLivenessObservation = compileSchedulerProjectionLivenessObservation;
 
 export function createMaterialLivenessEscalationLedger() {
   return {schema: "agentos.material_liveness_escalation_ledger.v1", keys: []};

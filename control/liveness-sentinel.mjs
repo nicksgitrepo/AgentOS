@@ -18,12 +18,24 @@ import {
   SCHEDULER_PROJECTION_LIVENESS_SCHEMA,
   TYPED_HOST_CAPABILITY_ESCALATION,
   compileProjectionLivenessObservation,
+  compileSchedulerProjectionLiveness,
   compileSchedulerProjectionLivenessObservation,
+  createSchedulerProjectionLivenessObservation,
   THREAD_READBACK_PROJECTION_DIVERGENCE,
   reconcileThreadReadbackProjection,
   validateProjectionLivenessObservation,
+  validateSchedulerProjectionLiveness,
   validateSchedulerProjectionLivenessObservation,
 } from "./campaign-closeout-lifecycle.mjs";
+import {
+  PERMANENT_SESSION_ROLLOVER_ADMITTED,
+  PERMANENT_SESSION_ROLLOVER_REJECTED,
+  PERMANENT_SESSION_ROLLOVER_SCHEMA,
+  compilePermanentSessionRollover,
+  compilePermanentTaskSessionRollover,
+  validatePermanentSessionRollover,
+  validatePermanentTaskSessionRollover,
+} from "./zero-output-session-replacement.mjs";
 
 export {
   ACTIVE_OR_PROJECTION_LAG,
@@ -34,9 +46,19 @@ export {
   SCHEDULER_PROJECTION_LIVENESS_SCHEMA,
   TYPED_HOST_CAPABILITY_ESCALATION,
   compileProjectionLivenessObservation,
+  compileSchedulerProjectionLiveness,
   compileSchedulerProjectionLivenessObservation,
+  createSchedulerProjectionLivenessObservation,
   validateProjectionLivenessObservation,
+  validateSchedulerProjectionLiveness,
   validateSchedulerProjectionLivenessObservation,
+  PERMANENT_SESSION_ROLLOVER_ADMITTED,
+  PERMANENT_SESSION_ROLLOVER_REJECTED,
+  PERMANENT_SESSION_ROLLOVER_SCHEMA,
+  compilePermanentSessionRollover,
+  compilePermanentTaskSessionRollover,
+  validatePermanentSessionRollover,
+  validatePermanentTaskSessionRollover,
 };
 
 export const LIVENESS_SENTINEL_SCHEMA = "agentos.liveness_sentinel.v1";
@@ -104,7 +126,25 @@ export function livenessSignature({taskId, turnId, className, evidence} = {}) {
   return canonicalDigest({task_id: taskId, turn_id: turnId, class: className, evidence: evidence ?? null});
 }
 
-export function classifySilentTurn({taskId, turnId, projection, durableHistory = null, adapter = undefined, originalClassification = null} = {}) {
+export function classifySilentTurn({taskId, turnId, laneId = "LIVENESS-SENTINEL", projection, durableHistory = null, adapter = undefined, originalClassification = null, durableSession = undefined, receipts = undefined, results = undefined, leases = undefined, previousObservation = null, recoveryAttempt = 0, maxRecoveryAttempts = 1, escalationLedger = null} = {}) {
+  const session = durableSession ?? durableHistory?.durable_session ?? durableHistory?.durableSession ?? durableHistory?.session;
+  if (session !== undefined || receipts !== undefined || results !== undefined || leases !== undefined) {
+    const triangulated = compileSchedulerProjectionLivenessObservation({
+      taskId,
+      laneId,
+      projection,
+      durableSession: session,
+      receipts: receipts ?? [],
+      results: results ?? [],
+      processes: durableHistory?.processes ?? [],
+      leases: leases ?? durableHistory?.leases ?? [],
+      previousObservation,
+      recoveryAttempt,
+      maxRecoveryAttempts,
+      escalationLedger,
+    });
+    return {classification: triangulated.classification, confidence: triangulated.classification === ACTIVE_OR_PROJECTION_LAG ? "HIGH_TRIANGULATED" : "MEDIUM_TRIANGULATED", receipt: triangulated};
+  }
   const receipt = reconcileThreadReadbackProjection({taskId, turnId, projection, durableHistory, adapter, originalClassification});
   if (receipt.status === THREAD_READBACK_PROJECTION_DIVERGENCE) {
     return {classification: THREAD_READBACK_PROJECTION_DIVERGENCE, confidence: receipt.confidence, receipt};
@@ -117,6 +157,25 @@ export function classifySilentTurn({taskId, turnId, projection, durableHistory =
 
 export function validateLivenessObservation(observation) {
   assert(isRecord(observation), "liveness observation must be an object");
+  if (observation.schema === SCHEDULER_PROJECTION_LIVENESS_SCHEMA) return validateSchedulerProjectionLivenessObservation(observation);
+  if (observation.projection !== undefined || observation.durable_session !== undefined || observation.durableSession !== undefined) {
+    const triangulated = compileSchedulerProjectionLivenessObservation({
+      taskId: observation.taskId ?? observation.task_id,
+      laneId: observation.laneId ?? observation.lane_id ?? "LIVENESS-SENTINEL",
+      projection: observation.projection,
+      durableSession: observation.durableSession ?? observation.durable_session,
+      receipts: observation.receipts ?? [],
+      results: observation.results ?? [],
+      processes: observation.processes ?? [],
+      leases: observation.leases ?? [],
+      previousObservation: observation.previousObservation ?? observation.previous_observation ?? null,
+      recoveryAttempt: observation.recoveryAttempt ?? observation.recovery_attempt ?? 0,
+      maxRecoveryAttempts: observation.maxRecoveryAttempts ?? observation.max_recovery_attempts ?? 1,
+      escalationLedger: observation.escalationLedger ?? observation.escalation_ledger ?? null,
+      observedAtUtc: observation.observedAtUtc ?? observation.observed_at_utc ?? new Date().toISOString(),
+    });
+    return triangulated;
+  }
   requireArray(observation.tasks, "liveness task roster");
   requireArray(observation.processes, "liveness process roster");
   for (const task of observation.tasks) {
