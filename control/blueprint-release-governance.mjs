@@ -270,6 +270,7 @@ export function validateBlueprintRelease(release, {priorRelease = null} = {}) {
   assert(JSON.stringify(sortedStrings(release.coordination.forbidden_traffic, "Blueprint forbidden traffic")) === JSON.stringify([...BLUEPRINT_FORBIDDEN_TRAFFIC]), "BLUEPRINT_INVALID_COORDINATION", "forbidden Blueprint traffic drifted");
   assert(JSON.stringify(sortedStrings(release.coordination.allowed_lifecycle_traffic, "Blueprint lifecycle traffic")) === JSON.stringify([...BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC].sort(compareUtf8)), "BLUEPRINT_INVALID_COORDINATION", "allowed lifecycle traffic drifted");
   const predecessor = normalizeSupersedes(release.supersedes);
+  if (predecessor !== null) assert(predecessor.release_id !== release.release_id, "BLUEPRINT_SUPERSEDES_SELF", "a release cannot supersede itself");
   if (priorRelease !== null) {
     validateBlueprintRelease(priorRelease);
     assert(predecessor !== null && predecessor.release_id === priorRelease.release_id, "BLUEPRINT_SUPERSEDES_MISMATCH", "successor does not bind the prior release");
@@ -395,13 +396,25 @@ export function validateBlueprintRepairPreflight(preflight) {
   requireIdentifier(preflight.preflight_id, "Blueprint preflight ID"); requireIdentifier(preflight.release_id, "Blueprint preflight release ID"); requireSha(preflight.index_sha256, "Blueprint preflight index digest"); requireUtc(preflight.checked_at_utc, "Blueprint preflight time"); assert(preflight.fresh === true && preflight.status === "PASS", "BLUEPRINT_PREFLIGHT_NOT_FRESH", "Repair requires one fresh passing preflight");
   assert(JSON.stringify(sortedStrings(preflight.checks_performed, "Blueprint preflight checks")) === JSON.stringify(["COLLISION_FREE", "CURRENT_STATUS", "CUSTODY_CLEAN", "SOURCE_BASE"]), "BLUEPRINT_PREFLIGHT_INCOMPLETE", "preflight must prove current status, source base, custody, and collision checks");
   assert(isRecord(preflight.source_base), "BLUEPRINT_PREFLIGHT_INVALID", "preflight source base is required"); assert(GIT_OBJECT.test(preflight.source_base.commit) && GIT_OBJECT.test(preflight.source_base.tree), "BLUEPRINT_PREFLIGHT_INVALID", "preflight source base identity is invalid");
-  assert(isRecord(preflight.custody) && preflight.custody.clean === true, "BLUEPRINT_PREFLIGHT_CUSTODY_DIRTY", "preflight custody is not clean"); for (const field of ["unstaged_count", "untracked_count", "process_count"]) if (preflight.custody[field] !== undefined) assert(Number.isSafeInteger(preflight.custody[field]) && preflight.custody[field] === 0, "BLUEPRINT_PREFLIGHT_CUSTODY_DIRTY", `preflight ${field} must be zero`);
-  assert(isRecord(preflight.collision), "BLUEPRINT_PREFLIGHT_COLLISION", "preflight collision evidence is required"); for (const field of ["target_preexisting", "target_ref_preexisting"]) if (preflight.collision[field] !== undefined) assert(preflight.collision[field] === false, "BLUEPRINT_PREFLIGHT_COLLISION", "Blueprint target collision is present"); for (const field of ["process_overlap", "active_writer_overlap"]) if (preflight.collision[field] !== undefined) assert(Number.isSafeInteger(preflight.collision[field]) && preflight.collision[field] === 0, "BLUEPRINT_PREFLIGHT_COLLISION", `preflight ${field} must be zero`);
+  assert(isRecord(preflight.custody) && preflight.custody.clean === true, "BLUEPRINT_PREFLIGHT_CUSTODY_DIRTY", "preflight custody is not clean");
+  for (const field of ["unstaged_count", "untracked_count", "process_count"]) {
+    assert(Number.isSafeInteger(preflight.custody[field]), "BLUEPRINT_PREFLIGHT_CUSTODY_DIRTY", `preflight ${field} is required`);
+    assert(preflight.custody[field] === 0, "BLUEPRINT_PREFLIGHT_CUSTODY_DIRTY", `preflight ${field} must be zero`);
+  }
+  assert(isRecord(preflight.collision), "BLUEPRINT_PREFLIGHT_COLLISION", "preflight collision evidence is required");
+  assert(typeof preflight.collision.target_preexisting === "boolean" && preflight.collision.target_preexisting === false, "BLUEPRINT_PREFLIGHT_COLLISION", "Blueprint target collision evidence is required and must be clear");
+  for (const field of ["process_overlap", "active_writer_overlap"]) {
+    assert(Number.isSafeInteger(preflight.collision[field]), "BLUEPRINT_PREFLIGHT_COLLISION", `preflight ${field} is required`);
+    assert(preflight.collision[field] === 0, "BLUEPRINT_PREFLIGHT_COLLISION", `preflight ${field} must be zero`);
+  }
   requireSha(preflight.preflight_sha256, "Blueprint preflight digest"); assert(preflight.preflight_sha256 === digestWithout(preflight, "preflight_sha256"), "BLUEPRINT_DIGEST_MISMATCH", "Blueprint preflight digest mismatch"); return preflight;
 }
 
 export function validateBlueprintReference(reference) {
   assert(isRecord(reference) && reference.schema === BLUEPRINT_REFERENCE_SCHEMA && reference.version === BLUEPRINT_VERSION, "BLUEPRINT_REFERENCE_INVALID", "Blueprint reference schema/version is invalid");
+  const expectedKeys = ["schema", "version", "release_id", "path", "sha256", "reference_sha256"].sort(compareUtf8);
+  const actualKeys = Object.keys(reference).sort(compareUtf8);
+  assert(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), "BLUEPRINT_REFERENCE_INVALID", "Blueprint reference fields are not canonical");
   requireIdentifier(reference.release_id, "Blueprint reference release ID"); relativeReference(reference.path, "Blueprint reference path"); requireSha(reference.sha256, "Blueprint reference digest");
   assert(reference.content === undefined && reference.blueprint === undefined && reference.advice === undefined && reference.advisory === undefined, "BLUEPRINT_REFERENCE_EMBEDDED_CONTENT", "Registrar references cannot embed Blueprint content or advice");
   requireSha(reference.reference_sha256, "Blueprint reference digest"); assert(reference.reference_sha256 === digestWithout(reference, "reference_sha256"), "BLUEPRINT_DIGEST_MISMATCH", "Blueprint reference self-digest mismatch"); return reference;
@@ -414,6 +427,7 @@ export function compileBlueprintReference({releaseId = null, release_id = null, 
 export function validateBlueprintLifecycleTraffic(message) {
   assert(isRecord(message), "BLUEPRINT_TRAFFIC_INVALID", "Blueprint lifecycle traffic must be an object");
   const kind = String(message.kind ?? message.type ?? message.event ?? "").toUpperCase();
+  assert(kind.length > 0, "BLUEPRINT_TRAFFIC_INVALID", "lifecycle traffic requires an event kind");
   assert(!BLUEPRINT_FORBIDDEN_TRAFFIC.includes(kind), "BLUEPRINT_CONSUMED_TRAFFIC_FORBIDDEN", "BLUEPRINT_CONSUMED traffic is forbidden");
   assert(message.acknowledgement_required !== true && message.ack_required !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "acknowledgement traffic is forbidden");
   assert(message.per_issue !== true && message.issue_notice !== true, "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", "per-issue Blueprint notices are forbidden");

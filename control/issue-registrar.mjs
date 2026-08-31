@@ -92,6 +92,8 @@ export function normalizeBlueprintReference(value) {
   if (value === undefined || value === null) return null;
   assert(isRecord(value), "ISSUE_REGISTRAR_BLUEPRINT_REFERENCE_INVALID", "Blueprint reference must be an object");
   rejectEmbeddedBlueprintFields(value);
+  if (value.schema !== undefined) assert(value.schema === BLUEPRINT_REFERENCE_SCHEMA, "ISSUE_REGISTRAR_BLUEPRINT_REFERENCE_INVALID", "Blueprint reference schema is invalid");
+  if (value.version !== undefined) assert(value.version === BLUEPRINT_VERSION, "ISSUE_REGISTRAR_BLUEPRINT_REFERENCE_INVALID", "Blueprint reference version is invalid");
   const reference = value.schema === BLUEPRINT_REFERENCE_SCHEMA
     ? clone(value)
     : compileBlueprintReference({releaseId: value.release_id ?? value.releaseId, path: value.path ?? value.path_ref ?? value.release_path, sha256: value.sha256 ?? value.release_sha256 ?? value.releaseSha256});
@@ -262,6 +264,7 @@ function validateReporter(reporter) {
 }
 export function validateIssueRecord(issue) {
   assert(isRecord(issue), "ISSUE_REGISTRAR_INVALID_RECORD", "issue record must be an object");
+  rejectEmbeddedBlueprintFields(issue);
   assert(issue.schema === ISSUE_REGISTRAR_SCHEMA && issue.version === ISSUE_REGISTRAR_VERSION, "ISSUE_REGISTRAR_INVALID_RECORD", "issue schema/version is invalid");
   for (const field of ["issue_id", "product_prefix", "title", "summary", "category", "severity", "status", "lifecycle_stage", "dedupe_key", "reason"]) requireText(issue[field], `issue ${field}`);
   assert(PRODUCT_PREFIX.test(issue.product_prefix), "ISSUE_REGISTRAR_INVALID_PRODUCT_PREFIX", "issue product prefix is invalid");
