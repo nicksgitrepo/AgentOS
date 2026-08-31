@@ -404,6 +404,8 @@ export {
   validateStorageSessionRollover,
   compileSharedTargetPruneDecision,
   validateSharedTargetPruneDecision,
+  compileOutsideProjectsCacheAlert,
+  validateOutsideProjectsCacheAlert,
   compileStorageRegenerationDecision,
   validateStorageRegenerationDecision,
   compileStorageCleanupDecision,

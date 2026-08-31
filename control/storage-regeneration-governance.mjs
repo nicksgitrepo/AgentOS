@@ -1005,6 +1005,58 @@ export function validateSharedTargetPruneDecision(decision) {
 export const compileSharedCargoTargetPruneDecision = compileSharedTargetPruneDecision;
 export const validateSharedCargoTargetPruneDecision = validateSharedTargetPruneDecision;
 
+/** Outside-Projects caches are owner-alert-only observations, never actions. */
+export function compileOutsideProjectsCacheAlert({
+  cacheId, cache_id, observedAtUtc, observed_at_utc, measuredBytes = 0, measured_bytes,
+  previousAlertKey = null, previous_alert_key, ownerAlerted = false, owner_alerted,
+} = {}) {
+  id(cacheId ?? cache_id, "outside-Projects cache ID");
+  const observed = observed_at_utc ?? observedAtUtc;
+  utc(observed, "outside-Projects cache observation time");
+  nonNegativeInteger(measured_bytes ?? measuredBytes, "outside-Projects cache measured bytes");
+  const previous = previous_alert_key ?? previousAlertKey ?? null;
+  nullableSha(previous, "outside-Projects cache previous alert key");
+  const alerted = owner_alerted ?? ownerAlerted ?? false;
+  bool(alerted, "outside-Projects cache owner alert state");
+  const alertKey = canonicalDigest({cache_id: cacheId ?? cache_id, measured_bytes: measured_bytes ?? measuredBytes, policy: "OWNER_ALERT_ONLY"});
+  const result = {
+    schema: "agentos.storage_outside_projects_cache_alert.v1",
+    version: 1,
+    cache_id: cacheId ?? cache_id,
+    measured_bytes: measured_bytes ?? measuredBytes,
+    observed_at_utc: observed,
+    policy: "OWNER_ALERT_ONLY",
+    mutation_allowed: false,
+    owner_alert_required: true,
+    owner_alerted: alerted,
+    alert_key: alertKey,
+    deduplicated: previous === alertKey,
+    decision_sha256: null,
+  };
+  result.decision_sha256 = digestWithout(result, "decision_sha256");
+  return validateOutsideProjectsCacheAlert(result);
+}
+
+export function validateOutsideProjectsCacheAlert(alert) {
+  exactKeys(alert, ["schema", "version", "cache_id", "measured_bytes", "observed_at_utc", "policy", "mutation_allowed", "owner_alert_required", "owner_alerted", "alert_key", "deduplicated", "decision_sha256"], "outside-Projects cache alert");
+  assert(alert.schema === "agentos.storage_outside_projects_cache_alert.v1" && alert.version === 1, "outside-Projects cache alert identity is invalid");
+  id(alert.cache_id, "outside-Projects cache ID");
+  nonNegativeInteger(alert.measured_bytes, "outside-Projects cache measured bytes");
+  utc(alert.observed_at_utc, "outside-Projects cache observation time");
+  assert(alert.policy === "OWNER_ALERT_ONLY", "outside-Projects cache policy is unsafe");
+  assert(alert.mutation_allowed === false && alert.owner_alert_required === true, "outside-Projects cache mutation is forbidden", "STORAGE_REGENERATION_OUTSIDE_PROJECTS_PROTECTED");
+  bool(alert.owner_alerted, "outside-Projects cache owner alert state");
+  sha(alert.alert_key, "outside-Projects cache alert key");
+  assert(alert.alert_key === canonicalDigest({cache_id: alert.cache_id, measured_bytes: alert.measured_bytes, policy: "OWNER_ALERT_ONLY"}), "outside-Projects cache alert key mismatch");
+  bool(alert.deduplicated, "outside-Projects cache alert deduplication");
+  sha(alert.decision_sha256, "outside-Projects cache alert digest");
+  // The decision digest is calculated without a self field, and alert_key is
+  // already the stable correlation key for repeated owner alerts.
+  const expected = {...alert, decision_sha256: null};
+  assert(alert.decision_sha256 === canonicalDigest(expected), "outside-Projects cache alert digest mismatch");
+  return alert;
+}
+
 /** Compile one immutable regeneration observation and recurrence classification. */
 export function compileStorageRegenerationCycle({
   cycleId, cycle_id, sourceClass, source_class, laneId, lane_id, generation = 1,

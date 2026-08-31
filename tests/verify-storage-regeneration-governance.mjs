@@ -15,6 +15,7 @@ import {
   compileRuntimePostgresqlCustody,
   compileStorageSessionRollover,
   compileSharedTargetPruneDecision,
+  compileOutsideProjectsCacheAlert,
   compileSharedDependencyCustody,
   compileStorageDailyInspection,
   compileStorageRegenerationCycle,
@@ -28,6 +29,7 @@ import {
   validateRuntimePostgresqlCustody,
   validateStorageSessionRollover,
   validateSharedTargetPruneDecision,
+  validateOutsideProjectsCacheAlert,
   validateSharedDependencyCustody,
   validateStorageDailyInspection,
   validateStorageRegenerationCycle,
@@ -216,5 +218,8 @@ assert.throws(() => compileStorageSessionRollover({predecessorSessionId: "SESSIO
 const prune = compileSharedTargetPruneDecision({targetId: "TARGET.CARGO.1", targetPath: "cargo/target-old", safeCheckpoint: true, orphaned: true, oldFingerprint: false, observedAtUtc: later});
 assert.equal(validateSharedTargetPruneDecision(prune).allowed, true);
 assert.equal(compileSharedTargetPruneDecision({targetId: "TARGET.CARGO.LIVE", targetPath: "cargo/target-live", safeCheckpoint: true, orphaned: true, activeConsumers: [issue], observedAtUtc: later}).allowed, false);
+const outsideAlert = compileOutsideProjectsCacheAlert({cacheId: "CACHE.SPARKLE.OUTSIDE", measuredBytes: 1024, ownerAlerted: false, observedAtUtc: later});
+assert.equal(validateOutsideProjectsCacheAlert(outsideAlert).mutation_allowed, false);
+assert.equal(compileOutsideProjectsCacheAlert({cacheId: "CACHE.SPARKLE.OUTSIDE", measuredBytes: 1024, previousAlertKey: outsideAlert.alert_key, observedAtUtc: later}).deduplicated, true);
 
 console.log("PASS storage regeneration recurrence governance: owned temp closeout, issue-bound manifests, verified delivery cleanup, cache/dependency custody, recurrence detection, protected-class denials, and hostile coverage");

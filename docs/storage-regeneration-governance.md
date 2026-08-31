@@ -38,3 +38,13 @@ OT projection dependencies, OT Well Cargo, shared Cargo targets, durable
 Runtime PostgreSQL, Codex thread/session history, and outside-Projects
 Sparkle caches each have a rule set and hostile coverage.  Any host-side
 effect still requires a separate, exact Runtime/Controller admission.
+
+Fleet replay roots are limited to one content-identified root per lane and
+generation; stopped fixtures retain receipts or an active hold.  Shared Cargo
+and OT dependencies require owner/use/release records, and shared-target
+pruning is represented as a denial unless a safe checkpoint proves no live
+consumer and orphaned or old-fingerprint content.  Durable PostgreSQL and
+Codex history are protected classes, never generic cleanup targets.  Outside
+Projects caches produce a deduplicated owner alert only.  Daily polling uses
+one changing key and a delta receipt for unchanged observations, while
+supported session rollover retains predecessor history and State ownership.
