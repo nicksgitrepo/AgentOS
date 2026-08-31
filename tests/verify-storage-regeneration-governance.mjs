@@ -82,7 +82,8 @@ try {
 assert.ok(failedOwned?.closeout);
 assert.equal(failedOwned.closeout.outcome, "FAIL");
 assert.equal(fs.existsSync(failedOwned.closeout.root_path), false);
-assert.throws(() => compileGeneratedTempCloseout({issueId: issue, ownerTaskId: "TASK.STORAGE.REGEN.1175", generatorId: "GENERATOR.STORAGE.1175", generation: 1, operationRoot: path.join(tempParent, "not-agentos-temp"), rootPath: path.join(tempParent, "not-agentos-temp", "GENERATOR.STORAGE.1175-1"), observedAtUtc: at}), /PATH_OUTSIDE_ROOT/u);
+const outsideOperationRoot = path.resolve(tempParent, "..", "not-agentos-temp");
+assert.throws(() => compileGeneratedTempCloseout({issueId: issue, ownerTaskId: "TASK.STORAGE.REGEN.1175", generatorId: "GENERATOR.STORAGE.1175", generation: 1, operationRoot: outsideOperationRoot, rootPath: path.join(outsideOperationRoot, "GENERATOR.STORAGE.1175-1"), observedAtUtc: at}), /PATH_OUTSIDE_ROOT/u);
 
 const governance = compileStorageRegenerationGovernance({authorityId: owner, owner: "CONTROLLER", observedAtUtc: at});
 assert.equal(validateStorageRegenerationGovernance(governance).governance_sha256, governance.governance_sha256);
