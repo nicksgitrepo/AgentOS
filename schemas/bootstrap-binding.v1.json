@@ -3520,8 +3520,8 @@
       "filesystem_mutation": false
     },
     "scheduler_projection_liveness_rollover": {
-      "path": "control/campaign-closeout-lifecycle.mjs",
-      "sha256": "d29e4e571c5e54744d9b3e0fe2909d555c6ece370bcb943c3b58f65cd9a49de5",
+      "path": "control/liveness-sentinel.mjs",
+      "sha256": "4937b1c8fe2ff62f4ed7438f08d64bcec3d740ff101a06c396b2899999a50315",
       "authority": "orchestrator-scheduler-projection-liveness-rollover-active-custody-1172",
       "authority_sha256": "c8be79e9de71536eae3b7d6318cd59b2d81c4648e840d615e528a08c6c2ccfcc",
       "owner_correction": "THREAD_READBACK_PROJECTION_DIVERGENCE",
