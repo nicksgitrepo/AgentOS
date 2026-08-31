@@ -3543,7 +3543,7 @@
         },
         {
           "path": "schemas/liveness-sentinel.v1.json",
-          "sha256": "9e5d3edcf64a35346ac91d216b131d9fcf465f65979b83148f4c85f70e04b2f6"
+          "sha256": "f8d32e8d2bc0772a2ea46cacf01950d137e4b59193d437c0f496fa64a0eec97b"
         },
         {
           "path": "tests/verify-liveness-sentinel.mjs",
@@ -3551,11 +3551,11 @@
         },
         {
           "path": "control/zero-output-session-replacement.mjs",
-          "sha256": "6dcec58a3c8fe7e340a9a5ba4943f2d3422e4919894014a9f10377f7ee60a681"
+          "sha256": "15fc46cdf386019876aa83759923c786fd90effc312025a467a79556030f6f00"
         },
         {
           "path": "tests/verify-zero-output-session-replacement.mjs",
-          "sha256": "99984faa6b860ead4a77b1badf873f850c3476cc24fa6f8a1b4f181355320123"
+          "sha256": "febf2569b7253934991e560febc68ebad186c8eb8e1caadb34ac361065d7c4cb"
         },
         {
           "path": "docs/campaign-closeout-memory-archive-hygiene.md",
