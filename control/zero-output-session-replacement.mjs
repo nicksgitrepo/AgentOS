@@ -261,6 +261,8 @@ export function compileSchedulerProjectionLivenessObservation({
       active_lease: leaseLive,
     },
     recovery: {attempt: recoveryAttempt, maximum_attempts: maxRecoveryAttempts, bounded: true, same_task_only: true},
+    prior_observation: recoveryAttempt > 0 ? clone(previousObservation) : null,
+    prior_observation_sha256: recoveryAttempt > 0 ? previousObservation.receipt_sha256 : null,
     classification,
     status: classification,
     action,
@@ -310,6 +312,20 @@ export function validateSchedulerProjectionLivenessObservation(receipt) {
   count(receipt.recovery.attempt, "scheduler projection/liveness recovery attempt");
   count(receipt.recovery.maximum_attempts, "scheduler projection/liveness maximum recovery attempts");
   assert(receipt.recovery.bounded === true && receipt.recovery.same_task_only === true, "scheduler recovery must remain bounded and same-task");
+  if (receipt.recovery.attempt > 0) {
+    assert(isRecord(receipt.prior_observation), "same-task prior observation is required before retry or stall classification");
+    sha(receipt.prior_observation_sha256, "scheduler prior observation receipt digest");
+    assert(receipt.prior_observation_sha256 === receipt.prior_observation.receipt_sha256, "scheduler prior observation digest binding mismatch");
+    requirePriorSameTaskObservation(receipt.prior_observation, {
+      taskId: receipt.task_id,
+      laneId: receipt.lane_id,
+      recoveryAttempt: receipt.recovery.attempt,
+      maxRecoveryAttempts: receipt.recovery.maximum_attempts,
+    });
+  } else {
+    if (Object.prototype.hasOwnProperty.call(receipt, "prior_observation")) assert(receipt.prior_observation === null, "initial liveness observation cannot carry a prior observation");
+    if (Object.prototype.hasOwnProperty.call(receipt, "prior_observation_sha256")) assert(receipt.prior_observation_sha256 === null, "initial liveness observation cannot carry a prior observation digest");
+  }
   assert([ACTIVE_OR_PROJECTION_LAG, MATERIAL_LIVENESS_ACTIVE, SAME_TASK_RECOVERY_REQUIRED, MATERIAL_LIVENESS_STAGNANT].includes(receipt.classification), "scheduler projection/liveness classification is invalid");
   assert(receipt.status === receipt.classification, "scheduler projection/liveness status diverges from classification");
   assert(receipt.replacement_allowed === false, "projection/liveness observation cannot authorize replacement");
