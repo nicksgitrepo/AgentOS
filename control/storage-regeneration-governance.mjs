@@ -497,7 +497,7 @@ export const validateStorageCacheIdentity = validateCacheIdentity;
 export function compileSharedDependencyCustody({
   dependencyId, dependency_id, rootPath, root_path, contentIdentity, content_identity,
   compatibleIdentity, compatible_identity, owner, consumers = [], liveConsumers = [],
-  issueRefs = [], issue_refs = [], shared = true, releaseRequested = false, release_requested = false,
+  issueRefs = [], issue_refs = [], shared = true, releaseRequested = false, release_requested,
   releaseReceiptSha256 = null, release_receipt_sha256 = null, observedAtUtc, observed_at_utc,
 } = {}) {
   id(dependencyId ?? dependency_id, "shared dependency ID");
@@ -510,7 +510,7 @@ export function compileSharedDependencyCustody({
   assert(activeConsumers.every((entry) => allConsumers.includes(entry)), "live dependency consumer is not declared");
   const refs = uniqueStrings(issueRefs ?? issue_refs, "shared dependency issue references");
   bool(shared, "shared dependency shared flag");
-  const release = release_requested ?? releaseRequested;
+  const release = release_requested ?? releaseRequested ?? false;
   bool(release, "shared dependency release request");
   const releaseReceipt = release_receipt_sha256 ?? releaseReceiptSha256;
   nullableSha(releaseReceipt, "shared dependency release receipt digest");
