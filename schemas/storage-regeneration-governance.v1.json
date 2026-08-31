@@ -41,7 +41,7 @@
   },
   "definitions": {
     "immutableDigest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "safeRelativePath": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\.\.(?:/|$))(?!.*[*?{}\\[\\]])[^\\\\]+$"}
+    "safeRelativePath": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*[*?{}\\[\\]])[^\\\\]+$"}
   },
   "x-contracts": {
     "generatedTempCloseout": "agentos.storage_generated_temp_closeout.v1",

@@ -67,6 +67,7 @@ const tempParent = process.env.TMPDIR;
 assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
 assert.ok(tempParent.length > 0, "TMPDIR must be nonempty");
 assert.ok(path.isAbsolute(tempParent), "TMPDIR must be absolute");
+const storageTempRoot = path.join(tempParent, "storage-regen-1175");
 fs.mkdirSync(tempParent, {recursive: true});
 const root = fs.mkdtempSync(path.join(tempParent, "route037-hygiene-"));
 let outside;
@@ -238,8 +239,8 @@ try {
     ownerTaskId: "TASK-HYGIENE-1175",
     generatorId: "GENERATOR-HYGIENE-1175",
     generation: 1,
-    operationRoot: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175",
-    rootPath: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175/GENERATOR-HYGIENE-1175-1",
+    operationRoot: storageTempRoot,
+    rootPath: path.join(storageTempRoot, "GENERATOR-HYGIENE-1175-1"),
     outcome: "FAIL",
     durableReceiptPaths: ["receipt.json"],
     observedAtUtc: "2026-08-31T12:00:00.000Z",

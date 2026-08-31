@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import path from "node:path";
 import {
   approveRuntimeOperationAuthorization,
   compileDeliveryOperationGovernance,
@@ -14,6 +15,12 @@ import {
   compilePostDeliveryCleanup,
   validatePostDeliveryCleanup,
 } from "../control/delivery-operation-governance.mjs";
+
+const tempParent = process.env.TMPDIR;
+assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
+assert.ok(tempParent.length > 0, "TMPDIR must be nonempty");
+assert.ok(path.isAbsolute(tempParent), "TMPDIR must be absolute");
+const storageTempRoot = path.join(tempParent, "storage-regen-1175");
 
 const POLICY = "a".repeat(64);
 const ADAPTER = "b".repeat(64);
@@ -199,7 +206,7 @@ const closeoutManifest = compileDisposableOutputManifest({
   issueId: closeoutIssue,
   ownerTaskId: "TASK-DELIVERY-1175",
   operationId: "OP-DELIVERY-CLOSEOUT-1175",
-  operationRoot: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175",
+  operationRoot: storageTempRoot,
   outputs: [{issue_id: closeoutIssue, path: "target/generated.bin", kind: "BUILD_OUTPUT", lifecycle_class: "REGENERABLE", bytes: 8, fingerprint: "delivery-fp"}],
   deliveryVerified: true,
   deliveryReceiptSha256: "5".repeat(64),

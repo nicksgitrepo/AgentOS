@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import path from "node:path";
 import {
   COMMAND_PATH_CORRELATED_SUCCESS,
   COMMAND_PATH_CORRELATION_OPEN,
@@ -51,6 +52,12 @@ import {
 } from "../control/campaign-closeout-lifecycle.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
+const tempParent = process.env.TMPDIR;
+assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
+assert.ok(tempParent.length > 0, "TMPDIR must be nonempty");
+assert.ok(path.isAbsolute(tempParent), "TMPDIR must be absolute");
+const storageTempRoot = path.join(tempParent, "storage-regen-1175");
+
 const taskId = "TASK-SYNTHETIC-037";
 const turnId = "TURN-SYNTHETIC-037";
 const itemId = "msg-final-pass";
@@ -68,7 +75,7 @@ const durable = {
   turn: {task_id: taskId, turn_id: turnId, final_agent_item_id: itemId, item_count: 4},
   items: [item],
 };
-const emptyProjection = {status: "completed", items: [], items_count: 0, source: "codex_app__read_thread"};
+const emptyProjection = {status: "completed", items: [], items_count: 0, source: "APP_PROJECTION_READBACK"};
 
 const pass = reconcileThreadReadbackProjection({taskId, turnId, projection: emptyProjection, durableHistory: durable});
 assert.equal(pass.status, THREAD_READBACK_PROJECTION_DIVERGENCE);
@@ -532,7 +539,7 @@ const closeoutManifest = compileDisposableOutputManifest({
   issueId: closeoutIssue,
   ownerTaskId: "TASK-STORAGE-1175",
   operationId: "OP-CLOSEOUT-STORAGE-1175",
-  operationRoot: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175",
+  operationRoot: storageTempRoot,
   outputs: [{issue_id: closeoutIssue, path: "build/output.bin", kind: "BUILD_OUTPUT", lifecycle_class: "REGENERABLE", bytes: 5, fingerprint: "closeout-fp"}],
   deliveryVerified: true,
   deliveryReceiptSha256: "5".repeat(64),
