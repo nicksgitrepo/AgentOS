@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import {canonicalDigest} from "../control/content-addressing.mjs";
 import {
   BLUEPRINT_RELEASE_SCHEMA,
   BLUEPRINT_NOTICE_SCHEMA,
@@ -130,6 +131,10 @@ const ack = structuredClone(notice); ack.acknowledgement_required = true; ack.no
 assert.throws(() => validateBlueprintProducerNotice(ack), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 const perIssue = structuredClone(notice); perIssue.per_issue = true; perIssue.notice_sha256 = "0".repeat(64);
 assert.throws(() => validateBlueprintProducerNotice(perIssue), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+const camelNotice = {...notice, acknowledgementRequired: true, notice_sha256: null}; camelNotice.notice_sha256 = canonicalDigest(camelNotice);
+assert.throws(() => validateBlueprintProducerNotice(camelNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+const camelPerIssueNotice = {...notice, perIssue: true, notice_sha256: null}; camelPerIssueNotice.notice_sha256 = canonicalDigest(camelPerIssueNotice);
+assert.throws(() => validateBlueprintProducerNotice(camelPerIssueNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "BLUEPRINT_CONSUMED"}), /CONSUMED_TRAFFIC_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "PER_ISSUE_NOTICE", acknowledgement_required: true}), /ACKNOWLEDGEMENT_FORBIDDEN|TRAFFIC_FORBIDDEN/u);
 const camelAcknowledgement = {kind: "ISSUE_STARTED", acknowledgementRequired: true};
