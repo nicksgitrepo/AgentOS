@@ -429,8 +429,8 @@ export function validateBlueprintLifecycleTraffic(message) {
   const kind = String(message.kind ?? message.type ?? message.event ?? "").toUpperCase();
   assert(kind.length > 0, "BLUEPRINT_TRAFFIC_INVALID", "lifecycle traffic requires an event kind");
   assert(!BLUEPRINT_FORBIDDEN_TRAFFIC.includes(kind), "BLUEPRINT_CONSUMED_TRAFFIC_FORBIDDEN", "BLUEPRINT_CONSUMED traffic is forbidden");
-  assert(message.acknowledgement_required !== true && message.ack_required !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "acknowledgement traffic is forbidden");
-  assert(message.per_issue !== true && message.issue_notice !== true, "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", "per-issue Blueprint notices are forbidden");
+  assert(message.acknowledgement_required !== true && message.ack_required !== true && message.acknowledgementRequired !== true && message.ackRequired !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "acknowledgement traffic is forbidden");
+  assert(message.per_issue !== true && message.issue_notice !== true && message.perIssue !== true && message.issueNotice !== true && message.perIssueNotice !== true, "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", "per-issue Blueprint notices are forbidden");
   if (kind.length > 0) assert(BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC.includes(kind), "BLUEPRINT_TRAFFIC_FORBIDDEN", `lifecycle traffic ${kind} is not allowed`);
   return message;
 }

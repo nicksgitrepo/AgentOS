@@ -132,6 +132,11 @@ const perIssue = structuredClone(notice); perIssue.per_issue = true; perIssue.no
 assert.throws(() => validateBlueprintProducerNotice(perIssue), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "BLUEPRINT_CONSUMED"}), /CONSUMED_TRAFFIC_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "PER_ISSUE_NOTICE", acknowledgement_required: true}), /ACKNOWLEDGEMENT_FORBIDDEN|TRAFFIC_FORBIDDEN/u);
+const camelAcknowledgement = {kind: "ISSUE_STARTED", acknowledgementRequired: true};
+assert.throws(() => validateBlueprintLifecycleTraffic(camelAcknowledgement), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, traffic: [camelAcknowledgement]}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+assert.throws(() => validateBlueprintLifecycleTraffic({kind: "ISSUE_STARTED", perIssue: true}), /PER_ISSUE_NOTICE_FORBIDDEN/u);
+assert.throws(() => validateBlueprintLifecycleTraffic({kind: "ISSUE_STARTED", issueNotice: true}), /PER_ISSUE_NOTICE_FORBIDDEN/u);
 for (const kind of BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC) assert.deepEqual(validateBlueprintLifecycleTraffic({kind}), {kind});
 
 const reference = compileBlueprintReference({releaseId: successor.release_id, path: successor.release_path, sha256: successor.release_sha256});
