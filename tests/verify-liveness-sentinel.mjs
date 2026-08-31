@@ -70,7 +70,7 @@ const projectionLagNext = projectionSentinel.observe({
   previousObservation: projectionLag,
   observedAtUtc: "2026-08-28T15:00:01.000Z",
 });
-assert.equal(projectionLag.classification, "SAME_TASK_RECOVERY_REQUIRED");
+assert.equal(projectionLag.classification, "ACTIVE_OR_PROJECTION_LAG");
 assert.equal(projectionLagNext.classification, "ACTIVE_OR_PROJECTION_LAG");
 assert.equal(projectionLagNext.stalled, false);
 assert.equal(projectionLagNext.replacement_allowed, false);

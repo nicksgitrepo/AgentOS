@@ -363,10 +363,16 @@ const projectionLivenessBase = {
   observedAtUtc: "2026-08-28T15:00:00.000Z",
 };
 const recoveryRequired = compileSchedulerProjectionLivenessObservation(projectionLivenessBase);
-assert.equal(recoveryRequired.classification, SAME_TASK_RECOVERY_REQUIRED);
+assert.equal(recoveryRequired.classification, ACTIVE_OR_PROJECTION_LAG);
 assert.equal(recoveryRequired.stalled, false);
 assert.equal(recoveryRequired.replacement_allowed, false);
 validateSchedulerProjectionLivenessObservation(recoveryRequired);
+const recoveryRequiredAfterRecheck = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  previousObservation: recoveryRequired,
+  recoveryAttempt: 0,
+});
+assert.equal(recoveryRequiredAfterRecheck.classification, SAME_TASK_RECOVERY_REQUIRED);
 const ordinalAdvanced = compileSchedulerProjectionLivenessObservation({
   ...projectionLivenessBase,
   durableSession: {...projectionLivenessBase.durableSession, ordinal: 2, mtime: 200, activity: "activity-two"},
