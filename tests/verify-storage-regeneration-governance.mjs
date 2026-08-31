@@ -167,6 +167,8 @@ const delivery = {
 };
 const cleanup = compilePostDeliveryCleanup({manifest, delivery, issueId: issue, candidateCommit: commit, candidateTree: tree, observedAtUtc: later});
 assert.equal(validatePostDeliveryCleanup(cleanup, {manifest, delivery}).cleanup_allowed, true);
+assert.throws(() => validatePostDeliveryCleanup(cleanup), /CLEANUP_CONTEXT_REQUIRED/u);
+assert.throws(() => validatePostDeliveryCleanup(cleanup, {manifest}), /CLEANUP_CONTEXT_REQUIRED/u);
 const unverifiedManifest = {...manifest, delivery_verified: false, cleanup_action: "HOLD_UNTIL_DELIVERY_VERIFIED", manifest_sha256: null};
 unverifiedManifest.manifest_sha256 = canonicalDigest({...unverifiedManifest, manifest_sha256: null});
 assert.throws(() => compilePostDeliveryCleanup({manifest: unverifiedManifest, delivery, issueId: issue, observedAtUtc: later}), /DELIVERY_NOT_VERIFIED/u);
