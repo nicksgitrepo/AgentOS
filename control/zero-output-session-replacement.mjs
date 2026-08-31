@@ -80,8 +80,7 @@ function normalizePriorSourceState(previous) {
   return isRecord(sourceState) ? sourceState : null;
 }
 
-function requirePriorSameTaskObservation(previousObservation, {taskId, laneId, recoveryAttempt, maxRecoveryAttempts} = {}) {
-  if (recoveryAttempt === 0) return;
+function requirePriorObservationReference(previousObservation, {taskId, laneId} = {}) {
   if (!isRecord(previousObservation)
     || previousObservation.task_id !== taskId
     || previousObservation.lane_id !== laneId
@@ -90,18 +89,23 @@ function requirePriorSameTaskObservation(previousObservation, {taskId, laneId, r
     error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_REQUIRED";
     throw error;
   }
-  if (!Number.isSafeInteger(previousObservation.recovery?.attempt)
-    || previousObservation.recovery.attempt !== recoveryAttempt - 1
-    || previousObservation.recovery.maximum_attempts !== maxRecoveryAttempts) {
-    const error = new Error("same-task prior observation must precede the requested recovery attempt");
-    error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_ORDER_INVALID";
-    throw error;
-  }
   try {
     validateSchedulerProjectionLivenessObservation(previousObservation);
   } catch (cause) {
     const error = new Error(`same-task prior observation is not content-bound: ${cause.message}`);
     error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_INVALID";
+    throw error;
+  }
+}
+
+function requirePriorSameTaskObservation(previousObservation, {taskId, laneId, recoveryAttempt, maxRecoveryAttempts} = {}) {
+  if (recoveryAttempt === 0) return;
+  requirePriorObservationReference(previousObservation, {taskId, laneId});
+  if (!Number.isSafeInteger(previousObservation.recovery?.attempt)
+    || previousObservation.recovery.attempt !== recoveryAttempt - 1
+    || previousObservation.recovery.maximum_attempts !== maxRecoveryAttempts) {
+    const error = new Error("same-task prior observation must precede the requested recovery attempt");
+    error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_ORDER_INVALID";
     throw error;
   }
 }
@@ -167,6 +171,7 @@ export function compileSchedulerProjectionLivenessObservation({
   assert(recoveryAttempt <= maxRecoveryAttempts, "same-task recovery attempt exceeds its bounded maximum");
   validUtcInstant(observedAtUtc, "scheduler liveness observation time");
   requirePriorSameTaskObservation(previousObservation, {taskId, laneId, recoveryAttempt, maxRecoveryAttempts});
+  if (recoveryAttempt === 0 && isRecord(previousObservation)) requirePriorObservationReference(previousObservation, {taskId, laneId});
 
   const sourceState = {
     app_projection_sha256: canonicalDigest(normalizedProjection),
@@ -261,8 +266,8 @@ export function compileSchedulerProjectionLivenessObservation({
       active_lease: leaseLive,
     },
     recovery: {attempt: recoveryAttempt, maximum_attempts: maxRecoveryAttempts, bounded: true, same_task_only: true},
-    prior_observation: recoveryAttempt > 0 ? clone(previousObservation) : null,
-    prior_observation_sha256: recoveryAttempt > 0 ? previousObservation.receipt_sha256 : null,
+    prior_observation: isRecord(previousObservation) ? clone(previousObservation) : null,
+    prior_observation_sha256: isRecord(previousObservation) ? previousObservation.receipt_sha256 : null,
     classification,
     status: classification,
     action,
@@ -323,8 +328,13 @@ export function validateSchedulerProjectionLivenessObservation(receipt) {
       maxRecoveryAttempts: receipt.recovery.maximum_attempts,
     });
   } else {
-    if (Object.prototype.hasOwnProperty.call(receipt, "prior_observation")) assert(receipt.prior_observation === null, "initial liveness observation cannot carry a prior observation");
-    if (Object.prototype.hasOwnProperty.call(receipt, "prior_observation_sha256")) assert(receipt.prior_observation_sha256 === null, "initial liveness observation cannot carry a prior observation digest");
+    if (receipt.prior_observation !== null && receipt.prior_observation !== undefined) {
+      sha(receipt.prior_observation_sha256, "scheduler prior observation receipt digest");
+      assert(receipt.prior_observation_sha256 === receipt.prior_observation.receipt_sha256, "scheduler prior observation digest binding mismatch");
+      requirePriorObservationReference(receipt.prior_observation, {taskId: receipt.task_id, laneId: receipt.lane_id});
+    } else if (Object.prototype.hasOwnProperty.call(receipt, "prior_observation_sha256")) {
+      assert(receipt.prior_observation_sha256 === null, "initial liveness observation cannot carry a prior observation digest");
+    }
   }
   assert([ACTIVE_OR_PROJECTION_LAG, MATERIAL_LIVENESS_ACTIVE, SAME_TASK_RECOVERY_REQUIRED, MATERIAL_LIVENESS_STAGNANT].includes(receipt.classification), "scheduler projection/liveness classification is invalid");
   assert(receipt.status === receipt.classification, "scheduler projection/liveness status diverges from classification");
@@ -339,6 +349,15 @@ export function validateSchedulerProjectionLivenessObservation(receipt) {
     active_lease: sourceHasLiveEntries(leases),
   };
   for (const [key, value] of Object.entries(expectedSignals)) assert(receipt.signals[key] === value, `scheduler projection/liveness signal ${key} mismatch`);
+  const previousState = normalizePriorSourceState(receipt.prior_observation);
+  const expectedAdvancementSignals = {
+    durable_ordinal_advanced: previousState !== null && durable.ordinal > previousState.durable_ordinal,
+    durable_mtime_advanced: previousState !== null && compareMtimeKey(durable.mtime_key, previousState.durable_mtime_key) > 0,
+    durable_activity_advanced: previousState !== null && durable.activity_sha256 !== previousState.durable_activity_sha256,
+    receipts_advanced: previousState !== null && expectedState.receipts_sha256 !== previousState.receipts_sha256 && expectedSignals.material_receipt,
+    results_advanced: previousState !== null && expectedState.results_sha256 !== previousState.results_sha256 && expectedSignals.material_result,
+  };
+  for (const [key, value] of Object.entries(expectedAdvancementSignals)) assert(receipt.signals[key] === value, `scheduler projection/liveness derived signal ${key} mismatch`);
   const hasIndependentSignal = receipt.signals.durable_ordinal_advanced === true || receipt.signals.durable_mtime_advanced === true || receipt.signals.durable_activity_advanced === true || receipt.signals.receipts_advanced === true || receipt.signals.results_advanced === true || expectedSignals.material_receipt || expectedSignals.material_result || expectedSignals.live_process || expectedSignals.active_lease;
   if (receipt.projection.items.length === 0 && hasIndependentSignal) assert(receipt.classification === ACTIVE_OR_PROJECTION_LAG && receipt.stalled === false, "independent material/liveness evidence must remain active or lagging");
   if (receipt.classification === ACTIVE_OR_PROJECTION_LAG) assert(receipt.projection.items.length === 0 && receipt.stalled === false, "projection lag classification must remain non-stalled");

@@ -461,6 +461,33 @@ resealLivenessObservation(wrongOrderPriorAtValidator.prior_observation);
 wrongOrderPriorAtValidator.prior_observation_sha256 = wrongOrderPriorAtValidator.prior_observation.receipt_sha256;
 resealLivenessObservation(wrongOrderPriorAtValidator);
 assert.throws(() => validateSchedulerProjectionLivenessObservation(wrongOrderPriorAtValidator), /prior observation must precede/u);
+const assertDerivedSignalRejects = (field, input) => {
+  const advanced = compileSchedulerProjectionLivenessObservation({
+    ...projectionLivenessBase,
+    ...input,
+    previousObservation: recoveryRequired,
+  });
+  assert.equal(advanced.signals[field], true);
+  const forged = structuredClone(advanced);
+  forged.signals[field] = false;
+  resealLivenessObservation(forged);
+  assert.throws(() => validateSchedulerProjectionLivenessObservation(forged), /derived signal .* mismatch/u);
+};
+assertDerivedSignalRejects("durable_ordinal_advanced", {
+  durableSession: {...projectionLivenessBase.durableSession, ordinal: 2},
+});
+assertDerivedSignalRejects("durable_mtime_advanced", {
+  durableSession: {...projectionLivenessBase.durableSession, mtime: 200},
+});
+assertDerivedSignalRejects("durable_activity_advanced", {
+  durableSession: {...projectionLivenessBase.durableSession, activity: "activity-two"},
+});
+assertDerivedSignalRejects("receipts_advanced", {
+  receipts: [{receipt_id: "RECEIPT-ADVANCE-037", material: true, status: "PASS"}],
+});
+assertDerivedSignalRejects("results_advanced", {
+  results: [{result_id: "RESULT-ADVANCE-037", material: true, status: "PASS"}],
+});
 const duplicateEscalation = deduplicateMaterialLivenessEscalation({escalation: stagnant.escalation, ledger: stagnantLedger});
 assert.equal(duplicateEscalation.duplicate, true);
 assert.equal(duplicateEscalation.emitted, false);
