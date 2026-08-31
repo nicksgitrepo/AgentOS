@@ -36,6 +36,12 @@ export const BLUEPRINT_FACTUAL_FIELDS = Object.freeze([
 export const BLUEPRINT_ADVISORY_FIELDS = Object.freeze([
   "batching_suggestions", "implementation_suggestions",
 ]);
+const BLUEPRINT_RELEASE_KEYS = Object.freeze([
+  "schema", "version", "release_id", "release_sequence", "status", "published_at_utc", "release_path", "manifest", "issue_ids", "entries", "factual_inputs", "advisory_inputs", "producer_notice_id", "acknowledgement_required", "coordination", "supersedes", "release_sha256",
+]);
+const BLUEPRINT_FORBIDDEN_RELEASE_ALIASES = Object.freeze([
+  "acknowledgementRequired", "ackRequired", "acknowledgmentRequired", "acknowledgment_required", "requiresAcknowledgement", "requires_acknowledgement", "requiresAck", "requires_ack", "perIssue", "issueNotice", "perIssueNotice", "per_issue", "issue_notice", "per_issue_notice", "perIssueAcknowledgement", "per_issue_acknowledgement",
+]);
 const SHA256 = /^[0-9a-f]{64}$/u;
 const GIT_OBJECT = /^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u;
 const ID = /^[A-Z][A-Z0-9._:-]{0,191}$/u;
@@ -245,6 +251,10 @@ export function compileBlueprintRelease({
 
 export function validateBlueprintRelease(release, {priorRelease = null} = {}) {
   assert(isRecord(release), "BLUEPRINT_INVALID_RELEASE", "Blueprint release must be an object");
+  for (const alias of BLUEPRINT_FORBIDDEN_RELEASE_ALIASES) assert(!Object.prototype.hasOwnProperty.call(release, alias), "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", `Blueprint release field ${alias} is forbidden`);
+  const actualKeys = Object.keys(release).sort(compareUtf8);
+  const expectedKeys = [...BLUEPRINT_RELEASE_KEYS].sort(compareUtf8);
+  assert(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), "BLUEPRINT_INVALID_RELEASE", "Blueprint release fields are not canonical");
   assert(release.schema === BLUEPRINT_RELEASE_SCHEMA && release.version === BLUEPRINT_VERSION, "BLUEPRINT_INVALID_RELEASE", "Blueprint release schema/version is invalid");
   requireIdentifier(release.release_id, "Blueprint release ID");
   assert(Number.isSafeInteger(release.release_sequence) && release.release_sequence > 0, "BLUEPRINT_INVALID_ORDER", "Blueprint release sequence is invalid");

@@ -60,6 +60,15 @@ assert.equal(release.status, "SEALED");
 assert.equal(validateBlueprintRelease(release), release);
 assert.equal(release.manifest.entry_count, 1);
 assert.equal(release.issue_ids[0], entry.issue_id);
+const releaseWithAckAlias = {...release, acknowledgementRequired: true, release_sha256: null};
+releaseWithAckAlias.release_sha256 = canonicalDigest(releaseWithAckAlias);
+assert.throws(() => validateBlueprintRelease(releaseWithAckAlias), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+const releaseWithPerIssueAlias = {...release, per_issue: true, release_sha256: null};
+releaseWithPerIssueAlias.release_sha256 = canonicalDigest(releaseWithPerIssueAlias);
+assert.throws(() => validateBlueprintRelease(releaseWithPerIssueAlias), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+const releaseWithUnknownCoordinationField = {...release, traffic: [], release_sha256: null};
+releaseWithUnknownCoordinationField.release_sha256 = canonicalDigest(releaseWithUnknownCoordinationField);
+assert.throws(() => validateBlueprintRelease(releaseWithUnknownCoordinationField), /INVALID_RELEASE/u);
 
 // A sealed publication is idempotent only when the bytes are identical.
 assert.equal(sealBlueprintRelease(release, {existingRelease: structuredClone(release)}).release_sha256, release.release_sha256);
@@ -102,6 +111,17 @@ const preflight = compileBlueprintRepairPreflight({
   collision: {target_preexisting: false, target_ref_preexisting: false, process_overlap: 0, active_writer_overlap: 0},
 });
 assert.equal(validateBlueprintRepairPreflight(preflight), preflight);
+const reboundAliasIndex = structuredClone(index);
+const reboundAliasRelease = {...successor, acknowledgementRequired: true, release_sha256: null};
+reboundAliasRelease.release_sha256 = canonicalDigest(reboundAliasRelease);
+reboundAliasIndex.releases.find((value) => value.release_id === reboundAliasRelease.release_id).release_sha256 = reboundAliasRelease.release_sha256;
+reboundAliasIndex.index_sha256 = null;
+reboundAliasIndex.index_sha256 = canonicalDigest(reboundAliasIndex);
+assert.equal(validateBlueprintIndex(reboundAliasIndex), reboundAliasIndex);
+const reboundAliasPreflight = {...preflight, index_sha256: reboundAliasIndex.index_sha256, preflight_sha256: null};
+reboundAliasPreflight.preflight_sha256 = canonicalDigest(reboundAliasPreflight);
+assert.equal(validateBlueprintRepairPreflight(reboundAliasPreflight), reboundAliasPreflight);
+assert.throws(() => consumeBlueprintRelease({release: reboundAliasRelease, index: reboundAliasIndex, preflight: reboundAliasPreflight}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 const stalePreflight = structuredClone(preflight);
 stalePreflight.index_sha256 = SHA("e"); stalePreflight.preflight_sha256 = "0".repeat(64);
 assert.throws(() => validateBlueprintRepairPreflight(stalePreflight), /DIGEST_MISMATCH/u);
