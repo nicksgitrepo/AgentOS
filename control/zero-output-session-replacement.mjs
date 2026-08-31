@@ -100,7 +100,12 @@ function requirePriorObservationReference(previousObservation, {taskId, laneId} 
 
 function requirePriorSameTaskObservation(previousObservation, {taskId, laneId, recoveryAttempt, maxRecoveryAttempts} = {}) {
   if (recoveryAttempt === 0) return;
-  requirePriorObservationReference(previousObservation, {taskId, laneId});
+  if (!isRecord(previousObservation)
+    || previousObservation.task_id !== taskId
+    || previousObservation.lane_id !== laneId
+    || normalizePriorSourceState(previousObservation) === null) {
+    requirePriorObservationReference(previousObservation, {taskId, laneId});
+  }
   if (!Number.isSafeInteger(previousObservation.recovery?.attempt)
     || previousObservation.recovery.attempt !== recoveryAttempt - 1
     || previousObservation.recovery.maximum_attempts !== maxRecoveryAttempts) {
@@ -108,6 +113,7 @@ function requirePriorSameTaskObservation(previousObservation, {taskId, laneId, r
     error.code = "MATERIAL_LIVENESS_PRIOR_OBSERVATION_ORDER_INVALID";
     throw error;
   }
+  requirePriorObservationReference(previousObservation, {taskId, laneId});
 }
 
 function compareMtimeKey(left, right) {
