@@ -114,6 +114,8 @@ assert.equal(consumed.accepted, true);
 assert.equal(consumed.status, "BLUEPRINT_READY_FOR_REPAIR");
 assert.equal(consumed.consumed_via, "DIRECT_RELEASE_AND_INDEX_FILES");
 assert.equal(consumed.blueprint_consumed_traffic, false);
+assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, traffic: {kind: "BLUEPRINT_CONSUMED"}}), /TRAFFIC_INVALID/u);
+assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, messages: {kind: "BLUEPRINT_CONSUMED"}}), /TRAFFIC_INVALID/u);
 assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, messages: [{kind: "BLUEPRINT_CONSUMED"}]}), /CONSUMED_TRAFFIC_FORBIDDEN/u);
 assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, acknowledgementRequired: true}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 const mismatched = structuredClone(preflight); mismatched.release_id = release.release_id; mismatched.preflight_sha256 = "0".repeat(64);

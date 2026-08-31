@@ -441,7 +441,9 @@ export function consumeBlueprintRelease({release, index, preflight, traffic = []
   assert(preflight.index_sha256 === index.index_sha256, "BLUEPRINT_PREFLIGHT_INDEX_MISMATCH", "preflight index digest differs from consumed index");
   const indexed = index.releases.find((entry) => entry.release_id === release.release_id); assert(indexed && indexed.release_sha256 === release.release_sha256 && indexed.release_path === release.release_path, "BLUEPRINT_INDEX_RELEASE_MISMATCH", "index does not bind the consumed release");
   assert(acknowledgementRequired !== true && acknowledgement_required !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "consumption cannot require acknowledgement"); requireIdentifier(consumer, "Blueprint consumer");
-  const allTraffic = [...(Array.isArray(traffic) ? traffic : []), ...(Array.isArray(messages) ? messages : [])]; allTraffic.forEach(validateBlueprintLifecycleTraffic);
+  assert(Array.isArray(traffic), "BLUEPRINT_TRAFFIC_INVALID", "Blueprint traffic must be an array");
+  assert(Array.isArray(messages), "BLUEPRINT_TRAFFIC_INVALID", "Blueprint messages must be an array");
+  const allTraffic = [...traffic, ...messages]; allTraffic.forEach(validateBlueprintLifecycleTraffic);
   assert(!allTraffic.some((message) => String(message.kind ?? message.type ?? message.event ?? "").toUpperCase() === "BLUEPRINT_CONSUMED"), "BLUEPRINT_CONSUMED_TRAFFIC_FORBIDDEN", "consumption must not emit BLUEPRINT_CONSUMED traffic");
   return {accepted: true, status: "BLUEPRINT_READY_FOR_REPAIR", release_id: release.release_id, release_sha256: release.release_sha256, index_sha256: index.index_sha256, preflight_sha256: preflight.preflight_sha256, consumed_via: "DIRECT_RELEASE_AND_INDEX_FILES", fresh_preflight_verified: true, blueprint_consumed_traffic: false, acknowledgement_required: false, consumer};
 }
