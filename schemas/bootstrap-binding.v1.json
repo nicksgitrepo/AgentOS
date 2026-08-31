@@ -3519,6 +3519,76 @@
       "public_api": "HYGIENE_EXECUTOR_COMPATIBILITY_REEXPORT",
       "filesystem_mutation": false
     },
+    "scheduler_projection_liveness_rollover": {
+      "path": "control/campaign-closeout-lifecycle.mjs",
+      "sha256": "d29e4e571c5e54744d9b3e0fe2909d555c6ece370bcb943c3b58f65cd9a49de5",
+      "authority": "orchestrator-scheduler-projection-liveness-rollover-active-custody-1172",
+      "authority_sha256": "c8be79e9de71536eae3b7d6318cd59b2d81c4648e840d615e528a08c6c2ccfcc",
+      "owner_correction": "THREAD_READBACK_PROJECTION_DIVERGENCE",
+      "direct_path_count": 8,
+      "mechanical_path_count": 1,
+      "maximum_total_path_count": 9,
+      "authorized_direct_paths": [
+        {
+          "path": "control/campaign-closeout-lifecycle.mjs",
+          "sha256": "d29e4e571c5e54744d9b3e0fe2909d555c6ece370bcb943c3b58f65cd9a49de5"
+        },
+        {
+          "path": "tests/verify-campaign-closeout-lifecycle.mjs",
+          "sha256": "46c87c6b5eaa907d852b986ab4284d9429bed8a3d6b3bf8cdfd4e83f3ed526fe"
+        },
+        {
+          "path": "control/liveness-sentinel.mjs",
+          "sha256": "4937b1c8fe2ff62f4ed7438f08d64bcec3d740ff101a06c396b2899999a50315"
+        },
+        {
+          "path": "schemas/liveness-sentinel.v1.json",
+          "sha256": "9e5d3edcf64a35346ac91d216b131d9fcf465f65979b83148f4c85f70e04b2f6"
+        },
+        {
+          "path": "tests/verify-liveness-sentinel.mjs",
+          "sha256": "2912a938f128f89b844188e95d9b3901a81e7a8e24d7ae6c4f382b13ebe580ab"
+        },
+        {
+          "path": "control/zero-output-session-replacement.mjs",
+          "sha256": "995b2d20bb9122094bb525b8a05633f35bf308fac56f83637713cd3e153ca9df"
+        },
+        {
+          "path": "tests/verify-zero-output-session-replacement.mjs",
+          "sha256": "99984faa6b860ead4a77b1badf873f850c3476cc24fa6f8a1b4f181355320123"
+        },
+        {
+          "path": "docs/campaign-closeout-memory-archive-hygiene.md",
+          "sha256": "01289c944019d8a8ec03ab2f6f06be590022dd8a3e5288d96884684e3e68416d"
+        }
+      ],
+      "mechanical_last": {
+        "path": "schemas/bootstrap-binding.v1.json",
+        "sha256": null,
+        "rule": "RAW_SHA256_WITH_SELF_ENTRY_NULL; refresh exactly once after all direct paths are frozen"
+      },
+      "required_behavior": {
+        "triangulation_sources": [
+          "app task projection",
+          "durable-session ordinal, mtime and activity",
+          "typed receipts and Scheduler results",
+          "relevant processes",
+          "active leases"
+        ],
+        "projection_rule": "items=[] alone is ACTIVE_OR_PROJECTION_LAG and never authorizes stall, replacement or duplicate recovery",
+        "stall_rule": "Only stagnant all-source state after bounded same-task recovery may classify stall and emit one deduplicated typed escalation",
+        "controlled_rollover": "One permanent-task successor at a clean checkpoint with State-owned queue, custody, incident and stopping-point continuity; old session retained",
+        "filesystem_mutation": false
+      },
+      "preserved_boundaries": {
+        "live_scheduler_mutated": false,
+        "scheduler_candidate_mutated": false,
+        "sociuna_mutated": false,
+        "memory_written": false,
+        "runtime_delivery_authorized_now": false,
+        "acceptance_inferred": false
+      }
+    },
     "hygiene_dual_key_zero_recovery_governance": {
       "path": "control/hygiene-dual-key-repair-loop.mjs",
       "sha256": "53e6a039e09fa02c3852e633f4fcb0851f2538668e8b039c4a76abe96f08d56c",
