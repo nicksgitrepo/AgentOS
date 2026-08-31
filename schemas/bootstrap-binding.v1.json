@@ -3535,7 +3535,7 @@
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
-          "sha256": "84b1ab20433ab09cc2629e2636039674a259a9892841cfb14566bd324c06187a"
+          "sha256": "aee0cba286228ec015edf88a7ede7966d5323ee14f05d95e9e242e12458fc03a"
         },
         {
           "path": "control/liveness-sentinel.mjs",
@@ -3551,7 +3551,7 @@
         },
         {
           "path": "control/zero-output-session-replacement.mjs",
-          "sha256": "09bb96507358f9870fcdcd3d55a0501002c7c7869497dafa27fba28b5f19fa5c"
+          "sha256": "a7c347917b2ba3b433cc12dc41629a8372b5ce686c3a06f24ccf917737220060"
         },
         {
           "path": "tests/verify-zero-output-session-replacement.mjs",
