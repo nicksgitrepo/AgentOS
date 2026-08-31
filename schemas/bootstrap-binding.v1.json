@@ -3551,7 +3551,7 @@
         },
         {
           "path": "control/zero-output-session-replacement.mjs",
-          "sha256": "a7c347917b2ba3b433cc12dc41629a8372b5ce686c3a06f24ccf917737220060"
+          "sha256": "a757ebc5e43bd76c681fdb1b7af234e21f6a8f7a9eb2337789b1ccfb74f18f02"
         },
         {
           "path": "tests/verify-zero-output-session-replacement.mjs",
