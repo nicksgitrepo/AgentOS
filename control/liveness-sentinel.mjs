@@ -20,6 +20,7 @@ import {
   compileProjectionLivenessObservation,
   compileSchedulerProjectionLiveness,
   compileSchedulerProjectionLivenessObservation,
+  createMaterialLivenessEscalationLedger,
   createSchedulerProjectionLivenessObservation,
   THREAD_READBACK_PROJECTION_DIVERGENCE,
   reconcileThreadReadbackProjection,
@@ -201,10 +202,14 @@ export function createLivenessSentinel({readRoster = null, readProcesses = null}
   assert(readRoster === null || typeof readRoster === "function", "liveness roster reader must be a function");
   assert(readProcesses === null || typeof readProcesses === "function", "liveness process reader must be a function");
   const signatures = new Set();
+  const escalationLedger = createMaterialLivenessEscalationLedger();
   let state = "QUIESCENT";
   let sequence = 0;
   const observeProjection = (input = {}) => {
-    const result = compileSchedulerProjectionLivenessObservation(input);
+    const result = compileSchedulerProjectionLivenessObservation({
+      ...input,
+      escalationLedger: input.escalationLedger === undefined ? escalationLedger : input.escalationLedger,
+    });
     validateSchedulerProjectionLivenessObservation(result);
     return result;
   };

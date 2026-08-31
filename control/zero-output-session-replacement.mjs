@@ -225,13 +225,11 @@ export function compileSchedulerProjectionLivenessObservation({
     action = "ESCALATE_ONCE_AFTER_BOUNDED_SAME_TASK_RECOVERY";
     stalled = true;
     const escalationKey = canonicalDigest({task_id: taskId, lane_id: laneId, source_state_sha256: sourceState.source_state_sha256, recovery_attempt: recoveryAttempt});
-    const keys = escalationLedger?.keys ?? escalationLedger?.escalation_keys ?? [];
+    assert(isRecord(escalationLedger), "material liveness escalation ledger is required");
+    const keys = escalationLedger.keys ?? escalationLedger.escalation_keys;
     assert(Array.isArray(keys), "material liveness escalation ledger keys must be an array");
     const duplicate = keys.includes(escalationKey);
-    if (!duplicate && isRecord(escalationLedger)) {
-      const target = Array.isArray(escalationLedger.keys) ? escalationLedger.keys : (Array.isArray(escalationLedger.escalation_keys) ? escalationLedger.escalation_keys : null);
-      if (target) { target.push(escalationKey); target.sort(); }
-    }
+    if (!duplicate) { keys.push(escalationKey); keys.sort(); }
     escalation = {
       schema: "agentos.material_liveness_escalation.v1",
       classification: TYPED_HOST_CAPABILITY_ESCALATION,

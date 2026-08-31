@@ -74,5 +74,44 @@ assert.equal(projectionLag.classification, "ACTIVE_OR_PROJECTION_LAG");
 assert.equal(projectionLagNext.classification, "ACTIVE_OR_PROJECTION_LAG");
 assert.equal(projectionLagNext.stalled, false);
 assert.equal(projectionLagNext.replacement_allowed, false);
+const stagnantProjection = projectionSentinel.observeProjection({
+  taskId: "TASK-SENTINEL-PROJECTION-037",
+  laneId: "LANE-SENTINEL-037",
+  projection: {status: "COMPLETED", items: [], items_count: 0},
+  durableSession: {session_id: "SESSION-SENTINEL-037", ordinal: 1, mtime: 1, activity: "one"},
+  previousObservation: projectionLag,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  observedAtUtc: "2026-08-28T15:00:02.000Z",
+});
+assert.equal(stagnantProjection.classification, "MATERIAL_LIVENESS_STAGNANT");
+assert.equal(stagnantProjection.escalation.emitted, true);
+const stagnantProjectionRepeat = projectionSentinel.observeProjection({
+  taskId: "TASK-SENTINEL-PROJECTION-037",
+  laneId: "LANE-SENTINEL-037",
+  projection: {status: "COMPLETED", items: [], items_count: 0},
+  durableSession: {session_id: "SESSION-SENTINEL-037", ordinal: 1, mtime: 1, activity: "one"},
+  previousObservation: projectionLag,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  observedAtUtc: "2026-08-28T15:00:03.000Z",
+});
+assert.equal(stagnantProjectionRepeat.classification, "MATERIAL_LIVENESS_STAGNANT");
+assert.equal(stagnantProjectionRepeat.escalation.duplicate, true);
+assert.equal(stagnantProjectionRepeat.escalation.emitted, false);
+const distinctStagnantProjection = projectionSentinel.observeProjection({
+  taskId: "TASK-SENTINEL-PROJECTION-037",
+  laneId: "LANE-SENTINEL-037",
+  projection: {status: "COMPLETED", items: [], items_count: 0},
+  durableSession: {session_id: "SESSION-SENTINEL-037", ordinal: 1, mtime: 1, activity: "one"},
+  receipts: [{receipt_id: "SENTINEL-NON-MATERIAL-037", material: false, status: "EMPTY"}],
+  previousObservation: projectionLag,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  observedAtUtc: "2026-08-28T15:00:04.000Z",
+});
+assert.equal(distinctStagnantProjection.classification, "MATERIAL_LIVENESS_STAGNANT");
+assert.equal(distinctStagnantProjection.escalation.duplicate, false);
+assert.equal(distinctStagnantProjection.escalation.emitted, true);
 
 console.log("PASS liveness sentinel: dynamic roster/process observation, deduplicated reports, quiescent boundary, and projection divergence routing");

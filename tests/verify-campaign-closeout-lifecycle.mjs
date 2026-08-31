@@ -423,6 +423,12 @@ assert.throws(() => compileSchedulerProjectionLivenessObservation({
   escalationLedger: createMaterialLivenessEscalationLedger(),
 }), /prior observation is not content-bound/u);
 const stagnantLedger = createMaterialLivenessEscalationLedger();
+assert.throws(() => compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  previousObservation: recoveryRequired,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+}), /material liveness escalation ledger is required/u);
 const stagnant = compileSchedulerProjectionLivenessObservation({
   ...projectionLivenessBase,
   previousObservation: recoveryRequired,
@@ -435,6 +441,29 @@ assert.equal(stagnant.stalled, true);
 assert.equal(stagnant.escalation.classification, TYPED_HOST_CAPABILITY_ESCALATION);
 assert.equal(stagnant.escalation.emitted, true);
 validateSchedulerProjectionLivenessObservation(stagnant);
+const distinctEvidenceLedger = createMaterialLivenessEscalationLedger();
+const distinctEvidence = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  receipts: [{receipt_id: "RECEIPT-NON-MATERIAL-037", material: false, status: "EMPTY"}],
+  previousObservation: recoveryRequired,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  escalationLedger: distinctEvidenceLedger,
+});
+assert.equal(distinctEvidence.classification, MATERIAL_LIVENESS_STAGNANT);
+assert.equal(distinctEvidence.escalation.duplicate, false);
+assert.equal(distinctEvidence.escalation.emitted, true);
+validateSchedulerProjectionLivenessObservation(distinctEvidence);
+const distinctEvidenceRepeat = compileSchedulerProjectionLivenessObservation({
+  ...projectionLivenessBase,
+  receipts: [{receipt_id: "RECEIPT-NON-MATERIAL-037", material: false, status: "EMPTY"}],
+  previousObservation: recoveryRequired,
+  recoveryAttempt: 1,
+  maxRecoveryAttempts: 1,
+  escalationLedger: distinctEvidenceLedger,
+});
+assert.equal(distinctEvidenceRepeat.escalation.duplicate, true);
+assert.equal(distinctEvidenceRepeat.escalation.emitted, false);
 const resealLivenessObservation = (observation) => {
   observation.receipt_sha256 = canonicalDigest({...observation, receipt_sha256: null});
   return observation;
