@@ -69,6 +69,12 @@ assert.throws(() => validateBlueprintRelease(releaseWithPerIssueAlias), /ACKNOWL
 const releaseWithUnknownCoordinationField = {...release, traffic: [], release_sha256: null};
 releaseWithUnknownCoordinationField.release_sha256 = canonicalDigest(releaseWithUnknownCoordinationField);
 assert.throws(() => validateBlueprintRelease(releaseWithUnknownCoordinationField), /INVALID_RELEASE/u);
+for (const value of [false, null, 0, "true", {nested: true}]) {
+  const typedAckAlias = {...release, acknowledgmentRequired: value, release_sha256: null}; typedAckAlias.release_sha256 = canonicalDigest(typedAckAlias);
+  assert.throws(() => validateBlueprintRelease(typedAckAlias), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+  const typedPerIssueAlias = {...release, perIssue: value, release_sha256: null}; typedPerIssueAlias.release_sha256 = canonicalDigest(typedPerIssueAlias);
+  assert.throws(() => validateBlueprintRelease(typedPerIssueAlias), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+}
 
 // A sealed publication is idempotent only when the bytes are identical.
 assert.equal(sealBlueprintRelease(release, {existingRelease: structuredClone(release)}).release_sha256, release.release_sha256);
@@ -165,6 +171,12 @@ for (const alias of ["perIssueNotice", "per_issue_notice", "perIssueAcknowledgme
   const perIssueAliasNotice = {...notice, [alias]: true, notice_sha256: null}; perIssueAliasNotice.notice_sha256 = canonicalDigest(perIssueAliasNotice);
   assert.throws(() => validateBlueprintProducerNotice(perIssueAliasNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 }
+for (const value of [false, null, 0, "true", {nested: true}]) {
+  const typedAmericanNotice = {...notice, acknowledgmentRequired: value, notice_sha256: null}; typedAmericanNotice.notice_sha256 = canonicalDigest(typedAmericanNotice);
+  assert.throws(() => validateBlueprintProducerNotice(typedAmericanNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+  const typedPerIssueNotice = {...notice, perIssueNotice: value, notice_sha256: null}; typedPerIssueNotice.notice_sha256 = canonicalDigest(typedPerIssueNotice);
+  assert.throws(() => validateBlueprintProducerNotice(typedPerIssueNotice), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+}
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "BLUEPRINT_CONSUMED"}), /CONSUMED_TRAFFIC_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "PER_ISSUE_NOTICE", acknowledgement_required: true}), /ACKNOWLEDGEMENT_FORBIDDEN|TRAFFIC_FORBIDDEN/u);
 const camelAcknowledgement = {kind: "ISSUE_STARTED", acknowledgementRequired: true};
@@ -175,6 +187,16 @@ assert.throws(() => validateBlueprintLifecycleTraffic(americanAcknowledgement), 
 assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, messages: [americanAcknowledgement]}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
 const americanSnakeAcknowledgement = {kind: "ISSUE_STARTED", acknowledgment_required: true};
 assert.throws(() => consumeBlueprintRelease({release: successor, index, preflight, traffic: [americanSnakeAcknowledgement]}), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+for (const value of [false, null, 0, "true", {nested: true}]) {
+  const typedLifecycleAck = {kind: "ISSUE_STARTED", acknowledgmentRequired: value};
+  assert.throws(() => validateBlueprintLifecycleTraffic(typedLifecycleAck), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+  const typedLifecyclePerIssue = {kind: "ISSUE_STARTED", perIssue: value};
+  assert.throws(() => validateBlueprintLifecycleTraffic(typedLifecyclePerIssue), /PER_ISSUE_NOTICE_FORBIDDEN/u);
+  const typedConsumptionAck = {release: successor, index, preflight, acknowledgmentRequired: value};
+  assert.throws(() => consumeBlueprintRelease(typedConsumptionAck), /ACKNOWLEDGEMENT_FORBIDDEN/u);
+  const typedConsumptionPerIssue = {release: successor, index, preflight, perIssue: value};
+  assert.throws(() => consumeBlueprintRelease(typedConsumptionPerIssue), /PER_ISSUE_NOTICE_FORBIDDEN/u);
+}
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "ISSUE_STARTED", perIssue: true}), /PER_ISSUE_NOTICE_FORBIDDEN/u);
 assert.throws(() => validateBlueprintLifecycleTraffic({kind: "ISSUE_STARTED", issueNotice: true}), /PER_ISSUE_NOTICE_FORBIDDEN/u);
 for (const kind of BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC) assert.deepEqual(validateBlueprintLifecycleTraffic({kind}), {kind});

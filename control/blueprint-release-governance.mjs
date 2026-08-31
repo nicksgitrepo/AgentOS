@@ -455,18 +455,22 @@ export function validateBlueprintLifecycleTraffic(message) {
   const kind = String(message.kind ?? message.type ?? message.event ?? "").toUpperCase();
   assert(kind.length > 0, "BLUEPRINT_TRAFFIC_INVALID", "lifecycle traffic requires an event kind");
   assert(!BLUEPRINT_FORBIDDEN_TRAFFIC.includes(kind), "BLUEPRINT_CONSUMED_TRAFFIC_FORBIDDEN", "BLUEPRINT_CONSUMED traffic is forbidden");
-  for (const alias of BLUEPRINT_TRAFFIC_ACK_ALIASES) assert(message[alias] !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "acknowledgement traffic is forbidden");
-  for (const alias of BLUEPRINT_TRAFFIC_PER_ISSUE_ALIASES) assert(message[alias] !== true, "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", "per-issue Blueprint notices are forbidden");
+  for (const alias of BLUEPRINT_TRAFFIC_ACK_ALIASES) assert(!Object.prototype.hasOwnProperty.call(message, alias), "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", `lifecycle traffic field ${alias} is forbidden`);
+  for (const alias of BLUEPRINT_TRAFFIC_PER_ISSUE_ALIASES) assert(!Object.prototype.hasOwnProperty.call(message, alias), "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", `lifecycle traffic field ${alias} is forbidden`);
   if (kind.length > 0) assert(BLUEPRINT_ALLOWED_LIFECYCLE_TRAFFIC.includes(kind), "BLUEPRINT_TRAFFIC_FORBIDDEN", `lifecycle traffic ${kind} is not allowed`);
   return message;
 }
 
-export function consumeBlueprintRelease({release, index, preflight, traffic = [], messages = [], acknowledgementRequired = false, acknowledgement_required = false, consumer = "REPAIR"} = {}) {
+export function consumeBlueprintRelease(options = {}) {
+  assert(isRecord(options), "BLUEPRINT_CONSUMPTION_INVALID", "Blueprint consumption options must be an object");
+  const {release, index, preflight, traffic = [], messages = [], consumer = "REPAIR"} = options;
+  for (const alias of BLUEPRINT_TRAFFIC_ACK_ALIASES) assert(!Object.prototype.hasOwnProperty.call(options, alias), "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", `consumption field ${alias} is forbidden`);
+  for (const alias of BLUEPRINT_TRAFFIC_PER_ISSUE_ALIASES) assert(!Object.prototype.hasOwnProperty.call(options, alias), "BLUEPRINT_PER_ISSUE_NOTICE_FORBIDDEN", `consumption field ${alias} is forbidden`);
   validateBlueprintRelease(release); validateBlueprintIndex(index); validateBlueprintRepairPreflight(preflight);
   assert(preflight.release_id === release.release_id, "BLUEPRINT_PREFLIGHT_RELEASE_MISMATCH", "preflight release differs from consumed release");
   assert(preflight.index_sha256 === index.index_sha256, "BLUEPRINT_PREFLIGHT_INDEX_MISMATCH", "preflight index digest differs from consumed index");
   const indexed = index.releases.find((entry) => entry.release_id === release.release_id); assert(indexed && indexed.release_sha256 === release.release_sha256 && indexed.release_path === release.release_path, "BLUEPRINT_INDEX_RELEASE_MISMATCH", "index does not bind the consumed release");
-  assert(acknowledgementRequired !== true && acknowledgement_required !== true, "BLUEPRINT_ACKNOWLEDGEMENT_FORBIDDEN", "consumption cannot require acknowledgement"); requireIdentifier(consumer, "Blueprint consumer");
+  requireIdentifier(consumer, "Blueprint consumer");
   assert(Array.isArray(traffic), "BLUEPRINT_TRAFFIC_INVALID", "Blueprint traffic must be an array");
   assert(Array.isArray(messages), "BLUEPRINT_TRAFFIC_INVALID", "Blueprint messages must be an array");
   const allTraffic = [...traffic, ...messages]; allTraffic.forEach(validateBlueprintLifecycleTraffic);
