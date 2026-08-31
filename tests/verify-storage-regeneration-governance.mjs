@@ -195,6 +195,12 @@ assert.equal(validateStorageRegenerationCycle(cycle2).recurrence_detected, true)
 const daily = compileStorageDailyInspection({inspectionId: "INSPECT.1", controllerId: "CONTROLLER.STORAGE", observedAtUtc: later, cycles: [cycle2], priorInspection: null, protectedBytes: 42, regeneratedBytes: 10, deletionAttempts: 0, previousCleanupCycle: cycle1});
 assert.equal(validateStorageDailyInspection(daily).deletion_execution_authorized, false);
 assert.equal(daily.recurrence_detected, true);
+const forgedCycleRecurrence = {...cycle2, recurrence_detected: false, cycle_sha256: null};
+forgedCycleRecurrence.cycle_sha256 = canonicalDigest({...forgedCycleRecurrence, cycle_sha256: null});
+assert.throws(() => validateStorageRegenerationCycle(forgedCycleRecurrence), /RECURRENCE_MISMATCH/u);
+const forgedDailyRecurrence = {...daily, recurrence_detected: false, recurrence_count: 0, recurrence_keys: [], inspection_sha256: null};
+forgedDailyRecurrence.inspection_sha256 = canonicalDigest({...forgedDailyRecurrence, inspection_sha256: null});
+assert.throws(() => validateStorageDailyInspection(forgedDailyRecurrence), /RECURRENCE_MISMATCH/u);
 const unchanged = compileStorageDailyInspection({inspectionId: "INSPECT.2", controllerId: "CONTROLLER.STORAGE", observedAtUtc: later, cycles: [], pollKey: "POLL.2", previousPollKey: "POLL.1", deltaReceiptSha256: "c".repeat(64), unchangedObservation: true, fullEvidence: false});
 assert.equal(validateStorageDailyInspection(unchanged).deduplicated, true);
 assert.throws(() => compileStorageDailyInspection({inspectionId: "INSPECT.BAD.POLL", controllerId: "CONTROLLER.STORAGE", observedAtUtc: later, cycles: [], pollKey: "POLL.1", previousPollKey: "POLL.1", unchangedObservation: true, deltaReceiptSha256: "c".repeat(64)}), /POLLING_LOOP/u);
