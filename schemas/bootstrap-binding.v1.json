@@ -3531,7 +3531,7 @@
       "authorized_direct_paths": [
         {
           "path": "control/campaign-closeout-lifecycle.mjs",
-          "sha256": "d29e4e571c5e54744d9b3e0fe2909d555c6ece370bcb943c3b58f65cd9a49de5"
+          "sha256": "b69229ce2eda1676188a86304e875074ebba7c4cb526873718566a2f12da78ca"
         },
         {
           "path": "tests/verify-campaign-closeout-lifecycle.mjs",
@@ -3551,7 +3551,7 @@
         },
         {
           "path": "control/zero-output-session-replacement.mjs",
-          "sha256": "995b2d20bb9122094bb525b8a05633f35bf308fac56f83637713cd3e153ca9df"
+          "sha256": "7355a455800f92851a332382f1d9a552e29abc794900059f5c8d1ba750ae0ce0"
         },
         {
           "path": "tests/verify-zero-output-session-replacement.mjs",
