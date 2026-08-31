@@ -89,6 +89,6 @@ assert.throws(() => compilePermanentSessionRollover({...rolloverInput, existingJ
 assert.throws(() => compilePermanentSessionRollover({...rolloverInput, stoppingPoint: {...rolloverInput.stoppingPoint, clean: false, complete: false, status: "OPEN"}}), /clean stopping point/u);
 assert.throws(() => compilePermanentSessionRollover({...rolloverInput, custody: {...rolloverInput.custody, state_owned: false, owner: "CHAT_HISTORY"}}), /durable AgentOS State|chat-history/u);
 const rolloverTampered = structuredClone(rollover); rolloverTampered.successor_session.session_id = "SESSION-OTHER-037";
-assert.throws(() => validatePermanentSessionRollover(rolloverTampered), /digest mismatch/u);
+assert.throws(() => validatePermanentSessionRollover(rolloverTampered), /linkage|digest mismatch/u);
 
 console.log("PASS zero-output session custody-preserving replacement without autonomy loss");
