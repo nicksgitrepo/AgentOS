@@ -3521,7 +3521,7 @@
     },
     "storage_regeneration_recurrence_governance": {
       "path": "control/storage-regeneration-governance.mjs",
-      "sha256": "2034a2d06c0004d21c73651086d78081cf6b05be773ce1505ae2e633608d5f9a",
+      "sha256": "11c9ed61861a1f0c2d979669bf9235589d954cf190068bd0345bec33d4dded9f",
       "authority": "orchestrator-storage-regeneration-recurrence-active-custody-1177",
       "authority_sha256": "8046d1a8aa1cdc47c600ad091bad4b95b2c997c7b93083c2406e775a47eb8da5",
       "serial_binding_sha256": "b3419798056eab5ed1a15428684b88e7e44be275cb7057490fef88c3f8898419",
@@ -3530,9 +3530,9 @@
       "mechanical_path_count": 1,
       "maximum_total_path_count": 15,
       "authorized_direct_paths": [
-        {"path": "control/storage-regeneration-governance.mjs", "sha256": "2034a2d06c0004d21c73651086d78081cf6b05be773ce1505ae2e633608d5f9a"},
+        {"path": "control/storage-regeneration-governance.mjs", "sha256": "11c9ed61861a1f0c2d979669bf9235589d954cf190068bd0345bec33d4dded9f"},
         {"path": "schemas/storage-regeneration-governance.v1.json", "sha256": "879104aed2e30c78f49cd41ec384ad5b9d571144cf1f019ae4e13ae5903c5d3e"},
-        {"path": "tests/verify-storage-regeneration-governance.mjs", "sha256": "7acf49fd5a0ede4670d328fc15f11c9ea8683fb16cfd9fabfdd1ef30b231fc1e"},
+        {"path": "tests/verify-storage-regeneration-governance.mjs", "sha256": "11ea27340fae7c937bac3c8d5137f723251ce0c1a611b51ff9a4d5b768821f7f"},
         {"path": "docs/storage-regeneration-governance.md", "sha256": "f1379770b2576c1928a1b721ffd20ae3dcc889c1d0dc1cfdd86d334a006a69a2"},
         {"path": "control/storage-autopilot.mjs", "sha256": "a3530deaf3dc277c35199cfc4579147fdcfe5f02fbb5ce418611d175bab04956"},
         {"path": "tests/verify-storage-build-cache-sentinel.mjs", "sha256": "8cc3a5d43bd7d9513b3ba084a5ebe5e7e43c5984088759510c443cb6c6d7e20c"},
