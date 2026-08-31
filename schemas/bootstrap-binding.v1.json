@@ -3698,7 +3698,7 @@
     },
     "blueprint_coordination_hygiene": {
       "path": "control/blueprint-release-governance.mjs",
-      "sha256": "272552b4bd778c1d6dc0ffd9d8ab40334003df20869921fbe9551bc6084b2220",
+      "sha256": "732191f6bd7fb4559cc472c5823af3a394d312caf7502184c0d50a04899395e9",
       "authority": "orchestrator-blueprint-coordination-hygiene-active-custody-1174",
       "authority_sha256": "50ed5cfca87a3e030114f672a40a183cca98e32f2cf0003a8ea234154a902b86",
       "serial_authority": "orchestrator-blueprint-coordination-hygiene-serial-binding-1173",
@@ -3709,7 +3709,7 @@
       "authorized_direct_paths": [
         {
           "path": "control/blueprint-release-governance.mjs",
-          "sha256": "272552b4bd778c1d6dc0ffd9d8ab40334003df20869921fbe9551bc6084b2220"
+          "sha256": "732191f6bd7fb4559cc472c5823af3a394d312caf7502184c0d50a04899395e9"
         },
         {
           "path": "schemas/blueprint-release-governance.v1.json",
@@ -3717,7 +3717,7 @@
         },
         {
           "path": "tests/verify-blueprint-release-governance.mjs",
-          "sha256": "e9ef3d7df1a44d4a9bf454ea077fadc9703c81ac1c0be7518daed93c4bf88ccb"
+          "sha256": "e8216a38cf98ca269b93173414643f8e2a4853127d88028d02949ef152ad6aca"
         },
         {
           "path": "docs/blueprint-release-governance.md",
@@ -3765,7 +3765,7 @@
     },
     "blueprint_release_governance_controller": {
       "path": "control/blueprint-release-governance.mjs",
-      "sha256": "272552b4bd778c1d6dc0ffd9d8ab40334003df20869921fbe9551bc6084b2220"
+      "sha256": "732191f6bd7fb4559cc472c5823af3a394d312caf7502184c0d50a04899395e9"
     },
     "blueprint_release_governance_contract": {
       "path": "schemas/blueprint-release-governance.v1.json",
@@ -3777,7 +3777,7 @@
     },
     "blueprint_release_governance_verifier": {
       "path": "tests/verify-blueprint-release-governance.mjs",
-      "sha256": "e9ef3d7df1a44d4a9bf454ea077fadc9703c81ac1c0be7518daed93c4bf88ccb"
+      "sha256": "e8216a38cf98ca269b93173414643f8e2a4853127d88028d02949ef152ad6aca"
     }
   },
   "compatibility_only": {
