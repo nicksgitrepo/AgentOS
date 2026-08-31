@@ -40,11 +40,14 @@ const at = "2026-08-31T12:00:00.000Z";
 const later = "2026-09-01T12:00:00.000Z";
 const issue = "AGENTOS-ISSUE-2026-1175";
 const owner = "AGENTOS.STORAGE.REGENERATION";
-const root = "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175";
+const tempParent = process.env.TMPDIR;
+assert.equal(typeof tempParent, "string", "TMPDIR must be supplied");
+assert.ok(tempParent.length > 0 && path.isAbsolute(tempParent), "TMPDIR must be an absolute non-empty path");
+const root = path.join(tempParent, "storage-regen-1175");
 const commit = "1".repeat(40);
 const tree = "2".repeat(40);
 
-const tempOperationRoot = path.join("/Users/nicholaspacheco/Projects/AgentOS/Temp", "storage-regen-governance-test");
+const tempOperationRoot = path.join(tempParent, "storage-regen-governance-test");
 fs.mkdirSync(tempOperationRoot, {recursive: true});
 const owned = withOwnedTempRoot({
   issueId: issue,
@@ -79,7 +82,7 @@ try {
 assert.ok(failedOwned?.closeout);
 assert.equal(failedOwned.closeout.outcome, "FAIL");
 assert.equal(fs.existsSync(failedOwned.closeout.root_path), false);
-assert.throws(() => compileGeneratedTempCloseout({issueId: issue, ownerTaskId: "TASK.STORAGE.REGEN.1175", generatorId: "GENERATOR.STORAGE.1175", generation: 1, operationRoot: "/tmp/not-agentos-temp", rootPath: "/tmp/not-agentos-temp/GENERATOR.STORAGE.1175-1", observedAtUtc: at}), /PATH_OUTSIDE_ROOT/u);
+assert.throws(() => compileGeneratedTempCloseout({issueId: issue, ownerTaskId: "TASK.STORAGE.REGEN.1175", generatorId: "GENERATOR.STORAGE.1175", generation: 1, operationRoot: path.join(tempParent, "not-agentos-temp"), rootPath: path.join(tempParent, "not-agentos-temp", "GENERATOR.STORAGE.1175-1"), observedAtUtc: at}), /PATH_OUTSIDE_ROOT/u);
 
 const governance = compileStorageRegenerationGovernance({authorityId: owner, owner: "CONTROLLER", observedAtUtc: at});
 assert.equal(validateStorageRegenerationGovernance(governance).governance_sha256, governance.governance_sha256);
@@ -115,7 +118,7 @@ assert.throws(() => compileGeneratedTempCloseout({
 }), /SHARED_TEMP_FORBIDDEN/u);
 assert.throws(() => compileGeneratedTempCloseout({
   issueId: issue, ownerTaskId: "TASK.STORAGE.REGEN.1175", generatorId: "GENERATOR.STORAGE.1175", generation: 3,
-  operationRoot: root, rootPath: "/Users/nicholaspacheco/Projects/AgentOS/Temp/other/GENERATOR.STORAGE.1175-3", outcome: "PASS", durableReceiptPaths: [], observedAtUtc: at,
+  operationRoot: root, rootPath: path.join(tempParent, "other", "GENERATOR.STORAGE.1175-3"), outcome: "PASS", durableReceiptPaths: [], observedAtUtc: at,
 }), /PATH_OUTSIDE_ROOT/u);
 
 const manifest = compileDisposableOutputManifest({
