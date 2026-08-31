@@ -38,7 +38,7 @@
     },
     "permanentSessionRollover": {
       "type": "object",
-      "required": ["schema", "version", "status", "task_id", "role_id", "old_session", "successor_session", "supersedes_session_id", "successor_session_id", "continuity", "retained_old_session", "exactly_one_successor", "rollover_sha256"],
+      "required": ["schema", "version", "status", "task_id", "role_id", "old_session", "old_session_sha256", "successor_session", "successor_session_sha256", "supersedes_session_id", "successor_session_id", "continuity", "continuity_sha256", "retained_old_session", "exactly_one_successor", "rollover_sha256"],
       "properties": {
         "schema": {"const": "agentos.permanent_session_rollover.v1"},
         "version": {"const": 1},
@@ -46,10 +46,13 @@
         "task_id": {"type": "string", "minLength": 1},
         "role_id": {"type": "string", "minLength": 1},
         "old_session": {"type": "object"},
+        "old_session_sha256": {"$ref": "#/$defs/sha256"},
         "successor_session": {"type": "object"},
+        "successor_session_sha256": {"$ref": "#/$defs/sha256"},
         "supersedes_session_id": {"type": "string", "minLength": 1},
         "successor_session_id": {"type": "string", "minLength": 1},
-        "continuity": {"type": "object", "required": ["queue", "custody", "incident", "stopping_point"]},
+        "continuity": {"type": "object", "required": ["queue", "custody", "incident", "stopping_point", "owner"]},
+        "continuity_sha256": {"$ref": "#/$defs/sha256"},
         "retained_old_session": {"const": true},
         "exactly_one_successor": {"const": true},
         "rollover_sha256": {"$ref": "#/$defs/sha256"}

@@ -91,4 +91,39 @@ assert.throws(() => compilePermanentSessionRollover({...rolloverInput, custody: 
 const rolloverTampered = structuredClone(rollover); rolloverTampered.successor_session.session_id = "SESSION-OTHER-037";
 assert.throws(() => validatePermanentSessionRollover(rolloverTampered), /linkage|digest mismatch/u);
 
+// Validator parity hostile matrix: a caller may reseal the outer receipt after
+// editing nested bytes, but cannot bypass the compile-time rollover invariants
+// or the content bindings carried by the receipt.
+const resealRollover = (value) => {
+  value.rollover_sha256 = canonicalDigest({...value, rollover_sha256: null});
+  return value;
+};
+const rolloverHostiles = [
+  ["archived old session", (value) => { value.old_session.archived = true; }, /retained|digest mismatch/u],
+  ["discarded old session", (value) => { value.old_session.discarded = true; }, /retained|digest mismatch/u],
+  ["dirty stopping point", (value) => { value.continuity.stopping_point.clean = false; value.continuity.stopping_point.status = "OPEN"; }, /clean|digest mismatch/u],
+  ["successor task mismatch", (value) => { value.successor_session.task_id = "TASK-OTHER-037"; }, /task identity|digest mismatch/u],
+  ["successor role mismatch", (value) => { value.successor_session.role_id = "ROLE-OTHER-037"; }, /role identity|digest mismatch/u],
+  ["custody digest altered", (value) => { value.continuity.custody.custody_sha256 = digest("forged-custody"); }, /content digest mismatch|continuity/u],
+  ["queue digest altered", (value) => { value.continuity.queue.queue_sha256 = digest("forged-queue"); }, /content digest mismatch|continuity/u],
+  ["old session content binding altered", (value) => { value.old_session_sha256 = digest("forged-old-session"); }, /content digest mismatch/u],
+  ["continuity content binding altered", (value) => { value.continuity_sha256 = digest("forged-continuity"); }, /content digest mismatch/u],
+];
+for (const [label, mutate, pattern] of rolloverHostiles) {
+  const hostile = structuredClone(rollover);
+  mutate(hostile);
+  resealRollover(hostile);
+  assert.throws(() => validatePermanentSessionRollover(hostile), pattern, label);
+}
+
+const missingRolloverBinding = structuredClone(rollover);
+delete missingRolloverBinding.continuity_sha256;
+resealRollover(missingRolloverBinding);
+assert.throws(() => validatePermanentSessionRollover(missingRolloverBinding), /SHA-256|content digest/u, "missing continuity content binding");
+
+const missingOldRetention = structuredClone(rollover);
+delete missingOldRetention.old_session.retained;
+resealRollover(missingOldRetention);
+assert.throws(() => validatePermanentSessionRollover(missingOldRetention), /retained|digest mismatch/u, "missing old-session retention");
+
 console.log("PASS zero-output session custody-preserving replacement without autonomy loss");
