@@ -98,6 +98,10 @@ const resealRollover = (value) => {
   value.rollover_sha256 = canonicalDigest({...value, rollover_sha256: null});
   return value;
 };
+const resealContinuity = (value) => {
+  value.continuity_sha256 = canonicalDigest(value.continuity);
+  return resealRollover(value);
+};
 const rolloverHostiles = [
   ["archived old session", (value) => { value.old_session.archived = true; }, /retained|digest mismatch/u],
   ["discarded old session", (value) => { value.old_session.discarded = true; }, /retained|digest mismatch/u],
@@ -120,6 +124,16 @@ const missingRolloverBinding = structuredClone(rollover);
 delete missingRolloverBinding.continuity_sha256;
 resealRollover(missingRolloverBinding);
 assert.throws(() => validatePermanentSessionRollover(missingRolloverBinding), /SHA-256|content digest/u, "missing continuity content binding");
+
+const changedContinuityOwner = structuredClone(rollover);
+changedContinuityOwner.continuity.owner = "CHAT_HISTORY";
+resealContinuity(changedContinuityOwner);
+assert.throws(() => validatePermanentSessionRollover(changedContinuityOwner), /State-owned/u, "changed continuity owner");
+
+const missingContinuityOwner = structuredClone(rollover);
+delete missingContinuityOwner.continuity.owner;
+resealContinuity(missingContinuityOwner);
+assert.throws(() => validatePermanentSessionRollover(missingContinuityOwner), /State-owned/u, "missing continuity owner");
 
 const missingOldRetention = structuredClone(rollover);
 delete missingOldRetention.old_session.retained;

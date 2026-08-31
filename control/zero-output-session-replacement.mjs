@@ -731,6 +731,7 @@ export function validatePermanentSessionRollover(decision) {
   assert(decision.successor_session_id === (decision.successor_session.session_id ?? decision.successor_session.id), "rollover successor linkage is invalid");
   assert(decision.retained_old_session === true && decision.exactly_one_successor === true, "rollover cardinality/retention is invalid");
   assert(decision.duplicate_role_denied === true && decision.duplicate_timer_denied === true && decision.duplicate_scheduler_job_denied === true && decision.chat_history_owned_state_denied === true, "rollover denial invariants are missing");
+  assert(decision.continuity?.owner === "AGENTOS_STATE", "rollover continuity must be State-owned");
   assert(typeof decision.old_session_sha256 === "string", "old session content digest is required");
   rolloverDigest(decision.old_session_sha256, "old session content digest");
   assert(decision.old_session_sha256 === canonicalDigest(decision.old_session), "old session content digest mismatch");
