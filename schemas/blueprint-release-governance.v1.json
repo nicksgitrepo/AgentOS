@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema": "agentos.blueprint_release_governance.v1",
+  "version": 1,
+  "title": "Portable immutable Blueprint release and coordination governance",
+  "description": "Direct-file Blueprint publication, index, notice, repair-preflight, and reference-only consumption contracts.",
+  "additionalProperties": false,
+  "release": {
+    "required": ["schema", "version", "release_id", "release_sequence", "status", "published_at_utc", "release_path", "manifest", "issue_ids", "entries", "factual_inputs", "advisory_inputs", "producer_notice_id", "acknowledgement_required", "coordination", "supersedes", "release_sha256"],
+    "status": "SEALED",
+    "immutable_rule": "A SEALED release is never rewritten at its release_id or path. A correction is a distinct successor with supersedes.release_id and supersedes.release_sha256.",
+    "entry_required": ["issue_id", "status", "issue_sha256", "blueprint_path", "blueprint_sha256", "source_hashes", "completeness", "batch_links", "recommended_order"],
+    "factual_fields": ["evidence", "root_cause", "constraints", "acceptance_criteria"],
+    "advisory_fields": ["batching_suggestions", "implementation_suggestions"]
+  },
+  "index": {
+    "schema": "agentos.blueprint_index.v1",
+    "required": ["schema", "version", "index_id", "generated_at_utc", "release_ids", "active_release_id", "releases", "index_sha256"],
+    "rule": "The index binds each sealed release id to its release path, release digest, manifest path/digest, and entry count. No unbound release may be consumed."
+  },
+  "producer_notice": {
+    "schema": "agentos.blueprint_producer_notice.v1",
+    "required": ["schema", "version", "notice_id", "release_id", "issue_ids", "notice_kind", "sent_at_utc", "acknowledgement_required", "per_issue", "notice_sha256"],
+    "notice_kind": "FINAL_CONSOLIDATED_BATCH",
+    "at_most_one": true,
+    "acknowledgement_required": false,
+    "per_issue": false,
+    "rule": "One final consolidated batch notice is sufficient; no per-issue notice or acknowledgement is part of the coordination protocol."
+  },
+  "repair_preflight": {
+    "schema": "agentos.blueprint_repair_preflight.v1",
+    "required": ["schema", "version", "preflight_id", "release_id", "index_sha256", "checked_at_utc", "fresh", "status", "checks_performed", "source_base", "custody", "collision", "preflight_sha256"],
+    "status": "PASS",
+    "fresh": true,
+    "checks": ["CURRENT_STATUS", "SOURCE_BASE", "CUSTODY_CLEAN", "COLLISION_FREE"],
+    "rule": "Repair consumes exactly one fresh canonical status/base/custody/collision preflight before direct release/index consumption."
+  },
+  "reference": {
+    "schema": "agentos.blueprint_reference.v1",
+    "required": ["schema", "version", "release_id", "path", "sha256", "reference_sha256"],
+    "rule": "The Issue Registrar stores only release_id, relative path, and SHA-256. Embedded Blueprint content, facts, advice, and coordination messages are forbidden."
+  },
+  "coordination": {
+    "source": "DIRECT_RELEASE_AND_INDEX_FILES",
+    "forbidden_traffic": ["BLUEPRINT_CONSUMED"],
+    "allowed_lifecycle_traffic": ["ISSUE_STARTED", "SCOPE_ADDITION_REQUIRES_ISSUE_ID", "EVIDENCE_COMPLETE_TRUE_BLOCKER", "DELIVERED_VERIFIED"],
+    "factual_inputs": ["evidence", "root_cause", "constraints", "acceptance_criteria"],
+    "advisory_inputs": ["batching_suggestions", "implementation_suggestions"],
+    "successor_only_corrections": true,
+    "no_per_issue_ack": true
+  },
+  "hostile_cases": [
+    "sealed release rewrite",
+    "correction without supersedes",
+    "duplicate final notice",
+    "per-issue notice",
+    "acknowledgement requirement",
+    "BLUEPRINT_CONSUMED traffic",
+    "embedded Registrar Blueprint content/advice",
+    "stale or absent repair preflight",
+    "index/release digest mismatch",
+    "release path traversal"
+  ]
+}

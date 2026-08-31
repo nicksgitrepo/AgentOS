@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import fs from "node:fs"; import path from "node:path"; import {canonicalDigest, compareUtf8} from "./content-addressing.mjs"; export const ISSUE_REGISTRAR_SCHEMA = "agentos.issue_registrar.v1";
+import fs from "node:fs"; import path from "node:path"; import {canonicalDigest, compareUtf8} from "./content-addressing.mjs";
+import {BLUEPRINT_REFERENCE_SCHEMA, BLUEPRINT_VERSION, compileBlueprintReference, validateBlueprintReference} from "./blueprint-release-governance.mjs"; export const ISSUE_REGISTRAR_SCHEMA = "agentos.issue_registrar.v1";
 export const ISSUE_REGISTRAR_VERSION = 1; export const ISSUE_REGISTRAR_ROLE_ID = "AGENTOS.ISSUE_REGISTRAR"; export const ISSUE_REGISTRAR_ROLE_TITLE = "AgentOS Issue Registrar — Permanent";
 export const ISSUE_REGISTRAR_ROLE_KIND = "ISSUE_REGISTRAR"; export const ISSUE_REGISTRAR_CANONICAL_FILENAME = "issues.md"; export const ISSUE_REGISTRAR_CLEARED_CANONICAL_FILENAME = "cleared-issues.md";
 export const ISSUE_REGISTRAR_FAILURE_CODE = "INCOMPLETE_STANDARDIZED_ISSUE"; export const ISSUE_REGISTRAR_RESERVATION_POLICY = "RESERVE_BEFORE_VALIDATION"; export const ISSUE_REGISTRAR_SEAM_RELATIONS = Object.freeze([
@@ -76,6 +77,30 @@ function normalizeReporter(input = {}) {
 }
 function reporterPresent(reporter) {
   return Object.values(reporter).some((value) => value !== null);
+}
+const BLUEPRINT_EMBEDDED_FIELDS = Object.freeze([
+  "blueprint", "blueprint_content", "blueprintContent", "advice", "advisory",
+  "advisory_inputs", "advisoryInputs", "batching_suggestions", "batchingSuggestions",
+  "implementation_suggestions", "implementationSuggestions", "producer_notice",
+  "producerNotice", "acknowledgement_required", "acknowledgementRequired",
+]);
+function rejectEmbeddedBlueprintFields(value) {
+  if (!isRecord(value)) return;
+  for (const field of BLUEPRINT_EMBEDDED_FIELDS) assert(value[field] === undefined || value[field] === null, "ISSUE_REGISTRAR_BLUEPRINT_EMBEDDED_FORBIDDEN", `Blueprint ${field} must not be embedded in canonical issue state`);
+}
+export function normalizeBlueprintReference(value) {
+  if (value === undefined || value === null) return null;
+  assert(isRecord(value), "ISSUE_REGISTRAR_BLUEPRINT_REFERENCE_INVALID", "Blueprint reference must be an object");
+  rejectEmbeddedBlueprintFields(value);
+  const reference = value.schema === BLUEPRINT_REFERENCE_SCHEMA
+    ? clone(value)
+    : compileBlueprintReference({releaseId: value.release_id ?? value.releaseId, path: value.path ?? value.path_ref ?? value.release_path, sha256: value.sha256 ?? value.release_sha256 ?? value.releaseSha256});
+  validateBlueprintReference(reference);
+  return reference;
+}
+function normalizeBlueprintSubmission(value) {
+  rejectEmbeddedBlueprintFields(value);
+  return normalizeBlueprintReference(value?.blueprint_reference ?? value?.blueprintReference ?? null);
 }
 const ISSUE_STATUS_LIFECYCLE = Object.freeze({
   INTAKE_FAILED: "NOT_AUTHORIZED",
@@ -252,6 +277,7 @@ export function validateIssueRecord(issue) {
     assert(normalizeFindingKind(issue.finding_kind ?? "ISSUE") === "SEAM_FINDING" || normalizeFindingKind(issue.finding_kind ?? "ISSUE") === "SCOPE_AMENDMENT", "ISSUE_REGISTRAR_INVALID_RELATION", "a seam relation requires a typed seam finding");
   }
   if (issue.scope_amendment !== null && issue.scope_amendment !== undefined) normalizeScopeAmendment(issue.scope_amendment); validateReporter(issue.reporter);
+  if (issue.blueprint_reference !== undefined && issue.blueprint_reference !== null) validateBlueprintReference(issue.blueprint_reference);
   requireUtc(issue.submitted_at_utc, "issue submitted timestamp"); requireUtc(issue.updated_at_utc, "issue updated timestamp");
   for (const field of ["accepted_fields", "missing_fields", "invalid_fields", "resubmission_requirements", "related_issue_ids", "evidence"]) {
     assert(Array.isArray(issue[field]), "ISSUE_REGISTRAR_INVALID_RECORD", `issue ${field} must be an array`); const strings = field === "evidence" ? null : issue[field]; if (strings !== null) {
@@ -354,6 +380,7 @@ function buildSubmissionRecord(input, {prefix, year, number, nowUtc, reservation
     finding_kind: findingKind,
     relation_type: relationType,
     scope_amendment: scopeAmendment,
+    blueprint_reference: normalizeBlueprintSubmission(input),
     evidence,
     candidate: normalizeCandidate(input.candidate),
     audit: null,
@@ -441,6 +468,8 @@ function patchIssue(issue, patch, nowUtc, event, actor = ISSUE_REGISTRAR_ROLE_ID
     const severity = String(patch.severity).toUpperCase(); assert(ISSUE_SEVERITIES.includes(severity), "ISSUE_REGISTRAR_INVALID_SEVERITY", "issue severity is invalid"); next.severity = severity;
   }
   for (const field of ["candidate", "audit", "delivery"]) if (patch[field] !== undefined) next[field] = field === "candidate" ? normalizeCandidate(patch[field]) : clone(patch[field]);
+  if (patch.blueprint_reference !== undefined || patch.blueprintReference !== undefined) next.blueprint_reference = normalizeBlueprintReference(patch.blueprint_reference ?? patch.blueprintReference);
+  rejectEmbeddedBlueprintFields(patch);
   if (patch.evidence !== undefined) next.evidence = normalizeEvidence(patch.evidence); if (patch.related_issue_ids !== undefined) next.related_issue_ids = normalizeRelated(patch.related_issue_ids);
   if (patch.finding_kind !== undefined || patch.findingKind !== undefined) next.finding_kind = normalizeFindingKind(patch.finding_kind ?? patch.findingKind);
   if (patch.relation_type !== undefined || patch.relationType !== undefined) next.relation_type = normalizeRelationType(patch.relation_type ?? patch.relationType);
@@ -645,6 +674,7 @@ function issueDetailLines(issue, {cleared = false} = {}) {
     `- Reporter task/thread: ${issue.reporter.task_id ?? "(not provided)"} / ${issue.reporter.thread_id ?? "(not provided)"}`,
     `- Reporter turn/item: ${issue.reporter.turn_id ?? "(not provided)"} / ${issue.reporter.item_id ?? "(not provided)"}`,
     `- Evidence: ${issue.evidence.map((entry) => `${entry.evidence_id} (${entry.reference})`).join(", ") || "(none)"}`,
+    `- Blueprint release reference: ${issue.blueprint_reference === null || issue.blueprint_reference === undefined ? "(none)" : `${issue.blueprint_reference.release_id} (${issue.blueprint_reference.path}; ${issue.blueprint_reference.sha256})`}`,
     `- Relationships: ${relationship}`,
   ]; if (issue.scope_amendment !== null && issue.scope_amendment !== undefined) lines.push(`- Scope amendment: ${JSON.stringify(issue.scope_amendment)}`);
   if (cleared) lines.push(`- Delivery: ${JSON.stringify(issue.delivery)}`); lines.push(""); return lines;
@@ -886,3 +916,7 @@ export function createIssueRegistrar(options = {}) { return new IssueRegistrar(o
 export const compileIssueSubmission = submitIssue; export const validateIssueSubmission = validateIssueRecord; export const compileIssueTransition = updateIssue; export const validateIssueTransition = updateIssue;
 export const compileIssueIntake = submitIssue; export const validateIssueIntake = validateIssueRecord; export const compileIssueRole = compileIssueRegistrarRole; export const compileIssueSeamFinding = submitSeamFinding;
 export const validateIssueSeam = validateIssueSeamClosure; if (import.meta.url === `file://${process.argv[1]}`) process.stdout.write("Issue Registrar contract loaded\n");
+export const ISSUE_REGISTRAR_BLUEPRINT_REFERENCE_SCHEMA = BLUEPRINT_REFERENCE_SCHEMA;
+export const ISSUE_REGISTRAR_BLUEPRINT_REFERENCE_VERSION = BLUEPRINT_VERSION;
+export const validateIssueBlueprintReference = normalizeBlueprintReference;
+export const compileIssueBlueprintReference = (value) => normalizeBlueprintReference(value);

@@ -38,6 +38,15 @@
     "privacy": "Security-sensitive evidence is represented by controlled opaque references and never stores raw secret payloads.",
     "repair_scope": "Admission requires exactly one compliant READY root issue plus a bounded causal seam-closure set. Every companion is a registered SEAM_FINDING or SCOPE_AMENDMENT with CHILD_OF, DEPENDS_ON, SAME_ROOT_CAUSE, or explicit Owner atomic-seam relation.",
     "scope_safety": "Unrelated, speculative, broad-audit, product-intent, self-authorized, or custody-conflicting findings remain visible as provisional/READY follow-ons and are excluded from the active candidate.",
-    "handoff": "Immutable handoffs enumerate the root issue, every companion ID, in-seam rationale, bounded paths, and verification mapping."
+    "handoff": "Immutable handoffs enumerate the root issue, every companion ID, in-seam rationale, bounded paths, and verification mapping.",
+    "blueprint_reference": "An issue may retain only a reference to an accepted immutable Blueprint release: release_id, relative path, and SHA-256. Blueprint content, factual/advisory payloads, producer notices, acknowledgements, and BLUEPRINT_CONSUMED traffic are never embedded in issue state."
+  },
+  "blueprint_reference": {
+    "schema": "agentos.blueprint_reference.v1",
+    "version": 1,
+    "required": ["schema", "version", "release_id", "path", "sha256", "reference_sha256"],
+    "additionalProperties": false,
+    "path_rule": "relative package path only; no traversal, absolute path, or host identity",
+    "forbidden_fields": ["content", "blueprint", "advice", "advisory", "producer_notice", "acknowledgement_required"]
   }
 }

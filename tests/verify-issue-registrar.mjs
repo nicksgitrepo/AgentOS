@@ -28,6 +28,8 @@ import {
   validateIssueSeamClosure,
   validateIssueRecord,
   validateIssueRegistry,
+  compileIssueBlueprintReference,
+  validateIssueBlueprintReference,
   writeIssuesMarkdownAtomic,
 } from "../control/issue-registrar.mjs";
 
@@ -51,6 +53,20 @@ assert.equal(first.issue.status, "READY");
 assert.equal(first.reserved, true);
 assert.equal(first.receipt.action, "SUBMITTED");
 validateIssueRegistry(registry);
+
+// Blueprint coordination is reference-only: release identity/path/digest may
+// be retained, while content, advice, and producer traffic may not enter issue
+// state.
+const blueprintReference = compileIssueBlueprintReference({
+  releaseId: "BLUEPRINT.RELEASE.1174",
+  path: "blueprints/BLUEPRINT.RELEASE.1174.json",
+  sha256: SHA("b"),
+});
+assert.equal(validateIssueBlueprintReference(blueprintReference).release_id, "BLUEPRINT.RELEASE.1174");
+const referenced = submitIssue(compileIssueRegistry(), {...BASE, title: "Blueprint reference", dedupe_key: "BLUEPRINT.REFERENCE", blueprint_reference: blueprintReference}, {nowUtc: NOW});
+assert.deepEqual(referenced.issue.blueprint_reference, blueprintReference);
+assert.throws(() => submitIssue(compileIssueRegistry(), {...BASE, title: "Embedded Blueprint", dedupe_key: "BLUEPRINT.EMBEDDED", blueprint: {release_id: "BLUEPRINT.RELEASE.1174", content: "not retained"}}, {nowUtc: NOW}), /BLUEPRINT_EMBEDDED_FORBIDDEN/u);
+assert.throws(() => submitIssue(compileIssueRegistry(), {...BASE, title: "Embedded advice", dedupe_key: "BLUEPRINT.ADVICE", implementation_suggestions: ["take over" ]}, {nowUtc: NOW}), /BLUEPRINT_EMBEDDED_FORBIDDEN/u);
 
 // A malformed intake still reserves its number and remains visible with a typed failure.
 const malformed = submitIssue(registry, {product_prefix: "SOCIUNA", reporter: {task_id: "TASK.MALFORMED"}}, {nowUtc: NOW});

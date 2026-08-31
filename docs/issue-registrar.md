@@ -44,6 +44,14 @@ visible provisional/READY follow-ons. The handoff enumerates the root, every
 companion ID, the in-seam rationale, paths, and verification mapping so an
 Auditor can reject unjustified expansion.
 
+Blueprint coordination is reference-only. An issue may carry the accepted
+release ID, its portable relative release path, and the release SHA-256 through
+`blueprint_reference`. The Registrar rejects embedded Blueprint content,
+factual or advisory payloads, producer notices, acknowledgement requirements,
+and `BLUEPRINT_CONSUMED` traffic. Consumers read the sealed release and index
+files directly and perform one fresh status/base/custody/collision preflight;
+corrections are successor releases linked with `supersedes`.
+
 Audit requires an issue ID, immutable commit/tree, scope, and verification
 contract. Runtime requires an identical-byte independent PASS and equality of
 local, fetched-origin, and GitHub commit/tree identities; a claimed delivery
