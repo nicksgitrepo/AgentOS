@@ -842,6 +842,25 @@ export function compileProjectionDivergenceReceipt(input) {
 }
 
 export {SCHEDULER_PROJECTION_LIVENESS_SCHEMA, ACTIVE_OR_PROJECTION_LAG, MATERIAL_LIVENESS_ACTIVE, SAME_TASK_RECOVERY_REQUIRED, MATERIAL_LIVENESS_STAGNANT, TYPED_HOST_CAPABILITY_ESCALATION, PROJECTION_LIVENESS_EVIDENCE_REQUIRED, compileSchedulerProjectionLivenessObservation, validateSchedulerProjectionLivenessObservation, compileProjectionLivenessObservation, validateProjectionLivenessObservation, compileSchedulerProjectionLiveness, validateSchedulerProjectionLiveness, createSchedulerProjectionLivenessObservation, createMaterialLivenessEscalationLedger, deduplicateMaterialLivenessEscalation} from "./zero-output-session-replacement.mjs";
+
+// Closeout callers consume the same issue-bound regeneration and post-delivery
+// cleanup contracts as the storage Controller.  These are pure exports: the
+// lifecycle state machine never performs deletion or treats a manifest as
+// delivery proof on its own.
+export {
+  STORAGE_DISPOSABLE_OUTPUT_MANIFEST_SCHEMA,
+  STORAGE_POST_DELIVERY_CLEANUP_SCHEMA,
+  compileDisposableOutputManifest,
+  validateDisposableOutputManifest,
+  compilePostDeliveryCleanup,
+  validatePostDeliveryCleanup,
+  compileDeliveryCleanupDecision,
+  validateDeliveryCleanupDecision,
+  compileStorageDailyInspection,
+  validateStorageDailyInspection,
+  compileStorageRegenerationCycle,
+  validateStorageRegenerationCycle,
+} from "./storage-regeneration-governance.mjs";
 const CLOSEOUT_STATES = Object.freeze(["CHECKPOINT_REACHED", "HANDOFF_READY", "AUDIT_ROUTED", "AUDIT_CONSUMED", "CLOSED"]);
 const CLOSEOUT_NEXT = Object.freeze({CHECKPOINT_REACHED: "HANDOFF_READY", HANDOFF_READY: "AUDIT_ROUTED", AUDIT_ROUTED: "AUDIT_CONSUMED", AUDIT_CONSUMED: "CLOSED"});
 

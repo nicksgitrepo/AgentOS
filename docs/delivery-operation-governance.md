@@ -43,3 +43,19 @@ The contract is implemented by:
 - `schemas/runtime-operation-cost-projection.v1.json`
 - `schemas/runtime-operation-owner-decision.v1.json`
 
+## Post-delivery output closeout
+
+Runtime delivery closeout consumes the issue-bound disposable-output manifest
+from `control/storage-regeneration-governance.mjs`.  The manifest records every
+dependency, build, and temporary output path with its issue, operation,
+lifecycle class, size, and content fingerprint.  A pre-delivery or
+status-only delivery cannot produce a cleanup decision: local, fetched-origin,
+and GitHub commit/tree identities must be equal and independently verified.
+
+After that proof, `compilePostDeliveryCleanup` emits a content-addressed
+decision that may clear only the listed issue-scoped regenerable entries.
+Worktrees, active custody, shared live caches, toolchains, PostgreSQL state,
+Artifacts, receipts, Codex history, and outside-Projects caches remain
+protected and require their own lifecycle authority.  The contract is
+idempotent and records the manifest and delivered candidate digests so a
+partial or replayed cleanup fails closed.

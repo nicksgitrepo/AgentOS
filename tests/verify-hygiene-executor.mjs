@@ -33,6 +33,10 @@ import {
   validateGeneratedTempMetadata,
   compileRetentionDefaults,
   validateRetentionDefaults,
+  compileGeneratedTempCloseout,
+  validateGeneratedTempCloseout,
+  compileStorageRegenerationCycle,
+  compileStorageDailyInspection,
 } from "../control/hygiene-executor.mjs";
 
 function eligibleTarget(pathname, kind = "TEMP", overrides = {}) {
@@ -229,6 +233,21 @@ try {
   }
   assert.throws(() => compileStorageAssetDisposition(eligibleTarget("unknown-class", "TEMP", {lifecycle_class: "UNKNOWN"})), /lifecycle class is invalid/u);
   assert.throws(() => compileStorageDeletionDecision(eligibleTarget("malformed-class", "TEMP", {lifecycle_class: null})), /lifecycle class is invalid/u);
+  const ownedTemp = compileGeneratedTempCloseout({
+    issueId: "AGENTOS-ISSUE-HYGIENE-1175",
+    ownerTaskId: "TASK-HYGIENE-1175",
+    generatorId: "GENERATOR-HYGIENE-1175",
+    generation: 1,
+    operationRoot: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175",
+    rootPath: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175/GENERATOR-HYGIENE-1175-1",
+    outcome: "FAIL",
+    durableReceiptPaths: ["receipt.json"],
+    observedAtUtc: "2026-08-31T12:00:00.000Z",
+  });
+  assert.equal(validateGeneratedTempCloseout(ownedTemp).removed, true);
+  const recurrenceCycle = compileStorageRegenerationCycle({cycleId: "CYCLE-HYGIENE-1", sourceClass: "FLEET_REPLAY_PGDATA_COPIES", laneId: "LANE-HYGIENE", generation: 1, rootIdentity: "ROOT-HYGIENE", observedAtUtc: "2026-08-31T12:00:00.000Z", outputBytes: 1, cleanupVerified: true, priorCleanup: true, priorCycles: []});
+  const recurrence = compileStorageDailyInspection({inspectionId: "INSPECTION-HYGIENE-1", controllerId: "CONTROLLER-HYGIENE", observedAtUtc: "2026-08-31T12:00:00.000Z", cycles: [recurrenceCycle], protectedBytes: 1, regeneratedBytes: 1, deletionAttempts: 0});
+  assert.equal(recurrence.deletion_execution_authorized, false);
   const plan = compileStorageHygienePlan({assets: [eligibleTarget("target", "BUILD_OUTPUT", {lifecycle_class: "REGENERABLE", estimated_bytes: 2048}), activeDisposition, evidenceDisposition], observedAtUtc: "2026-08-26T18:00:00.000Z"});
   assert.equal(plan.schema, STORAGE_HYGIENE_PLAN_SCHEMA);
   assert.deepEqual(plan.cleanup_eligible_paths, ["target"]);

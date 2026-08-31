@@ -10,6 +10,9 @@ import {
   rejectRuntimeOperationAuthorization,
   validateDeliveryOperationGovernance,
   validateRuntimeOperationAuthorization,
+  compileDisposableOutputManifest,
+  compilePostDeliveryCleanup,
+  validatePostDeliveryCleanup,
 } from "../control/delivery-operation-governance.mjs";
 
 const POLICY = "a".repeat(64);
@@ -188,6 +191,36 @@ const rejected = rejectRuntimeOperationAuthorization(prepared, {
 });
 assert.equal(rejected.status, "REJECTED");
 assert.throws(() => validateRuntimeOperationAuthorization(rejected, {requireApproved: true}), /explicit owner approval/u);
+
+const closeoutIssue = "AGENTOS-ISSUE-DELIVERY-1175";
+const closeoutCommit = "3".repeat(40);
+const closeoutTree = "4".repeat(40);
+const closeoutManifest = compileDisposableOutputManifest({
+  issueId: closeoutIssue,
+  ownerTaskId: "TASK-DELIVERY-1175",
+  operationId: "OP-DELIVERY-CLOSEOUT-1175",
+  operationRoot: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175",
+  outputs: [{issue_id: closeoutIssue, path: "target/generated.bin", kind: "BUILD_OUTPUT", lifecycle_class: "REGENERABLE", bytes: 8, fingerprint: "delivery-fp"}],
+  deliveryVerified: true,
+  deliveryReceiptSha256: "5".repeat(64),
+  candidateCommit: closeoutCommit,
+  candidateTree: closeoutTree,
+  observedAtUtc: "2026-08-31T12:00:00.000Z",
+});
+const closeoutDelivery = {
+  status: "DELIVERED_VERIFIED",
+  independent_pass: true,
+  identical_bytes: true,
+  local_commit: closeoutCommit,
+  origin_commit: closeoutCommit,
+  github_commit: closeoutCommit,
+  local_tree: closeoutTree,
+  origin_tree: closeoutTree,
+  github_tree: closeoutTree,
+};
+const cleanup = compilePostDeliveryCleanup({manifest: closeoutManifest, delivery: closeoutDelivery, issueId: closeoutIssue, observedAtUtc: "2026-08-31T12:01:00.000Z"});
+assert.equal(validatePostDeliveryCleanup(cleanup, {manifest: closeoutManifest, delivery: closeoutDelivery}).cleanup_allowed, true);
+assert.throws(() => compilePostDeliveryCleanup({manifest: {...closeoutManifest, delivery_verified: false, cleanup_action: "HOLD_UNTIL_DELIVERY_VERIFIED", manifest_sha256: "0".repeat(64)}, delivery: closeoutDelivery, issueId: closeoutIssue, observedAtUtc: "2026-08-31T12:01:00.000Z"}), /digest mismatch|DELIVERY_NOT_VERIFIED/u);
 
 const unknownProjection = compileRuntimeOperationCostProjection();
 assert.equal(unknownProjection.boundary_status, "UNKNOWN");

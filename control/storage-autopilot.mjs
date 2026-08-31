@@ -42,6 +42,13 @@ import {
   compileStorageDailyInspection,
   validateStorageDailyInspection,
   compileStorageRegenerationDecision,
+  validateStorageRegenerationDecision,
+  compileStorageCleanupDecision,
+  validateStorageCleanupDecision,
+  compileGeneratorTempRootCloseout,
+  validateGeneratorTempRootCloseout,
+  compileStorageInspection,
+  validateStorageInspection,
 } from "./storage-regeneration-governance.mjs";
 
 export {
@@ -82,6 +89,13 @@ export {
   compileStorageDailyInspection,
   validateStorageDailyInspection,
   compileStorageRegenerationDecision,
+  validateStorageRegenerationDecision,
+  compileStorageCleanupDecision,
+  validateStorageCleanupDecision,
+  compileGeneratorTempRootCloseout,
+  validateGeneratorTempRootCloseout,
+  compileStorageInspection,
+  validateStorageInspection,
 } from "./storage-regeneration-governance.mjs";
 
 const SHA256 = /^[0-9a-f]{64}$/u;

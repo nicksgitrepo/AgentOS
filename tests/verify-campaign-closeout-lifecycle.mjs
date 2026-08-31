@@ -45,6 +45,9 @@ import {
   validateSchedulerProjectionLivenessObservation,
   createMaterialLivenessEscalationLedger,
   deduplicateMaterialLivenessEscalation,
+  compileDisposableOutputManifest,
+  compilePostDeliveryCleanup,
+  validatePostDeliveryCleanup,
 } from "../control/campaign-closeout-lifecycle.mjs";
 import {canonicalDigest} from "../control/content-addressing.mjs";
 
@@ -521,5 +524,34 @@ const duplicateEscalation = deduplicateMaterialLivenessEscalation({escalation: s
 assert.equal(duplicateEscalation.duplicate, true);
 assert.equal(duplicateEscalation.emitted, false);
 assert.throws(() => validateSchedulerProjectionLivenessObservation({...stagnant, replacement_allowed: true}), /replacement/u);
+
+const closeoutIssue = "AGENTOS-ISSUE-STORAGE-1175";
+const closeoutCommit = "3".repeat(40);
+const closeoutTree = "4".repeat(40);
+const closeoutManifest = compileDisposableOutputManifest({
+  issueId: closeoutIssue,
+  ownerTaskId: "TASK-STORAGE-1175",
+  operationId: "OP-CLOSEOUT-STORAGE-1175",
+  operationRoot: "/Users/nicholaspacheco/Projects/AgentOS/Temp/storage-regen-1175",
+  outputs: [{issue_id: closeoutIssue, path: "build/output.bin", kind: "BUILD_OUTPUT", lifecycle_class: "REGENERABLE", bytes: 5, fingerprint: "closeout-fp"}],
+  deliveryVerified: true,
+  deliveryReceiptSha256: "5".repeat(64),
+  candidateCommit: closeoutCommit,
+  candidateTree: closeoutTree,
+  observedAtUtc: "2026-08-31T12:00:00.000Z",
+});
+const closeoutDelivery = {
+  status: "DELIVERED_VERIFIED",
+  independent_pass: true,
+  identical_bytes: true,
+  local_commit: closeoutCommit,
+  origin_commit: closeoutCommit,
+  github_commit: closeoutCommit,
+  local_tree: closeoutTree,
+  origin_tree: closeoutTree,
+  github_tree: closeoutTree,
+};
+const closeout = compilePostDeliveryCleanup({manifest: closeoutManifest, delivery: closeoutDelivery, issueId: closeoutIssue, observedAtUtc: "2026-08-31T12:01:00.000Z"});
+assert.equal(validatePostDeliveryCleanup(closeout, {manifest: closeoutManifest, delivery: closeoutDelivery}).cleanup_allowed, true);
 
 console.log("PASS campaign closeout lifecycle: durable projection divergence, PASS/FAIL/blocker recovery, exact correlation, stability gating, exactly-once consumption, no replay, and ordered audit closeout");

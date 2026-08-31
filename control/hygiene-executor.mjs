@@ -389,4 +389,11 @@ export {
   compileStorageDailyInspection,
   validateStorageDailyInspection,
   compileStorageRegenerationDecision,
+  validateStorageRegenerationDecision,
+  compileStorageCleanupDecision,
+  validateStorageCleanupDecision,
+  compileGeneratorTempRootCloseout,
+  validateGeneratorTempRootCloseout,
+  compileStorageInspection,
+  validateStorageInspection,
 } from "./storage-regeneration-governance.mjs";
