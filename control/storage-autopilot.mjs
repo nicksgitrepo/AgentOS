@@ -108,6 +108,11 @@ export const STORAGE_LIFECYCLE_CLASSES = Object.freeze([
   "DELIVERY_EVIDENCE",
   "RETAINED_RUNTIME_STATE",
   "CLEANUP_ELIGIBLE",
+  "TOOLCHAIN",
+  "SHARED_LIVE_CACHE",
+  "POSTGRESQL_STATE",
+  "CODEX_HISTORY",
+  "OUTSIDE_PROJECTS_CACHE",
 ]);
 export const CLEANUP_TARGET_KINDS = Object.freeze([
   "WORKTREE",
@@ -150,6 +155,7 @@ export function compileStorageAssetDisposition(asset) {
   if (STORAGE_AUTO_LIFECYCLE_PROTECTED.has(valid.lifecycle_class)) {
     holds.push(valid.lifecycle_class === "DELIVERY_EVIDENCE" ? "DURABLE_EVIDENCE_RETAINED" : valid.lifecycle_class);
   }
+  if (storageAutoProtectedAsset(valid) && holds.length === 0) holds.push("PROTECTED_DATA");
   if (valid.active && !holds.includes("ACTIVE_CUSTODY")) holds.push("ACTIVE_CUSTODY");
   if (valid.dirty) holds.push("DIRTY_CUSTODY");
   if (valid.referenced) holds.push("LIVE_REFERENCE");
@@ -291,6 +297,27 @@ export function validateBuildOutputPlan({cacheScope, duplicatePerProofTargets, n
 const STORAGE_AUTO_BUCKET_KINDS = new Set(["PHYSICAL", "LOGICAL"]);
 const STORAGE_AUTO_LIFECYCLE_PROTECTED = new Set(["ACTIVE_CUSTODY", "DELIVERY_EVIDENCE", "RETAINED_RUNTIME_STATE"]);
 const STORAGE_AUTO_CLASSIFICATIONS = new Set(["PERMANENT_EXEMPT", "TEMPORARY_CLOSED"]);
+const STORAGE_AUTO_PROTECTED_PATH_PATTERNS = Object.freeze([
+  /(?:^|\/)worktrees?(?:\/|$)/iu,
+  /(?:^|\/)toolchains?(?:\/|$)/iu,
+  /(?:^|\/)(?:pgdata|postgres(?:ql)?)(?:\/|$)/iu,
+  /(?:^|\/)(?:artifacts?|receipts?)(?:\/|$)/iu,
+  /(?:^|\/)(?:codex|thread|session)[-_]?(?:history|state)?(?:\/|$)/iu,
+  /(?:^|\/)(?:sparkle|outside-projects)(?:\/|$)/iu,
+]);
+
+function storageAutoProtectedAsset(asset) {
+  const lowerPath = asset.path.toLowerCase();
+  return asset.protected === true
+    || asset.kind === "WORKTREE"
+    || asset.kind === "RUNTIME_STATE"
+    || asset.lifecycle_class === "TOOLCHAIN"
+    || asset.lifecycle_class === "SHARED_LIVE_CACHE"
+    || asset.lifecycle_class === "POSTGRESQL_STATE"
+    || asset.lifecycle_class === "CODEX_HISTORY"
+    || asset.lifecycle_class === "OUTSIDE_PROJECTS_CACHE"
+    || STORAGE_AUTO_PROTECTED_PATH_PATTERNS.some((pattern) => pattern.test(lowerPath));
+}
 const STORAGE_AUTO_DISCOVERY_SOURCES = Object.freeze([
   "live", "pinned", "non_pinned", "archived", "notLoaded", "interrupted", "failed", "idle", "active",
   "campaign_roster", "controller_ledger", "worktrees", "processes", "automation_targets", "state", "memory",
@@ -752,7 +779,7 @@ export const validateStorageDiscovery = validateUniversalDiscovery;
 export function compileStorageDeletionDecision(asset, {action = "DELETE"} = {}) {
   const source = validateStorageAsset(asset);
   const classified = compileStorageAssetDisposition(source);
-  const protectedClass = STORAGE_AUTO_LIFECYCLE_PROTECTED.has(source.lifecycle_class) || source.protected === true || source.kind === "RUNTIME_STATE";
+  const protectedClass = STORAGE_AUTO_LIFECYCLE_PROTECTED.has(source.lifecycle_class) || storageAutoProtectedAsset(source);
   const allowed = action !== "DELETE" || (!protectedClass && classified.disposition === "DELETE_AFTER_SEPARATE_ADMISSION");
   return {path: source.path, action, allowed, disposition: allowed ? "DELETE_AFTER_SEPARATE_ADMISSION" : "RETAIN", reason: allowed ? null : "PROTECTED_DATA_DELETE_DENIAL", lifecycle_class: classified.lifecycle_class};
 }
